@@ -1,0 +1,4 @@
+<launch>
+  <test test-name="test_dxl_armed_turtlebot" pkg="roseus"
+        type="roseus" args="$(find dxl_armed_turtlebot)/test/test-dxl-armed-turtlebot.l"/>
+</launch>
