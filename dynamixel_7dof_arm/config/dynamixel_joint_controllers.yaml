@@ -1,0 +1,110 @@
+arm_j1_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint1
+    joint_speed: 2.0
+    motor:
+        id: 1
+        init: 512
+        min: 0
+        max: 1023
+
+arm_j2_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint2
+    joint_speed: 2.0
+    motor:
+        id: 2
+        init: 512
+        min: 0
+        max: 1023
+
+arm_j3_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint3
+    joint_speed: 2.0
+    motor:
+        id: 3
+        init: 512
+        min: 0
+        max: 1023
+
+arm_j4_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint4
+    joint_speed: 2.0
+    motor:
+        id: 4
+        init: 512
+        min: 0
+        max: 1023
+
+arm_j5_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint5
+    joint_speed: 2.0
+    motor:
+        id: 5
+        init: 512
+        min: 0
+        max: 1023
+
+arm_j6_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint6
+    joint_speed: 2.0
+    motor:
+        id: 6
+        init: 512
+        min: 0
+        max: 1023
+
+arm_j7_controller:
+    controller:
+        package: dynamixel_controllers
+        module: joint_position_controller
+        type: JointPositionController
+    joint_name: arm_joint7
+    joint_speed: 2.0
+    motor:
+        id: 7
+        init: 512
+        min: 0
+        max: 1023
+
+fullbody_controller:
+   controller:
+       package: dynamixel_controllers
+       module: joint_trajectory_action_controller
+       type: JointTrajectoryActionController
+   joint_trajectory_action_node:
+       min_velocity: 0.25
+       constraints:
+           goal_time: 0.0
+
+gripper_controller:
+   controller:
+       package: dynamixel_controllers
+       module: joint_trajectory_action_controller
+       type: JointTrajectoryActionController
+   joint_trajectory_action_node:
+       min_velocity: 0.25
+       constraints:
+           goal_time: 0.0

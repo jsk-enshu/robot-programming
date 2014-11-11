@@ -1,0 +1,13 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+    <!-- Load controller configuration to parameter server -->
+    <rosparam file="$(find dynamixel_7dof_arm)/config/dynamixel_joint_controllers.yaml" command="load"/>
+    <node name="dynamixel_trajectory_controller_spawner_for_gripper" pkg="dynamixel_controllers" type="controller_spawner.py"
+          args="--manager=dxl_manager
+                --port=7dof_arm_port
+                --type=meta
+                gripper_controller
+                arm_j7_controller"
+          output="screen"/>
+</launch>

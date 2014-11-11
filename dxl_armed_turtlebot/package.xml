@@ -1,0 +1,18 @@
+<package>
+  <name>dxl_armed_turtlebot</name>
+  <version>1.0.0</version>
+  <description>Turtlebot with dynamixel 7dof arm</description>
+  <license>BSD</license>
+  <maintainer email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</maintainer>
+  <author email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>dynamixel_7dof_arm</build_depend>
+  <build_depend>kobuki_msgs</build_depend>
+  <build_depend>linux_hardware</build_depend>
+
+  <run_depend>dynamixel_7dof_arm</run_depend>
+  <run_depend>kobuki_msgs</run_depend>
+  <run_depend>linux_hardware</run_depend>
+</package>
