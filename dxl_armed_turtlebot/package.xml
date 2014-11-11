@@ -13,6 +13,8 @@
   <build_depend>linux_hardware</build_depend>
 
   <run_depend>dynamixel_7dof_arm</run_depend>
+  <run_depend>control_msgs</run_depend>
   <run_depend>kobuki_msgs</run_depend>
+  <run_depend>move_base_msgs</run_depend>
   <run_depend>linux_hardware</run_depend>
 </package>
