@@ -113,8 +113,7 @@
           :rotation-axis nil)
     (send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 2000)
     (send *ri* :wait-interpolation)
-    (send *dxl-armed-turtlebot* :arm :move-end-pos #f(70 0 -100) :world
-          :rotation-axis nil)
+    (send *dxl-armed-turtlebot* :arm :inverse-kinematics (make-coords :pos (send *dxl-armed-turtlebot* :transform-vector #f(430 0 250))) :rotation-axis nil)
     (send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 2000)
     (send *ri* :wait-interpolation)
     ))
