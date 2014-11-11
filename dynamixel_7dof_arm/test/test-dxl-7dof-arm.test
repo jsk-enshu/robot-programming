@@ -1,0 +1,4 @@
+<launch>
+  <test test-name="test_dxl_7dof_arm" pkg="roseus"
+        type="roseus" args="$(find dynamixel_7dof_arm)/test/test-dxl-7dof-arm.l"/>
+</launch>
