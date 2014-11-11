@@ -15,4 +15,6 @@
   <run_depend>dynamixel_7dof_arm</run_depend>
   <run_depend>kobuki_msgs</run_depend>
   <run_depend>linux_hardware</run_depend>
+  <run_depend>pr2eus</run_depend>
+
 </package>
