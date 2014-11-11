@@ -1,0 +1,5 @@
+<launch>
+  <test test-name="test_daisya_ik" pkg="roseus"
+        type="roseus" args="$(find daisya_euslisp_tutorials)/test/test-daisya-maze.l"
+        time-limit="300"/>
+</launch>

@@ -1,0 +1,51 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+    <node name="dynamixel_manager" pkg="dynamixel_controllers" type="controller_manager.py" required="true" output="screen">
+        <rosparam>
+            namespace: dxl_manager
+            serial_ports:
+                7dof_arm_port:
+                    port_name: "/dev/dynamixel_arm"
+                    baud_rate: 1000000
+                    min_motor_id: 1
+                    max_motor_id: 25
+                    update_rate: 20
+        </rosparam>
+    </node>
+
+    <!-- Load controller configuration to parameter server -->
+    <rosparam file="$(find dynamixel_7dof_arm)/config/dynamixel_joint_controllers.yaml" command="load"/>
+
+    <!-- start specified joint controllers -->
+    <node name="dynamixel_controller_spawner" pkg="dynamixel_controllers" type="controller_spawner.py"
+          args="--manager=dxl_manager
+                --port=7dof_arm_port
+                --type=simple
+                arm_j1_controller
+                arm_j2_controller
+                arm_j3_controller
+                arm_j4_controller
+                arm_j5_controller
+                arm_j6_controller
+                arm_j7_controller"
+          output="screen"/>
+
+    <!-- start trajectory controllers for fullbody + gripper -->
+    <node name="dynamixel_trajectory_controller_spawner_for_fullbody" pkg="dynamixel_controllers" type="controller_spawner.py"
+          args="--manager=dxl_manager
+                --port=7dof_arm_port
+                --type=meta
+                fullbody_controller
+                arm_j1_controller
+                arm_j2_controller
+                arm_j3_controller
+                arm_j4_controller
+                arm_j5_controller
+                arm_j6_controller"
+          output="screen"/>
+
+    <!-- TODO : Should use gripper_controller_spawner.launch instead of .sh ;; timing problem -->
+    <node name="dynamixel_trajectory_script" pkg="dynamixel_7dof_arm" type="gripper_controller_spawner.sh" output="screen"/>
+    <!-- <include file="$(find dynamixel_7dof_arm)/launch/gripper_controller_spawner.launch"/> -->
+</launch>

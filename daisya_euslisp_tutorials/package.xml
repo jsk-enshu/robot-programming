@@ -1,0 +1,14 @@
+<package>
+  <name>daisya_euslisp_tutorials</name>
+  <version>1.0.0</version>
+  <description>Daisya enshu</description>
+  <license>BSD</license>
+  <maintainer email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</maintainer>
+  <author email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roseus</build_depend>
+
+  <run_depend>roseus</run_depend>
+</package>

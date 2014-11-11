@@ -1,0 +1,14 @@
+<!-- -*- mode: XML -*- -->
+
+<launch>
+  <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
+  <!-- <include file="$(find dxl_armed_turtlebot)/launch/turtlebot_joystick_teleop.launch"/> -->
+  <!-- <include file="$(find turtlebot_rviz_launchers)/launch/view_robot.launch"/> -->
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtlebot_rviz_launchers)/rviz/robot.rviz" respawn="true"/> -->
+  <include file="$(find dynamixel_7dof_arm)/launch/dynamixel_7dof_arm_bringup.launch"/>
+  <!-- <include file="$(find roseus_tutorials)/launch/aques-talk.launch"/> -->
+  <node name="thermo_speaker" pkg="roseus"
+        type="roseus" args="$(find dynamixel_7dof_arm)/euslisp/thermo-speaker"
+        output="screen" respawn="true"/>
+</launch>

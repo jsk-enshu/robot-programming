@@ -1,0 +1,18 @@
+<package>
+  <description brief="daisya_euslisp_tutorials">
+
+     daisya_euslisp_tutorials
+
+  </description>
+  <author>nozawa</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+
+  <url>http://ros.org/wiki/daisya_euslisp_tutorials</url>
+
+  <depend package="roseus"/>
+  <depend package="dxl_armed_turtlebot"/>
+
+</package>
+
+
