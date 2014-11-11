@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(daisya_euslisp_tutorials)
 
-find_package(catkin REQUIRED COMPONENTS)
+find_package(catkin REQUIRED COMPONENTS rostest)
 
 catkin_package()
 
