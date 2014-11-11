@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2014-11-11)
+------------------
 * add rostest to package.xml
 * add control_msgs and move_base_msgs
 * add pr2eus to depends

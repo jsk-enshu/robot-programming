@@ -2,8 +2,8 @@
 Changelog for package daisya_euslisp_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.0 (2014-11-11)
+------------------
 * Fix final ik for reaching
 * Add find_package for rostest
 * Enable to catkin_make test for several examples
