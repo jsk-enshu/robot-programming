@@ -119,7 +119,7 @@
   
 
 (defun test-subsumption
-  (&key (exit-count 100))
+  (&key (exit-count 150))
   (let (i)
     (setq t1 (instance subsumption-task :init :name "Wander" :priority 10
                        :check-func #'(lambda (v) t)
