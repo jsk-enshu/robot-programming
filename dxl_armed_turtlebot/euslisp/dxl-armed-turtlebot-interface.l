@@ -136,7 +136,7 @@
    (make-coords :rot (send self :imurot)))
   (:power-system-vector () (cdr (assoc :power-system robot-state)))
   (:update-robot-state
-   ()
+   (&rest args)
    (prog1
        (send-super :update-robot-state)
      (if (send self :simulation-modep)
