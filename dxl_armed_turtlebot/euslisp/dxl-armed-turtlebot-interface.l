@@ -31,18 +31,6 @@
      (send self :initialize-arm-robot-ros)
      )
    )
-  (:def-vector-value
-   (&key (simulate-func #'(lambda () (instantiate float-vector 3)))
-         (raw-data-name)
-         (vector-length 3)
-         (state-name :state)
-         (value-name))
-   (if (send self :simulation-modep)
-       (funcall simulate-func)
-     (let ((bp (send self raw-data-name))
-           (ret (instantiate float-vector vector-length)))
-       (if bp (setf (elt ret (cadr (memq value-name bp))) (cadr (memq state-name bp))))
-       ret)))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
