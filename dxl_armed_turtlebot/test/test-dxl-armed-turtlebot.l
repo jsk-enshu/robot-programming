@@ -16,7 +16,12 @@
 (deftest test-init-ri
   (load "package://dxl_armed_turtlebot/euslisp/dxl-armed-turtlebot-interface.l")
   (assert (dxl-armed-turtlebot-init))
-  (assert (send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 2000))
+  (assert (progn
+            (send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 2000)
+            (send *ri* :wait-interpolation)
+            t))
+  (assert (progn (send *ri* :go-pos 0.1 0 5) t))
+  (assert (progn (send *ri* :go-velocity 0.1 0 5) t))
   )
 
 (run-all-tests)

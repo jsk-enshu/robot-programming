@@ -16,7 +16,10 @@
 (deftest test-init-ri
   (load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-interface.l")
   (assert (dxl-7dof-arm-init))
-  (assert (send *ri* :angle-vector (send *dxl-7dof-arm* :angle-vector) 2000))
+  (assert (progn
+            (send *ri* :angle-vector (send *dxl-7dof-arm* :angle-vector) 2000)
+            (send *ri* :wait-interpolation)
+            t))
   )
 
 (run-all-tests)
