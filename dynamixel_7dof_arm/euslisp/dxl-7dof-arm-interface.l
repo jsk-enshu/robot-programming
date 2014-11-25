@@ -1,27 +1,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; robot-interface definition to use 7dof arm robot using dynamixel AX-12A motors
+;; 7dof アームロボットのrobot-interfaceクラス
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; !! If you want to see dxl-7dof-arm-interface's methods, please see
-;; !! (load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-interface-common.l")
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; loading of necessary programs
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load "package://pr2eus/robot-interface.l")
 (load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
+
+;; loadする台車・アームのrobot-interfaceクラスのメソッド定義ファイル
 (load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-interface-common.l")
 (ros::load-ros-manifest "control_msgs")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; dxl-7dof-arm-interface class definition
+;; 7dof アームロボットのrobot-interfaceクラス定義
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defclass dxl-7dof-arm-interface
   :super robot-interface
   :slots ())
+
 (defmethod dxl-7dof-arm-interface
   (:init
    (&rest args)
    (eval `(defmethod ,(send (class self) :name)
+            ;; dxl-7dof-arm-interfaceのメソッドをdefmethodする
             ,@(get-method-list-for-dxl-7dof-arm-interface)
             ))
    (prog1
@@ -32,10 +31,11 @@
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; initialization function
-;;   *ri* and *dxl-7dof-arm* are generated
+;; アーム台車ロボット用初期化関数
+;;   robot-interface (*ri*) とモデル (*dxl-7dof-arm*)を生成する
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun dxl-7dof-arm-init ()
+  "Initialization function for *ri* and *dxl-7dof-arm*."
   (if (not (boundp '*ri*)) ;; real robot interface
       (setq *ri* (instance dxl-7dof-arm-interface :init)))
   (if (not (boundp '*dxl-7dof-arm*)) ;; Euslisp model

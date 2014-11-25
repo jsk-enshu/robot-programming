@@ -1,11 +1,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 7dof arm robot using dynamixel AX-12A motors
-;;   6dof arm + 1dof gripper
+;; Dynamixel AX-12Aモータによる7DOF アームロボット
+;;   7dof = 6dof arm + 1dof gripper
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; body definitions
+;; body生成関数
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Dynamixel AX-12A
@@ -128,7 +127,7 @@
       b)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; link definitions
+;; リンク生成関数
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; root-link : base+frame1-bottom+motor
@@ -272,12 +271,12 @@
       )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; robot class definition
+;; 7DOF アームロボットモデルクラス
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defclass dxl-7dof-arm-robot
   :super robot-model
-  :slots (jc0 jc1 jc2 jc3 jc4 jc5 jc6))
+  :slots (jc0 jc1 jc2 jc3 jc4 jc5 jc6)) ;; 関節インスタンス
 
 (defmethod dxl-7dof-arm-robot
   (:init
@@ -383,6 +382,7 @@
                          (t (make-list (length target-coords) :initial-element (deg2rad 5)))))
                   (base-range (list :min #f(-30 -30) :max #f( 30  30)))
                   &allow-other-keys)
+   "Inverse kinemaitcs method for arm robot."
    (let (diff-pos-rot)
      (unless move-target
        (setq move-target (send self :arm :end-coords)))
@@ -427,7 +427,11 @@
        )))
   )
 
-(defun dxl-7dof-arm () (instance dxl-7dof-arm-robot :init))
+;; 7dofアームモデル生成関数
+(defun dxl-7dof-arm
+  ()
+  "Generation function for dxl-7dof-arm-robot."
+  (instance dxl-7dof-arm-robot :init))
 
 #|
 (defun init-model-viewer ()

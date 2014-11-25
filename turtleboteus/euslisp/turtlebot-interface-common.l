@@ -1,3 +1,7 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 台車ロボットのrobot-interfaceクラスのメソッド定義部
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (ros::load-ros-manifest "control_msgs")
 (ros::load-ros-manifest "kobuki_msgs")
 (ros::load-ros-manifest "move_base_msgs")
@@ -5,6 +9,7 @@
 
 (defun get-method-list-for-turtlebot-interface ()
 '(
+  ;; サービスのwaitやsubscribeコールバック関数設定を行う初期化メソッド
   (:initialize-turtlebot-ros
    ()
    ;; subscriber
@@ -69,41 +74,14 @@
        (if bp (setf (elt ret (cadr (memq value-name bp))) (cadr (memq state-name bp))))
        ret)))
   (:raw-bumper-data () (cdr (assoc :bumper robot-state)))
-  (:bumper-vector
-   ()
-   (send self :def-vector-value
-         :simulate-func #'(lambda () (concatenate float-vector (send-all (send robot :bumper-sensors) :read)))
-         :raw-data-name :raw-bumper-data
-         :vector-length (length (send robot :bumper-sensors))
-         :value-name :bumper))
   (:raw-button-data () (cdr (assoc :button robot-state)))
-  (:button-vector
-   ()
-   (send self :def-vector-value
-         :raw-data-name :raw-button-data :value-name :button))
   (:raw-wheel-drop-data () (cdr (assoc :wheel-drop robot-state)))
-  (:wheel-drop-vector
-   ()
-   (send self :def-vector-value
-         :raw-data-name :raw-wheel-drop-data :value-name :wheel :vector-length 2))
   (:raw-cliff-data () (cdr (assoc :cliff robot-state)))
-  (:cliff-vector
-   ()
-   (send self :def-vector-value
-         :raw-data-name :raw-cliff-data :value-name :sensor))
-  (:cliff-bottom-vector
-   ()
-   (send self :def-vector-value
-         :raw-data-name :raw-cliff-data :value-name :sensor :state-name :bottom))
   (:raw-imu-data () (cdr (assoc :imu robot-state)))
   (:imurot
    ()
    (let* ((qt (cadr (memq :orientation (send self :raw-imu-data)))))
      (quaternion2matrix (float-vector (send qt :x) (send qt :y) (send qt :z) (send qt :w)))))
-  (:imucoords
-   ()
-   (make-coords :rot (send self :imurot)))
-  (:power-system-vector () (cdr (assoc :power-system robot-state)))
   (:update-robot-state
    (&rest args)
    (prog1
@@ -112,9 +90,49 @@
          (send robot :simulate objects))
      )
    )
-  ;; publish methods
+
+  ;; センサ取得メソッド
+  (:bumper-vector
+   ()
+   "Get bumper value vector."
+   (send self :def-vector-value
+         :simulate-func #'(lambda () (concatenate float-vector (send-all (send robot :bumper-sensors) :read)))
+         :raw-data-name :raw-bumper-data
+         :vector-length (length (send robot :bumper-sensors))
+         :value-name :bumper))
+  (:button-vector
+   ()
+   "Get button value vector."
+   (send self :def-vector-value
+         :raw-data-name :raw-button-data :value-name :button))
+  (:wheel-drop-vector
+   ()
+   "Get wheel drop sensor vector."
+   (send self :def-vector-value
+         :raw-data-name :raw-wheel-drop-data :value-name :wheel :vector-length 2))
+  (:cliff-vector
+   ()
+   "Get cliff sensor vector."
+   (send self :def-vector-value
+         :raw-data-name :raw-cliff-data :value-name :sensor))
+  (:cliff-bottom-vector
+   ()
+   "Get cliff bottom vector."
+   (send self :def-vector-value
+         :raw-data-name :raw-cliff-data :value-name :sensor :state-name :bottom))
+  (:imucoords
+   ()
+   "Get imucoords."
+   (make-coords :rot (send self :imurot)))
+  (:power-system-vector
+   ()
+   "Get power system vector."
+   (cdr (assoc :power-system robot-state)))
+
+  ;; publish メソッド
   (:publish-led
    (id value)
+   "Publish topic to turn on/off LEG. id should be 1-2. Value should be :black, :green, :orange, and :red."
    (ros::publish
     (format nil "/mobile_base/commands/led~d" id)
     (instance kobuki_msgs::Led :init
@@ -127,6 +145,7 @@
                        ))))
   (:publish-sound
    (value)
+   "Publish topic to turn on sound. value should be :on, :off, :recharge, :button, :error, :cleaningstart, and :cleaningend."
    (ros::publish
     (format nil "/mobile_base/commands/sound")
     (instance kobuki_msgs::Sound :init
@@ -140,6 +159,7 @@
                        (:cleaningend 6)
                        (t 0)
                        ))))
+
   ;;
   ;; go pos methods ;; copied from pr2-initerface.l
   ;;
