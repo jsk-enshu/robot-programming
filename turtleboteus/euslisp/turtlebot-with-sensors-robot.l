@@ -55,4 +55,4 @@
   (:camera (&rest args) (send* self :camera-sensor args))
   )
 
-(defun turtlebot-with-sensors-robot () (setq *turtlebot* (instance turtlebot-with-sensors-robot :init)))
+(defun turtlebot-with-sensors () (setq *turtlebot* (instance turtlebot-with-sensors-robot :init)))

@@ -36,7 +36,7 @@
   (if (not (boundp '*ri*))
       (setq *ri* (instance turtlebot-interface :init :objects objects)))
   (if (not (boundp '*turtlebot*))
-      (setq *turtlebot* (turtlebot-with-sensors-robot)))
+      (setq *turtlebot* (turtlebot-with-sensors)))
   (objects (list *turtlebot*))
   (send *irtviewer* :change-background #f(0.9 0.9 0.9))
   (send *irtviewer* :draw-objects)
