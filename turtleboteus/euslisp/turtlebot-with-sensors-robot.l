@@ -1,5 +1,14 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; turtlebotの台車ロボット
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; turtlebotのロボットモデルクラス (urdfから自動変換して生成)
 (require "package://turtleboteus/models/kobuki_hexagons_kinect.l")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 台車ロボットモデルクラス
+;;   Euslispでセンサ等を追加
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defclass turtlebot-with-sensors-robot
   :super turtlebot-robot
   :slots (sensors)
@@ -42,11 +51,13 @@
              (flatten (mapcar #'(lambda (obj) (if (find-method obj :bodies) (send obj :bodies) obj)) objs))))
   (:bumper-sensors
    (&rest args)
+   "Returns bumper sensors."
    (forward-message-to-all
     (remove-if-not #'(lambda (x) (derivedp x bumper-model)) sensors)
     args))
   (:camera-sensors
    (&rest args)
+   "Returns camera sensors."
    (forward-message-to-all
     (remove-if-not #'(lambda (x) (derivedp x camera-model)) sensors)
     args))
@@ -55,4 +66,7 @@
   (:camera (&rest args) (send* self :camera-sensor args))
   )
 
-(defun turtlebot-with-sensors () (setq *turtlebot* (instance turtlebot-with-sensors-robot :init)))
+(defun turtlebot-with-sensors
+  ()
+  "Generation function for turtlebot-with-sensors-robot."
+  (instance turtlebot-with-sensors-robot :init))

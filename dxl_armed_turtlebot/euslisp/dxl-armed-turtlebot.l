@@ -1,9 +1,20 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; turtlebotとdynamixel-7dof-armを組み合わせたアーム台車ロボット
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; loadする台車・アームのモデルファイル
 (require "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
 (require "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; アーム台車ロボットモデルクラス
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;   turtlebotは継承、dynamixel-7dof-armはスロット変数として確保
 (defclass dxl-armed-turtlebot-robot
   :super turtlebot-with-sensors-robot
-  :slots (arm-robot arm-base-fixed-joint)
+  :slots (arm-robot
+          arm-base-fixed-joint ;; アームのルートリンクと台車を接続するための関節
+          )
   )
 
 (defmethod dxl-armed-turtlebot-robot
@@ -25,6 +36,7 @@
          )
    (prog1
        (send-super* :init :name name args)
+     ;; アームモデルの生成
      (setq arm-robot (instance dxl-7dof-arm-robot :init))
      (send arm-robot :newcoords arm-origin-coords)
      (send (car (send self :links)) :assoc (car (send arm-robot :links)))
@@ -67,7 +79,11 @@
         (unless args (setq args (list nil))) (send* self :limb :rarm args))
   )
 
-(defun dxl-armed-turtlebot () (instance dxl-armed-turtlebot-robot :init))
+;; アーム台車モデル生成関数
+(defun dxl-armed-turtlebot
+  ()
+  "Generation function for dxl-armed-turtlebot-robot."
+  (instance dxl-armed-turtlebot-robot :init))
 
 #|
 (defun test ()

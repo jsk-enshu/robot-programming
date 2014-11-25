@@ -1,20 +1,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; robot-interface definition for turtlebot
+;; 台車ロボットのrobot-interfaceクラス
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; loading of necessary programs
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load "package://pr2eus/robot-interface.l")
 (require "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
+
+;; loadする台車のrobot-interfaceクラスのメソッド定義ファイル
 (require "package://turtleboteus/euslisp/turtlebot-interface-common.l")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; dxl-armed-turtlebot-interface class definition
+;; 台車ロボットのrobot-interfaceクラス定義
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defclass turtlebot-interface
   :super robot-interface
   :slots ())
+
 (defmethod turtlebot-interface
   (:init
    (&rest args)
@@ -29,10 +29,11 @@
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; initialization function
-;;   *ri* and *turtlebot* are generated
+;; アーム台車ロボット用初期化関数
+;;   robot-interface (*ri*) とモデル (*turtlebot*)を生成する
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun turtlebot-init (&key (objects))
+  "Initialization function for *ri* and *turtlebot*."
   (if (not (boundp '*ri*))
       (setq *ri* (instance turtlebot-interface :init :objects objects)))
   (if (not (boundp '*turtlebot*))
