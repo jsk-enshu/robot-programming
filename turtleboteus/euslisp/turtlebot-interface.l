@@ -26,6 +26,16 @@
      (send self :initialize-turtlebot-ros)
      )
    )
+  ;; TODO : this should be merged pr2 base controller
+  ;; https://github.com/jsk-ros-pkg/jsk_common/issues/254
+  (:add-controller
+   (&rest args)
+   (prog1
+       (send-super* :add-controller args)
+     (if (and (send self :simulation-modep)
+              (ros::get-param "/turtlebot_laptop_battery/acpi_path")) ;; check if real robot
+         (setq joint-action-enable t))
+     ))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
