@@ -34,7 +34,7 @@
      (let ((acamera (send self :camera_rgb_optical_frame_lk)))
        (let ((bb (make-cube 10 10 10)))
          (send bb :newcoords (send acamera :copy-worldcoords))
-         (push (instance camera-model :init bb :name :camera_rgb_optical) cameras)
+         (push (instance camera-model :init bb :name :camera_rgb_optical :view-up (send bb :rotate-vector (float-vector 0 1 0))) cameras)
          ))
      (let ((acamera (send self :camera_depth_frame_lk)))
        (let ((bb (make-cube 10 10 10)))
