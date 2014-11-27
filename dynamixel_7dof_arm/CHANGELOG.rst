@@ -2,8 +2,8 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2014-11-27)
+------------------
 * Add documentation for Euslisp codes
 * Add turtleboteus rostest and update other tests
 * Contributors: Shunichi Nozawa

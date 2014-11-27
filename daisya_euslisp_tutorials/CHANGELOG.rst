@@ -2,8 +2,8 @@
 Changelog for package daisya_euslisp_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2014-11-27)
+------------------
 * test-subsumption should run more than 100, since the sensor data changes at i = 100
 * Contributors: Kei Okada
 

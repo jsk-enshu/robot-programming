@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2014-11-27)
+------------------
 * Remove unused method :def-vector-value
 * Remove unused models which are moved to turtleboteus package
 * Add documentation for Euslisp codes
