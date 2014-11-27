@@ -2,8 +2,8 @@
 Changelog for package turtleboteus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2014-11-27)
+------------------
 * Fix view-up orientation, which is reported in https://github.com/jsk-enshu/robot-programming/issues/23
 * Move simulation check to turtlebot-interface.l
 * Fix cameras and bumper-sensors accessors
