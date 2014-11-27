@@ -2,6 +2,17 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove unused method :def-vector-value
+* Remove unused models which are moved to turtleboteus package
+* Add documentation for Euslisp codes
+* Add hsi_color_filter tempolarily.
+* Add turtleboteus rostest and update other tests
+* Add turtleboteus package and use it from dxl-armed-turtlebot
+* receive rest arguments in update-robot-staet
+* Contributors: Shunichi Nozawa, mmurooka
+
 1.0.0 (2014-11-11)
 ------------------
 * add rostest to package.xml
