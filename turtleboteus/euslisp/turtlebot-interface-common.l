@@ -29,11 +29,7 @@
    ;; publisher
    (dotimes (i 2) (ros::advertise (format nil "/mobile_base/commands/led~d" (1+ i)) kobuki_msgs::LED 1))
    (ros::advertise (format nil "/mobile_base/commands/sound") kobuki_msgs::sound 1)
-   ;; TODO : this should be merged pr2 base controller
    (ros::advertise "/cmd_vel_mux/input/navi" geometry_msgs::Twist 1)
-   (if (and (send self :simulation-modep)
-            (ros::get-param "/turtlebot_laptop_battery/acpi_path"))
-       (send self :joint-action-enable :dummy2))
    )
   (:kobuki-bumper-states-callback
    (msg)
