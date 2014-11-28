@@ -16,13 +16,13 @@
   :super robot-interface
   :slots ())
 
+(eval `(defmethod dxl-7dof-arm-interface
+         ;; dxl-7dof-arm-interfaceのメソッドをdefmethodする
+         ,@(get-method-list-for-dxl-7dof-arm-interface)
+         ))
 (defmethod dxl-7dof-arm-interface
   (:init
    (&rest args)
-   (eval `(defmethod ,(send (class self) :name)
-            ;; dxl-7dof-arm-interfaceのメソッドをdefmethodする
-            ,@(get-method-list-for-dxl-7dof-arm-interface)
-            ))
    (prog1
        (send-super :init :robot dxl-7dof-arm-robot)
      (send self :initialize-arm-robot-ros)

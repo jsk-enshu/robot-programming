@@ -15,12 +15,12 @@
   :super robot-interface
   :slots ())
 
+(eval `(defmethod turtlebot-interface
+         ,@(get-method-list-for-turtlebot-interface)
+         ))
 (defmethod turtlebot-interface
   (:init
    (&rest args)
-   (eval `(defmethod ,(send (class self) :name)
-            ,@(get-method-list-for-turtlebot-interface)
-            ))
    (prog1
        (send-super* :init :robot turtlebot-with-sensors-robot args)
      (send self :initialize-turtlebot-ros)

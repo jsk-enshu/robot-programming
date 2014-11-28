@@ -16,14 +16,14 @@
   :super robot-interface
   :slots ())
 
+(eval `(defmethod dxl-armed-turtlebot-interface
+         ;; dxl-7dof-arm-interface, turtlebot-interfaceのメソッドをそれぞれdefmethodする
+         ,@(get-method-list-for-dxl-7dof-arm-interface)
+         ,@(get-method-list-for-turtlebot-interface)
+         ))
 (defmethod dxl-armed-turtlebot-interface
   (:init
    (&rest args)
-   (eval `(defmethod ,(send (class self) :name)
-            ;; dxl-7dof-arm-interface, turtlebot-interfaceのメソッドをそれぞれdefmethodする
-            ,@(get-method-list-for-dxl-7dof-arm-interface)
-            ,@(get-method-list-for-turtlebot-interface)
-            ))
    (prog1
        (send-super* :init :robot dxl-armed-turtlebot-robot args)
      ;; それぞれのcallback登録など
