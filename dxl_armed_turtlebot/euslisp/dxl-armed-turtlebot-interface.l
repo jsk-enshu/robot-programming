@@ -3,7 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (load "package://dxl_armed_turtlebot/euslisp/dxl-armed-turtlebot.l")
-(load "package://pr2eus/robot-interface.l")
+(require :robot-interface "package://pr2eus/robot-interface.l")
 
 ;; loadする台車・アームのrobot-interfaceクラスのメソッド定義ファイル
 (load "package://turtleboteus/euslisp/turtlebot-interface-common.l")
