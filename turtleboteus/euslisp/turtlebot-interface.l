@@ -2,11 +2,11 @@
 ;; 台車ロボットのrobot-interfaceクラス
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(load "package://pr2eus/robot-interface.l")
-(require "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
+(require :robot-interface "package://pr2eus/robot-interface.l")
+(require :turtlebot-with-sensors-robot "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
 
 ;; loadする台車のrobot-interfaceクラスのメソッド定義ファイル
-(require "package://turtleboteus/euslisp/turtlebot-interface-common.l")
+(require :turtlebot-interface-common "package://turtleboteus/euslisp/turtlebot-interface-common.l")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 台車ロボットのrobot-interfaceクラス定義

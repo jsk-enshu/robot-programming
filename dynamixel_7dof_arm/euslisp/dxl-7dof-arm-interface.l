@@ -2,8 +2,8 @@
 ;; 7dof アームロボットのrobot-interfaceクラス
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(load "package://pr2eus/robot-interface.l")
-(load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
+(require :robot-interface "package://pr2eus/robot-interface.l")
+(require :dxl-7dof-arm-robot "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
 
 ;; loadする台車・アームのrobot-interfaceクラスのメソッド定義ファイル
 (load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-interface-common.l")
