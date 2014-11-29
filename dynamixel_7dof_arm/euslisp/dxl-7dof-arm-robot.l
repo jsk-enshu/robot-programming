@@ -352,22 +352,24 @@
   (:arm_joint7 () jc6)
   ;; limbs
   (:arm (&rest args)
+        "Accessor for arm methods."
         (unless args (setq args (list nil))) (send* self :limb :rarm args))
   ;; poses
-  (:init-pose
-   ()
-   (send self :angle-vector (instantiate float-vector (send self :calc-target-joint-dimension (cdr (send self :links))))))
   (:reset-pose
    ()
+   "Reset pose."
    (send self :angle-vector (float-vector 0.0 0.0 -90.0 0.0 90.0 0.0 0.0)))
   (:reset-pose2
    ()
+   "Reset pose2."
    (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 90.0 0.0 0.0)))
   (:tuckarm-pose
    ()
+   "Folding arm pose."
    (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 0.0 0.0 0.0)))
   (:tuckarm-pose2
    ()
+   "Folding arm pose2."
    (send self :angle-vector (float-vector 90.0 90.0 5.0 0.0 -90.0 90.0 0.0)))
   ;; inverse-kinematics
   (:inverse-kinematics
