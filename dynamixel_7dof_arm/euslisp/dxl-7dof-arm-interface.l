@@ -2,8 +2,8 @@
 ;; 7dof アームロボットのrobot-interfaceクラス
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(load "package://pr2eus/robot-interface.l")
-(load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
+(require :robot-interface "package://pr2eus/robot-interface.l")
+(require :dxl-7dof-arm-robot "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
 
 ;; loadする台車・アームのrobot-interfaceクラスのメソッド定義ファイル
 (load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-interface-common.l")
@@ -16,13 +16,13 @@
   :super robot-interface
   :slots ())
 
+(eval `(defmethod dxl-7dof-arm-interface
+         ;; dxl-7dof-arm-interfaceのメソッドをdefmethodする
+         ,@(get-method-list-for-dxl-7dof-arm-interface)
+         ))
 (defmethod dxl-7dof-arm-interface
   (:init
    (&rest args)
-   (eval `(defmethod ,(send (class self) :name)
-            ;; dxl-7dof-arm-interfaceのメソッドをdefmethodする
-            ,@(get-method-list-for-dxl-7dof-arm-interface)
-            ))
    (prog1
        (send-super :init :robot dxl-7dof-arm-robot)
      (send self :initialize-arm-robot-ros)

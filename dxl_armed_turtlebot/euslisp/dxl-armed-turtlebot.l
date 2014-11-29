@@ -3,8 +3,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; loadする台車・アームのモデルファイル
-(require "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
-(require "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
+(require :turtlebot-with-sensors-robot "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
+(require :dxl-7dof-arm-robot "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; アーム台車ロボットモデルクラス

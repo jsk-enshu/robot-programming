@@ -2,11 +2,11 @@
 ;; 台車ロボットのrobot-interfaceクラス
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(load "package://pr2eus/robot-interface.l")
-(require "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
+(require :robot-interface "package://pr2eus/robot-interface.l")
+(require :turtlebot-with-sensors-robot "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
 
 ;; loadする台車のrobot-interfaceクラスのメソッド定義ファイル
-(require "package://turtleboteus/euslisp/turtlebot-interface-common.l")
+(require :turtlebot-interface-common "package://turtleboteus/euslisp/turtlebot-interface-common.l")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 台車ロボットのrobot-interfaceクラス定義
@@ -15,12 +15,12 @@
   :super robot-interface
   :slots ())
 
+(eval `(defmethod turtlebot-interface
+         ,@(get-method-list-for-turtlebot-interface)
+         ))
 (defmethod turtlebot-interface
   (:init
    (&rest args)
-   (eval `(defmethod ,(send (class self) :name)
-            ,@(get-method-list-for-turtlebot-interface)
-            ))
    (prog1
        (send-super* :init :robot turtlebot-with-sensors-robot args)
      (send self :initialize-turtlebot-ros)
