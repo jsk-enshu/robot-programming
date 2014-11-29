@@ -1,0 +1,179 @@
+%\documentstyle[art10,titlepage,makeidx,twoside,EPSF/epsf,mytabbing]{j-article}
+
+%%% added 2004.12.14
+\documentclass[]{jarticle}
+\usepackage{makeidx,fancyheadings}
+
+
+\usepackage[dvipdfm]{graphicx,color,epsfig}
+\let\epsfile=\epsfig
+\usepackage[dvipdfm,bookmarks=true,bookmarksnumbered=true,bookmarkstype=toc]{hyperref}
+\ifnum 42146=\euc"A4A2 \AtBeginDvi{\special{pdf:tounicode EUC-UCS2}}\else
+\AtBeginDvi{\special{pdf:tounicode 90ms-RKSJ-UCS2}}\fi
+
+%%%
+\newcommand{\eusversion}{9.00}
+\newcommand{\irteusversion}{1.00}
+
+
+\flushbottom
+\makeindex
+\pagestyle{myheadings}
+\oddsidemargin=0cm
+\evensidemargin=0cm
+
+% A4 size
+\textwidth=16.5cm
+\textheight=24.6cm
+\topmargin=-0.8cm
+\oddsidemargin= 0.5cm
+\evensidemargin=0.5cm
+
+% Letter size
+%\topmargin=0.5cm
+%\textwidth=17.6cm
+%\textheight=23cm
+%\oddsidemargin= 0.2cm
+%\evensidemargin=0.2cm
+
+\parindent=10pt
+\parskip=1mm
+%\baselineskip 14pt
+
+\setcounter{totalnumber}{3}
+\renewcommand{\topfraction}{0.99}       % 85% of a page (from page
+                                        % top)
+                                        % can be occupied by tbl / fig
+                                        %
+\renewcommand{\bottomfraction}{0.99}    % 85% of a page (from page
+                                        % bottom)
+                                        % can be occupied by tbl / fig
+\renewcommand{\textfraction}{0.0}      % text shoud occupy 15% or
+                                        % more in
+                                        % a page
+%\renewcommand{\floatpagefraction}{0.99} % 70% or more shoud occupy in
+                                        % a
+                                        % a float page
+
+
+%%% removed 2004.12.14 \jintercharskip=0pt plus3.0pt minus1pt%
+
+\usepackage{amsmath,amssymb}
+\usepackage{cases} %% subnumcases
+\newcommand{\labfig}[1]{\label{fig:#1}}
+\newcommand{\labtab}[1]{\label{tab:#1}}
+\newcommand{\labeq}[1]{\label{eq:#1}}
+\newcommand{\labsec}[1]{\label{sec:#1}}
+\newcommand{\labchap}[1]{\label{chap:#1}}
+\newcommand{\labitem}[1]{\label{item:#1}}
+\newcommand{\figlab}[1]{\labfig{#1}} % alias
+\newcommand{\tablab}[1]{\labtab{#1}} % alias
+\newcommand{\eqlab}[1]{\labeq{#1}} % alias
+\newcommand{\eqlabel}[1]{\labeq{#1}} % alias
+\newcommand{\equlab}[1]{\labeq{#1}} % alias
+\newcommand{\reffig}[1]{{Fig.\ref{fig:#1}}~}
+\newcommand{\reftab}[1]{{Table~\ref{tab:#1}}~}
+\newcommand{\refeq}[1]{{Equation~\ref{eq:#1}}~}
+\newcommand{\refchap}[1]{第\ref{chap:#1}章}
+\newcommand{\refitem}[1]{\ref{item:#1}}
+\newcommand{\refsec}[1]{第\ref{seq:#1}節}
+\newcommand{\figref}[1]{\reffig{#1}} % alias
+\newcommand{\tabref}[1]{\reftab{#1}} % alias
+\renewcommand{\eqref}[1]{\refeq{#1}} % alias
+\newcommand{\chapref}[1]{\refchap{#1}} % alias
+\newcommand{\secref}[1]{\refsec{#1}} % alias
+\newcommand{\bm}[1]{\mbox{\boldmath{$#1$}}}
+\makeatletter
+\newcommand{\footnoteref}[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
+
+
+
+\begin{document}
+
+\newcommand{\ptext}[1]
+{\tt \begin{quote} \begin{tabbing} #1 \end{tabbing} \end{quote} \rm}
+
+\newcommand{\desclist}[1]{
+\begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
+\item #1
+\end{list}
+\vspace{3mm}}
+
+\newcommand{\functiondescription}[4]{
+\index{#1}
+{\bf #1} \em #2 \rm \hfill [#3] 
+%\if#4 \vspace{3mm} \\ \else \desclist{#4} \fi
+%\ifx#4 \vspace{3mm} \\ \else \desclist{#4} \fi
+ \desclist{\hspace{0mm}#4}
+}
+
+\newcommand{\bfx}[1]{\index{#1}{\bf #1}}
+\newcommand{\emx}[1]{\index{#1}{\em #1}}
+
+\newcommand{\longdescription}[3]{
+\index{#1}
+\begin{emtabbing}
+{\bf #1} 
+\it #2
+\rm
+\end{emtabbing}
+\desclist{#3}
+}
+
+\newcommand{\funcdesc}[3]{\functiondescription{#1}{#2}{関数}{#3}}
+\newcommand{\macrodesc}[3]{\functiondescription{#1}{#2}{マクロ}{#3}}
+\newcommand{\specialdesc}[3]{\functiondescription{#1}{#2}{特殊}{#3}}
+\newcommand{\methoddesc}[3]{\functiondescription{#1}{#2}{メソッド}{#3}}
+\newcommand{\vardesc}[2]{\functiondescription{#1}{}{変数}{#2}}
+
+\newcommand{\fundesc}[2]{\functiondescription{#1}{#2}{関数}{\hspace{0mm}}}
+\newcommand{\macdesc}[2]{\functiondescription{#1}{#2}{マクロ}{\hspace{0mm}}}
+\newcommand{\spedesc}[2]{\functiondescription{#1}{#2}{特殊}{\hspace{0mm}}}
+\newcommand{\metdesc}[2]{\functiondescription{#1}{#2}{メソッド}{\hspace{0mm}}}
+
+\newcommand{\constdesc}[2]{\functiondescription{#1}{}{定数}{#2}}
+
+\newcommand{\classdesc}[4]{	%class, super slots description
+\vspace{2mm} 
+\index{#1}
+{\Large {\bf #1 }} \hfill [クラス]  %super
+\begin{tabbing}
+\hspace{30mm} :super \hspace{5mm} \= {\bf #2} \\
+\hspace{30mm} :slots \> #3 
+\end{tabbing}
+\vspace{4mm}
+\desclist{#4}}
+
+\newenvironment{refdesc}{
+ \vspace{5mm} \parindent=0mm \topsep=0mm \parskip=0mm \leftmargin=10mm}{
+             \parindent=10mm \topsep=3mm \parskip=1mm \leftmargin=0mm }
+
+
+\date{}
+\title{{\Huge \bf JSK Enshu robot\_programming Euslisp Manual} \\
+{\LARGE \bf リファレンスマニュアル} \\
+\vspace{10mm}
+%ETL-RM-87-06E \\
+%%{\large ETL-TR-95-19 + JSK-TR-10-03} \\
+{\large \today} \\ }
+
+\thispagestyle{empty}
+\maketitle
+\pagenumbering{roman}
+\tableofcontents
+% \listoffigures
+% \listoftables
+\bibliographystyle{plain}
+\newpage
+\part{robot\_programming Models}
+\input{robot_programming_model-func}
+\part{robot\_programming Robot Interface}
+\input{robot_programming_ri-func}
+%%\input{robot_programming_ri-func}
+\cleardoublepage
+%%\markboth{Euslisp version \eusversion リファレンスマニュアル}{Index}
+\footnotesize
+\printindex
+\end{document}
+
