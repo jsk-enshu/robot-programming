@@ -1,7 +1,7 @@
 \batchmode
 
 
-\documentclass{jarticle}
+\documentclass{article}
 \RequirePackage{ifthen}
 
 
@@ -9,9 +9,7 @@
 
 
 \usepackage[dvipdfm]{graphicx,color,epsfig}
-\let\epsfile=\epsfig{\usepackage}[dvipdfm,bookmarks=true,bookmarksnumbered=true,bookmarkstype=toc]{hyperref}
-\ifnum 42146=\euc"A4A2 \AtBeginDvi{\special{pdf:tounicode EUC-UCS2}}\else
-\AtBeginDvi{\special{pdf:tounicode 90ms-RKSJ-UCS2}}\fi
+\let\epsfile=\epsfig{\AtBeginDvi}{\special{pdf:tounicode 90ms-RKSJ-UCS2}}\fi
 
 %
 \providecommand{\eusversion}{9.00}%
@@ -61,15 +59,15 @@
 \providecommand{\reffig}[1]{{Fig.\ref{fig:#1}}~}%
 \providecommand{\reftab}[1]{{Table~\ref{tab:#1}}~}%
 \providecommand{\refeq}[1]{{Equation~\ref{eq:#1}}~}%
-\providecommand{\refchap}[1]{Âè\ref{chap:#1}¾Ï}%
+\providecommand{\refchap}[1]{ç¬¬\ref{chap:#1}ç« }%
 \providecommand{\refitem}[1]{\ref{item:#1}}%
-\providecommand{\refsec}[1]{Âè\ref{seq:#1}Àá}%
+\providecommand{\refsec}[1]{ç¬¬\ref{seq:#1}ç¯€}%
 \providecommand{\figref}[1]{{Fig.\ref{fig:#1}}~}  % alias%
 \providecommand{\tabref}[1]{{Table~\ref{tab:#1}}~}  % alias
 %
 \renewcommand{\eqref}[1]{{Equation~\ref{eq:#1}}~} % alias%
-\providecommand{\chapref}[1]{Âè\ref{chap:#1}¾Ï}  % alias%
-\providecommand{\secref}[1]{Âè\ref{seq:#1}Àá}  % alias%
+\providecommand{\chapref}[1]{ç¬¬\ref{chap:#1}ç« }  % alias%
+\providecommand{\secref}[1]{ç¬¬\ref{seq:#1}ç¯€}  % alias%
 \providecommand{\bm}[1]{\mbox{\boldmath{$#1$}}} 
 \makeatletter%
 \providecommand{\footnoteref}[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark} 
@@ -218,8 +216,8 @@
 % !!! IMAGES START HERE !!!
 
 {\newpage\clearpage
-\lthtmlpictureA{tex2html_wrap526}%
-\epsfig{\usepackage}%
+\lthtmlpictureA{tex2html_wrap523}%
+\epsfig{\AtBeginDvi}%
 \lthtmlpictureZ
 \lthtmlcheckvsize\clearpage}
 
@@ -276,7 +274,7 @@
 %
 \providecommand{\funcdesc}[3]{
 
-{\bf #1} \em #2 \rm \hfill [´Ø¿ô] 
+{\bf #1} \em #2 \rm \hfill [é–¢æ•°] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}#3
@@ -288,7 +286,7 @@
 %
 \providecommand{\macrodesc}[3]{
 
-{\bf #1} \em #2 \rm \hfill [¥Þ¥¯¥í] 
+{\bf #1} \em #2 \rm \hfill [ãƒžã‚¯ãƒ­] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}#3
@@ -300,7 +298,7 @@
 %
 \providecommand{\specialdesc}[3]{
 
-{\bf #1} \em #2 \rm \hfill [ÆÃ¼ì] 
+{\bf #1} \em #2 \rm \hfill [ç‰¹æ®Š] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}#3
@@ -312,7 +310,7 @@
 %
 \providecommand{\methoddesc}[3]{
 
-{\bf #1} \em #2 \rm \hfill [¥á¥½¥Ã¥É] 
+{\bf #1} \em #2 \rm \hfill [ãƒ¡ã‚½ãƒƒãƒ‰] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}#3
@@ -324,7 +322,7 @@
 %
 \providecommand{\vardesc}[2]{
 
-{\bf #1} \em  \rm \hfill [ÊÑ¿ô] 
+{\bf #1} \em  \rm \hfill [å¤‰æ•°] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}#2
@@ -336,7 +334,7 @@
 %
 \providecommand{\fundesc}[2]{
 
-{\bf #1} \em #2 \rm \hfill [´Ø¿ô] 
+{\bf #1} \em #2 \rm \hfill [é–¢æ•°] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}\hspace{0mm}
@@ -348,7 +346,7 @@
 %
 \providecommand{\macdesc}[2]{
 
-{\bf #1} \em #2 \rm \hfill [¥Þ¥¯¥í] 
+{\bf #1} \em #2 \rm \hfill [ãƒžã‚¯ãƒ­] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}\hspace{0mm}
@@ -360,7 +358,7 @@
 %
 \providecommand{\spedesc}[2]{
 
-{\bf #1} \em #2 \rm \hfill [ÆÃ¼ì] 
+{\bf #1} \em #2 \rm \hfill [ç‰¹æ®Š] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}\hspace{0mm}
@@ -372,7 +370,7 @@
 %
 \providecommand{\metdesc}[2]{
 
-{\bf #1} \em #2 \rm \hfill [¥á¥½¥Ã¥É] 
+{\bf #1} \em #2 \rm \hfill [ãƒ¡ã‚½ãƒƒãƒ‰] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}\hspace{0mm}
@@ -384,7 +382,7 @@
 %
 \providecommand{\constdesc}[2]{
 
-{\bf #1} \em  \rm \hfill [Äê¿ô] 
+{\bf #1} \em  \rm \hfill [å®šæ•°] 
 
 \begin{list}{ }{\setlength{\rightmargin}{0mm}\topsep=0mm\partopsep=0mm}
 \item \hspace{0mm}#2
@@ -397,7 +395,7 @@
 \providecommand{\classdesc}[4]{	%class, super slots description
 \vspace{2mm} 
 
-{\Large {\bf #1 }} \hfill [¥¯¥é¥¹]  %super
+{\Large {\bf #1 }} \hfill [ã‚¯ãƒ©ã‚¹]  %super
 \begin{tabbing}
 \hspace{30mm} :super \hspace{5mm} \= {\bf #2} \\
 \hspace{30mm} :slots \> #3 
