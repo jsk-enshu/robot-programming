@@ -1,0 +1,1592 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//JP">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>robot_programming Robot Interface</TITLE>
+<META NAME="description" CONTENT="robot_programming Robot Interface">
+<META NAME="keywords" CONTENT="robot_programming_manual">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="robot_programming_manual.css">
+
+<LINK REL="next" HREF="robot_programming_manual-node4.html">
+<LINK REL="previous" HREF="robot_programming_manual-node2.html">
+<LINK REL="up" HREF="robot_programming_manual.html">
+<LINK REL="next" HREF="robot_programming_manual-node4.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html53"
+  HREF="robot_programming_manual-node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html47"
+  HREF="robot_programming_manual.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html41"
+  HREF="robot_programming_manual-node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html49"
+  HREF="robot_programming_manual-node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html51"
+  HREF="robot_programming_manual-node4.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html54"
+  HREF="robot_programming_manual-node4.html">Index</A>
+<B> Up:</B> <A NAME="tex2html48"
+  HREF="robot_programming_manual.html">JSK Enshu robot_programming Euslisp</A>
+<B> Previous:</B> <A NAME="tex2html42"
+  HREF="robot_programming_manual-node2.html">robot_programming Models</A>
+ &nbsp; <B>  <A NAME="tex2html50"
+  HREF="robot_programming_manual-node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html52"
+  HREF="robot_programming_manual-node4.html">Index</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION03000000000000000000">
+robot_programming Robot Interface</A>
+</H1>
+
+ <BR>
+<BR> <BR> 
+<A NAME="2115"></A>
+<BIG CLASS="XLARGE"><B>turtlebot-interface </B></BIG> [クラス]  <PRE><TT>
+  :super   <B>robot-interface</B> 
+<BR>  :slots 		 nil 
+</TT></PRE>
+<BR>
+<BR>
+
+<DL COMPACT>
+<DT> 
+<DD>
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2132"></A>
+<B>:bumper-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get bumper value vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2142"></A>
+<B>:button-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get button value vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2152"></A>
+<B>:wheel-drop-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get wheel drop sensor vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2162"></A>
+<B>:cliff-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get cliff sensor vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2172"></A>
+<B>:cliff-bottom-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get cliff bottom vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2182"></A>
+<B>:imucoords</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get imucoords.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2192"></A>
+<B>:power-system-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get power system vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2202"></A>
+<B>:publish-led</B> <EM>id value  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Publish topic to turn on/off LEG. id should be 1-2. Value should be :black, :green, :orange, and :red.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2212"></A>
+<B>:publish-sound</B> <EM>value  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Publish topic to turn on sound. value should be :on, :off, :recharge, :button, :error, :cleaningstart, and :cleaningend.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="2222"></A>
+<B>:initialize-turtlebot-ros</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2232"></A>
+<B>:kobuki-bumper-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2242"></A>
+<B>:kobuki-button-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2252"></A>
+<B>:kobuki-power-system-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2262"></A>
+<B>:kobuki-wheel-drop-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2272"></A>
+<B>:kobuki-cliff-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2282"></A>
+<B>:kobuki-imu-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2292"></A>
+<B>:laptop-charge-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2302"></A>
+<B>:def-vector-value</B> <EM>&amp;key (simulate-func #'(lambda nil (instantiate float-vector 3))) (raw-data-name) (vector-length 3) (state-name :state) (value-name)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2312"></A>
+<B>:raw-bumper-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2322"></A>
+<B>:raw-button-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2332"></A>
+<B>:raw-wheel-drop-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2342"></A>
+<B>:raw-cliff-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2352"></A>
+<B>:raw-imu-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2362"></A>
+<B>:imurot</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2372"></A>
+<B>:update-robot-state</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2382"></A>
+<B>:go-stop</B> <EM>&amp;optional (force-stop t)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2392"></A>
+<B>:move-to</B> <EM>coords &amp;key (retry 10) (frame-id /world) (wait-for-server-timeout 5)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2402"></A>
+<B>:go-pos</B> <EM>x y &amp;optional (d 0)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2412"></A>
+<B>:go-velocity</B> <EM>x y d &amp;optional (msec 1000) &amp;key (stop t) (wait)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2422"></A>
+<B>:init</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2432"></A>
+<B>:add-controller</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+</SMALL>
+
+<P>
+	<BR> 
+<A NAME="2443"></A>
+<BIG CLASS="XLARGE"><B>dxl-7dof-arm-interface </B></BIG> [クラス]  <PRE><TT>
+  :super   <B>robot-interface</B> 
+<BR>  :slots 		 nil 
+</TT></PRE>
+<BR>
+<BR>
+
+<DL COMPACT>
+<DT> 
+<DD>
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2460"></A>
+<B>:set-compliance-slope</B> <EM>id slope  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Set compliance slope for one joint. id should be 1-7. slope is 32 by default.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2470"></A>
+<B>:compliance-slope-vector</B> <EM>av  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Set compliance slope vector for all joints. #f(32 32 32 32 32 32 32) by default.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2480"></A>
+<B>:set-torque-limit</B> <EM>id torque-limit  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Set torque limit for one joint. id should be 1-7. torque-limit should be within [0, 1].
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2490"></A>
+<B>:torque-enable</B> <EM>id torque-enable  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Configure joint torque mode for one joint. id sohuld be 1-7. If torque-enable is t, move to torque control mode, otherwise, move to joint positoin mode.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2500"></A>
+<B>:servo-on</B> <EM>id  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Servo On for one joint. id should be 1-7.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2510"></A>
+<B>:servo-off</B> <EM>id  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Servo Off for one joint. id should be 1-7.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2520"></A>
+<B>:servo-on-all</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Servo On for all joints.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2530"></A>
+<B>:servo-off-all</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Servo Off for all joints.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2540"></A>
+<B>:start-grasp</B> <EM>&amp;optional (arm :arm) &amp;key ((:gain g) 0.5) ((:objects objs) objects)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Start grasp mode.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2550"></A>
+<B>:stop-grasp</B> <EM>&amp;optional (arm :arm) &amp;key (wait nil)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Stop grasp mode.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="2560"></A>
+<B>:initialize-arm-robot-ros</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2570"></A>
+<B>:dynamixel-motor-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2580"></A>
+<B>:fullbody-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2590"></A>
+<B>:gripper-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2600"></A>
+<B>:default-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2610"></A>
+<B>:servo-on-off</B> <EM>id on/off  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2620"></A>
+<B>:init</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+</SMALL>
+
+<P>
+	<BR> 
+<A NAME="2631"></A>
+<BIG CLASS="XLARGE"><B>dxl-armed-turtlebot-robot </B></BIG> [クラス]  <PRE><TT>
+  :super   <B>turtlebot-with-sensors-robot</B> 
+<BR>  :slots 		 arm-robot arm-base-fixed-joint 
+</TT></PRE>
+<BR>
+<BR>
+
+<DL COMPACT>
+<DT> 
+<DD>
+</DD>
+</DL>
+<BR>
+<BR>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="2648"></A>
+<B>:init</B> <EM>&amp;rest args &amp;key (name dxl-armed-turtlebot-robot) (arm-origin-coords (make-coords :pos (float-vector 85.725 9.525 402) :rpy (list 0 0 pi)))  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2658"></A>
+<B>:method-copying</B> <EM>substr &amp;optional (use-args nil)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2668"></A>
+<B>:arm</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+</SMALL>
+
+<P>
+	<BR> 
+<A NAME="2679"></A>
+<BIG CLASS="XLARGE"><B>dxl-armed-turtlebot-interface </B></BIG> [クラス]  <PRE><TT>
+  :super   <B>robot-interface</B> 
+<BR>  :slots 		 nil 
+</TT></PRE>
+<BR>
+<BR>
+
+<DL COMPACT>
+<DT> 
+<DD>
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2696"></A>
+<B>:set-compliance-slope</B> <EM>id slope  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Set compliance slope for one joint. id should be 1-7. slope is 32 by default.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2706"></A>
+<B>:compliance-slope-vector</B> <EM>av  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Set compliance slope vector for all joints. #f(32 32 32 32 32 32 32) by default.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2716"></A>
+<B>:set-torque-limit</B> <EM>id torque-limit  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Set torque limit for one joint. id should be 1-7. torque-limit should be within [0, 1].
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2726"></A>
+<B>:torque-enable</B> <EM>id torque-enable  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Configure joint torque mode for one joint. id sohuld be 1-7. If torque-enable is t, move to torque control mode, otherwise, move to joint positoin mode.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2736"></A>
+<B>:servo-on</B> <EM>id  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Servo On for one joint. id should be 1-7.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2746"></A>
+<B>:servo-off</B> <EM>id  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Servo Off for one joint. id should be 1-7.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2756"></A>
+<B>:servo-on-all</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Servo On for all joints.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2766"></A>
+<B>:servo-off-all</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Servo Off for all joints.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2776"></A>
+<B>:start-grasp</B> <EM>&amp;optional (arm :arm) &amp;key ((:gain g) 0.5) ((:objects objs) objects)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Start grasp mode.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2786"></A>
+<B>:stop-grasp</B> <EM>&amp;optional (arm :arm) &amp;key (wait nil)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Stop grasp mode.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2796"></A>
+<B>:bumper-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get bumper value vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2806"></A>
+<B>:button-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get button value vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2816"></A>
+<B>:wheel-drop-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get wheel drop sensor vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2826"></A>
+<B>:cliff-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get cliff sensor vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2836"></A>
+<B>:cliff-bottom-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get cliff bottom vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2846"></A>
+<B>:imucoords</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get imucoords.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2856"></A>
+<B>:power-system-vector</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Get power system vector.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2866"></A>
+<B>:publish-led</B> <EM>id value  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Publish topic to turn on/off LEG. id should be 1-2. Value should be :black, :green, :orange, and :red.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2876"></A>
+<B>:publish-sound</B> <EM>value  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Publish topic to turn on sound. value should be :on, :off, :recharge, :button, :error, :cleaningstart, and :cleaningend.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="2886"></A>
+<B>:initialize-arm-robot-ros</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2896"></A>
+<B>:dynamixel-motor-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2906"></A>
+<B>:fullbody-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2916"></A>
+<B>:gripper-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2926"></A>
+<B>:default-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2936"></A>
+<B>:servo-on-off</B> <EM>id on/off  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2946"></A>
+<B>:initialize-turtlebot-ros</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2956"></A>
+<B>:kobuki-bumper-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2966"></A>
+<B>:kobuki-button-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2976"></A>
+<B>:kobuki-power-system-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2986"></A>
+<B>:kobuki-wheel-drop-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="2996"></A>
+<B>:kobuki-cliff-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3006"></A>
+<B>:kobuki-imu-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3016"></A>
+<B>:laptop-charge-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3026"></A>
+<B>:def-vector-value</B> <EM>&amp;key (simulate-func #'(lambda nil (instantiate float-vector 3))) (raw-data-name) (vector-length 3) (state-name :state) (value-name)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3036"></A>
+<B>:raw-bumper-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3046"></A>
+<B>:raw-button-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3056"></A>
+<B>:raw-wheel-drop-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3066"></A>
+<B>:raw-cliff-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3076"></A>
+<B>:raw-imu-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3086"></A>
+<B>:imurot</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3096"></A>
+<B>:update-robot-state</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3106"></A>
+<B>:go-stop</B> <EM>&amp;optional (force-stop t)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3116"></A>
+<B>:move-to</B> <EM>coords &amp;key (retry 10) (frame-id /world) (wait-for-server-timeout 5)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3126"></A>
+<B>:go-pos</B> <EM>x y &amp;optional (d 0)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3136"></A>
+<B>:go-velocity</B> <EM>x y d &amp;optional (msec 1000) &amp;key (stop t) (wait)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="3146"></A>
+<B>:init</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+</SMALL>
+
+<P>
+
+<A NAME="3156"></A>
+<B>turtlebot-init</B> <EM>&amp;key (objects)  </EM>[関数]
+
+<DL COMPACT>
+<DT> 
+<DD> Initialization function for riand turtlebot.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="3166"></A>
+<B>dxl-7dof-arm-init</B> <EM>nil </EM>[関数]
+
+<DL COMPACT>
+<DT> 
+<DD> Initialization function for riand dxl-7dof-arm.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="3176"></A>
+<B>dxl-armed-turtlebot</B> <EM>nil </EM>[関数]
+
+<DL COMPACT>
+<DT> 
+<DD> Generation function for dxl-armed-turtlebot-robot.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="3186"></A>
+<B>dxl-armed-turtlebot-init</B> <EM>&amp;key (objects)  </EM>[関数]
+
+<DL COMPACT>
+<DT> 
+<DD> Initialization function for riand dxl-armed-turtlebot.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="3196"></A>
+<B>get-method-list-for-turtlebot-interface</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="3207"></A>
+<B>get-method-list-for-dxl-7dof-arm-interface</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="3218"></A>
+<B>get-method-list-for-turtlebot-interface</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="3229"></A>
+<B>get-method-list-for-dxl-7dof-arm-interface</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+             
+
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html53"
+  HREF="robot_programming_manual-node4.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html47"
+  HREF="robot_programming_manual.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html41"
+  HREF="robot_programming_manual-node2.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html49"
+  HREF="robot_programming_manual-node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html51"
+  HREF="robot_programming_manual-node4.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html54"
+  HREF="robot_programming_manual-node4.html">Index</A>
+<B> Up:</B> <A NAME="tex2html48"
+  HREF="robot_programming_manual.html">JSK Enshu robot_programming Euslisp</A>
+<B> Previous:</B> <A NAME="tex2html42"
+  HREF="robot_programming_manual-node2.html">robot_programming Models</A>
+ &nbsp; <B>  <A NAME="tex2html50"
+  HREF="robot_programming_manual-node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html52"
+  HREF="robot_programming_manual-node4.html">Index</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+nozawa
+2014-11-29
+</ADDRESS>
+</BODY>
+</HTML>

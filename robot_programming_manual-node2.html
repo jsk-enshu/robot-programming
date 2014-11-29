@@ -1,0 +1,730 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//JP">
+
+<!--Converted with LaTeX2HTML 2008 (1.71)
+original version by:  Nikos Drakos, CBLU, University of Leeds
+* revised and updated by:  Marcus Hennecke, Ross Moore, Herb Swan
+* with significant contributions from:
+  Jens Lippmann, Marek Rouchal, Martin Wilck and others -->
+<HTML>
+<HEAD>
+<TITLE>robot_programming Models</TITLE>
+<META NAME="description" CONTENT="robot_programming Models">
+<META NAME="keywords" CONTENT="robot_programming_manual">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+
+<META NAME="Generator" CONTENT="LaTeX2HTML v2008">
+<META HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+
+<LINK REL="STYLESHEET" HREF="robot_programming_manual.css">
+
+<LINK REL="next" HREF="robot_programming_manual-node3.html">
+<LINK REL="previous" HREF="robot_programming_manual-node1.html">
+<LINK REL="up" HREF="robot_programming_manual.html">
+<LINK REL="next" HREF="robot_programming_manual-node3.html">
+</HEAD>
+
+<BODY >
+
+<DIV CLASS="navigation"><!--Navigation Panel-->
+<A NAME="tex2html39"
+  HREF="robot_programming_manual-node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html33"
+  HREF="robot_programming_manual.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html27"
+  HREF="robot_programming_manual-node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html35"
+  HREF="robot_programming_manual-node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html37"
+  HREF="robot_programming_manual-node4.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html40"
+  HREF="robot_programming_manual-node3.html">robot_programming Robot Interface</A>
+<B> Up:</B> <A NAME="tex2html34"
+  HREF="robot_programming_manual.html">JSK Enshu robot_programming Euslisp</A>
+<B> Previous:</B> <A NAME="tex2html28"
+  HREF="robot_programming_manual-node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html36"
+  HREF="robot_programming_manual-node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html38"
+  HREF="robot_programming_manual-node4.html">Index</A></B> 
+<BR>
+<BR></DIV>
+<!--End of Navigation Panel-->
+
+<H1><A NAME="SECTION02000000000000000000">
+robot_programming Models</A>
+</H1>
+
+ <BR>
+<BR> <BR> 
+<A NAME="857"></A>
+<BIG CLASS="XLARGE"><B>turtlebot-with-sensors-robot </B></BIG> [クラス]  <PRE><TT>
+  :super   <B>turtlebot-robot</B> 
+<BR>  :slots 		 sensors bumper-sensors 
+</TT></PRE>
+<BR>
+<BR>
+
+<DL COMPACT>
+<DT> 
+<DD>
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="874"></A>
+<B>:bumper-sensors</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Returns bumper sensors.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="884"></A>
+<B>:bumper-sensor</B> <EM>sensor-name  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Returns bumper sensor of given name
+</DD>
+</DL>
+<BR>
+<BR>
+
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="894"></A>
+<B>:init</B> <EM>&amp;rest args &amp;key (name turtlebot-with-sensors-robot)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="904"></A>
+<B>:simulate</B> <EM>objs  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+</SMALL>
+
+<P>
+	<BR> 
+<A NAME="915"></A>
+<BIG CLASS="XLARGE"><B>dxl-7dof-arm-robot </B></BIG> [クラス]  <PRE><TT>
+  :super   <B>robot-model</B> 
+<BR>  :slots 		 jc0 jc1 jc2 jc3 jc4 jc5 jc6 
+</TT></PRE>
+<BR>
+<BR>
+
+<DL COMPACT>
+<DT> 
+<DD>
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="932"></A>
+<B>:arm</B> <EM>&amp;rest args  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Accessor for arm methods.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="942"></A>
+<B>:reset-pose</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Reset pose.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="952"></A>
+<B>:reset-pose2</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Reset pose2.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="962"></A>
+<B>:tuckarm-pose</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Folding arm pose.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="972"></A>
+<B>:tuckarm-pose2</B> <EM>nil </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Folding arm pose2.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="982"></A>
+<B>:inverse-kinematics</B> <EM>target-coords &amp;rest args &amp;key (link-list) (move-target) (stop 300) (use-base nil) (start-coords (send self :copy-worldcoords)) (thre (cond ((atom target-coords) 10) (t (make-list (length target-coords) :initial-element 10)))) (rthre (cond ((atom target-coords) (deg2rad 5)) (t (make-list (length target-coords) :initial-element (deg2rad 5))))) (base-range (list :min #f(-30.0 -30.0) :max #f(30.0 30.0))) &amp;allow-other-keys  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Inverse kinemaitcs method for arm robot.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="992"></A>
+<B>:init</B> <EM>&amp;rest args &amp;key (name dxl-7dof-arm-robot)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1002"></A>
+<B>:make-root-link</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1012"></A>
+<B>:make-arm-links</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1022"></A>
+<B>:arm_joint1</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1032"></A>
+<B>:arm_joint2</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1042"></A>
+<B>:arm_joint3</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1052"></A>
+<B>:arm_joint4</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1062"></A>
+<B>:arm_joint5</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1072"></A>
+<B>:arm_joint6</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1082"></A>
+<B>:arm_joint7</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+</SMALL>
+
+<P>
+	<BR> 
+<A NAME="1093"></A>
+<BIG CLASS="XLARGE"><B>dxl-armed-turtlebot-robot </B></BIG> [クラス]  <PRE><TT>
+  :super   <B>turtlebot-with-sensors-robot</B> 
+<BR>  :slots 		 arm-robot arm-base-fixed-joint 
+</TT></PRE>
+<BR>
+<BR>
+
+<DL COMPACT>
+<DT> 
+<DD>
+</DD>
+</DL>
+<BR>
+<BR>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1110"></A>
+<B>:init</B> <EM>&amp;rest args &amp;key (name dxl-armed-turtlebot-robot) (arm-origin-coords (make-coords :pos (float-vector 85.725 9.525 402) :rpy (list 0 0 pi)))  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1120"></A>
+<B>:method-copying</B> <EM>substr &amp;optional (use-args nil)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+
+<A NAME="1130"></A>
+<B>:arm</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD> 
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+
+<BR>
+</SMALL>
+
+<P>
+
+<A NAME="1140"></A>
+<B>turtlebot-with-sensors</B> <EM>nil </EM>[関数]
+
+<DL COMPACT>
+<DT> 
+<DD> Generation function for turtlebot-with-sensors-robot.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="1150"></A>
+<B>dxl-7dof-arm</B> <EM>nil </EM>[関数]
+
+<DL COMPACT>
+<DT> 
+<DD> Generation function for dxl-7dof-arm-robot.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="1160"></A>
+<B>dxl-armed-turtlebot</B> <EM>nil </EM>[関数]
+
+<DL COMPACT>
+<DT> 
+<DD> Generation function for dxl-armed-turtlebot-robot.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1170"></A>
+<B>make-dynamixel-ax-12a-motor-body</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1181"></A>
+<B>make-dynamixel-ax-12a-frame1-body</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1192"></A>
+<B>make-dynamixel-ax-12a-frame2-body</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1203"></A>
+<B>make-dxl-7dof-arm-gripper-body</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1214"></A>
+<B>make-dxl-7dof-arm-base-body</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1225"></A>
+<B>make-dynamixel-ax-12a-motor-unit-bodyset</B> <EM>&amp;key (use-frame1 (list :bottom :left))  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1236"></A>
+<B>make-dxl-7dof-arm-root-link</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1247"></A>
+<B>make-dxl-7dof-arm-link1</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1258"></A>
+<B>make-dxl-7dof-arm-link2</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1269"></A>
+<B>make-dxl-7dof-arm-link3</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1280"></A>
+<B>make-dxl-7dof-arm-link4</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1291"></A>
+<B>make-dxl-7dof-arm-link5</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1302"></A>
+<B>make-dxl-7dof-arm-link6</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+<SMALL CLASS="FOOTNOTESIZE">
+<A NAME="1313"></A>
+<B>make-dxl-7dof-arm-link7</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
+
+</SMALL>
+
+<DL COMPACT>
+<DT> 
+<DD>  
+</DD>
+</DL><SMALL CLASS="FOOTNOTESIZE">
+<BR>
+<BR>
+nil
+<BR>
+</SMALL>
+             
+<DIV CLASS="navigation"><HR>
+<!--Navigation Panel-->
+<A NAME="tex2html39"
+  HREF="robot_programming_manual-node3.html">
+<IMG WIDTH="37" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="next" SRC="next.png"></A> 
+<A NAME="tex2html33"
+  HREF="robot_programming_manual.html">
+<IMG WIDTH="26" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="up" SRC="up.png"></A> 
+<A NAME="tex2html27"
+  HREF="robot_programming_manual-node1.html">
+<IMG WIDTH="63" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="previous" SRC="prev.png"></A> 
+<A NAME="tex2html35"
+  HREF="robot_programming_manual-node1.html">
+<IMG WIDTH="65" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="contents" SRC="contents.png"></A> 
+<A NAME="tex2html37"
+  HREF="robot_programming_manual-node4.html">
+<IMG WIDTH="43" HEIGHT="24" ALIGN="BOTTOM" BORDER="0" ALT="index" SRC="index.png"></A> 
+<BR>
+<B> Next:</B> <A NAME="tex2html40"
+  HREF="robot_programming_manual-node3.html">robot_programming Robot Interface</A>
+<B> Up:</B> <A NAME="tex2html34"
+  HREF="robot_programming_manual.html">JSK Enshu robot_programming Euslisp</A>
+<B> Previous:</B> <A NAME="tex2html28"
+  HREF="robot_programming_manual-node1.html">Contents</A>
+ &nbsp; <B>  <A NAME="tex2html36"
+  HREF="robot_programming_manual-node1.html">Contents</A></B> 
+ &nbsp; <B>  <A NAME="tex2html38"
+  HREF="robot_programming_manual-node4.html">Index</A></B> </DIV>
+<!--End of Navigation Panel-->
+<ADDRESS>
+nozawa
+2014-11-29
+</ADDRESS>
+</BODY>
+</HTML>
