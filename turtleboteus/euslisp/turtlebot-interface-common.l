@@ -160,6 +160,7 @@
   ;; go pos methods ;; copied from pr2-initerface.l
   ;;
   (:go-stop (&optional (force-stop t))
+   "Stop go-velocity mode."
    (when joint-action-enable
      (send move-base-action :cancel-all-goals)
      (prog1
@@ -274,6 +275,7 @@
   ;; overwrite go-pos command tempolarily ;; this should be replaced by move_base_action
   (:go-pos
    (x y &optional (d 0)) ;; [m] [m] [degree]
+   "Move to desired x y position and yaw orientation. x and y is [m] and d is [deg]."
    (let (c)
      (if (send self :simulation-modep)
          (progn
@@ -301,7 +303,8 @@
      ))
   ;; overwrite go-velocity command
   (:go-velocity
-   (x y d &optional (msec 1000) &key (stop t) (wait)) ;; [m/sec] [m/sec] [rad/sec]
+   (x y d &optional (msec 1000) &key (stop t) (wait)) ;; [m/sec] [m/sec] [deg/sec]
+   "Moving by desired x y translational velocity and yaw rotational velocity. x and y is [m/s] and d is [deg/s]."
    (unless joint-action-enable
      (let ((orig-coords (send robot :copy-worldcoords))
 	   (coords (send robot :copy-worldcoords)))
