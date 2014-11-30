@@ -64,7 +64,7 @@ robot_programming Robot Interface</A>
 
  <BR>
 <BR> <BR> 
-<A NAME="2112"></A>
+<A NAME="2106"></A>
 <BIG CLASS="XLARGE"><B>turtlebot-interface </B></BIG> [クラス]  <PRE><TT>
   :super   <B>robot-interface</B> 
 <BR>  :slots 		 nil 
@@ -80,7 +80,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2129"></A>
+<A NAME="2123"></A>
 <B>:bumper-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -91,7 +91,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2139"></A>
+<A NAME="2133"></A>
 <B>:button-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -102,7 +102,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2149"></A>
+<A NAME="2143"></A>
 <B>:wheel-drop-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -113,7 +113,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2159"></A>
+<A NAME="2153"></A>
 <B>:cliff-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -124,7 +124,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2169"></A>
+<A NAME="2163"></A>
 <B>:cliff-bottom-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -135,7 +135,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2179"></A>
+<A NAME="2173"></A>
 <B>:imucoords</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -146,7 +146,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2189"></A>
+<A NAME="2183"></A>
 <B>:power-system-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -157,7 +157,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2199"></A>
+<A NAME="2193"></A>
 <B>:publish-led</B> <EM>id value  </EM>[メソッド]
 
 <DL COMPACT>
@@ -168,7 +168,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2209"></A>
+<A NAME="2203"></A>
 <B>:publish-sound</B> <EM>value  </EM>[メソッド]
 
 <DL COMPACT>
@@ -179,8 +179,41 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
+<A NAME="2213"></A>
+<B>:go-stop</B> <EM>&amp;optional (force-stop t)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Stop go-velocity mode.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2223"></A>
+<B>:go-pos</B> <EM>x y &amp;optional (d 0)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Move to desired x y position and yaw orientation. x and y is [m] and d is [deg].
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2233"></A>
+<B>:go-velocity</B> <EM>x y d &amp;optional (msec 1000) &amp;key (stop t) (wait)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Moving by desired x y translational velocity and yaw rotational velocity. x and y is [m/s] and d is [deg/s].
+</DD>
+</DL>
+<BR>
+<BR>
+
 <SMALL CLASS="FOOTNOTESIZE">
-<A NAME="2219"></A>
+<A NAME="2243"></A>
 <B>:initialize-turtlebot-ros</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -195,7 +228,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2229"></A>
+<A NAME="2253"></A>
 <B>:kobuki-bumper-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -210,7 +243,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2239"></A>
+<A NAME="2263"></A>
 <B>:kobuki-button-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -225,7 +258,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2249"></A>
+<A NAME="2273"></A>
 <B>:kobuki-power-system-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -240,7 +273,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2259"></A>
+<A NAME="2283"></A>
 <B>:kobuki-wheel-drop-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -255,7 +288,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2269"></A>
+<A NAME="2293"></A>
 <B>:kobuki-cliff-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -270,7 +303,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2279"></A>
+<A NAME="2303"></A>
 <B>:kobuki-imu-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -285,7 +318,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2289"></A>
+<A NAME="2313"></A>
 <B>:laptop-charge-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -300,7 +333,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2299"></A>
+<A NAME="2323"></A>
 <B>:def-vector-value</B> <EM>&amp;key (simulate-func #'(lambda nil (instantiate float-vector 3))) (raw-data-name) (vector-length 3) (state-name :state) (value-name)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -315,7 +348,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2309"></A>
+<A NAME="2333"></A>
 <B>:raw-bumper-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -330,7 +363,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2319"></A>
+<A NAME="2343"></A>
 <B>:raw-button-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -345,7 +378,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2329"></A>
+<A NAME="2353"></A>
 <B>:raw-wheel-drop-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -360,7 +393,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2339"></A>
+<A NAME="2363"></A>
 <B>:raw-cliff-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -375,7 +408,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2349"></A>
+<A NAME="2373"></A>
 <B>:raw-imu-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -390,7 +423,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2359"></A>
+<A NAME="2383"></A>
 <B>:imurot</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -405,7 +438,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2369"></A>
+<A NAME="2393"></A>
 <B>:update-robot-state</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -420,22 +453,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2379"></A>
-<B>:go-stop</B> <EM>&amp;optional (force-stop t)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
-
-</SMALL>
-
-<DL COMPACT>
-<DT> 
-<DD> 
-</DD>
-</DL><SMALL CLASS="FOOTNOTESIZE">
-<BR>
-<BR>
-
-<BR>
-
-<A NAME="2389"></A>
+<A NAME="2403"></A>
 <B>:move-to</B> <EM>coords &amp;key (retry 10) (frame-id /world) (wait-for-server-timeout 5)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -450,37 +468,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2399"></A>
-<B>:go-pos</B> <EM>x y &amp;optional (d 0)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
-
-</SMALL>
-
-<DL COMPACT>
-<DT> 
-<DD> 
-</DD>
-</DL><SMALL CLASS="FOOTNOTESIZE">
-<BR>
-<BR>
-
-<BR>
-
-<A NAME="2409"></A>
-<B>:go-velocity</B> <EM>x y d &amp;optional (msec 1000) &amp;key (stop t) (wait)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
-
-</SMALL>
-
-<DL COMPACT>
-<DT> 
-<DD> 
-</DD>
-</DL><SMALL CLASS="FOOTNOTESIZE">
-<BR>
-<BR>
-
-<BR>
-
-<A NAME="2419"></A>
+<A NAME="2413"></A>
 <B>:init</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -495,7 +483,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2429"></A>
+<A NAME="2423"></A>
 <B>:add-controller</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -513,7 +501,7 @@ robot_programming Robot Interface</A>
 
 <P>
 	<BR> 
-<A NAME="2440"></A>
+<A NAME="2434"></A>
 <BIG CLASS="XLARGE"><B>dxl-7dof-arm-interface </B></BIG> [クラス]  <PRE><TT>
   :super   <B>robot-interface</B> 
 <BR>  :slots 		 nil 
@@ -529,7 +517,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2457"></A>
+<A NAME="2451"></A>
 <B>:set-compliance-slope</B> <EM>id slope  </EM>[メソッド]
 
 <DL COMPACT>
@@ -540,7 +528,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2467"></A>
+<A NAME="2461"></A>
 <B>:compliance-slope-vector</B> <EM>av  </EM>[メソッド]
 
 <DL COMPACT>
@@ -551,7 +539,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2477"></A>
+<A NAME="2471"></A>
 <B>:set-torque-limit</B> <EM>id torque-limit  </EM>[メソッド]
 
 <DL COMPACT>
@@ -562,7 +550,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2487"></A>
+<A NAME="2481"></A>
 <B>:torque-enable</B> <EM>id torque-enable  </EM>[メソッド]
 
 <DL COMPACT>
@@ -573,7 +561,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2497"></A>
+<A NAME="2491"></A>
 <B>:servo-on</B> <EM>id  </EM>[メソッド]
 
 <DL COMPACT>
@@ -584,7 +572,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2507"></A>
+<A NAME="2501"></A>
 <B>:servo-off</B> <EM>id  </EM>[メソッド]
 
 <DL COMPACT>
@@ -595,7 +583,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2517"></A>
+<A NAME="2511"></A>
 <B>:servo-on-all</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -606,7 +594,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2527"></A>
+<A NAME="2521"></A>
 <B>:servo-off-all</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -617,7 +605,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2537"></A>
+<A NAME="2531"></A>
 <B>:start-grasp</B> <EM>&amp;optional (arm :arm) &amp;key ((:gain g) 0.5) ((:objects objs) objects)  </EM>[メソッド]
 
 <DL COMPACT>
@@ -628,7 +616,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2547"></A>
+<A NAME="2541"></A>
 <B>:stop-grasp</B> <EM>&amp;optional (arm :arm) &amp;key (wait nil)  </EM>[メソッド]
 
 <DL COMPACT>
@@ -640,7 +628,7 @@ robot_programming Robot Interface</A>
 <BR>
 
 <SMALL CLASS="FOOTNOTESIZE">
-<A NAME="2557"></A>
+<A NAME="2551"></A>
 <B>:initialize-arm-robot-ros</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -655,7 +643,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2567"></A>
+<A NAME="2561"></A>
 <B>:dynamixel-motor-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -670,7 +658,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2577"></A>
+<A NAME="2571"></A>
 <B>:fullbody-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -685,7 +673,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2587"></A>
+<A NAME="2581"></A>
 <B>:gripper-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -700,7 +688,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2597"></A>
+<A NAME="2591"></A>
 <B>:default-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -715,7 +703,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2607"></A>
+<A NAME="2601"></A>
 <B>:servo-on-off</B> <EM>id on/off  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -730,7 +718,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2617"></A>
+<A NAME="2611"></A>
 <B>:init</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -748,7 +736,7 @@ robot_programming Robot Interface</A>
 
 <P>
 	<BR> 
-<A NAME="2628"></A>
+<A NAME="2622"></A>
 <BIG CLASS="XLARGE"><B>dxl-armed-turtlebot-robot </B></BIG> [クラス]  <PRE><TT>
   :super   <B>turtlebot-with-sensors-robot</B> 
 <BR>  :slots 		 arm-robot arm-base-fixed-joint 
@@ -764,7 +752,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 <SMALL CLASS="FOOTNOTESIZE">
-<A NAME="2645"></A>
+<A NAME="2639"></A>
 <B>:init</B> <EM>&amp;rest args &amp;key (name dxl-armed-turtlebot-robot) (arm-origin-coords (make-coords :pos (float-vector 85.725 9.525 402) :rpy (list 0 0 pi)))  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -779,7 +767,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2655"></A>
+<A NAME="2649"></A>
 <B>:method-copying</B> <EM>substr &amp;optional (use-args nil)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -794,7 +782,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2665"></A>
+<A NAME="2659"></A>
 <B>:arm</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -812,7 +800,7 @@ robot_programming Robot Interface</A>
 
 <P>
 	<BR> 
-<A NAME="2676"></A>
+<A NAME="2670"></A>
 <BIG CLASS="XLARGE"><B>dxl-armed-turtlebot-interface </B></BIG> [クラス]  <PRE><TT>
   :super   <B>robot-interface</B> 
 <BR>  :slots 		 nil 
@@ -828,7 +816,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2693"></A>
+<A NAME="2687"></A>
 <B>:set-compliance-slope</B> <EM>id slope  </EM>[メソッド]
 
 <DL COMPACT>
@@ -839,7 +827,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2703"></A>
+<A NAME="2697"></A>
 <B>:compliance-slope-vector</B> <EM>av  </EM>[メソッド]
 
 <DL COMPACT>
@@ -850,7 +838,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2713"></A>
+<A NAME="2707"></A>
 <B>:set-torque-limit</B> <EM>id torque-limit  </EM>[メソッド]
 
 <DL COMPACT>
@@ -861,7 +849,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2723"></A>
+<A NAME="2717"></A>
 <B>:torque-enable</B> <EM>id torque-enable  </EM>[メソッド]
 
 <DL COMPACT>
@@ -872,7 +860,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2733"></A>
+<A NAME="2727"></A>
 <B>:servo-on</B> <EM>id  </EM>[メソッド]
 
 <DL COMPACT>
@@ -883,7 +871,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2743"></A>
+<A NAME="2737"></A>
 <B>:servo-off</B> <EM>id  </EM>[メソッド]
 
 <DL COMPACT>
@@ -894,7 +882,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2753"></A>
+<A NAME="2747"></A>
 <B>:servo-on-all</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -905,7 +893,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2763"></A>
+<A NAME="2757"></A>
 <B>:servo-off-all</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -916,7 +904,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2773"></A>
+<A NAME="2767"></A>
 <B>:start-grasp</B> <EM>&amp;optional (arm :arm) &amp;key ((:gain g) 0.5) ((:objects objs) objects)  </EM>[メソッド]
 
 <DL COMPACT>
@@ -927,7 +915,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2783"></A>
+<A NAME="2777"></A>
 <B>:stop-grasp</B> <EM>&amp;optional (arm :arm) &amp;key (wait nil)  </EM>[メソッド]
 
 <DL COMPACT>
@@ -938,7 +926,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2793"></A>
+<A NAME="2787"></A>
 <B>:bumper-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -949,7 +937,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2803"></A>
+<A NAME="2797"></A>
 <B>:button-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -960,7 +948,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2813"></A>
+<A NAME="2807"></A>
 <B>:wheel-drop-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -971,7 +959,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2823"></A>
+<A NAME="2817"></A>
 <B>:cliff-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -982,7 +970,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2833"></A>
+<A NAME="2827"></A>
 <B>:cliff-bottom-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -993,7 +981,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2843"></A>
+<A NAME="2837"></A>
 <B>:imucoords</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -1004,7 +992,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2853"></A>
+<A NAME="2847"></A>
 <B>:power-system-vector</B> <EM>nil </EM>[メソッド]
 
 <DL COMPACT>
@@ -1015,7 +1003,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2863"></A>
+<A NAME="2857"></A>
 <B>:publish-led</B> <EM>id value  </EM>[メソッド]
 
 <DL COMPACT>
@@ -1026,7 +1014,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="2873"></A>
+<A NAME="2867"></A>
 <B>:publish-sound</B> <EM>value  </EM>[メソッド]
 
 <DL COMPACT>
@@ -1037,8 +1025,41 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
+<A NAME="2877"></A>
+<B>:go-stop</B> <EM>&amp;optional (force-stop t)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Stop go-velocity mode.
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2887"></A>
+<B>:go-pos</B> <EM>x y &amp;optional (d 0)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Move to desired x y position and yaw orientation. x and y is [m] and d is [deg].
+</DD>
+</DL>
+<BR>
+<BR>
+
+<A NAME="2897"></A>
+<B>:go-velocity</B> <EM>x y d &amp;optional (msec 1000) &amp;key (stop t) (wait)  </EM>[メソッド]
+
+<DL COMPACT>
+<DT> 
+<DD> Moving by desired x y translational velocity and yaw rotational velocity. x and y is [m/s] and d is [deg/s].
+</DD>
+</DL>
+<BR>
+<BR>
+
 <SMALL CLASS="FOOTNOTESIZE">
-<A NAME="2883"></A>
+<A NAME="2907"></A>
 <B>:initialize-arm-robot-ros</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1053,7 +1074,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2893"></A>
+<A NAME="2917"></A>
 <B>:dynamixel-motor-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1068,7 +1089,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2903"></A>
+<A NAME="2927"></A>
 <B>:fullbody-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1083,7 +1104,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2913"></A>
+<A NAME="2937"></A>
 <B>:gripper-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1098,7 +1119,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2923"></A>
+<A NAME="2947"></A>
 <B>:default-controller</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1113,7 +1134,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2933"></A>
+<A NAME="2957"></A>
 <B>:servo-on-off</B> <EM>id on/off  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1128,7 +1149,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2943"></A>
+<A NAME="2967"></A>
 <B>:initialize-turtlebot-ros</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1143,7 +1164,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2953"></A>
+<A NAME="2977"></A>
 <B>:kobuki-bumper-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1158,7 +1179,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2963"></A>
+<A NAME="2987"></A>
 <B>:kobuki-button-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1173,7 +1194,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2973"></A>
+<A NAME="2997"></A>
 <B>:kobuki-power-system-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1188,7 +1209,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2983"></A>
+<A NAME="3007"></A>
 <B>:kobuki-wheel-drop-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1203,7 +1224,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="2993"></A>
+<A NAME="3017"></A>
 <B>:kobuki-cliff-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1218,7 +1239,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3003"></A>
+<A NAME="3027"></A>
 <B>:kobuki-imu-states-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1233,7 +1254,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3013"></A>
+<A NAME="3037"></A>
 <B>:laptop-charge-callback</B> <EM>msg  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1248,7 +1269,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3023"></A>
+<A NAME="3047"></A>
 <B>:def-vector-value</B> <EM>&amp;key (simulate-func #'(lambda nil (instantiate float-vector 3))) (raw-data-name) (vector-length 3) (state-name :state) (value-name)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1263,7 +1284,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3033"></A>
+<A NAME="3057"></A>
 <B>:raw-bumper-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1278,7 +1299,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3043"></A>
+<A NAME="3067"></A>
 <B>:raw-button-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1293,7 +1314,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3053"></A>
+<A NAME="3077"></A>
 <B>:raw-wheel-drop-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1308,7 +1329,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3063"></A>
+<A NAME="3087"></A>
 <B>:raw-cliff-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1323,7 +1344,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3073"></A>
+<A NAME="3097"></A>
 <B>:raw-imu-data</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1338,7 +1359,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3083"></A>
+<A NAME="3107"></A>
 <B>:imurot</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1353,7 +1374,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3093"></A>
+<A NAME="3117"></A>
 <B>:update-robot-state</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1368,22 +1389,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3103"></A>
-<B>:go-stop</B> <EM>&amp;optional (force-stop t)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
-
-</SMALL>
-
-<DL COMPACT>
-<DT> 
-<DD> 
-</DD>
-</DL><SMALL CLASS="FOOTNOTESIZE">
-<BR>
-<BR>
-
-<BR>
-
-<A NAME="3113"></A>
+<A NAME="3127"></A>
 <B>:move-to</B> <EM>coords &amp;key (retry 10) (frame-id /world) (wait-for-server-timeout 5)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1398,37 +1404,7 @@ robot_programming Robot Interface</A>
 
 <BR>
 
-<A NAME="3123"></A>
-<B>:go-pos</B> <EM>x y &amp;optional (d 0)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
-
-</SMALL>
-
-<DL COMPACT>
-<DT> 
-<DD> 
-</DD>
-</DL><SMALL CLASS="FOOTNOTESIZE">
-<BR>
-<BR>
-
-<BR>
-
-<A NAME="3133"></A>
-<B>:go-velocity</B> <EM>x y d &amp;optional (msec 1000) &amp;key (stop t) (wait)  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
-
-</SMALL>
-
-<DL COMPACT>
-<DT> 
-<DD> 
-</DD>
-</DL><SMALL CLASS="FOOTNOTESIZE">
-<BR>
-<BR>
-
-<BR>
-
-<A NAME="3143"></A>
+<A NAME="3137"></A>
 <B>:init</B> <EM>&amp;rest args  </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[メソッド] 
 
 </SMALL>
@@ -1446,7 +1422,7 @@ robot_programming Robot Interface</A>
 
 <P>
 
-<A NAME="3153"></A>
+<A NAME="3147"></A>
 <B>turtlebot-init</B> <EM>&amp;key (objects)  </EM>[関数]
 
 <DL COMPACT>
@@ -1457,7 +1433,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="3163"></A>
+<A NAME="3157"></A>
 <B>dxl-7dof-arm-init</B> <EM>nil </EM>[関数]
 
 <DL COMPACT>
@@ -1468,7 +1444,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="3173"></A>
+<A NAME="3167"></A>
 <B>dxl-armed-turtlebot</B> <EM>nil </EM>[関数]
 
 <DL COMPACT>
@@ -1479,7 +1455,7 @@ robot_programming Robot Interface</A>
 <BR>
 <BR>
 
-<A NAME="3183"></A>
+<A NAME="3177"></A>
 <B>dxl-armed-turtlebot-init</B> <EM>&amp;key (objects)  </EM>[関数]
 
 <DL COMPACT>
@@ -1491,7 +1467,7 @@ robot_programming Robot Interface</A>
 <BR>
 
 <SMALL CLASS="FOOTNOTESIZE">
-<A NAME="3193"></A>
+<A NAME="3187"></A>
 <B>get-method-list-for-turtlebot-interface</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
 
 </SMALL>
@@ -1507,7 +1483,7 @@ nil
 <BR>
 </SMALL>
 <SMALL CLASS="FOOTNOTESIZE">
-<A NAME="3204"></A>
+<A NAME="3198"></A>
 <B>get-method-list-for-dxl-7dof-arm-interface</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
 
 </SMALL>
@@ -1523,7 +1499,7 @@ nil
 <BR>
 </SMALL>
 <SMALL CLASS="FOOTNOTESIZE">
-<A NAME="3215"></A>
+<A NAME="3209"></A>
 <B>get-method-list-for-turtlebot-interface</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
 
 </SMALL>
@@ -1539,7 +1515,7 @@ nil
 <BR>
 </SMALL>
 <SMALL CLASS="FOOTNOTESIZE">
-<A NAME="3226"></A>
+<A NAME="3220"></A>
 <B>get-method-list-for-dxl-7dof-arm-interface</B> <EM>nil </EM></SMALL><SMALL CLASS="FOOTNOTESIZE">[関数] 
 
 </SMALL>
@@ -1587,7 +1563,7 @@ nil
 <!--End of Navigation Panel-->
 <ADDRESS>
 nozawa
-2014-11-29
+2014-11-30
 </ADDRESS>
 </BODY>
 </HTML>
