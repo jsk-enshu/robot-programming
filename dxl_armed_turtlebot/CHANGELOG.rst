@@ -2,6 +2,16 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2 (2014-12-01)
+------------------
+* Add launch file includes all enshu launches
+* Update html encoding
+* Add documentation directory for robot_programming all
+* Use require instead of load
+* Eval generated defmethod outside of :init
+* Add vision example from jsk_pcl_ros/euslisp/display-bounding-box-array.l
+* Contributors: Shunichi Nozawa
+
 1.0.1 (2014-11-27)
 ------------------
 * Remove unused method :def-vector-value

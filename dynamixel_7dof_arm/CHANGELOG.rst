@@ -2,6 +2,13 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.2 (2014-12-01)
+------------------
+* Add documentation for arm robot
+* Use require instead of load
+* Eval generated defmethod outside of :init
+* Contributors: Shunichi Nozawa
+
 1.0.1 (2014-11-27)
 ------------------
 * Add documentation for Euslisp codes
