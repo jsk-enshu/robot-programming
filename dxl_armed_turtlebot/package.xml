@@ -1,6 +1,6 @@
 <package>
   <name>dxl_armed_turtlebot</name>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <description>Turtlebot with dynamixel 7dof arm</description>
   <license>BSD</license>
   <maintainer email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</maintainer>
