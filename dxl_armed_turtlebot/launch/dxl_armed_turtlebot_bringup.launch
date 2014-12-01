@@ -6,7 +6,7 @@
   <arg name="RUN_RVIZ" default="false"/>
   <!--   rqt_reconfigure を起動するか -->
   <arg name="RUN_RECONFIGURE_GUI" default="false"/>
-  <!--   rqt_reconfigure を起動するか -->
+  <!--   ps3_teleop を起動するか -->
   <arg name="RUN_PS3JOY" default="false"/>
 
   <!-- 本体 -->
@@ -26,5 +26,5 @@
         output="screen" respawn="true"/>
   <!--   その他 -->
   <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure"
-        if="$(arg RUN_RECONFIGURE_GUI)"/>
+        if="$(arg RUN_RECONFIGURE_GUI)" respawn="true"/>
 </launch>
