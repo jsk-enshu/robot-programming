@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2014-12-01)
+------------------
 * Add launch file includes all enshu launches
 * Update html encoding
 * Add documentation directory for robot_programming all
