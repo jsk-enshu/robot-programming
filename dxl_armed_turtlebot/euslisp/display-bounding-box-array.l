@@ -25,7 +25,7 @@
                        ;; BoundingBoxのカメラ相対の座標系は、geometry_msgs/Poseという型で得られるので、Euslispのcoordsに変換する
                        (cam->obj-coords (ros::tf-pose->coords (send b :pose)))
                        ;; *dxl-armed-turtlebot*モデルがカメラの座標系をもってるので、取得する
-                       (cam-coords (send (send *dxl-armed-turtlebot* :camera_depth_optical_frame_lk) :copy-worldcoords)))
+                       (cam-coords (send (send *dxl-armed-turtlebot* :camera_rgb_optical_frame_lk) :copy-worldcoords)))
                   ;; Euslisp内部でのworld座標系の値にして、そこにmake-cubeの箱を設置する
                   (send bx :newcoords (send cam-coords :transform cam->obj-coords))
                   (send bx :worldcoords)
