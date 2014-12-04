@@ -1,7 +1,7 @@
 (ros::load-ros-manifest "dynamixel_msgs")
 
 (ros::roseus "thermo_speaker")
-(load "package://pr2eus/speak.l")
+;;(load "package://pr2eus/speak.l")
 (ros::set-param "thermo_thre" 50)
 
 (defvar *arm-dof* 7)
@@ -28,7 +28,7 @@
                      (> (elt (send x :motor_temps) 0) thre))
                  *state-list*)))
            (when mot
-             (speak-jp "モータが/あ'つ'いです。")
+             ;;(speak-jp "モータが/あ'つ'いです。")
              (warn ";; motor ~A are hot (temp ~A > ~A)~%"
                    (mapcar #'(lambda (x) (elt x 0)) (send-all mot :motor_temps))
                    (mapcar #'(lambda (x) (elt x 0)) (send-all mot :motor_ids))
