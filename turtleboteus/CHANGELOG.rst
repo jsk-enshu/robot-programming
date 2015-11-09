@@ -2,6 +2,9 @@
 Changelog for package turtleboteus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.2 (2014-12-01)
 ------------------
 * Add go-pos methods documentation

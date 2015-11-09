@@ -2,6 +2,9 @@
 Changelog for package daisya_euslisp_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.2 (2014-12-01)
 ------------------
 

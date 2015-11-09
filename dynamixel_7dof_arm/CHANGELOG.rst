@@ -2,6 +2,11 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Comment out speak-jp because currently aques_talk is not available
+* Contributors: Shunichi Nozawa
+
 1.0.2 (2014-12-01)
 ------------------
 * Add documentation for arm robot
