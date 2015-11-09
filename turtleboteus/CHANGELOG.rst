@@ -2,6 +2,16 @@
 Changelog for package turtleboteus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* linux_hardware is obsoulte, use  linux_peripheral_interface or smart_battery_msgs
+* ;; turtlebot-interface-common.l; I'm not sure but without this change, the knaji code crashes
+* dxl_armed_turtlebot, dynamixel_7dof_arm, turtleboteus: add roseus tofind_package() to  gen messages
+* {daisya_euslisp_tutorials,turtleboteus}/{package.xml,CMakeLists.txt}: add rostest to {build,run}_depend
+* turtleboteus/package.xml: linux_hardware is now move to linux_peripheral_interface and smart_battery_msgs
+* {turtleboteus,dynamixel_7dof_arm}/package.xml roseus_msgs is not longer required
+* Contributors: Kei Okada
+
 1.0.3 (2015-11-09)
 ------------------
 

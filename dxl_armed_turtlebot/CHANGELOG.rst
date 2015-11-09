@@ -2,6 +2,11 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* dxl_armed_turtlebot, dynamixel_7dof_arm, turtleboteus: add roseus tofind_package() to  gen messages
+* Contributors: Kei Okada
+
 1.0.3 (2015-11-09)
 ------------------
 * Enable to create several hsi filters

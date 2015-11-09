@@ -2,6 +2,12 @@
 Changelog for package daisya_euslisp_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* daisya_euslisp_tutorials: add depends to dxl_armed_turtlebot
+* {daisya_euslisp_tutorials,turtleboteus}/{package.xml,CMakeLists.txt}: add rostest to {build,run}_depend
+* Contributors: Kei Okada
+
 1.0.3 (2015-11-09)
 ------------------
 
