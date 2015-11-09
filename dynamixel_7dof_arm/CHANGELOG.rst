@@ -2,8 +2,8 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.0 (2015-11-10)
+------------------
 * dxl_armed_turtlebot, dynamixel_7dof_arm, turtleboteus: add roseus tofind_package() to  gen messages
 * {turtleboteus,dynamixel_7dof_arm}/package.xml roseus_msgs is not longer required
 * Contributors: Kei Okada
