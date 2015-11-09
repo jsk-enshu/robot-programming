@@ -1,18 +1,18 @@
-robot-programming
+robot-programming[![Build Status](https://travis-ci.org/jsk-enshu/robot-programming.svg?branch=master)](https://travis-ci.org/jsk-enshu/robot-programming)
 =================
 
 This is exercise for robot-programming.
 
 ```
-$ source /opt/ros/hydro/setup.bash   
+$ source /opt/ros/indigo/setup.bash   
 $ mkdir -p ~/catkin_ws/src
 $ cd ~/catkin_ws   
 $ wstool init src
-$ wstool set robot-programming https://github.com/jsk-enshu/robot-programming --git -t src -v 1.0.2
+$ wstool set robot-programming https://github.com/jsk-enshu/robot-programming --git -t src
 $ wstool update robot-programming -t src                                                                 
 $ rosdep update                                                                                          
 $ rosdep install --from-paths src  -y -r                                                                 
-$ catkin_make                                                                                            
+$ catkin build
 $ source ~/catkin_ws/devel/setup.bash ## 毎回ターミナルを開く度にこれを行うこと！！   
 ```
 
