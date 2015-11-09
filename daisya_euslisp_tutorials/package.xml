@@ -9,6 +9,8 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>roseus</build_depend>
+  <build_depend>rostest</build_depend>
 
   <run_depend>roseus</run_depend>
+  <run_depend>rostest</run_depend>
 </package>
