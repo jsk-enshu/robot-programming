@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2015-11-09)
+------------------
 * Enable to create several hsi filters
 * Fix camera frame (rgb frame)
 * Contributors: Shunichi Nozawa

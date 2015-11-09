@@ -2,8 +2,8 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2015-11-09)
+------------------
 * Comment out speak-jp because currently aques_talk is not available
 * Contributors: Shunichi Nozawa
 
