@@ -5,7 +5,8 @@
 (ros::load-ros-manifest "control_msgs")
 (ros::load-ros-manifest "kobuki_msgs")
 (ros::load-ros-manifest "move_base_msgs")
-(ros::load-ros-manifest "linux_hardware")
+;;(ros::load-ros-manifest "linux_hardware") linux_hardware is obsolete, use  linux_peripheral_interface or smart_battery_msgs
+
 
 (defun get-method-list-for-turtlebot-interface ()
 '(
@@ -25,7 +26,7 @@
                    #'send self :kobuki-cliff-states-callback :groupname groupname)
    (ros::subscribe "/mobile_base/sensors/imu_data" sensor_msgs::Imu
                    #'send self :kobuki-imu-states-callback :groupname groupname)
-   (ros::subscribe "/laptop_charge" linux_hardware::LaptopChargeStatus #'send self :laptop-charge-callback)
+   ;;(ros::subscribe "/laptop_charge" linux_hardware::LaptopChargeStatus #'send self :laptop-charge-callback)
    ;; publisher
    (dotimes (i 2) (ros::advertise (format nil "/mobile_base/commands/led~d" (1+ i)) kobuki_msgs::LED 1))
    (ros::advertise (format nil "/mobile_base/commands/sound") kobuki_msgs::sound 1)
@@ -53,10 +54,10 @@
                                            :angular_velocity_covariance (send msg :angular_velocity_covariance)
                                            :linear_acceleration (send msg :linear_acceleration)
                                            :linear_acceleration_covariance (send msg :linear_acceleration_covariance))))
-  (:laptop-charge-callback
-   (msg)
-   (send self :set-robot-state1 :laptop-charge nil)
-   )
+;  (:laptop-charge-callback
+;   (msg)
+;   (send self :set-robot-state1 :laptop-charge nil)
+;   )
   (:def-vector-value
    (&key (simulate-func #'(lambda () (instantiate float-vector 3)))
          (raw-data-name)
