@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 台車ロボットのrobot-interfaceクラスのメソッド定義部
+;; 台車ロボットのrobot-interface
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ros::load-ros-manifest "control_msgs")
@@ -9,7 +9,7 @@
 
 (defun get-method-list-for-turtlebot-interface ()
 '(
-  ;; サービスのwaitやsubscribeコールバック関数設定を行う初期化メソッド
+  ;; サービスのwaitやsubscribeコールバック関数設定を行う
   (:initialize-turtlebot-ros
    ()
    ;; subscriber
@@ -87,7 +87,7 @@
      )
    )
 
-  ;; センサ取得メソッド
+  ;; センサ取得
   (:bumper-vector
    ()
    "Get bumper value vector."
@@ -125,7 +125,7 @@
    "Get power system vector."
    (cdr (assoc :power-system robot-state)))
 
-  ;; publish メソッド
+  ;; publish
   (:publish-led
    (id value)
    "Publish topic to turn on/off LEG. id should be 1-2. Value should be :black, :green, :orange, and :red."
