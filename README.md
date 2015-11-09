@@ -1,4 +1,4 @@
-robot-programming[![Build Status](https://travis-ci.org/jsk-enshu/robot-programming.svg?branch=master)](https://travis-ci.org/jsk-enshu/robot-programming)
+robot-programming [![Build Status](https://travis-ci.org/jsk-enshu/robot-programming.svg?branch=master)](https://travis-ci.org/jsk-enshu/robot-programming) [![Join the chat at https://gitter.im/jsk-enshu/robot-programming](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/jsk-enshu/robot-programming?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 =================
 
 This is exercise for robot-programming.
