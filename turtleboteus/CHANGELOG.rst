@@ -2,6 +2,9 @@
 Changelog for package turtleboteus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.0.0 (2015-11-10)
 ------------------
 * linux_hardware is obsoulte, use  linux_peripheral_interface or smart_battery_msgs

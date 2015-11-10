@@ -2,6 +2,14 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add dxl_armed_turtlebot_gazebo.launch
+* add dxl_armed_turtlebot/urdf/robot.urdf.xacro
+* add depends to dynamixel_urdf (update .travis.yml, README.md and dxl_armed_turtlebot/package.xml
+  )
+* Contributors: Kei Okada
+
 2.0.0 (2015-11-10)
 ------------------
 * dxl_armed_turtlebot, dynamixel_7dof_arm, turtleboteus: add roseus tofind_package() to  gen messages
