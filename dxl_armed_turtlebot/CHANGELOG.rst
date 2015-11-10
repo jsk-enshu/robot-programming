@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2015-11-11)
+------------------
 * add dxl_armed_turtlebot_gazebo.launch
 * add dxl_armed_turtlebot/urdf/robot.urdf.xacro
 * add depends to dynamixel_urdf (update .travis.yml, README.md and dxl_armed_turtlebot/package.xml
