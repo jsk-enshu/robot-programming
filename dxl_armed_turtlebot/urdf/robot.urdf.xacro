@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot name="dxl_armed_turtlebot" xmlns:xacro="http://ros.org/wiki/xacro"> 
+  <xacro:include filename="$(find turtlebot_description)/urdf/turtlebot_library.urdf.xacro" />
+  <xacro:include filename="$(find dxl_armed_turtlebot)/urdf/dynamixel_7dof_arm.urdf.xacro" />
+  
+  <kobuki/>
+  <stack_hexagons parent="base_link"/>
+  <sensor_kinect  parent="base_link"/>
+
+  <dynamixel_7dof_arm />
+  <joint name="joint0" type="fixed">
+    <parent link="plate_top_link"/>
+    <child link="arm_base_link"/>
+    <origin xyz="0.15 0 0.025" rpy="0 0 0" />
+  </joint>
+
+</robot>
+
+
+
