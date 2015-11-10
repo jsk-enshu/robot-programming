@@ -1,0 +1,202 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" >
+
+  <xacro:include filename="$(find dynamixel_urdf)/urdf/ax12.xacro" />
+  <property name="M_PI" value="3.1415926535897931" />
+
+  <macro name="dynamixel_ax12_joint" params="parent name color llimit ulimit vlimit *origin" >
+    <joint name="${name}_joint" type="revolute">
+      <insert_block name="origin" />
+       <axis xyz="0 0 1"/>
+      <limit effort="30" velocity="${vlimit}" lower="${llimit}" upper="${ulimit}" />
+      <parent link="${parent}"/>
+      <child link="${name}_link" />
+    </joint>
+
+    <link name="${name}_link">
+      <inertial>
+        <mass value="0.00001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+          iyy="1.0" iyz="0.0"
+          izz="1.0" />
+      </inertial>
+      <visual>
+        <origin xyz=" 0 0 0 " rpy="1.57 0 1.57" />
+        <geometry>
+          <mesh filename="package://dynamixel_urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+      <collision>
+        <origin xyz="${-0.0501/2+0.0116} 0.0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.0501 0.032 0.040"/>
+        </geometry>
+      </collision>
+    </link>
+  </macro>
+
+  <macro name="ax12_hinge_revolute_axis" params="parent name color llimit ulimit vlimit *origin *axis">
+    <joint name="${name}_joint" type="revolute">
+      <insert_block name="origin" />
+      <insert_block name="axis" />
+      <limit effort="30" velocity="${vlimit}" lower="${llimit}" upper="${ulimit}" />
+      <parent link="${parent}"/>
+      <child link="${name}_link" />
+    </joint>
+
+    <link name="${name}_link">
+      <inertial>
+        <mass value="0.00001" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+          iyy="1.0" iyz="0.0"
+          izz="1.0" />
+      </inertial>
+      <visual>
+        <origin xyz=" 0 0 0 " rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://dynamixel_urdf/meshes/F2.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+      <collision>
+        <origin xyz="0.0 0.0 0.00775" rpy="0 0 0" />
+        <geometry>
+          <box size="0.025 0.0485 0.0375"/>
+        </geometry>
+      </collision>
+    </link>
+  </macro>
+
+  <xacro:macro name="gazebo_arm_link" params="name color">
+    <gazebo reference="${name}">
+      <material>Gazebo/${color}</material>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="simple_transmission" params="name interface" >
+    <transmission name="${name}_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${name}">
+        <hardwareInterface>${interface}</hardwareInterface>
+      </joint>
+      <actuator name="${name}_motor">
+        <mechanicalReduction>10</mechanicalReduction>
+        <hardwareInterface>${interface}</hardwareInterface>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+
+  <xacro:macro name="dynamixel_7dof_arm" >
+    <material name="black">
+      <color rgba="0.3 0.3 0.3 1.0" />
+    </material>
+    <material name="white">
+      <color rgba="0.8 0.8 0.8 1.0" />
+    </material>
+
+    <link name="arm_base_link">
+      <visual>
+        <origin xyz="-0.02 0.0 0.0" rpy="0 0 0" />
+        <geometry>
+          <box size="0.04 0.03 0.04" />
+        </geometry>
+        <material name="white" />
+      </visual>
+    </link>
+    
+    <xacro:dynamixel_ax12_pan parent="arm_base_link" name="arm_link0" color="black">
+      <origin xyz="0.045 0 0.0" rpy="${M_PI} 0 0" />
+    </xacro:dynamixel_ax12_pan>
+
+    <xacro:ax12_hinge_revolute parent="arm_link0_link" name="arm_link1"
+                               llimit="-2.61" ulimit="2.61" vlimit="6.0"
+                               color="white" >
+      <origin xyz="0.0 0.0 0.0" rpy="${M_PI/2} 0 ${M_PI/2}" />
+    </xacro:ax12_hinge_revolute>
+
+    <xacro:dynamixel_ax12_joint parent="arm_link1_link" name="arm_link2"
+                               llimit="-2.61" ulimit="2.61" vlimit="6.0"
+                               color="black" >
+      <origin xyz="0.0 0.0 0.05" rpy="0 0 -${M_PI/2}" />
+    </xacro:dynamixel_ax12_joint>
+
+    <xacro:dynamixel_ax12_tilt parent="arm_link2_link" name="arm_link2_motor" color="black">
+      <origin xyz="-0.06 0.0 0.02" rpy="0 0 0" />
+    </xacro:dynamixel_ax12_tilt>
+
+    <xacro:ax12_hinge_revolute parent="arm_link2_motor_link" name="arm_link3"
+                               llimit="-2.61" ulimit="2.61" vlimit="6.0"
+                               color="white" >
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+    </xacro:ax12_hinge_revolute>
+
+    <xacro:dynamixel_ax12_pan parent="arm_link3_link" name="arm_link3_motor" color="black">
+      <origin xyz="-0.01 0.0 0.055" rpy="${M_PI} ${M_PI} 0" />
+    </xacro:dynamixel_ax12_pan>
+
+    <xacro:ax12_hinge_revolute_axis parent="arm_link3_motor_link" name="arm_link4"
+                               llimit="-2.61" ulimit="2.61" vlimit="6.0"
+                               color="white" >
+      <origin xyz="0.0 0.0 0.05" rpy="0 ${M_PI} 0" />
+      <axis xyz="0 0 1" />
+    </xacro:ax12_hinge_revolute_axis>
+
+    <xacro:dynamixel_ax12_joint parent="arm_link4_link" name="arm_link5"
+                               llimit="-2.61" ulimit="2.61" vlimit="6.0" color="black">
+      <origin xyz="0.0 0.0 0.0" rpy="0 -${M_PI/2} ${M_PI/2}" />
+    </xacro:dynamixel_ax12_joint>
+
+    <xacro:dynamixel_ax12_joint parent="arm_link5_link" name="arm_link6"
+                               llimit="-2.61" ulimit="2.61" vlimit="6.0" color="black">
+      <origin xyz="-0.07 0.0 0.0" rpy="-${M_PI/2} ${M_PI} -${M_PI/2}" />
+    </xacro:dynamixel_ax12_joint>
+
+    <xacro:dynamixel_ax12_pan parent="arm_link6_link" name="arm_link6_motor" color="black">
+      <origin xyz="0.0 0.03 -0.05" rpy="${M_PI/2} 0 ${M_PI/2}" />
+    </xacro:dynamixel_ax12_pan>
+
+    <xacro:ax12_hinge_revolute parent="arm_link6_motor_link" name="arm_link7"
+                               llimit="-2.61" ulimit="2.61" vlimit="6.0"
+                               color="white" >
+      <origin xyz="0.0 0.0 0.0" rpy="${M_PI/2} 0 ${M_PI/2}" />
+    </xacro:ax12_hinge_revolute>
+
+    <!-- ros_control plugin -->
+    <gazebo>
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>/dxl_armed_turtlebot</robotNamespace>
+      </plugin>
+      <plugin name="ground_truth" filename="libgazebo_ros_p3d.so">
+        <frameName>map</frameName>
+        <bodyName>base_footprint</bodyName>
+        <topicName>base_pose_ground_truth</topicName>
+        <updateRate>30.0</updateRate>
+      </plugin>
+    </gazebo>
+
+    <xacro:gazebo_arm_link name="arm_base_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link0_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link1_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link2_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link2_motor_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link3_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link3_motor_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link4_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link5_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link6_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link6_motor_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link7_link" color="Gray" />
+
+    <xacro:simple_transmission name="arm_link1_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link2_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link3_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link4_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link5_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link6_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link7_joint" interface="EffortJointInterface" />
+
+  </xacro:macro>
+</robot>
