@@ -70,6 +70,25 @@
     </link>
   </macro>
 
+  <xacro:macro name="gazebo_arm_link" params="name color">
+    <gazebo reference="${name}">
+      <material>Gazebo/${color}</material>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="simple_transmission" params="name interface" >
+    <transmission name="${name}_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${name}">
+        <hardwareInterface>${interface}</hardwareInterface>
+      </joint>
+      <actuator name="${name}_motor">
+        <mechanicalReduction>10</mechanicalReduction>
+        <hardwareInterface>${interface}</hardwareInterface>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+
   <xacro:macro name="dynamixel_7dof_arm" >
     <material name="black">
       <color rgba="0.3 0.3 0.3 1.0" />
@@ -144,6 +163,40 @@
                                color="white" >
       <origin xyz="0.0 0.0 0.0" rpy="${M_PI/2} 0 ${M_PI/2}" />
     </xacro:ax12_hinge_revolute>
+
+    <!-- ros_control plugin -->
+    <gazebo>
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <robotNamespace>/dxl_armed_turtlebot</robotNamespace>
+      </plugin>
+      <plugin name="ground_truth" filename="libgazebo_ros_p3d.so">
+        <frameName>map</frameName>
+        <bodyName>base_footprint</bodyName>
+        <topicName>base_pose_ground_truth</topicName>
+        <updateRate>30.0</updateRate>
+      </plugin>
+    </gazebo>
+
+    <xacro:gazebo_arm_link name="arm_base_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link0_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link1_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link2_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link2_motor_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link3_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link3_motor_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link4_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link5_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link6_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link6_motor_link" color="Black" />
+    <xacro:gazebo_arm_link name="arm_link7_link" color="Gray" />
+
+    <xacro:simple_transmission name="arm_link1_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link2_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link3_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link4_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link5_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link6_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_link7_joint" interface="EffortJointInterface" />
 
   </xacro:macro>
 </robot>

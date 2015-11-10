@@ -1,0 +1,133 @@
+<launch>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="world_file" default="worlds/empty.world" />
+  <arg name="model" value="$(find dxl_armed_turtlebot)/urdf/robot.urdf.xacro"  />
+
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
+    <remap from="joint_states" to="dxl_armed_turtlebot/joint_states" />
+  </node>
+  <node name="cmd_vel_renamer" pkg="topic_tools" type="relay"
+        args=" /cmd_vel /mobile_base/commands/velocity" />
+  <node name="rviz" pkg="rviz" type="rviz" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="world_name" value="$(arg world_file)"/>
+  </include>
+
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        respawn="false" output="screen"
+        args="-x 0.0 -y 0.0 -z 0.01 -unpause -urdf -model dxl_armed_turtlebot
+              -param robot_description" />
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam>
+dxl_armed_turtlebot:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+  arm_link1_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: arm_link1_joint
+    pid: {p: 5000.0, i: 500, d: 5.0}
+  arm_link2_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: arm_link2_joint
+    pid: {p: 5000.0, i: 500, d: 5.0}
+  arm_link3_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: arm_link3_joint
+    pid: {p: 5000.0, i: 500, d: 5.0}
+  arm_link4_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: arm_link4_joint
+    pid: {p: 5000.0, i: 500, d: 5.0}
+  arm_link5_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: arm_link5_joint
+    pid: {p: 5000.0, i: 500, d: 5.0}
+  arm_link6_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: arm_link6_joint
+    pid: {p: 5000.0, i: 500, d: 5.0}
+  arm_link7_joint_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: arm_link7_joint
+    pid: {p: 5000.0, i: 500, d: 5.0}
+
+  # Trajectory Controllers ---------------------------------------
+  trajectory_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - arm_link1_joint
+      - arm_link2_joint
+      - arm_link3_joint
+      - arm_link4_joint
+      - arm_link5_joint
+      - arm_link6_joint
+      - arm_link7_joint
+    constraints:
+      goal_time: 0.5                   # Override default
+      stopped_velocity_tolerance: 0.02 # Override default
+      arm_link1_joint:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                     # Not enforced if unspecified
+      arm_link2_joint:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                     # Not enforced if unspecified
+      arm_link3_joint:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                     # Not enforced if unspecified
+      arm_link4_joint:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                     # Not enforced if unspecified
+      arm_link5_joint:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                     # Not enforced if unspecified
+      arm_link6_joint:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                     # Not enforced if unspecified
+      arm_link7_joint:
+        trajectory: 0.05               # Not enforced if unspecified
+        goal: 0.02                     # Not enforced if unspecified
+
+    gains: # Required because we're controlling an effort interface
+      arm_link1_joint: {p: 500, i: 5, d: 1}
+      arm_link2_joint: {p: 500, i: 5, d: 1}
+      arm_link3_joint: {p: 500, i: 5, d: 1}
+      arm_link4_joint: {p: 500, i: 5, d: 1}
+      arm_link5_joint: {p: 500, i: 5, d: 1}
+      arm_link6_joint: {p: 500, i: 5, d: 1}
+      arm_link7_joint: {p: 500, i: 5, d: 1}
+    state_publish_rate:  100            # Override default
+    action_monitor_rate: 100            # Override default
+    stop_trajectory_duration: 0        # Override default
+  </rosparam>
+
+  <!-- load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager"
+        type="spawner" respawn="false"
+        output="screen" ns="/dxl_armed_turtlebot"
+        args="joint_state_controller
+              trajectory_controller
+              "/>
+  <!--
+                                                        arm_link1_joint_position_controller
+                                                        arm_link2_joint_position_controller
+                                                        arm_link3_joint_position_controller
+                                                        arm_link4_joint_position_controller
+                                                        arm_link5_joint_position_controller
+                                                        arm_link6_joint_position_controller
+                                                        arm_link7_joint_position_controller
+-->
+</launch>
