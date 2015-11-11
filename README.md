@@ -12,7 +12,7 @@ $ wstool set robot-programming https://github.com/jsk-enshu/robot-programming --
 $ wstool set dynamixel_urdf    https://github.com/jsk-enshu/dynamixel_urdf    --git -t src
 $ wstool update -t src
 $ rosdep update                                                                                          
-$ rosdep install --from-paths src  -y -r                                                                 
+$ rosdep install --from-paths src --ignore-src -y -r                                                                 
 $ catkin build
 $ source ~/catkin_ws/devel/setup.bash ## 毎回ターミナルを開く度にこれを行うこと！！   
 ```
