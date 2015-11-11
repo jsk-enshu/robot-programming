@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.1 (2015-11-11)
+------------------
 * add robot_state_publisher for both base and robot
 * Contributors: Kei Okada
 
