@@ -8,6 +8,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>dynamixel_urdf</build_depend>
   <build_depend>dynamixel_controllers</build_depend>
   <build_depend>pr2eus</build_depend>
 
