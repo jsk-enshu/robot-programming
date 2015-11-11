@@ -38,7 +38,7 @@ script:
   - env | grep ROS
   - rosversion catkin
   # Build
-  - catkin build -v -i --limit-status-rate 0.003 --no-notify # every 5 mim
+  - catkin build -v -i -p 1 --limit-status-rate 0.003 --no-notify # every 5 mim
   # Run tests
   - catkin run_tests
   # check test (this only works on indigo)
