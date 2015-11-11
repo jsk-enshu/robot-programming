@@ -9,9 +9,12 @@
 
   <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
 
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
+  <!-- for upper body -->
+  <node name="body_robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
     <remap from="joint_states" to="dxl_armed_turtlebot/joint_states" />
   </node>
+  <!-- for base -->
+  <node name="base_robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
   <node name="cmd_vel_renamer" pkg="topic_tools" type="relay"
         args=" /cmd_vel /mobile_base/commands/velocity" />
   <node name="rviz" pkg="rviz" type="rviz" />
