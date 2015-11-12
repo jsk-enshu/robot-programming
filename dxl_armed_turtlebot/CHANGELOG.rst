@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.2 (2015-11-12)
+------------------
 * Use kinect as 3d_sensor
 * Contributors: Shunichi Nozawa
 
