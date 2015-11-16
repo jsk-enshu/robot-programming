@@ -371,6 +371,10 @@
    ()
    "Folding arm pose2."
    (send self :angle-vector (float-vector 90.0 90.0 5.0 0.0 -90.0 90.0 0.0)))
+  (:tuckarm-pose3
+   ()
+   "Folding arm pose3."
+   (send self :angle-vector (float-vector 0.0 90.0 0.0 -20.0 90.0 0.0 0.0)))
   ;; inverse-kinematics
   (:inverse-kinematics
    (target-coords &rest args &key (link-list)
