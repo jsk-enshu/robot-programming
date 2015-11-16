@@ -26,7 +26,10 @@
           ;; (make-coords :pos (float-vector 85.725 9.525 410) ;; 9.525 = (/ 38.1 4.0), 38.1 = 2 pitch width, 85.725 = (+ (/ 152.4 2.0) (/ 38.1 4.0))
           ;;              :rpy (list 0 0 0))
           ;; lower arm version
-          (make-coords :pos (float-vector 85.725 9.525 402) ;; 9.525 = (/ 38.1 4.0), 38.1 = 2 pitch width, 85.725 = (+ (/ 152.4 2.0) (/ 38.1 4.0))
+          ;; (make-coords :pos (float-vector 85.725 9.525 402) ;; 9.525 = (/ 38.1 4.0), 38.1 = 2 pitch width, 85.725 = (+ (/ 152.4 2.0) (/ 38.1 4.0))
+          ;;              :rpy (list 0 0 pi))
+          ;; lower arm version + 長いアーム台座
+          (make-coords :pos (float-vector (+ 58.0 85.725) 9.525 402) ;; 9.525 = (/ 38.1 4.0), 38.1 = 2 pitch width, 85.725 = (+ (/ 152.4 2.0) (/ 38.1 4.0))
                        :rpy (list 0 0 pi))
           )
          ;; turtlebot CAD information is here:
