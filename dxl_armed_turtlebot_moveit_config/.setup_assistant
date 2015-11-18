@@ -1,0 +1,8 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: dxl_armed_turtlebot
+    relative_path: urdf/robot.urdf.xacro
+  SRDF:
+    relative_path: config/dxl_armed_turtlebot.srdf
+  CONFIG:
+    generated_timestamp: 1447848072

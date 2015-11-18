@@ -1,0 +1,9 @@
+controller_list:
+  - name: fake_manipulator_controller
+    joints:
+      - arm_link1_joint
+      - arm_link2_joint
+      - arm_link3_joint
+      - arm_link4_joint
+      - arm_link5_joint
+      - arm_link6_joint
