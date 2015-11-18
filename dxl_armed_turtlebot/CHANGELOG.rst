@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.3 (2015-11-19)
+------------------
 * Update arm base
 * Add example to display checkerboard pose with turtlebot
 * Fix ps3 teleop launch path
