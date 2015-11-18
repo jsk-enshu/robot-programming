@@ -12,8 +12,10 @@
   <!-- 本体 -->
   <!--   turtlebot関係 -->
   <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
-  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch"/>
-  <include file="$(find turtlebot_teleop)/launch/ps3_teleop.launch"
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+    <arg name="3d_sensor" default="kinect" />
+  </include>
+  <include file="$(find dxl_armed_turtlebot)/launch/turtlebot_joystick_teleop.launch"
            if="$(arg RUN_PS3JOY)"/>
   <!-- <include file="$(find turtlebot_rviz_launchers)/launch/view_robot.launch"/> -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtlebot_rviz_launchers)/rviz/robot.rviz" respawn="true"

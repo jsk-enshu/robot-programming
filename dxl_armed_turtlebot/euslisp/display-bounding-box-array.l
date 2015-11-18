@@ -3,10 +3,12 @@
 (dxl-armed-turtlebot-init)
 
 ;; jsk_pcl_rosのmsgを使うため、loadする
-(ros::load-ros-manifest "jsk_pcl_ros")
+;;(ros::load-ros-manifest "jsk_pcl_ros")
+(ros::load-ros-manifest "jsk_recognition_msgs")
 
 ;; クラスタリング結果であるBoundingBoxのtopic名
-(defvar *topic-name* "/camera/depth_registered/cluster_decomposer/boxes")
+;;(defvar *topic-name* "/camera/depth_registered/cluster_decomposer/boxes")
+(defvar *topic-name* "/camera/depth_registered/boxes")
 (defvar *bounding-box-list* nil)
 
 ;; ros::initする
@@ -35,7 +37,7 @@
     (send *irtviewer* :viewer :viewsurface :flush)
     ))
 
-(ros::subscribe *topic-name* jsk_pcl_ros::BoundingBoxArray #'bounding-box-array-cb 1)
+(ros::subscribe *topic-name* jsk_recognition_msgs::BoundingBoxArray #'bounding-box-array-cb 1)
 
 (do-until-key
  (x::window-main-one) ;; IRT viewerの視点を変えられる。見にくければ変えよう

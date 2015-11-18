@@ -14,7 +14,8 @@
 
 #. /opt/ros/electric/setup.sh
 #. /opt/ros/groovy/setup.sh
-. /opt/ros/hydro/setup.sh
+#. /opt/ros/hydro/setup.sh
+. /opt/ros/indigo/setup.sh
 export ROS_HOME=/root
 
 # path to daemon
