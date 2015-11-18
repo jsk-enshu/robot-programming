@@ -2,6 +2,15 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update arm base
+* Add example to display checkerboard pose with turtlebot
+* Fix ps3 teleop launch path
+* Update ps3joy teleop launch to reduce velocity and use indigo
+* Update displaying of bounding box using jsk_pcl_ros. Update package name and topic names.
+* Contributors: Shunichi Nozawa
+
 2.1.2 (2015-11-12)
 ------------------
 * Use kinect as 3d_sensor
