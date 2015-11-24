@@ -28,11 +28,11 @@
     ;; 物体モデルを配置
     (setq frame-id (concatenate string "/" (send msg :header :frame_id)))
     (mapcar #'(lambda (obj-pose)
-                (let* (;; カメラ相対の座標系は、geometry_msgs/Poseという型で得られるので、Euslispのcoordsに変換する
+                (let* (;; (1) カメラ相対の座標系は、geometry_msgs/Poseという型で得られるので、Euslispのcoordsに変換する
                        (cam->obj-coords (ros::tf-pose->coords (send obj-pose :pose)))
-                       ;; *dxl-armed-turtlebot*モデルがカメラの座標系をもってるので、取得する
+                       ;; (2) *dxl-armed-turtlebot*モデルがカメラの座標系をもってるので、取得する
                        (cam-coords (send (send *dxl-armed-turtlebot* :camera_rgb_optical_frame_lk) :copy-worldcoords)))
-                  ;; Euslisp内部でのworld座標系の値にして、そこにcheckerboardモデルを配置する
+                  ;; (3) Euslisp内部でのworld座標系の値にして、そこにcheckerboardモデルを配置する
                   (send *target-object* :newcoords (send cam-coords :transform cam->obj-coords))
                   ))
             (send msg :objects))
