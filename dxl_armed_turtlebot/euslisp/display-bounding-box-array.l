@@ -24,11 +24,11 @@
                 ;; BoundingBoxは、dimsntion(直方体の幅・奥行き・高さ)をもつ
                 (let* ((dims (ros::tf-point->pos (send b :dimensions)))
                        (bx (make-cube (elt dims 0) (elt dims 1) (elt dims 2)))
-                       ;; BoundingBoxのカメラ相対の座標系は、geometry_msgs/Poseという型で得られるので、Euslispのcoordsに変換する
+                       ;; (1) BoundingBoxのカメラ相対の座標系は、geometry_msgs/Poseという型で得られるので、Euslispのcoordsに変換する
                        (cam->obj-coords (ros::tf-pose->coords (send b :pose)))
-                       ;; *dxl-armed-turtlebot*モデルがカメラの座標系をもってるので、取得する
+                       ;; (2) *dxl-armed-turtlebot*モデルがカメラの座標系をもってるので、取得する
                        (cam-coords (send (send *dxl-armed-turtlebot* :camera_rgb_optical_frame_lk) :copy-worldcoords)))
-                  ;; Euslisp内部でのworld座標系の値にして、そこにmake-cubeの箱を設置する
+                  ;; (3) Euslisp内部でのworld座標系の値にして、そこにmake-cubeの箱を設置する
                   (send bx :newcoords (send cam-coords :transform cam->obj-coords))
                   (send bx :worldcoords)
                   (send bx :draw-on :flush nil :color #f(1 0 0)) ;; 描画
