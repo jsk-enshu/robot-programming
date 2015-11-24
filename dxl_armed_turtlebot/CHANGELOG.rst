@@ -2,6 +2,12 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update hsi color for latest jsk_pcl_ros and enable to invoke several color filter
+* Update comments for display euslisp examples
+* Contributors: Shunichi Nozawa
+
 2.1.3 (2015-11-19)
 ------------------
 * Update arm base

@@ -2,6 +2,9 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 2.1.3 (2015-11-19)
 ------------------
 * Add arm pose to get wide view field
