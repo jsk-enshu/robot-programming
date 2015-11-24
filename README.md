@@ -14,7 +14,7 @@ $ wstool update -t src
 $ rosdep update                                                                                          
 $ rosdep install --from-paths src --ignore-src -y -r                                                                 
 $ catkin build
-$ source ~/catkin_ws/devel/setup.bash ## 毎回ターミナルを開く度にこれを行うこと！！   
+$ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## bashrcについか
 ```
 
 Documentations
