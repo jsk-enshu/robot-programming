@@ -3,6 +3,8 @@ project(dynamixel_7dof_arm)
 
 find_package(catkin REQUIRED COMPONENTS dynamixel_controllers roseus rostest) # add roseus to gen messages
 
+catkin_python_setup()
+
 catkin_package()
 
 add_rostest(test/test-dxl-7dof-arm.test)
