@@ -1,3 +1,9 @@
+joint_state_publisher:
+   controller:
+       package: dynamixel_7dof_arm
+       module: joint_state_publisher
+       type: JointStatePublisher
+
 arm_j1_controller:
     controller:
         package: dynamixel_controllers
