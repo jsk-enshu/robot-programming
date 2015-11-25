@@ -37,16 +37,16 @@
     </link>
   </macro>
 
-  <macro name="dynamixel_ax12_joint" params="parent name color llimit ulimit vlimit *origin" >
-    <joint name="${name}_joint" type="revolute">
+  <macro name="dynamixel_ax12_joint" params="parent link_name joint_name color llimit ulimit vlimit *origin" >
+    <joint name="${joint_name}" type="revolute">
       <insert_block name="origin" />
        <axis xyz="0 0 1"/>
       <limit effort="30" velocity="${vlimit}" lower="${llimit}" upper="${ulimit}" />
       <parent link="${parent}"/>
-      <child link="${name}_link" />
+      <child link="${link_name}" />
     </joint>
 
-    <link name="${name}_link">
+    <link name="${link_name}">
       <inertial>
         <mass value="0.00001" />
         <origin xyz="0 0 0" />
@@ -70,16 +70,16 @@
     </link>
   </macro>
 
-  <macro name="ax12_hinge_revolute_axis" params="parent name color llimit ulimit vlimit *origin *axis">
-    <joint name="${name}_joint" type="revolute">
+  <macro name="ax12_hinge_revolute_axis" params="parent link_name joint_name color llimit ulimit vlimit *origin *axis">
+    <joint name="${joint_name}" type="revolute">
       <insert_block name="origin" />
       <insert_block name="axis" />
       <limit effort="30" velocity="${vlimit}" lower="${llimit}" upper="${ulimit}" />
       <parent link="${parent}"/>
-      <child link="${name}_link" />
+      <child link="${link_name}" />
     </joint>
 
-    <link name="${name}_link">
+    <link name="${link_name}">
       <inertial>
         <mass value="0.00001" />
         <origin xyz="0 0 0" />
@@ -144,19 +144,20 @@
       <origin xyz="0.045 0 0.0" rpy="${M_PI} 0 0" />
     </xacro:dynamixel_ax12_pan>
 
-    <xacro:ax12_hinge_revolute parent="arm_link0_link" name="arm_link1"
+    <xacro:ax12_hinge_revolute_axis parent="arm_link0_link" link_name="arm_link1" joint_name="arm_joint1"
                                llimit="-2.61" ulimit="2.61" vlimit="6.0"
                                color="white" >
       <origin xyz="0.0 0.0 0.0" rpy="${M_PI/2} 0 ${M_PI/2}" />
-    </xacro:ax12_hinge_revolute>
+      <axis xyz="0 0 1"/>
+    </xacro:ax12_hinge_revolute_axis>
 
-    <xacro:dynamixel_ax12_joint parent="arm_link1_link" name="arm_link2"
+    <xacro:dynamixel_ax12_joint parent="arm_link1" link_name="arm_link2" joint_name="arm_joint2"
                                llimit="-2.61" ulimit="2.61" vlimit="6.0"
                                color="black" >
       <origin xyz="0.0 0.0 0.05" rpy="0 0 -${M_PI/2}" />
     </xacro:dynamixel_ax12_joint>
 
-    <xacro:ax12_side_fixed parent="arm_link2_link" name="arm_link2_F31" color="white">
+    <xacro:ax12_side_fixed parent="arm_link2" name="arm_link2_F31" color="white">
       <origin xyz=" -0.039 0 0" rpy="${M_PI/2} 0 -${M_PI/2}" />
     </xacro:ax12_side_fixed>
 
@@ -168,41 +169,42 @@
       <origin xyz="0.025 0.0 -0.018" rpy="0 ${M_PI/2} 0" />
     </xacro:dynamixel_ax12_tilt>
 
-    <xacro:ax12_hinge_revolute parent="arm_link2_motor_link" name="arm_link3"
+    <xacro:ax12_hinge_revolute_axis parent="arm_link2_motor_link" link_name="arm_link3" joint_name="arm_joint3"
                                llimit="-2.61" ulimit="2.61" vlimit="6.0"
                                color="white" >
       <origin xyz="0.0 0.0 0.0" rpy="0 0 ${M_PI}" />
-    </xacro:ax12_hinge_revolute>
+      <axis xyz="0 0 1"/>
+    </xacro:ax12_hinge_revolute_axis>
 
-    <xacro:dynamixel_ax12_pan parent="arm_link3_link" name="arm_link3_motor" color="black">
+    <xacro:dynamixel_ax12_pan parent="arm_link3" name="arm_link3_motor" color="black">
       <origin xyz="-0.01 0.0 0.055" rpy="${M_PI} ${M_PI} 0" />
     </xacro:dynamixel_ax12_pan>
 
-    <xacro:ax12_hinge_revolute_axis parent="arm_link3_motor_link" name="arm_link4"
+    <xacro:ax12_hinge_revolute_axis parent="arm_link3_motor_link" link_name="arm_link4" joint_name="arm_joint4"
                                llimit="-2.61" ulimit="2.61" vlimit="6.0"
                                color="white" >
       <origin xyz="0.0 0.0 0.05" rpy="0 ${M_PI} 0" />
       <axis xyz="0 0 1" />
     </xacro:ax12_hinge_revolute_axis>
 
-    <xacro:dynamixel_ax12_joint parent="arm_link4_link" name="arm_link5"
+    <xacro:dynamixel_ax12_joint parent="arm_link4" link_name="arm_link5" joint_name="arm_joint5"
                                llimit="-2.61" ulimit="2.61" vlimit="6.0" color="black">
       <origin xyz="0.0 0.0 0.0" rpy="0 -${M_PI/2} ${M_PI/2}" />
     </xacro:dynamixel_ax12_joint>
 
-    <xacro:ax12_side_fixed parent="arm_link5_link" name="arm_link5_F3" color="white">
+    <xacro:ax12_side_fixed parent="arm_link5" name="arm_link5_F3" color="white">
       <origin xyz="-0.041 0 0.0" rpy="${M_PI/2} 0 -${M_PI/2}" />
     </xacro:ax12_side_fixed>
 
 
-    <xacro:dynamixel_ax12_joint parent="arm_link5_F3_link" name="arm_link6"
+    <xacro:dynamixel_ax12_joint parent="arm_link5_F3_link" link_name="arm_link6" joint_name="arm_joint6"
                                llimit="-2.61" ulimit="2.61" vlimit="6.0" color="black">
       <origin xyz="-0.0 0.0 0.023" rpy="-0 ${M_PI} 0" />
     </xacro:dynamixel_ax12_joint>
 
 
 
-    <xacro:ax12_side_fixed parent="arm_link6_link" name="arm_link6_F3" color="white">
+    <xacro:ax12_side_fixed parent="arm_link6" name="arm_link6_F3" color="white">
       <origin xyz="-0.012 0 -0.025" rpy="-${M_PI} ${M_PI} ${M_PI/2}" />
     </xacro:ax12_side_fixed>
 
@@ -210,13 +212,14 @@
       <origin xyz="-0.017 0.0 -0.024" rpy="${M_PI/2} 0 ${M_PI}" />
     </xacro:dynamixel_ax12_pan>
 
-    <xacro:ax12_hinge_revolute parent="arm_link6_motor_link" name="arm_link7"
+    <xacro:ax12_hinge_revolute_axis parent="arm_link6_motor_link" link_name="arm_link7" joint_name="arm_joint7"
                                llimit="-2.61" ulimit="2.61" vlimit="6.0"
                                color="white" >
       <origin xyz="0.0 0.0 0.0" rpy="${M_PI/2} 0 ${M_PI/2}" />
-    </xacro:ax12_hinge_revolute>
+      <axis xyz="0 0 1"/>
+    </xacro:ax12_hinge_revolute_axis>
 
-    <xacro:gripper_fixed parent="arm_link7_link" name="gripper" color="white">
+    <xacro:gripper_fixed parent="arm_link7" name="gripper" color="white">
       <origin xyz="-0.06 0.0 0.032" rpy="${M_PI/2} 0 0" />
     </xacro:gripper_fixed>
 
@@ -243,32 +246,32 @@
 
     <xacro:gazebo_arm_link name="arm_base_link" color="Red" />
     <xacro:gazebo_arm_link name="arm_link0_link" color="Orange" />
-    <xacro:gazebo_arm_link name="arm_link1_link" color="Yellow" />
-    <xacro:gazebo_arm_link name="arm_link2_link" color="Green" />
+    <xacro:gazebo_arm_link name="arm_link1" color="Yellow" />
+    <xacro:gazebo_arm_link name="arm_link2" color="Green" />
     <xacro:gazebo_arm_link name="arm_link2_F31_link" color="Blue" />
     <xacro:gazebo_arm_link name="arm_link2_F32_link" color="Purple" />
     <xacro:gazebo_arm_link name="arm_link2_motor_link" color="Red" />
-    <xacro:gazebo_arm_link name="arm_link3_link" color="Orange" />
+    <xacro:gazebo_arm_link name="arm_link3" color="Orange" />
     <xacro:gazebo_arm_link name="arm_link3_motor_link" color="Yellow" />
-    <xacro:gazebo_arm_link name="arm_link4_link" color="Green" />
-    <xacro:gazebo_arm_link name="arm_link5_link" color="Blue" />
+    <xacro:gazebo_arm_link name="arm_link4" color="Green" />
+    <xacro:gazebo_arm_link name="arm_link5" color="Blue" />
     <xacro:gazebo_arm_link name="arm_link5_F3_link" color="Purple" />
-    <xacro:gazebo_arm_link name="arm_link6_link" color="Red" />
+    <xacro:gazebo_arm_link name="arm_link6" color="Red" />
     <xacro:gazebo_arm_link name="arm_link6_F3_link" color="Orange" />
     <xacro:gazebo_arm_link name="arm_link6_motor_link" color="Yellow" />
-    <xacro:gazebo_arm_link name="arm_link7_link" color="Green" />
+    <xacro:gazebo_arm_link name="arm_link7" color="Green" />
     <xacro:gazebo_arm_link name="gripper_link" color="Blue" />
     <xacro:gazebo_arm_link name="gripper_after_F3_link" color="Purple" />
     <xacro:gazebo_arm_link name="gripper_F3_link" color="Red" />
     <xacro:gazebo_arm_link name="gripper_link_link" color="Gray" />
 
-    <xacro:simple_transmission name="arm_link1_joint" interface="EffortJointInterface" />
-    <xacro:simple_transmission name="arm_link2_joint" interface="EffortJointInterface" />
-    <xacro:simple_transmission name="arm_link3_joint" interface="EffortJointInterface" />
-    <xacro:simple_transmission name="arm_link4_joint" interface="EffortJointInterface" />
-    <xacro:simple_transmission name="arm_link5_joint" interface="EffortJointInterface" />
-    <xacro:simple_transmission name="arm_link6_joint" interface="EffortJointInterface" />
-    <xacro:simple_transmission name="arm_link7_joint" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_joint1" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_joint2" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_joint3" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_joint4" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_joint5" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_joint6" interface="EffortJointInterface" />
+    <xacro:simple_transmission name="arm_joint7" interface="EffortJointInterface" />
 
   </xacro:macro>
 </robot>
