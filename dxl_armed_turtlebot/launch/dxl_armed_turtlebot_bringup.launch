@@ -15,6 +15,11 @@
   <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
     <arg name="3d_sensor" default="kinect" />
   </include>
+
+  <!-- robot_description is defined in minimal.launch and hope this line overwrite that-->
+  <arg name="model" value="$(find dxl_armed_turtlebot)/urdf/robot.urdf.xacro"  />
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+
   <include file="$(find dxl_armed_turtlebot)/launch/turtlebot_joystick_teleop.launch"
            if="$(arg RUN_PS3JOY)"/>
   <!-- <include file="$(find turtlebot_rviz_launchers)/launch/view_robot.launch"/> -->
