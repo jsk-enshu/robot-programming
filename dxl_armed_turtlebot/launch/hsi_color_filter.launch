@@ -15,8 +15,8 @@
   <arg name="FILTER_NAME_SUFFIX" default=""/>
   <arg name="OUTPUT" default="hsi_output$(arg FILTER_NAME_SUFFIX)"/>
 
-  <arg name="h_max" default="127" />
-  <arg name="h_min" default="-128" />
+  <arg name="h_max" default="127" doc="maximum hue 127 corresponds to pi"/>
+  <arg name="h_min" default="-128" doc="minimum hue -128 corresponds to -pi" />
   <arg name="s_max" default="255" />
   <arg name="s_min" default="0" />
   <arg name="i_max" default="255" />
