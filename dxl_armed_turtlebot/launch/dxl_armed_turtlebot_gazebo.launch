@@ -9,12 +9,9 @@
 
   <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
 
-  <!-- for upper body -->
-  <node name="body_robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" >
-    <remap from="joint_states" to="dxl_armed_turtlebot/joint_states" />
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="30.0" />
   </node>
-  <!-- for base -->
-  <node name="base_robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
   <node name="cmd_vel_renamer" pkg="topic_tools" type="relay"
         args=" /cmd_vel /mobile_base/commands/velocity" />
   <node name="rviz" pkg="rviz" type="rviz" />
@@ -35,7 +32,6 @@
 
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <rosparam>
-dxl_armed_turtlebot:
   joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 50  
@@ -120,7 +116,7 @@ dxl_armed_turtlebot:
   <!-- load the controllers -->
   <node name="controller_spawner" pkg="controller_manager"
         type="spawner" respawn="false"
-        output="screen" ns="/dxl_armed_turtlebot"
+        output="screen"
         args="joint_state_controller
               trajectory_controller
               "/>
