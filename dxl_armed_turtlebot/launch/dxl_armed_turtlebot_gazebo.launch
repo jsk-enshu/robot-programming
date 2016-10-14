@@ -4,7 +4,7 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="world_file" default="worlds/empty.world" />
+  <arg name="world_file" default="$(find dxl_armed_turtlebot)/worlds/empty.world" />
   <arg name="model" value="$(find dxl_armed_turtlebot)/urdf/robot.urdf.xacro"  />
 
   <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
