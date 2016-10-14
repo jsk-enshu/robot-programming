@@ -179,16 +179,16 @@
 
     <xacro:gazebo_arm_link name="arm_base_link" color="Black" />
     <xacro:gazebo_arm_link name="arm_link0_link" color="Black" />
-    <xacro:gazebo_arm_link name="arm_link1_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link1_link" color="Grey" />
     <xacro:gazebo_arm_link name="arm_link2_link" color="Black" />
     <xacro:gazebo_arm_link name="arm_link2_motor_link" color="Black" />
-    <xacro:gazebo_arm_link name="arm_link3_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link3_link" color="Grey" />
     <xacro:gazebo_arm_link name="arm_link3_motor_link" color="Black" />
-    <xacro:gazebo_arm_link name="arm_link4_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link4_link" color="Grey" />
     <xacro:gazebo_arm_link name="arm_link5_link" color="Black" />
     <xacro:gazebo_arm_link name="arm_link6_link" color="Black" />
     <xacro:gazebo_arm_link name="arm_link6_motor_link" color="Black" />
-    <xacro:gazebo_arm_link name="arm_link7_link" color="Gray" />
+    <xacro:gazebo_arm_link name="arm_link7_link" color="Grey" />
 
     <xacro:simple_transmission name="arm_link1_joint" interface="EffortJointInterface" />
     <xacro:simple_transmission name="arm_link2_joint" interface="EffortJointInterface" />
