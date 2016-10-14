@@ -14,7 +14,7 @@
   </node>
   <node name="cmd_vel_renamer" pkg="topic_tools" type="relay"
         args=" /cmd_vel /mobile_base/commands/velocity" />
-  <node name="rviz" pkg="rviz" type="rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dxl_armed_turtlebot)/config/dxl_armed_turtlebot.rviz"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="debug" value="$(arg debug)" />
