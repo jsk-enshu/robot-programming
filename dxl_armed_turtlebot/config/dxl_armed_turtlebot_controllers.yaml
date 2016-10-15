@@ -1,38 +1,11 @@
+# Joint State Controllers ---------------------------------------
 joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50  
-arm_link1_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: arm_link1_joint
-  pid: {p: 5000.0, i: 500, d: 5.0}
-arm_link2_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: arm_link2_joint
-  pid: {p: 5000.0, i: 500, d: 5.0}
-arm_link3_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: arm_link3_joint
-  pid: {p: 5000.0, i: 500, d: 5.0}
-arm_link4_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: arm_link4_joint
-  pid: {p: 5000.0, i: 500, d: 5.0}
-arm_link5_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: arm_link5_joint
-  pid: {p: 5000.0, i: 500, d: 5.0}
-arm_link6_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: arm_link6_joint
-  pid: {p: 5000.0, i: 500, d: 5.0}
-arm_link7_joint_position_controller:
-  type: effort_controllers/JointPositionController
-  joint: arm_link7_joint
-  pid: {p: 5000.0, i: 500, d: 5.0}
-
 # Trajectory Controllers ---------------------------------------
 trajectory_controller:
-  type: effort_controllers/JointTrajectoryController
+  #type: effort_controllers/JointTrajectoryController
+  type: velocity_controllers/JointTrajectoryController
   joints:
     - arm_link1_joint
     - arm_link2_joint
@@ -67,13 +40,13 @@ trajectory_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    arm_link1_joint: {p: 500, i: 5, d: 1}
-    arm_link2_joint: {p: 500, i: 5, d: 1}
-    arm_link3_joint: {p: 500, i: 5, d: 1}
-    arm_link4_joint: {p: 500, i: 5, d: 1}
-    arm_link5_joint: {p: 500, i: 5, d: 1}
-    arm_link6_joint: {p: 500, i: 5, d: 1}
-    arm_link7_joint: {p: 500, i: 5, d: 1}
+    arm_link1_joint: {p: 25.0, i: 0.0, d: 0.0}
+    arm_link2_joint: {p: 25.0, i: 0.0, d: 0.0}
+    arm_link3_joint: {p: 25.0, i: 0.0, d: 0.0}
+    arm_link4_joint: {p: 25.0, i: 0.0, d: 0.0}
+    arm_link5_joint: {p: 25.0, i: 0.0, d: 0.0}
+    arm_link6_joint: {p: 25.0, i: 0.0, d: 0.0}
+    arm_link7_joint: {p: 5.0, i: 0.0, d: 0.0}
   state_publish_rate:  100            # Override default
   action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default

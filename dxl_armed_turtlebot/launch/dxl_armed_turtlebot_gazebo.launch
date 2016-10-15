@@ -39,13 +39,6 @@
         args="joint_state_controller
               trajectory_controller
               "/>
-  <!--
-                                                        arm_link1_joint_position_controller
-                                                        arm_link2_joint_position_controller
-                                                        arm_link3_joint_position_controller
-                                                        arm_link4_joint_position_controller
-                                                        arm_link5_joint_position_controller
-                                                        arm_link6_joint_position_controller
-                                                        arm_link7_joint_position_controller
--->
+  <!-- send tuck pose -->
+  <node name="tuck_arm" pkg="dxl_armed_turtlebot" type="tuck_arm.py" args="-t" />
 </launch>
