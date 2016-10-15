@@ -507,6 +507,7 @@
   (:arm (&rest args)
         (unless args (setq args (list nil))) (send* self :limb :arm args))
   (:end-coords (&rest args) (forward-message-to arm-end-coords args))
+  (:arm-end-coords (&rest args) (forward-message-to arm-end-coords args))
   ;;IKをときやすい姿勢に変更
   (:reset-pose
    ()
