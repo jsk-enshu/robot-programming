@@ -31,5 +31,6 @@
   <run_depend>turtlebot_teleop</run_depend>
   <run_depend>turtleboteus</run_depend>
   <run_depend>rqt_joint_trajectory_controller</run_depend>
+  <run_depend>rqt_robot_steering</run_depend>
   <run_depend>teleop_twist_keyboard</run_depend>
 </package>
