@@ -2,6 +2,34 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update for 2016 (https://github.com/jsk-enshu/robot-programming/pull/78)
+
+  * package.xml : add image_view2 to depends
+  * package.xml : add depends to opencv_apps
+  * package.xml : more package depends
+  * package.xml :  add nodelet to package.xml
+  * package.xml : add turtlebot_teleop to package.xml
+
+  * add enshu.perspective and update package.xml
+  * CMakeLists.txt : clean up roslaunch_add_file_check
+  * update gazebo parametesrs, use velocity_controller, initialie robot pose by turk_arm.py
+  * move controller_config to config/config/dxl_armed_turtlebot_controller.yaml
+  * use dxl_armed_turtlebot.rviz settings
+  * set ros_control namespace from /dxl_armed_turtlebot to /, and robot_state_publisher taks joint_states from both base and arm and publish tf
+  * use custom worlds/empty.world, for simulation step at 0.01
+  * urdf/dynamixel_7dof_arm.urdf.xacro: fix typo Gray -> Grey
+  * dxl_armed_turtlebot/{package.xml, CMakeLists.txt}
+
+* dxl_armed_turtlebot/launch/hsi_color_filter.launch: add hue, satuation, intensity parameter information #73 (https://github.com/jsk-enshu/robot-programming/pull/73)
+
+  * modified satuation information
+  * add s, i param information
+  * add hue parameter information (-128~127 = -p1~pi)
+
+* Contributors: Kanae Kochigami, Kei Okada
+
 2.1.5 (2015-11-25)
 ------------------
 
