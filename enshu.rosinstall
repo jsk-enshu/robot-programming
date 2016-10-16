@@ -1,0 +1,6 @@
+- git:
+    local-name: dynamixel_urdf
+    uri: https://github.com/jsk-enshu/dynamixel_urdf
+- git:
+    local-name: robot-programming
+    uri: https://github.com/jsk-enshu/robot-programming

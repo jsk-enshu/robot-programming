@@ -11,13 +11,28 @@
   <build_depend>dynamixel_urdf</build_depend>
   <build_depend>dynamixel_7dof_arm</build_depend>
   <build_depend>turtleboteus</build_depend>
+  <build_depend>roseus</build_depend>
   <build_depend>rostest</build_depend>
   <build_depend>rqt_joint_trajectory_controller</build_depend>
   <build_depend>teleop_twist_keyboard</build_depend>
 
+  <run_depend>controller_manager</run_depend>
   <run_depend>dynamixel_urdf</run_depend>
   <run_depend>dynamixel_7dof_arm</run_depend>
+  <run_depend>gazebo_ros</run_depend>
+  <run_depend>image_view2</run_depend>
+  <run_depend>joy</run_depend>
+  <run_depend>nodelet</run_depend>
+  <run_depend>opencv_apps</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>rqt_reconfigure</run_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>topic_tools</run_depend>
+  <run_depend>turtlebot_bringup</run_depend>
+  <run_depend>turtlebot_description</run_depend>
+  <run_depend>turtlebot_teleop</run_depend>
   <run_depend>turtleboteus</run_depend>
   <run_depend>rqt_joint_trajectory_controller</run_depend>
+  <run_depend>rqt_robot_steering</run_depend>
   <run_depend>teleop_twist_keyboard</run_depend>
 </package>
