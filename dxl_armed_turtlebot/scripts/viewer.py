@@ -24,10 +24,10 @@ def cb(msg):
 #rospyにノード名を通知する。
 rospy.init_node('client')
 
-#ノードがRotatedRectStampedという型の/camshift/track_boxというメッセージを購読することを宣言している。また、メッセージが到着するたびに、メッセージを引数としてcdという関数を呼び出す。
+#ノードがRotatedRectStampedという型の/camshift/track_boxというメッセージを購読することを宣言している。また、メッセージが到着するたびに、メッセージを引数としてcbという関数を呼び出す。
 rospy.Subscriber('/camshift/track_box', RotatedRectStamped, cb)
 
-#/camshift/trackboxというトピックにRotatedRectStampedという型のメッセージを送っていることを宣言している。
+#/image_markerというトピックにImageMarker2という型のメッセージを送ることを宣言している。
 pub = rospy.Publisher('/image_marker', ImageMarker2)
 
 #ノードが終了するまでrospy.spin()がノードを終了させないようにしている。
