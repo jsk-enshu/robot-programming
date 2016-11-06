@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.1 (2016-11-06)
+------------------
 * add missing deps
 * Contributors: Taiki Abe
 
