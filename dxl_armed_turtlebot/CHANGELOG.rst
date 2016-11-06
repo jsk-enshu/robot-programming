@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.1.0 (2016-11-07)
+------------------
 * add depthimage_to_laserscan to package.xml
 * add dxl_armed_turtlebot_navigation.launch
 * add jsk_recognition packages to depend
