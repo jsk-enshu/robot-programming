@@ -30,6 +30,29 @@
         args="-x 0.0 -y 0.0 -z 0.01 -unpause -urdf -model dxl_armed_turtlebot
               -param robot_description" />
 
+  <!-- copied turtlebot_bringup/launch/3dsensor.launch, included from dxl_armed_turtlebot_bringup.launch -->
+  <arg name="camera"     default="camera"/>
+  <arg name="scan_topic" default="scan"/>
+  <arg name="depth"      default="depth" />
+  <!--                        Laserscan
+       This uses lazy subscribing, so will not activate until scan is requested.
+  -->
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" >
+    <!-- Pixel rows to use to generate the laserscan. For each column, the scan will
+         return the minimum value for those pixels centered vertically in the image. -->
+    <param name="scan_height" value="10"/>
+    <param name="output_frame_id" value="/$(arg camera)_depth_frame"/>
+    <param name="range_min" value="0.45"/>
+    <remap from="image" to="$(arg camera)/$(arg depth)/image_raw"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
+
+    <!-- Somehow topics here get prefixed by "$(arg camera)" when not inside an app namespace,
+         so in this case "$(arg scan_topic)" must provide an absolute topic name (issue #88).
+         Probably is a bug in the nodelet manager: https://github.com/ros/nodelet_core/issues/7 -->
+    <remap from="$(arg camera)/image" to="$(arg camera)/$(arg depth)/image_raw"/>
+    <remap from="$(arg camera)/scan" to="$(arg scan_topic)"/>
+  </node>
+
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <!-- load the controllers -->
   <rosparam file="$(find dxl_armed_turtlebot)/config/dxl_armed_turtlebot_controllers.yaml" />
