@@ -2,6 +2,11 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add missing deps
+* Contributors: Taiki Abe
+
 3.0.0 (2016-10-16)
 ------------------
 * update for 2016 (https://github.com/jsk-enshu/robot-programming/pull/78)
