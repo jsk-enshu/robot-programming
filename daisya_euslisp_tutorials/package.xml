@@ -1,6 +1,6 @@
 <package>
   <name>daisya_euslisp_tutorials</name>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
   <description>Daisya enshu</description>
   <license>BSD</license>
   <maintainer email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</maintainer>

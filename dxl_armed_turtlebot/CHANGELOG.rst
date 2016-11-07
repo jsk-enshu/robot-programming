@@ -2,6 +2,21 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.0 (2016-11-07)
+------------------
+* add depthimage_to_laserscan to package.xml
+* add dxl_armed_turtlebot_navigation.launch
+* add jsk_recognition packages to depend
+* add depth_to_laserfilter
+* add walls for gazebo world
+* add more displays, path, arrow
+* Contributors: Kei Okada
+
+3.0.1 (2016-11-06)
+------------------
+* add missing deps
+* Contributors: Taiki Abe
+
 3.0.0 (2016-10-16)
 ------------------
 * update for 2016 (https://github.com/jsk-enshu/robot-programming/pull/78)

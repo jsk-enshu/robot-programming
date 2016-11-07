@@ -2,6 +2,12 @@
 Changelog for package daisya_euslisp_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+3.1.0 (2016-11-07)
+------------------
+
+3.0.1 (2016-11-06)
+------------------
+
 3.0.0 (2016-10-16)
 ------------------
 * add :arm-end-coords method, this will solve error, cannot find method :arm-end-coords in (apply #'send self :limb :arm args)

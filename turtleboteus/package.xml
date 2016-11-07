@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>turtleboteus</name>
-  <version>3.0.0</version>
+  <version>3.1.0</version>
   <description>The turtleboteus package</description>
   <license>BSD</license>
   <maintainer email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</maintainer>
