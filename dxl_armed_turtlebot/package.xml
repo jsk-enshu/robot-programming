@@ -30,6 +30,7 @@
   <run_depend>jsk_perception</run_depend>
   <run_depend>jsk_pcl_ros</run_depend>
   <run_depend>kobuki_gazebo</run_depend>
+  <run_depend>map_server</run_depend>
   <run_depend>nodelet</run_depend>
   <run_depend>opencv_apps</run_depend>
   <run_depend>robot_state_publisher</run_depend>

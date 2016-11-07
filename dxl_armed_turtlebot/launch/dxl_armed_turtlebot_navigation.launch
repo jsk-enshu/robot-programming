@@ -9,7 +9,9 @@
   <arg name="initial_pose_x" default="0.0"/>
   <arg name="initial_pose_y" default="0.0"/>
   <arg name="initial_pose_a" default="0.0"/>
-  <include file="$(find turtlebot_navigation)/launch/includes/amcl.launch.xml">
+  <!-- 2.3.7 changed the locaiton, but released version is 2.3.3 -->
+  <!-- <include file="$(find turtlebot_navigation)/launch/includes/amcl/amcl.launch.xml"> -->
+  <include file="$(find dxl_armed_turtlebot)/launch/includes/amcl.launch.xml">
     <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
     <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
     <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
