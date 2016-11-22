@@ -20,6 +20,7 @@
   <run_depend>depthimage_to_laserscan</run_depend>
   <run_depend>dynamixel_urdf</run_depend>
   <run_depend>dynamixel_7dof_arm</run_depend>
+  <run_depend>dynamixel_motor</run_depend>
   <run_depend>gazebo_plugins</run_depend>
   <run_depend>gazebo_ros</run_depend>
   <run_depend>gazebo_ros_control</run_depend>
@@ -42,6 +43,9 @@
   <run_depend>turtlebot_navigation</run_depend>
   <run_depend>turtlebot_teleop</run_depend>
   <run_depend>turtleboteus</run_depend>
+  <run_depend>turtlebot_apps</run_depend>
+  <run_depend>turtlebot_interactions</run_depend>
+  <run_depend>turtlebot_interactive_markers</run_depend>
   <run_depend>rqt_joint_trajectory_controller</run_depend>
   <run_depend>rqt_robot_steering</run_depend>
   <run_depend>teleop_twist_keyboard</run_depend>
