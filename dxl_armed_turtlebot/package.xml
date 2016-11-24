@@ -49,4 +49,5 @@
   <run_depend>rqt_joint_trajectory_controller</run_depend>
   <run_depend>rqt_robot_steering</run_depend>
   <run_depend>teleop_twist_keyboard</run_depend>
+  <run_depend>roseus_tutorials</run_depend>
 </package>
