@@ -59,7 +59,7 @@
           output="screen" clear_params="true">
       <remap from="~input" to="$(arg OUTPUT)" />
       <remap from="~target" to="euclidean_clustering$(arg FILTER_NAME_SUFFIX)/output" />
-      <remap from="~debug_output" to="debug_output$(arg FILTER_NAME_SUFFIX)" />
+      <!-- <remap from="~debug_output" to="debug_output$(arg FILTER_NAME_SUFFIX)" /> -->
       <remap from="~boxes" to="boxes$(arg FILTER_NAME_SUFFIX)" />
       <rosparam>
       </rosparam>
