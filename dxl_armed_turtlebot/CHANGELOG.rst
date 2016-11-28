@@ -2,6 +2,21 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add slam_karto to run depend
+* fix to publish appropriate topic
+* add depend pkg
+* change default arm mounting direction
+* add depend pkgs
+* modify to print
+* add joy-sample.l for document simplification
+* Merge pull request #134 from k-okada/fix_ros_apps
+  add map_server to package.xml
+* fix amcl.launch location for turtlebot_navigation 2.3.7
+* add map_server
+* Contributors: Kei Okada, Yuki Asano, yuki-asano
+
 3.1.0 (2016-11-07)
 ------------------
 * add depthimage_to_laserscan to package.xml
