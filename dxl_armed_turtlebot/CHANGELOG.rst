@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.0 (2016-11-29)
+------------------
 * add slam_karto to run depend
 * fix to publish appropriate topic
 * add depend pkg
