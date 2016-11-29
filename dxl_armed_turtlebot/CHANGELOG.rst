@@ -15,7 +15,7 @@ Changelog for package dxl_armed_turtlebot
   add map_server to package.xml
 * fix amcl.launch location for turtlebot_navigation 2.3.7
 * add map_server
-* Contributors: Kei Okada, Yuki Asano, yuki-asano
+* Contributors: Kei Okada, Yuki Asano
 
 3.1.0 (2016-11-07)
 ------------------
