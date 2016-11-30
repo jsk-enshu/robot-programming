@@ -2,6 +2,13 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* change turtlebot arm direction up side down
+* add kobuki_dashboard to run depend
+* remove duplicated Contributor
+* Contributors: Yuki Asano
+
 3.2.0 (2016-11-29)
 ------------------
 * add slam_karto to run depend
