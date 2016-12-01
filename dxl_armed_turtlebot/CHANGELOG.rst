@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.2.2 (2016-12-01)
+------------------
 * dxl_armed_turtlebot_navigation.launch: run velocity_smoother_renamer (topic_tools/transform) with --wait-for-start (`#151 <https://github.com/jsk-enshu/robot-programming/issues/151>`_)
 * Contributors: Naoya Yamaguchi
 
