@@ -2,6 +2,11 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* dxl_armed_turtlebot_navigation.launch: run velocity_smoother_renamer (topic_tools/transform) with --wait-for-start (`#151 <https://github.com/jsk-enshu/robot-programming/issues/151>`_)
+* Contributors: Naoya Yamaguchi
+
 3.2.1 (2016-11-30)
 ------------------
 * change turtlebot arm direction up side down
