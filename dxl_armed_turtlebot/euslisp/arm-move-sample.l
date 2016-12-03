@@ -1,5 +1,4 @@
-(load "package://dxl_armed_turtlebot/euslisp/dxl-armed-turtlebot-interface.l")
-(warn "~%")
+(setq *arm-dof* 7)
 
 (progn
   (block arm-check
