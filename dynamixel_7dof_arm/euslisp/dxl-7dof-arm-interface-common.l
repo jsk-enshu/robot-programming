@@ -3,6 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (ros::load-ros-manifest "dynamixel_controllers")
+(ros::load-ros-manifest "dynamixel_msgs")
 
 (defun get-method-list-for-dxl-7dof-arm-interface ()
 '(
