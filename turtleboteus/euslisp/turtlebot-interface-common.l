@@ -5,8 +5,7 @@
 (ros::load-ros-manifest "control_msgs")
 (ros::load-ros-manifest "kobuki_msgs")
 (ros::load-ros-manifest "move_base_msgs")
-;;(ros::load-ros-manifest "linux_hardware") linux_hardware is obsolete, use  linux_peripheral_interface or smart_battery_msgs
-
+;;(ros::load-ros-manifest "linux_hardware") linux_hardware is obsolete, use  linux_peripheral_interface
 
 (defun get-method-list-for-turtlebot-interface ()
 '(
