@@ -1,8 +1,33 @@
 (load "package://dxl_armed_turtlebot/euslisp/dxl-armed-turtlebot-interface.l")
 
+(warn ";; (dxl-arm-sample) ;; for dxl arm sample program~%")
 (warn ";; (dxl-arm-check) ;; for dxl arm direction check~%")
 
 (defvar *arm-dof* 7)
+
+(defun dxl-arm-sample ()
+  (warn ";; press enter to stop program~%~%")
+  (do-until-key
+   (warn "set model's (*dxl-armed-turtlebot*) joint angle to :init-pose~%~%")
+   (send *dxl-armed-turtlebot* :init-pose) ;; 関節角度を :init-pose にセット
+   (send *irtviewer* :draw-objects) ;; 描画
+   (unix::usleep (* 2000 1000))
+   ;;
+   (warn "move real robot (*ri*) with 4000 [ms]~%~%")
+   (send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 4000) ;;4000[ms] で実行
+   (send *ri* :wait-interpolation) ;; 補間をまつ
+   ;;
+   (warn "set model's (*dxl-armed-turtlebot*) joint angle to :reset-pose~%~%")
+   (send *dxl-armed-turtlebot* :reset-pose) ;; 関節角度を :reset-pose にセット
+   (send *irtviewer* :draw-objects) ;; 描画
+   (unix::usleep (* 2000 1000))
+   ;;
+   (warn "move real robot (*ri*) with 4000 [ms]~%~%")
+   (send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 4000) ;;4000[ms] で実行
+   (send *ri* :wait-interpolation) ;; 補間をまつ
+   ;;
+   ))
+
 
 (defun dxl-arm-check ()
   (let ((send-av))
