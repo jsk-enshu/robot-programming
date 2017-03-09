@@ -7,7 +7,6 @@
 
 ;; loadする台車・アームのrobot-interfaceクラスのメソッド定義ファイル
 (load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-interface-common.l")
-(ros::load-ros-manifest "control_msgs")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 7dof アームロボットのrobot-interfaceクラス定義
