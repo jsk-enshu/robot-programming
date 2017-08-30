@@ -7,8 +7,12 @@ env:
     - ROS_DISTRO="indigo" REPOSITORY=http://packages.ros.org/ros-shadow-fixed/ubuntu
     - ROS_DISTRO="jade"   REPOSITORY=http://packages.ros.org/ros/ubuntu
     - ROS_DISTRO="jade"   REPOSITORY=http://packages.ros.org/ros-shadow-fixed/ubuntu
+    - ROS_DISTRO="kinetic"   REPOSITORY=http://packages.ros.org/ros/ubuntu
+    - ROS_DISTRO="kinetic"   REPOSITORY=http://packages.ros.org/ros-shadow-fixed/ubuntu
 matrix:
   allow_failures:
+    - env: ROS_DISTRO="indigo" REPOSITORY=http://packages.ros.org/ros/ubuntu
+    - env: ROS_DISTRO="indigo" REPOSITORY=http://packages.ros.org/ros-shadow-fixed/ubuntu
     - env: ROS_DISTRO="jade"   REPOSITORY=http://packages.ros.org/ros/ubuntu
     - env: ROS_DISTRO="jade"   REPOSITORY=http://packages.ros.org/ros-shadow-fixed/ubuntu
 install:
