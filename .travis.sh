@@ -2,17 +2,6 @@
 
 set -x
 
-function error {
-    mkdir -p ${HOME}/.ros/test_results || echo "OK"
-    find ${HOME}/.ros/test_results -type f -exec echo "=== {} ===" \; -exec\
- cat {} \;
-    for file in ${HOME}/.ros/log/rostest-*; do echo "=== $file ==="; cat \$\
-file; done
-    exit 1
-}
-
-trap error ERR
-
 apt-get update
 apt-get install -y sudo software-properties-common git wget sed
 
@@ -44,4 +33,5 @@ catkin build -v -i --summarize --no-status -p 1 -j 1 --no-notify # every 5 mim
   # Run tests
 catkin run_tests
   # check test (this only works on indigo)
-catkin_test_results build
+catkin_test_results --verbose build
+
