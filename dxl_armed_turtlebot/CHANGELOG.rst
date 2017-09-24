@@ -2,6 +2,19 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix for latest kinetic / gazebo (`#172 <https://github.com/jsk-enshu/robot-programming/issues/172>`_)
+  * fix enshu.perspective for kinetic
+  * update kobuki urdf location for kinetic
+* enable to run travis on kinetic (`#171 <https://github.com/jsk-enshu/robot-programming/issues/171>`_)
+  * change urdf path
+* add dxl-arm-sample function (`#170 <https://github.com/jsk-enshu/robot-programming/issues/170>`_, `#160 <https://github.com/jsk-enshu/robot-programming/issues/160>`_)
+  * define function dxl-arm-check to excute
+  * update arm-move-sample
+  * add arm-move-sample.l
+* Contributors: Kei Okada, Yuki Asano
+
 3.2.2 (2016-12-01)
 ------------------
 * dxl_armed_turtlebot_navigation.launch: run velocity_smoother_renamer (topic_tools/transform) with --wait-for-start (`#151 <https://github.com/jsk-enshu/robot-programming/issues/151>`_)

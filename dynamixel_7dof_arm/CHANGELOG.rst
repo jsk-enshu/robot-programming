@@ -2,6 +2,13 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* enable to run travis on kinetic (`#171 <https://github.com/jsk-enshu/robot-programming/issues/171>`_)
+  * update msg load description
+  * add depends and load manifest
+* Contributors: Yuki Asano
+
 3.2.2 (2016-12-01)
 ------------------
 
