@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
-<robot name="dxl_armed_turtlebot" xmlns:xacro="http://ros.org/wiki/xacro"> 
-  <xacro:include filename="$(find turtlebot_description)/urdf/turtlebot_common_library.urdf.xacro" />
+<robot name="dxl_armed_turtlebot" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find kobuki_description)/urdf/kobuki.urdf.xacro"/>
+  <xacro:include filename="$(find turtlebot_description)/urdf/stacks/hexagons.urdf.xacro" />
+  <xacro:include filename="$(find turtlebot_description)/urdf/sensors/kinect.urdf.xacro" />
   <xacro:include filename="$(find dxl_armed_turtlebot)/urdf/dynamixel_7dof_arm.urdf.xacro" />
   
   <kobuki/>
