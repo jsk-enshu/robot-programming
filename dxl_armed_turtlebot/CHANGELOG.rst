@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.0.0 (2017-09-24)
+------------------
 * fix for latest kinetic / gazebo (`#172 <https://github.com/jsk-enshu/robot-programming/issues/172>`_)
   * fix enshu.perspective for kinetic
   * update kobuki urdf location for kinetic

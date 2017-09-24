@@ -2,8 +2,8 @@
 Changelog for package turtleboteus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.0.0 (2017-09-24)
+------------------
 * enable to run travis on kinetic (`#171 <https://github.com/jsk-enshu/robot-programming/issues/171>`_)
   * smart_battery_msgs is obsolete in kinetic, use sensor_msgs/BatteryState
 * Contributors: Yuki Asano
