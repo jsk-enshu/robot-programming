@@ -2,7 +2,7 @@
 import rospy
 from opencv_apps.msg import RotatedRectStamped #This is to use "RotatedRect".
 from image_view2.msg import ImageMarker2 #This is to designate the range of interest(ROI) using a marker.
-from geometry_msgs.msg import Point #This is to designate the position of a point in a three-dimensional space.
+from geometry_msgs.msg import Point #This is to designate the position of a point.
 def cb(msg):
     print msg.rect #print received data
     marker=ImageMarker2() 
