@@ -3,8 +3,6 @@
 #! /usr/bin/env python
 ## 環境変数 PATH に含まれている python を探して実行するという宣言
 
-
-
 import rospy
 # rosの関数をpythonで使用可能にするモジュールをインポート
 # ROS Node を書くために必要
