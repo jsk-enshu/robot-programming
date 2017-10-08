@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
 #! /usr/bin/env python
+## Python
+
 
 import rospy
 from opencv_apps.msg import RotatedRectStamped
