@@ -37,7 +37,7 @@
             (setq leg_l (instance bodyset-link :init (make-cascoords) :bodies (list (make-leg-l))))
             (setq leg_r (instance bodyset-link :init (make-cascoords) :bodies (list (make-leg-r))))
 
-            (setq joint_head (instance rotational-joint :init :parent-link torso :child-link head :axis :x))
+            (setq joint_head (instance rotational-joint :init :parent-link torso :child-link head :axis #f(100 0 0)))
             (setq joint_leg_l (instance rotational-joint :init :parent-link torso :child-link leg_l :axis :x))
             (setq joint_leg_r (instance rotational-joint :init :parent-link torso :child-link leg_r :axis :x))
 
@@ -53,13 +53,20 @@
             self
         )
     )
-;    (:walk
-;        (setq i 0)
-;        (do-until-key
-;            (send )
-;        )
-;    )
+    (:walk ()
+        (setq i 0)
+        (do-until-key
+            (send joint_head :joint-angle (* 10 (sin (/ i 10.0))))
+            (send joint_leg_l :joint-angle (* 30 (cos (/ i 20.0))))
+            (send joint_leg_r :joint-angle (* 30 (sin (/ i 20.0))))
+
+            (send *irtviewer* :draw-objects)
+            (setq i (+ i 1))
+        )
+    )
 )
 
-(setq pigeon-m (instance pigeon-model :init))
-(objects (list pigeon-m))
+(setq pigeon (instance pigeon-model :init))
+(objects (list pigeon))
+
+(send pigeon :walk)
