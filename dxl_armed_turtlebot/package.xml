@@ -30,11 +30,15 @@
   <run_depend>joy</run_depend>
   <run_depend>jsk_perception</run_depend>
   <run_depend>jsk_pcl_ros</run_depend>
+  <run_depend>joystick_drivers</run_depend>
   <run_depend>kobuki_dashboard</run_depend>
   <run_depend>kobuki_gazebo</run_depend>
+  <run_depend>libbluetooth-dev</run_depend>
+  <run_depend>libjack-dev</run_depend>
   <run_depend>map_server</run_depend>
   <run_depend>nodelet</run_depend>
   <run_depend>opencv_apps</run_depend>
+  <run_depend>ps3joy</run_depend>
   <run_depend>robot_state_publisher</run_depend>
   <run_depend>rqt_reconfigure</run_depend>
   <run_depend>rviz</run_depend>
