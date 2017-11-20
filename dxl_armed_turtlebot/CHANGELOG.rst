@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+4.0.1 (2017-11-20)
+------------------
 * Merge pull request `#224 <https://github.com/jsk-enshu/robot-programming/issues/224>`_ from yuki-asano/add-ps3joy
   add ps3joy into depend
 * add ps3joy into depend
