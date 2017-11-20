@@ -2,6 +2,13 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#224 <https://github.com/jsk-enshu/robot-programming/issues/224>`_ from yuki-asano/add-ps3joy
+  add ps3joy into depend
+* add ps3joy into depend
+* Contributors: Yuki Asano
+
 4.0.0 (2017-09-24)
 ------------------
 * fix for latest kinetic / gazebo (`#172 <https://github.com/jsk-enshu/robot-programming/issues/172>`_)
