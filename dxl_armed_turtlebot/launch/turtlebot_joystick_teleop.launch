@@ -1,4 +1,5 @@
 <launch>
+  <arg name="joy_dev" default="/dev/input/js0" doc="device file name for joystick"/>
   <!--  smooths inputs from cmd_vel_mux/input/teleop_raw to cmd_vel_mux/input/teleop -->
   <include file="$(find turtlebot_teleop)/launch/includes/velocity_smoother.launch.xml"/>
 
@@ -11,6 +12,8 @@
     <remap from="turtlebot_teleop_joystick/cmd_vel" to="teleop_velocity_smoother/raw_cmd_vel"/>
   </node>
 
-  <node pkg="joy" type="joy_node" name="joystick"/>
+  <node pkg="joy" type="joy_node" name="joystick">
+    <param name="dev" type="string" value="$(arg joy_dev)" />
+  </node>
 
 </launch>
