@@ -4,3 +4,6 @@
 - git:
     local-name: robot-programming
     uri: https://github.com/jsk-enshu/robot-programming
+- git:
+    local-name: cartographer_turtlebot
+    uri: https://github.com/googlecartographer/cartographer_turtlebot.git
