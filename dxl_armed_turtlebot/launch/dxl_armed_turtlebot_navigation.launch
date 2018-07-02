@@ -1,21 +1,46 @@
 <launch>
   <arg name="custom_param_file" default="$(find turtlebot_navigation)/param/dummy.yaml"/>
+  <arg name="do_slam" default="true"/>
+  <arg name="slam_mode" default="0"/> <!-- 0: karto, 1: cartographer -->
 
-  <!-- Map server -->
-  <arg name="map_file" default="$(find dxl_armed_turtlebot)/config/map.yaml"/>
-  <node name="map_server" pkg="map_server" type="map_server"
-        args="$(arg map_file)" />
+  <!-- do slam -->
+  <group if="$(arg do_slam)">
+    <!-- slam methods -->
+    <node name="slam_karto" pkg="slam_karto" type="slam_karto" if="$(eval arg('slam_mode') == 0)" />
 
-  <arg name="initial_pose_x" default="0.0"/>
-  <arg name="initial_pose_y" default="0.0"/>
-  <arg name="initial_pose_a" default="0.0"/>
-  <!-- 2.3.7 changed the locaiton, but released version is 2.3.3 -->
-  <!-- <include file="$(find turtlebot_navigation)/launch/includes/amcl/amcl.launch.xml"> -->
-  <include file="$(find dxl_armed_turtlebot)/launch/includes/amcl.launch.xml">
-    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
-    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
-    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
-  </include>
+    <group if="$(eval arg('slam_mode') == 1)" >
+      <node name="cartographer_node" pkg="cartographer_ros"
+            type="cartographer_node"
+            args="-configuration_directory $(find dxl_armed_turtlebot)/config
+                  -configuration_basename cartographer.lua"
+            output="screen">
+        <remap from="points2" to="/camera/depth/points" />
+      </node>
+      <node name="flat_world_imu_node" pkg="cartographer_turtlebot"
+            type="cartographer_flat_world_imu_node" output="screen">
+        <remap from="imu_in" to="/mobile_base/sensors/imu_data_raw" />
+        <remap from="imu_out" to="/imu" />
+      </node>
+    </group>
+  </group>
+
+  <!-- do localization only -->
+  <group unless="$(arg do_slam)">
+    <!-- Map server -->
+    <arg name="map_file" default="$(find dxl_armed_turtlebot)/config/map.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server"
+          args="$(arg map_file)" />
+    <arg name="initial_pose_x" default="0.0"/>
+    <arg name="initial_pose_y" default="0.0"/>
+    <arg name="initial_pose_a" default="0.0"/>
+    <!-- 2.3.7 changed the locaiton, but released version is 2.3.3 -->
+    <!-- <include file="$(find turtlebot_navigation)/launch/includes/amcl/amcl.launch.xml"> -->
+    <include file="$(find dxl_armed_turtlebot)/launch/includes/amcl.launch.xml">
+      <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+      <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+      <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+    </include>
+  </group>
 
   <!-- skip velocity smoother and kobuki_safety_controller -->
   <!-- <node pkg="nodelet" type="nodelet" -->

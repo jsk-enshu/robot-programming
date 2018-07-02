@@ -29,4 +29,9 @@
   <!--   その他 -->
   <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure"
         if="$(arg RUN_RECONFIGURE_GUI)" respawn="true"/>
+
+  <!-- remote the slash "/" from the head of the frame id (for cartographer) -->
+  <param name="/depthimage_to_laserscan/output_frame_id"
+         value="camera_depth_frame" />
+
 </launch>
