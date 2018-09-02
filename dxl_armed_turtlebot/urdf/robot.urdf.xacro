@@ -13,7 +13,7 @@
   <joint name="joint0" type="fixed">
     <parent link="plate_top_link"/>
     <child link="arm_base_link"/>
-    <origin xyz="0.15 0 0.025" rpy="0 0 0" />
+    <origin xyz="0.122 0 -0.025" rpy="0 0 0" />
   </joint>
 
 </robot>
