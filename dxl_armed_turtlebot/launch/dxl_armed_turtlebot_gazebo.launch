@@ -60,7 +60,8 @@
         type="spawner" respawn="false"
         output="screen"
         args="joint_state_controller
-              trajectory_controller
+              fullbody_controller
+              gripper_controller
               "/>
   <!-- send tuck pose -->
   <node name="tuck_arm" pkg="dxl_armed_turtlebot" type="tuck_arm.py" args="-t" />
