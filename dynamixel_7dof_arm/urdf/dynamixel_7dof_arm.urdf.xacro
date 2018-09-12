@@ -211,9 +211,9 @@
 
     <link name="arm_base_link">
       <visual>
-        <origin xyz="-0.02 0.0 0.0" rpy="0 0 0" />
+        <origin xyz="-0.05 0.0 0.0" rpy="0 0 0" />
         <geometry>
-          <box size="0.04 0.03 0.04" />
+          <box size="0.1 0.03 0.04" />
         </geometry>
         <material name="white" />
       </visual>
