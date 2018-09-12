@@ -47,7 +47,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="1.57 0 1.57" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
@@ -74,7 +74,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="1.57 0 1.57" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
@@ -101,7 +101,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
@@ -131,7 +131,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/F2.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/F2.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
@@ -163,7 +163,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/dxl_gripper.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/dxl_gripper.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
