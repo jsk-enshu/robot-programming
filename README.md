@@ -9,7 +9,6 @@ $ mkdir -p ~/catkin_ws/src
 $ cd ~/catkin_ws   
 $ wstool init src
 $ wstool set robot-programming https://github.com/jsk-enshu/robot-programming --git -t src
-$ wstool set dynamixel_urdf    https://github.com/jsk-enshu/dynamixel_urdf    --git -t src
 $ wstool update -t src
 $ rosdep update                                                                                          
 $ rosdep install --from-paths src --ignore-src -y -r                                                                 
