@@ -20,7 +20,6 @@
   <run_depend>depthimage_to_laserscan</run_depend>
   <run_depend>dynamixel_urdf</run_depend>
   <run_depend>dynamixel_7dof_arm</run_depend>
-  <run_depend>dynamixel_motor</run_depend>
   <run_depend>gazebo_plugins</run_depend>
   <run_depend>gazebo_ros</run_depend>
   <run_depend>gazebo_ros_control</run_depend>
