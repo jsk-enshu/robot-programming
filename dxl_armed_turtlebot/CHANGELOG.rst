@@ -2,6 +2,14 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Remove the urdf file about the arm model from this package (`#239 <https://github.com/jsk-enshu/robot-programming/pull/239>`_)
+* Remove metapackage from package.xml (`#243 <https://github.com/jsk-enshu/robot-programming/pull/243>`_)
+* Use anon rviz nodename to prevent ns collision (`#229 <https://github.com/jsk-enshu/robot-programming/pull/229>`_)
+* Add device name for joystick in launch file (`#225 <https://github.com/jsk-enshu/robot-programming/pull/225>`_)
+* Contributors: Bakui Chou, Shingo Kitagawa, Yuki Asano, Kei Okada
+
 4.0.1 (2017-11-20)
 ------------------
 * Merge pull request `#224 <https://github.com/jsk-enshu/robot-programming/issues/224>`_ from yuki-asano/add-ps3joy

@@ -2,6 +2,12 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add gripper urdf model for rviz and gazebo (`#239 <https://github.com/jsk-enshu/robot-programming/pull/239>`_)
+* Add ros dependency explicitly in package.xml (`#243 <https://github.com/jsk-enshu/robot-programming/pull/243>`_)
+* Contributors: Bakui Chou
+
 4.0.1 (2017-11-20)
 ------------------
 
