@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+5.0.0 (2018-09-14)
+------------------
 * Remove the urdf file about the arm model from this package (`#239 <https://github.com/jsk-enshu/robot-programming/pull/239>`_)
 * Remove metapackage from package.xml (`#243 <https://github.com/jsk-enshu/robot-programming/pull/243>`_)
 * Use anon rviz nodename to prevent ns collision (`#229 <https://github.com/jsk-enshu/robot-programming/pull/229>`_)
