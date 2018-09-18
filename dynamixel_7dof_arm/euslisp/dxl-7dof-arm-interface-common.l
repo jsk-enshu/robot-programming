@@ -104,8 +104,8 @@
    )
   (:default-controller
    ()
-   (send self :fullbody-controller)
-   ;;(append (send self :fullbody-controller) (send self :gripper-controller))
+   ;;(send self :fullbody-controller)
+   (append (send self :fullbody-controller) (send self :gripper-controller))
    )
   ;; raw dynamixel command
   ;;   TODO : define these methods by considering pr2eus?
@@ -170,8 +170,9 @@
   (:start-grasp
    (&optional (arm :arm) &key ((:gain g) 0.5) ((:objects objs) objects))
    "Start grasp mode."
-   (send self :set-compliance-slope 7 1023)
-   (send self :set-torque-limit 7 g)
+   (unless (send self :simulation-modep)
+     (send self :set-compliance-slope 7 1023)
+     (send self :set-torque-limit 7 g))
    (send robot :gripper arm :angle-vector
          (send-all (send robot :gripper arm :joint-list) :min-angle))
    (send self :angle-vector (send robot :angle-vector) 1000 :gripper-controller)
@@ -189,8 +190,9 @@
    (send robot :gripper arm :angle-vector
          (send-all (send robot :gripper arm :joint-list) :max-angle))
    (send self :angle-vector (send robot :angle-vector) 1000 :gripper-controller)
-   (send self :set-compliance-slope 7 32)
-   (send self :set-torque-limit 7 1.0)
+   (unless (send self :simulation-modep)
+     (send self :set-compliance-slope 7 32)
+     (send self :set-torque-limit 7 1.0))
    (send self :wait-interpolation :gripper-controller)
    )
   )
