@@ -304,7 +304,7 @@
        (setq jc3 (instance rotational-joint :init :parent-link (elt rarm 2) :child-link (elt rarm 3) :name "arm_joint4" :axis :x :min -180 :max 180 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
        (setq jc4 (instance rotational-joint :init :parent-link (elt rarm 3) :child-link (elt rarm 4) :name "arm_joint5" :axis :y :min -90 :max 90 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
        (setq jc5 (instance rotational-joint :init :parent-link (elt rarm 4) :child-link (elt rarm 5) :name "arm_joint6" :axis :x :min -180 :max 180 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
-       (setq gripper_jc (instance rotational-joint :init :parent-link (elt rarm 5) :child-link (elt rarm 6) :name "arm_joint7" :axis :z :min -55 :max 50 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
+       (setq gripper_jc (instance rotational-joint :init :parent-link (elt rarm 5) :child-link (elt rarm 6) :name "gripper_joint" :axis :z :min -55 :max 50 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
        )
 
      ;; 4. define slots for robot class
@@ -353,10 +353,31 @@
   (:arm_joint5 () jc4)
   (:arm_joint6 () jc5)
   (:gripper_joint () gripper_jc)
+
   ;; limbs
   (:arm (&rest args)
         "Accessor for arm methods."
         (unless args (setq args (list nil))) (send* self :limb :rarm args))
+
+  (:gripper
+   (limb &rest args)
+   (let ()
+     (unless (or (eq limb :arm) (eq limb :rarm))
+       (error "you can only use ~A, not ~A " ":arm" limb)
+       (return-from :gripper nil))
+     (cond
+      ((memq :links args)
+       (list (send gripper_jc :child-link)))
+      ((memq :joint-list args)
+       (list gripper_jc))
+      ((memq :joint-angle args)
+       (if (null (cdr args))
+           (send gripper_jc :joint-angle)
+         (send gripper_jc :joint-angle (cadr args))
+         ))
+      (t (send-super* :gripper limb args))
+      )))
+
   ;; poses
   (:reset-pose
    ()
