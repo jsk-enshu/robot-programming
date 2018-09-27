@@ -6,6 +6,25 @@
 (require :turtlebot-with-sensors-robot "package://turtleboteus/euslisp/turtlebot-with-sensors-robot.l")
 (require :dxl-7dof-arm-robot "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-robot.l")
 
+
+;; forward function
+(defun forward-function-list (keyword-list)
+  (let (forward-methods
+        (arm-robot-methods (send (instance dxl-7dof-arm-robot :init) :methods)))
+    (setq forward-methods
+          (flatten
+           (remove-duplicates
+            (mapcar
+             #'(lambda (keyword)
+                 (remove-if-not
+                  #'(lambda (x) (substringp keyword (string-downcase x)))
+                  arm-robot-methods))
+             keyword-list
+             ))))
+    forward-methods))
+(setq key-funcs (forward-function-list (list "arm"))) ;;global var
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; アーム台車ロボットモデルクラス
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -116,3 +135,5 @@
         :rotation-axis nil :debug-view t)
   )
 |#
+
+(setq *r* (dxl-armed-turtlebot))

@@ -6,7 +6,7 @@
 (require :robot-interface "package://pr2eus/robot-interface.l")
 
 ;; loadする台車・アームのrobot-interfaceクラスのメソッド定義ファイル
-(load "package://turtleboteus/euslisp/turtlebot-interface-common.l")
+(load "package://turtleboteus/euslisp/turtlebot-interface.l")
 (load "package://dynamixel_7dof_arm/euslisp/dxl-7dof-arm-interface-common.l")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -14,20 +14,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defclass dxl-armed-turtlebot-interface
   :super robot-interface
-  :slots (gripper-action))
+  :slots ((robot-base :forward (:def-vector-value :raw-bumper-data :raw-button-data :raw-wheel-drop-data :raw-cliff-data :raw-imu-data :imurot :update-robot-state :bumper-vector :button-vector :wheel-drop-vector :cliff-vector :cliff-bottom-vector :imucoords :power-system-vector :publish-led :publish-sound :go-stop :move-to :go-pos :go-velocity))
+          gripper-action))
 
 (eval `(defmethod dxl-armed-turtlebot-interface
-         ;; dxl-7dof-arm-interface, turtlebot-interfaceのメソッドをそれぞれdefmethodする
          ,@(get-method-list-for-dxl-7dof-arm-interface)
-         ,@(get-method-list-for-turtlebot-interface)
          ))
 (defmethod dxl-armed-turtlebot-interface
   (:init
    (&rest args)
    (prog1
        (send-super* :init :robot dxl-armed-turtlebot-robot args)
-     ;; それぞれのcallback登録など
-     (send self :initialize-turtlebot-ros)
+
+     (setq robot-base (instance turtlebot-interface :init))
      (send self :initialize-arm-robot-ros)
      )
    )
