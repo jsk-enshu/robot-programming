@@ -59,7 +59,7 @@ gripper_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    arm_link7_joint: {p: 5.0, i: 0.0, d: 0.0}
+    arm_link7_joint: {p: 10.0, i: 0.0, d: 0.0}
   state_publish_rate:  100            # Override default
   action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
