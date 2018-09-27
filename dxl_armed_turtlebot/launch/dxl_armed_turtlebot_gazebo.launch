@@ -53,6 +53,14 @@
     <remap from="$(arg camera)/scan" to="$(arg scan_topic)"/>
   </node>
 
+  <!-- Velocity muxer -->
+  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux"
+        args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+    <param name="yaml_cfg_file" value="$(find turtlebot_bringup)/param/mux.yaml" />
+    <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
+  </node>
+
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <!-- load the controllers -->
   <rosparam file="$(find dxl_armed_turtlebot)/config/dxl_armed_turtlebot_controllers.yaml" />
