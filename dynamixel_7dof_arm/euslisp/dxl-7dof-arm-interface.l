@@ -13,7 +13,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defclass dxl-7dof-arm-interface
   :super robot-interface
-  :slots ())
+  :slots (gripper-action))
 
 (eval `(defmethod dxl-7dof-arm-interface
          ;; dxl-7dof-arm-interfaceのメソッドをdefmethodする

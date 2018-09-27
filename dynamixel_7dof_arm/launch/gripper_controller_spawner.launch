@@ -8,6 +8,6 @@
                 --port=7dof_arm_port
                 --type=meta
                 gripper_controller
-                arm_j7_controller"
+                gripper_joint_controller"
           output="screen"/>
 </launch>

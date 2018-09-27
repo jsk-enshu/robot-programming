@@ -63,6 +63,8 @@
      (send self :method-copying "-pose")
      (send self :method-copying "_joint")
      (send self :method-copying "inverse-kinematics" t)
+     (send self :method-copying "gripper" t)
+     (send self :method-copying "arm" t)
      t))
   (:method-copying
    (substr &optional (use-args nil))
@@ -79,10 +81,12 @@
             ,(if use-args `(send* arm-robot ,me args) `(send arm-robot ,me))
             )
            ))
-       )))
+       )
+     methods))
+
   ;; limbs
-  (:arm (&rest args)
-        (unless args (setq args (list nil))) (send* self :limb :rarm args))
+  ;;(:arm (&rest args)
+  ;;(unless args (setq args (list nil))) (send* self :limb :rarm args))
   )
 
 ;; アーム台車モデル生成関数
