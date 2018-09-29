@@ -17,7 +17,7 @@ gazeboのgui (右図) を立ち上げると、PCの処理負荷が一気に上�
 $ roslaunch dxl_armed_turtlebot dxl_armed_turtlebot_gazebo.launch gui:=false
 ```
 
-### Grasping test in gazebo via roseus
+### 1. Grasping test in gazebo via roseus
 
 以下のコマンドを実行し、roseusから目の前にある物体を掴んでみましょう。
 
@@ -31,7 +31,7 @@ $ roseus gazebo-grasp-test.l
 
 ![gazebo_turtlebot_grasp](images/gazebo_turtlebot_grasp.png)
 
-### Object recognition and approaching via roseus
+### 2. Object recognition and approaching via roseus
 前の例では、物体認識を行っておりません。物体認識を踏まえた自律動作は以下のように実行します。
 
 1. 物体認識を実行する. これは演習で習ったもので、詳細は演習資料を参考してください。
@@ -44,7 +44,7 @@ $ roseus gazebo-grasp-test.l
    $ roseus gazebo-grasp-with-recognition.l
    ```
 
-### SLAM in Gazebo
+### 3. SLAM in Gazebo
 gazebo内でも地図作成は、実機と同様、下記のコマンドを実行するだけ:
 ```
 $ rosrun slam_karto slam_karto
