@@ -40,12 +40,12 @@ class Tuck(object):
     def _move_to(self, goal):
         traj = JointTrajectory()
         traj.joint_names  = [
-            'arm_link1_joint', 
-            'arm_link2_joint', 
-            'arm_link3_joint',
-            'arm_link4_joint',
-            'arm_link5_joint',
-            'arm_link6_joint',
+            'arm_joint1', 
+            'arm_joint2', 
+            'arm_joint3',
+            'arm_joint4',
+            'arm_joint5',
+            'arm_joint6',
         ]
         traj.points.append(JointTrajectoryPoint())
         traj.points[0].positions = self._joint_moves[goal]
