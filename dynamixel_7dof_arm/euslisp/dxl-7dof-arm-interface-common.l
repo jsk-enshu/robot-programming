@@ -22,8 +22,15 @@
         (format nil "/arm_j~d_controller/state" (1+ i)))
       dynamixel_msgs::JointState
       #'send self :dynamixel-motor-states-callback :groupname groupname))
+   ;; for gazebo
+   (when (ros::get-param "use_sim_time" nil)
+     (ros::subscribe
+      (format nil "/joint_states")
+      sensor_msgs::JointState
+      #'send self :joint-states-callback :groupname groupname)
+     )
 
-   (unless (send self :simulation-modep)
+   (unless (or (send self :simulation-modep) (ros::get-param "use_sim_time" nil))
    ;; services for arm joints
      (dotimes (i (length (send robot :angle-vector)))
        (ros::wait-for-service
@@ -93,6 +100,37 @@
              (:velocity (send msg :velocity))
              (:effort (send msg :load)))
            )
+     )
+   )
+  ;; TODO
+  ;; Because turtlebot kobuki also publish the wheel states as "joint_states", it conflicts with arm joint states.
+  ;; We have to separate these two topics in the future.
+  ;; Temporary, we check the number of the joint states and distinguish the origin.
+  ;; However, the arm joint states may not be updated in the eus model on time, if we only oprate "spinOnce" for one time.
+  (:joint-states-callback
+   (msg)
+   ;; maybe from wheel (TODO: remove joint_state for kobuki_gazebo_plugin)
+   (unless (eq (length (send msg :name)) (+ (length (send robot :angle-vector)) 1))
+     (return-from :joint-states-callback nil))
+   ;; for initialize
+   (dolist (key '(:position :velocity :effort :name))
+     (unless (and (cdr (assoc key robot-state))
+                  (= (length (send msg :name)) (length (cdr (assoc key robot-state)))))
+       (send self :set-robot-state1 key
+             (if (eq key :name)
+                 (make-list (length (send msg :name)))
+               (instantiate float-vector (length (send msg :name)))))))
+   ;; update values
+   (dotimes (i (length (send msg :name)))
+     (dolist (key '(:position :velocity :effort :name))
+       (setf (elt (cdr (assoc key robot-state)) i)
+             (case key
+                   (:position (elt (send msg :position) i))
+                   (:name (elt (send msg :name) i))
+                   (:velocity (elt (send msg :velocity) i))
+                   (:effort (elt (send msg :effort) i)))
+             )
+       )
      )
    )
 
@@ -199,7 +237,7 @@
      (send (send robot :gripper_joint) :joint-angle pos )
      (send self :publish-joint-state)
      (if viewer (send self :draw-objects))
-     (return-from :move-gripper nil))
+     (return-from :move-gripper t))
    ;; for real robot
    (let* ((goal (send gripper-action :make-goal-instance))
           (goal-points nil)
@@ -237,7 +275,7 @@
   (:start-grasp
    (&key ((:gain g) 0.5))
    "Start grasp mode."
-   (unless (send self :simulation-modep)
+   (unless (or (send self :simulation-modep) (ros::get-param "use_sim_time" nil))
      (send self :set-compliance-slope 7 1023)
      (send self :set-torque-limit 7 g))
    (send self :move-gripper (send (send robot :gripper_joint) :min-angle) :tm 1000 :wait t)
@@ -251,7 +289,7 @@
    ()
    "Stop grasp mode."
    (send self :move-gripper (send (send robot :gripper_joint) :max-angle) :tm 1000 :wait t)
-   (unless (send self :simulation-modep)
+   (unless (or (send self :simulation-modep) (ros::get-param "use_sim_time" nil))
      (send self :set-compliance-slope 7 32)
      (send self :set-torque-limit 7 1.0))
    )
