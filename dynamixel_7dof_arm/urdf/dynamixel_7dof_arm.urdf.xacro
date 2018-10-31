@@ -29,10 +29,10 @@
   </xacro:macro>
 
 
-  <macro name="dynamixel_ax12_joint" params="parent name joint_name color llimit ulimit vlimit *origin" >
+  <macro name="dynamixel_ax12_joint" params="parent name joint_name color llimit ulimit vlimit *origin *axis" >
     <joint name="${joint_name}" type="revolute">
       <insert_block name="origin" />
-      <axis xyz="0 0 1"/>
+      <insert_block name="axis" />
       <limit effort="${elimit}" velocity="${vlimit}" lower="${llimit - 0.1}" upper="${ulimit + 0.1}" />
 <!--      <safety_controller soft_lower_limit="${llimit}" soft_upper_limit="${ulimit}" k_position="1" k_velocity="1" /> -->
       <parent link="${parent}"/>
@@ -220,7 +220,7 @@
     </link>
 
     <xacro:dynamixel_ax12_pan parent="arm_base_link" name="arm_link0" color="black">
-      <origin xyz="0.045 0 0.0" rpy="${M_PI} 0 0" />
+      <origin xyz="0.045 0 0.0" rpy="0 0 0" />
     </xacro:dynamixel_ax12_pan>
 
     <xacro:ax12_hinge_revolute_axis parent="arm_link0_link" name="arm_link1" joint_name="arm_joint1"
@@ -233,11 +233,12 @@
     <xacro:dynamixel_ax12_joint parent="arm_link1_link" name="arm_link2" joint_name="arm_joint2"
                                llimit="-2.61" ulimit="2.61" vlimit="${vlimit}"
                                color="black" >
-      <origin xyz="0.0 0.0 0.05" rpy="0 0 -${M_PI/2}" />
+      <origin xyz="0.0 0.0 0.05" rpy="${M_PI} 0 ${M_PI/2}" />
+      <axis xyz="0 0 -1" />
     </xacro:dynamixel_ax12_joint>
 
     <xacro:dynamixel_ax12_tilt parent="arm_link2_link" name="arm_link2_motor" color="black">
-      <origin xyz="-0.06 0.0 0.02" rpy="0 0 0" />
+      <origin xyz="-0.06 0.0 -0.02" rpy="${M_PI} 0 0" />
     </xacro:dynamixel_ax12_tilt>
 
     <xacro:ax12_hinge_revolute_axis parent="arm_link2_motor_link" name="arm_link3" joint_name="arm_joint3"
@@ -248,24 +249,26 @@
     </xacro:ax12_hinge_revolute_axis>
 
     <xacro:dynamixel_ax12_pan parent="arm_link3_link" name="arm_link3_motor" color="black">
-      <origin xyz="-0.01 0.0 0.055" rpy="${M_PI} ${M_PI} 0" />
+      <origin xyz="-0.014 0.0 0.055" rpy="${M_PI} ${M_PI} 0" />
     </xacro:dynamixel_ax12_pan>
 
     <xacro:ax12_hinge_revolute_axis parent="arm_link3_motor_link" name="arm_link4" joint_name="arm_joint4"
                                llimit="-2.61" ulimit="2.61" vlimit="${vlimit}"
                                color="white" >
       <origin xyz="0.0 0.0 0.05" rpy="0 ${M_PI} 0" />
-      <axis xyz="0 0 1" />
+      <axis xyz="0 0 -1" />
     </xacro:ax12_hinge_revolute_axis>
 
     <xacro:dynamixel_ax12_joint parent="arm_link4_link" name="arm_link5" joint_name="arm_joint5"
                                llimit="-2.0944" ulimit="1.5708" vlimit="${vlimit}" color="black">
       <origin xyz="0.0 0.0 0.0" rpy="0 -${M_PI/2} ${M_PI/2}" />
+      <axis xyz="0 0 1" />
     </xacro:dynamixel_ax12_joint>
 
     <xacro:dynamixel_ax12_joint parent="arm_link5_link" name="arm_link6" joint_name="arm_joint6"
                                llimit="-2.61" ulimit="2.61" vlimit="${vlimit}" color="black">
       <origin xyz="-0.07 0.0 0.0" rpy="-${M_PI/2} ${M_PI} -${M_PI/2}" />
+      <axis xyz="0 0 -1" />
     </xacro:dynamixel_ax12_joint>
 
     <xacro:dynamixel_ax12_pan parent="arm_link6_link" name="arm_link6_motor" color="black">
