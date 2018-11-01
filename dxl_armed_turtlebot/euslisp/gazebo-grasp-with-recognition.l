@@ -57,13 +57,16 @@
 
 (ros::ros-warn "re-found target object ~A" obj-pos)
 (setq target-cds (make-coords :pos (scale 1000 obj-pos)))
-(send target-cds :translate #f(-200 0 100)) ;;z should be 0, but the link is not rigid in gazebo, so 100 is the height offset for end effector.
+(send target-cds :translate #f(-200 0 50)) ;;z should be 0, but the link is not rigid in gazebo, so 100 is the height offset for end effector.
 (objects (list *dxl-armed-turtlebot* target-cds))
 
 (send *dxl-armed-turtlebot* :angle-vector #f(0 0 -90 0 90 0))
+
+(send *dxl-armed-turtlebot* :arm :end-coords :translate #f(0 30 0)) ;; change the end-effector position
+
 (send *dxl-armed-turtlebot* :inverse-kinematics target-cds :rotation-axis :y)
 
-
+#|
 (send *dxl-armed-turtlebot* :angle-vector (map float-vector #'(lambda(ang)
                                      (cond
                                       ((> ang 90) (- ang 180))
@@ -71,12 +74,12 @@
                                       (t ang)
                                       ))
                                  (send *dxl-armed-turtlebot* :angle-vector)))
+|#
 
 (ros::ros-warn "the grap arm pose is ~A" (send *dxl-armed-turtlebot* :angle-vector))
 
 (send *ri* :angle-vector  (send *dxl-armed-turtlebot* :angle-vector) 3000)
 
-#|
 (unix:sleep 5)
 (send *ri* :go-pos 0.1 0 0)
 
