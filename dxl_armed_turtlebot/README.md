@@ -58,3 +58,31 @@ $ roslaunch turtlebot_teleop keyboard_teleop.launch
 機体を一周旋回させると、以下のようになります。
 
 ![gazebo_turtlebot_slam](images/gazebo_turtlebot_slam.png)
+
+### 4. Detect Checkerboard in Gazebo
+gazebo内でも実機と同様にcheckerboardを検出することができる
+
+まず、checkerboader_detectorを起動しましょう:
+```
+$ roslaunch roseus_tutorials checkerboard-detector.launch rect0_size_x:=0.02 rect0_size_y:=0.02 grid0_size_x:=7 grid0_size_y:=4 translation0:="0 0 0" image:=image_raw  group:=/camera/rgb frame_id:=camera_rgb_frame
+```
+
+
+次に、上記と同じコマンドを使って、ロボットを旋回させましょう:
+```
+$ roslaunch turtlebot_teleop keyboard_teleop.launch
+```
+
+最後に、rviz上でchecker_boardが見つかれば、下記のコマンドでroseus上でcheckerboardを表示しましょう:
+
+```
+$ roscd dxl_armed_turtlebot/euslisp
+$ roseus display-checkerboard.l
+```
+
+最終てきには、以下のようになります。
+
+![gazebo_checkerboard](images/gazebo_checkerboard.png)
+
+
+

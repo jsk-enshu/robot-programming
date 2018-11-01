@@ -398,5 +398,13 @@
       </link>
     </model>
 
+    <!-- checkerboard -->
+    <model name="checkerboard" >
+      <pose>0 1.3 0.3 0 1.5708 -1.5708</pose>
+      <include>
+        <uri>model://checkerboard</uri>
+      </include>
+    </model>
+
   </world>
 </sdf>

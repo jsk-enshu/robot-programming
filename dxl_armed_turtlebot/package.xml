@@ -53,4 +53,9 @@
   <run_depend>teleop_twist_keyboard</run_depend>
   <run_depend>roseus_tutorials</run_depend>
   <run_depend>slam_karto</run_depend>
+
+  <export>
+    <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />
+  </export>
+
 </package>
