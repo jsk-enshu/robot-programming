@@ -47,7 +47,6 @@
 (send *ri* :stop-grasp)
 
 
-
 (setq found-obj nil)
 (until found-obj
        (x::window-main-one) ;; IRT viewerの視点を変えられる。見にくければ変えよう
@@ -79,14 +78,14 @@
 (ros::ros-warn "the grap arm pose is ~A" (send *dxl-armed-turtlebot* :angle-vector))
 
 (send *ri* :angle-vector  (send *dxl-armed-turtlebot* :angle-vector) 3000)
+(send *ri* :wait-interpolation)
 
-(unix:sleep 5)
 (send *ri* :go-pos 0.1 0 0)
 
 ;; grasp
 ;; still some bug in start-grasp, so we have to directly use :move-gripper
 (send *ri* :move-gripper -30 :tm 1500 :wait t)
-(unix:sleep 2)
+(send *ri* :wait-interpolation)
 
 (send *ri* :angle-vector #f(80 0 45 0 45 45)) ;;  arm tuck pose
 (send *ri* :go-pos -0.6 0 0) ;;  arm tuck pose
