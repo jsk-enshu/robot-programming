@@ -276,7 +276,7 @@
 
 (defclass dxl-7dof-arm-robot
   :super robot-model
-  :slots (jc0 jc1 jc2 jc3 jc4 jc5 jc6)) ;; 関節インスタンス
+  :slots (jc0 jc1 jc2 jc3 jc4 jc5 gripper_jc)) ;; 関節インスタンス
 
 (defmethod dxl-7dof-arm-robot
   (:init
@@ -304,13 +304,13 @@
        (setq jc3 (instance rotational-joint :init :parent-link (elt rarm 2) :child-link (elt rarm 3) :name "arm_joint4" :axis :x :min -180 :max 180 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
        (setq jc4 (instance rotational-joint :init :parent-link (elt rarm 3) :child-link (elt rarm 4) :name "arm_joint5" :axis :y :min -90 :max 90 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
        (setq jc5 (instance rotational-joint :init :parent-link (elt rarm 4) :child-link (elt rarm 5) :name "arm_joint6" :axis :x :min -180 :max 180 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
-       (setq jc6 (instance rotational-joint :init :parent-link (elt rarm 5) :child-link (elt rarm 6) :name "arm_joint7" :axis :z :min -55 :max 50 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
+       (setq gripper_jc (instance rotational-joint :init :parent-link (elt rarm 5) :child-link (elt rarm 6) :name "gripper_joint" :axis :z :min -55 :max 50 :max-joint-velocity max-joint-velocity :max-joint-torque max-joint-torque))
        )
 
      ;; 4. define slots for robot class
      ;;    links and joint-list for cascaded-link.
-     (setq links (append (list aroot-link) rarm))
-     (setq joint-list (list jc0 jc1 jc2 jc3 jc4 jc5 jc6))
+     (setq links (append (list aroot-link) (butlast rarm)))
+     (setq joint-list (list jc0 jc1 jc2 jc3 jc4 jc5))
      ;;    These are for robot-model.
      (setq rarm-root-link (car rarm))
      ;;    end-coords
@@ -320,6 +320,9 @@
 
      ;; 5. call :init-ending after defining links and joint-list and return "self"
      (send self :init-ending)
+
+     ;; 6. overwrite bodies to return draw-things links not (send link :bodies)
+     (setq bodies (flatten (mapcar #'(lambda (b) (if (find-method b :bodies) (send b :bodies))) (append links (last rarm)))))
      self))
   ;; links
   (:make-root-link
@@ -349,32 +352,57 @@
   (:arm_joint4 () jc3)
   (:arm_joint5 () jc4)
   (:arm_joint6 () jc5)
-  (:arm_joint7 () jc6)
+  (:gripper_joint () gripper_jc)
+
   ;; limbs
   (:arm (&rest args)
         "Accessor for arm methods."
         (unless args (setq args (list nil))) (send* self :limb :rarm args))
+
+  (:gripper
+   (limb &rest args)
+   (let ()
+     (unless (or (eq limb :arm) (eq limb :rarm))
+       (error "you can only use ~A, not ~A " ":arm" limb)
+       (return-from :gripper nil))
+     (cond
+      ((memq :links args)
+       (list (send gripper_jc :child-link)))
+      ((memq :joint-list args)
+       (list gripper_jc))
+      ((memq :joint-angle args)
+       (if (null (cdr args))
+           (send gripper_jc :joint-angle)
+         (send gripper_jc :joint-angle (cadr args))
+         ))
+      (t (send-super* :gripper limb args))
+      )))
+
   ;; poses
   (:reset-pose
    ()
    "Reset pose."
-   (send self :angle-vector (float-vector 0.0 0.0 -90.0 0.0 90.0 0.0 0.0)))
+   (let ()
+     (send self :angle-vector (float-vector 0.0 0.0 -90.0 0.0 90.0 0.0))
+     (send (send self :gripper_joint) :joint-angle 0)))
   (:reset-pose2
    ()
    "Reset pose2."
-   (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 90.0 0.0 0.0)))
+   (let ()
+     (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 90.0 0.0))
+     (send (send self :gripper_joint) :joint-angle 0)))
   (:tuckarm-pose
    ()
    "Folding arm pose."
-   (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 0.0 0.0 0.0)))
+   (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 0.0 0.0)))
   (:tuckarm-pose2
    ()
    "Folding arm pose2."
-   (send self :angle-vector (float-vector 90.0 90.0 5.0 0.0 -90.0 90.0 0.0)))
+   (send self :angle-vector (float-vector 90.0 90.0 5.0 0.0 -90.0 90.0)))
   (:tuckarm-pose3
    ()
    "Folding arm pose3."
-   (send self :angle-vector (float-vector 0.0 90.0 0.0 -20.0 90.0 0.0 0.0)))
+   (send self :angle-vector (float-vector 0.0 90.0 0.0 -20.0 90.0 0.0)))
   ;; inverse-kinematics
   (:inverse-kinematics
    (target-coords &rest args &key (link-list)
@@ -394,7 +422,6 @@
        (setq move-target (send self :arm :end-coords)))
      (unless link-list
        (setq link-list (send self :link-list (send move-target :parent))))
-
      ;; use base
      (cond
       (use-base

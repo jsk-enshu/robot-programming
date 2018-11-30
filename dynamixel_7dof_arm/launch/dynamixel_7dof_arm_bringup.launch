@@ -28,7 +28,7 @@
                 arm_j4_controller
                 arm_j5_controller
                 arm_j6_controller
-                arm_j7_controller"
+                gripper_joint_controller"
           output="screen"/>
 
     <!-- start trajectory controllers for fullbody + gripper -->
