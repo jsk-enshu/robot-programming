@@ -12,7 +12,7 @@
 ;; 台車ロボットのrobot-interfaceクラス定義
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defclass turtlebot-interface
-  :super robot-interface
+  :super robot-move-base-interface
   :slots ())
 
 (eval `(defmethod turtlebot-interface
@@ -32,10 +32,14 @@
    (&rest args)
    (prog1
        (send-super* :add-controller args)
-     (if (and (send self :simulation-modep)
-              (ros::get-param "/turtlebot_laptop_battery/acpi_path")) ;; check if real robot
+     ;; check if real robot
+     (when (and (send self :simulation-modep)
+              (ros::get-param "/turtlebot_laptop_battery/acpi_path"))
          (setq joint-action-enable t))
-     ))
+     (when (ros::get-param "use_sim_time" nil)
+       (setq joint-action-enable t))
+     )
+   )
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -13,7 +13,7 @@
 ;; アーム台車ロボットのrobot-interfaceクラス定義
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defclass dxl-armed-turtlebot-interface
-  :super robot-interface
+  :super robot-move-base-interface
   :slots (gripper-action))
 
 (eval `(defmethod dxl-armed-turtlebot-interface
