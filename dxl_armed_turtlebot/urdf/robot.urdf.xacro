@@ -3,8 +3,8 @@
   <xacro:include filename="$(find kobuki_description)/urdf/kobuki.urdf.xacro"/>
   <xacro:include filename="$(find turtlebot_description)/urdf/stacks/hexagons.urdf.xacro" />
   <xacro:include filename="$(find turtlebot_description)/urdf/sensors/kinect.urdf.xacro" />
-  <xacro:include filename="$(find dxl_armed_turtlebot)/urdf/dynamixel_7dof_arm.urdf.xacro" />
-  
+  <xacro:include filename="$(find dynamixel_7dof_arm)/urdf/dynamixel_7dof_arm.urdf.xacro" />
+
   <kobuki/>
   <stack_hexagons parent="base_link"/>
   <sensor_kinect  parent="base_link"/>
@@ -13,7 +13,7 @@
   <joint name="joint0" type="fixed">
     <parent link="plate_top_link"/>
     <child link="arm_base_link"/>
-    <origin xyz="0.15 0 0.025" rpy="0 0 0" />
+    <origin xyz="0.182 0 -0.025" rpy="0 0 0" />
   </joint>
 
 </robot>

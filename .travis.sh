@@ -21,9 +21,6 @@ rosdep update
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws
 ln -sf ${CI_SOURCE_PATH} src/${REPOSITORY_NAME}
-wstool init src
-wstool set dynamixel_urdf https://github.com/jsk-enshu/dynamixel_urdf --git -t src -y
-wstool update -t src
 rosdep install --from-paths src -y --ignore-src --rosdistro ${ROS_DISTRO}
 source /opt/ros/${ROS_DISTRO}/setup.bash
 env | grep ROS

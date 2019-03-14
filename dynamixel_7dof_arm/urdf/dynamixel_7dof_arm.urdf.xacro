@@ -37,7 +37,7 @@
       <safety_controller soft_lower_limit="${llimit}" soft_upper_limit="${ulimit}" k_position="1" k_velocity="1" />
       <parent link="${parent}"/>
       <child link="${name}_link" />
-      <dynamics damping="0" />
+      <dynamics damping="0.1" />
     </joint>
 
     <link name="${name}_link">
@@ -47,7 +47,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="1.57 0 1.57" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
@@ -74,7 +74,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="1.57 0 1.57" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
@@ -101,7 +101,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/ax12.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
@@ -131,7 +131,7 @@
       <visual>
         <origin xyz=" 0 0 0 " rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://dynamixel_urdf/meshes/F2.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/F2.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="${color}"/>
       </visual>
@@ -139,6 +139,38 @@
         <origin xyz="0.0 0.0 ${0.00775+0.015}" rpy="0 0 0" />
         <geometry>
           <box size="0.025 0.0485 ${0.0375-0.03}"/>
+        </geometry>
+      </collision>
+    </link>
+  </macro>
+
+  <macro name="half_grpper" params="parent name color *origin">
+    <joint name="${name}_joint" type="fixed">
+      <insert_block name="origin" />
+      <parent link="${parent}"/>
+      <child link="${name}_link" />
+    </joint>
+
+    <link name="${name}_link">
+      <inertial>
+        <origin xyz=" 0.025 0 0.003" rpy="0 0 0" />
+        <mass value="0.013" />
+        <inertia ixx="0.0" ixy="0.0" ixz="0.0"
+                 iyy="0.00002" iyz="0.0"
+                 izz="0.00002" />
+
+      </inertial>
+      <visual>
+        <origin xyz=" 0 0 0 " rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://dynamixel_7dof_arm/urdf/meshes/dxl_gripper.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="${color}"/>
+      </visual>
+      <collision>
+        <origin xyz="0.027 0.0 0.01" rpy="0 0 0" />
+        <geometry>
+          <box size="0.08 0.04 0.02"/>
         </geometry>
       </collision>
     </link>
@@ -179,14 +211,14 @@
 
     <link name="arm_base_link">
       <visual>
-        <origin xyz="-0.02 0.0 0.0" rpy="0 0 0" />
+        <origin xyz="-0.05 0.0 0.0" rpy="0 0 0" />
         <geometry>
-          <box size="0.04 0.03 0.04" />
+          <box size="0.1 0.03 0.04" />
         </geometry>
         <material name="white" />
       </visual>
     </link>
-    
+
     <xacro:dynamixel_ax12_pan parent="arm_base_link" name="arm_link0" color="black">
       <origin xyz="0.045 0 0.0" rpy="${M_PI} 0 0" />
     </xacro:dynamixel_ax12_pan>
@@ -247,6 +279,14 @@
       <axis xyz="0 1 0"/>
     </xacro:ax12_hinge_revolute_axis>
 
+    <xacro:half_grpper parent="arm_link7_link" name="arm_gripper_left" color="white" >
+      <origin xyz="0.0 0.0 0.027" rpy="0 0 ${M_PI}" />
+    </xacro:half_grpper>
+
+    <xacro:half_grpper parent="arm_link6_motor_link" name="arm_gripper_right" color="white" >
+      <origin xyz="-0.041 0.0 0.0" rpy="${M_PI/2} 0 ${-M_PI/2}" />
+    </xacro:half_grpper>
+
     <!-- ros_control plugin -->
     <gazebo>
       <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so" />
@@ -270,6 +310,8 @@
     <xacro:gazebo_arm_link name="arm_link6_link" color="Black" />
     <xacro:gazebo_arm_link name="arm_link6_motor_link" color="Black" />
     <xacro:gazebo_arm_link name="arm_link7_link" color="Grey" />
+    <xacro:gazebo_arm_link name="arm_gripper_left" color="Grey" />
+    <xacro:gazebo_arm_link name="arm_gripper_right" color="Grey" />
 
     <xacro:simple_transmission name="arm_link1_joint" interface="${joint_interface}" />
     <xacro:simple_transmission name="arm_link2_joint" interface="${joint_interface}" />

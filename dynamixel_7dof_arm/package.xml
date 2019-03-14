@@ -1,6 +1,6 @@
 <package>
   <name>dynamixel_7dof_arm</name>
-  <version>4.0.1</version>
+  <version>5.0.0</version>
   <description>7dof dynamixel motor arm</description>
   <license>BSD</license>
   <maintainer email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</maintainer>
@@ -8,11 +8,13 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>dynamixel_controllers</build_depend>
   <build_depend>dynamixel_msgs</build_depend>
+  <build_depend>dynamixel_driver</build_depend>
+  <build_depend>dynamixel_controllers</build_depend>
   <build_depend>pr2eus</build_depend>
 
-  <run_depend>dynamixel_controllers</run_depend>
   <run_depend>dynamixel_msgs</run_depend>
+  <run_depend>dynamixel_driver</run_depend>
+  <run_depend>dynamixel_controllers</run_depend>
   <run_depend>pr2eus</run_depend>
 </package>

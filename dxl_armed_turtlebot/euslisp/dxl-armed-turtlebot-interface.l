@@ -14,7 +14,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defclass dxl-armed-turtlebot-interface
   :super robot-interface
-  :slots ())
+  :slots (gripper-action))
 
 (eval `(defmethod dxl-armed-turtlebot-interface
          ;; dxl-7dof-arm-interface, turtlebot-interfaceのメソッドをそれぞれdefmethodする
