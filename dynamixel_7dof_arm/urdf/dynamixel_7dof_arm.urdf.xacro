@@ -2,11 +2,11 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro" >
 
   <!-- <xacro:include filename="$(find dynamixel_urdf)/urdf/ax12.xacro" /> -->
-  <property name="M_PI" value="3.1415926535897931" />
-  <property name="elimit" value="1.5" />
-  <property name="vlimit" value="6.0" />
-  <!-- <property name="joint_interface" value="EffortJointInterface" /> -->
-  <property name="joint_interface" value="VelocityJointInterface" />
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+  <xacro:property name="elimit" value="1.5" />
+  <xacro:property name="vlimit" value="6.0" />
+  <!-- <xacro:property name="joint_interface" value="EffortJointInterface" /> -->
+  <xacro:property name="joint_interface" value="VelocityJointInterface" />
 
   <!-- Macro for the inertia of a box -->
   <xacro:macro name="box_inertia" params="x y z mass">
@@ -29,9 +29,9 @@
   </xacro:macro>
 
 
-  <macro name="dynamixel_ax12_joint" params="parent name color llimit ulimit vlimit *origin" >
+  <xacro:macro name="dynamixel_ax12_joint" params="parent name color llimit ulimit vlimit *origin" >
     <joint name="${name}_joint" type="revolute">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <axis xyz="0 0 1"/>
       <limit effort="${elimit}" velocity="${vlimit}" lower="${llimit - 0.1}" upper="${ulimit + 0.1}" />
       <safety_controller soft_lower_limit="${llimit}" soft_upper_limit="${ulimit}" k_position="1" k_velocity="1" />
@@ -58,11 +58,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="dynamixel_ax12_pan" params="parent name color *origin" >
+  <xacro:macro name="dynamixel_ax12_pan" params="parent name color *origin" >
     <joint name="${name}_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="${name}_link" />
     </joint>
@@ -85,11 +85,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="dynamixel_ax12_tilt" params="parent name color *origin" >
+  <xacro:macro name="dynamixel_ax12_tilt" params="parent name color *origin" >
     <joint name="${name}_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="${name}_link" />
     </joint>
@@ -112,12 +112,12 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="ax12_hinge_revolute_axis" params="parent name color llimit ulimit vlimit *origin *axis">
+  <xacro:macro name="ax12_hinge_revolute_axis" params="parent name color llimit ulimit vlimit *origin *axis">
     <joint name="${name}_joint" type="revolute">
-      <insert_block name="origin" />
-      <insert_block name="axis" />
+      <xacro:insert_block name="origin" />
+      <xacro:insert_block name="axis" />
       <limit effort="${elimit}" velocity="${vlimit}" lower="${llimit - 0.1}" upper="${ulimit + 0.1}" />
       <safety_controller soft_lower_limit="${llimit}" soft_upper_limit="${ulimit}" k_position="1" k_velocity="1" />
       <parent link="${parent}"/>
@@ -142,11 +142,11 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
-  <macro name="half_grpper" params="parent name color *origin">
+  <xacro:macro name="half_grpper" params="parent name color *origin">
     <joint name="${name}_joint" type="fixed">
-      <insert_block name="origin" />
+      <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
       <child link="${name}_link" />
     </joint>
@@ -174,7 +174,7 @@
         </geometry>
       </collision>
     </link>
-  </macro>
+  </xacro:macro>
 
   <xacro:macro name="gazebo_arm_link" params="name color">
     <gazebo reference="${name}">
