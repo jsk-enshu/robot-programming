@@ -5,6 +5,9 @@ set -x
 apt-get update
 apt-get install -y sudo software-properties-common git wget sed
 
+# fix stopping tzdata for 18.04
+echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
+
 echo "Testing branch $TRAVIS_BRANCH of $REPOSITORY_NAME"
 sudo sh -c "echo \"deb ${REPOSITORY} `lsb_release -cs` main\" > /etc/apt/sources.list.d/ros-latest.list"
 wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
