@@ -1,9 +1,10 @@
 #!/bin/bash
 
 set -x
+set -e
 
 apt-get update
-apt-get install -y sudo software-properties-common git wget sed
+apt-get install -y sudo software-properties-common git wget sed sudo
 
 # fix stopping tzdata for 18.04
 echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
@@ -13,10 +14,6 @@ sudo sh -c "echo \"deb ${REPOSITORY} `lsb_release -cs` main\" > /etc/apt/sources
 wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update -qq
 sudo apt-get install -qq -y python-rosdep python-catkin-tools python-wstool ros-${ROS_DISTRO}-catkin
-  # https://github.com/ros/ros_comm/pull/668
-sudo apt-get install -qq -y ros-${ROS_DISTRO}-rostest
-(cd /opt/ros/$ROS_DISTRO/lib/python2.7/dist-packages; wget --no-check-certificate https://patch-diff.githubusercontent.com/raw/ros/ros_comm/pull/637.diff -O - | sudo patch -f -p4 || echo "ok" )
-(cd /opt/ros/$ROS_DISTRO/lib/python2.7/dist-packages; wget --no-check-certificate https://patch-diff.githubusercontent.com/raw/ros/ros_comm/pull/668.diff -O - | sudo patch -f -p4 || echo "ok" )
 sudo rosdep init
 rosdep update
 # script:
