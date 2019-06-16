@@ -5,4 +5,10 @@ find_package(catkin REQUIRED COMPONENTS rostest) # add roseus to gen messages
 
 catkin_package()
 
-add_rostest(test/test-dxl-7dof-arm.test)
+if(CATKIN_ENABLE_TESTING)
+  find_package(pr2eus QUIET)
+  if(pr2eus_FOUND)
+    add_rostest(test/test-dxl-7dof-arm.test)
+  endif()
+endif()
+
