@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+6.0.0 (2019-06-16)
+------------------
 * add melodic test on travis (`#272 <https://github.com/jsk-enshu/robot-programming/issues/272>`_)
 
   * add --shutdown-timeout 0.1 to controller_manager

@@ -2,8 +2,8 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+6.0.0 (2019-06-16)
+------------------
 * fix for melodic and add test on travis (`#272 <https://github.com/jsk-enshu/robot-programming/issues/272>`_)
 
   * fix xacro: deprecated: xacro tags should be prepended with 'xacro' xml namespace.
