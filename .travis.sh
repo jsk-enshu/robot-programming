@@ -21,7 +21,7 @@ rosdep update
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws
 ln -sf ${CI_SOURCE_PATH} src/${REPOSITORY_NAME}
-rosdep install --from-paths src -y --ignore-src --rosdistro ${ROS_DISTRO}
+rosdep install --from-paths src -y -r -q --ignore-src --rosdistro ${ROS_DISTRO}
 source /opt/ros/${ROS_DISTRO}/setup.bash
 env | grep ROS
 rosversion catkin
