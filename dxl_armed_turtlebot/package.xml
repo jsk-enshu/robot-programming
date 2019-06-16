@@ -45,7 +45,7 @@
   <run_depend>turtlebot_navigation</run_depend>
   <run_depend>turtlebot_teleop</run_depend>
   <run_depend>turtleboteus</run_depend>
-  <run_depend>turtlebot_apps</run_depend>
+  <run_depend>turtlebot_navigation</run_depend>
   <run_depend>turtlebot_interactions</run_depend>
   <run_depend>turtlebot_interactive_markers</run_depend>
   <run_depend>rqt_joint_trajectory_controller</run_depend>

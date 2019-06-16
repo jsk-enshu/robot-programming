@@ -1,0 +1,21 @@
+- git:
+    local-name: dynamixel_urdf
+    uri: https://github.com/jsk-enshu/dynamixel_urdf
+- git:
+    local-name: kobuki
+    uri: https://github.com/yujinrobot/kobuki
+- git:
+    local-name: kobuki_desktop
+    uri: https://github.com/yujinrobot/kobuki_desktop
+- git:
+    local-name: turtlebot
+    uri: https://github.com/turtlebot/turtlebot
+- git:
+    local-name: turtlebot_simulator
+    uri: https://github.com/turtlebot/turtlebot_simulator
+- git:
+    local-name: turtlebot_apps
+    uri: https://github.com/turtlebot/turtlebot_apps
+- git:
+    local-name: turtlebot_msgs
+    uri: https://github.com/turtlebot/turtlebot_msgs
