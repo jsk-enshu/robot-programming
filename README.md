@@ -6,12 +6,14 @@ This is exercise for robot-programming.
 ```
 $ source /opt/ros/indigo/setup.bash   
 $ mkdir -p ~/catkin_ws/src
-$ cd ~/catkin_ws   
-$ wstool init src
-$ wstool set robot-programming https://github.com/jsk-enshu/robot-programming --git -t src
-$ wstool update -t src
-$ rosdep update                                                                                          
-$ rosdep install --from-paths src --ignore-src -y -r                                                                 
+$ cd ~/catkin_ws/src
+$ git clone https://github.com/jsk-enshu/robot-programming
+$ wstool init .
+$ wstool merge robot-programming/.rosinstall.${ROS_DISTRO}
+$ wstool update
+$ rosdep update
+$ rosdep install --from-paths src --ignore-src -y -r
+$ cd ..
 $ catkin build
 $ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## bashrcについか
 ```
