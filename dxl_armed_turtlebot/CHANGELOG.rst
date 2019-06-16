@@ -2,6 +2,37 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add melodic test on travis (`#272 <https://github.com/jsk-enshu/robot-programming/issues/272>`_)
+
+  * add --shutdown-timeout 0.1 to controller_manager
+  * run test-dxl-armed-turtlebot.test if pr2eus exists, and dxl_armed_turtlebot_bringup.launch depends on freenect_launch
+  * change depends from (metapackage) turtlebot_apps to turtlebot_navigation
+
+* Armed turtlebot in  Gazebo (`#245 <https://github.com/jsk-enshu/robot-programming/issues/245>`_)
+
+  * Fix the bug of the wrong location of tag <surface>
+  * Fix the problem of not working function ":wait-interpolation" in uselisp by:
+  update the constaints for joint trajectory controller, relaxing the path tolerance
+  * Add the checkerboard model in gazebo world, and also add instruction in READM.md
+  * Update the euslisp code to recognize and grasp cylinder object:
+    1. remove the commentout code about grasping motion
+    2. modified the IK part, regarding to the end-effector and target grasping position
+  * Add README.md and images to explain how to play smaples in gazebo
+  * Add several samples for gazebo
+  * Change the joint name form "arm_link${num}_joint" to "arm_joint${num}", in order to match the naming rule in real robot and eus model
+  * Add the velocity command mux node for gazebo trutelbot
+  * Add friction rate for gripper and object, along with PID gains for girpper controller
+  * Add grasp target object
+  * Seperate the trajectory controller into fullbody (arm) and gripper
+
+* Update the robot model of dxl_7dof_arm (`#244 <https://github.com/jsk-enshu/robot-programming/issues/244>`_)
+
+  * Add method copy process for robot arm part
+
+* Contributors: Kei Okada, Moju Zhao
+
 5.0.0 (2018-09-14)
 ------------------
 * Remove the urdf file about the arm model from this package (`#239 <https://github.com/jsk-enshu/robot-programming/pull/239>`_)
