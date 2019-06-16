@@ -7,6 +7,7 @@
   <property name="vlimit" value="6.0" />
   <!-- <property name="joint_interface" value="EffortJointInterface" /> -->
   <property name="joint_interface" value="VelocityJointInterface" />
+  <property name="joint_interface" value="hardware_interface/VelocityJointInterface" />
 
   <!-- Macro for the inertia of a box -->
   <xacro:macro name="box_inertia" params="x y z mass">
