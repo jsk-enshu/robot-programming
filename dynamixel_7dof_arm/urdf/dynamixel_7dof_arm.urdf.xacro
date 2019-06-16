@@ -2,12 +2,12 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro" >
 
   <!-- <xacro:include filename="$(find dynamixel_urdf)/urdf/ax12.xacro" /> -->
-  <property name="M_PI" value="3.1415926535897931" />
-  <property name="elimit" value="1.5" />
-  <property name="vlimit" value="6.0" />
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+  <xacro:property name="elimit" value="1.5" />
+  <xacro:property name="vlimit" value="6.0" />
   <!-- <property name="joint_interface" value="EffortJointInterface" /> -->
-  <property name="joint_interface" value="VelocityJointInterface" />
-  <property name="joint_interface" value="hardware_interface/VelocityJointInterface" />
+  <xacro:property name="joint_interface" value="VelocityJointInterface" />
+  <xacro:property name="joint_interface" value="hardware_interface/VelocityJointInterface" />
 
   <!-- Macro for the inertia of a box -->
   <xacro:macro name="box_inertia" params="x y z mass">
