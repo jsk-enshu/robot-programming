@@ -12,7 +12,7 @@ def cb(msg):
     marker.position=Point(msg.rect.center.x,msg.rect.center.y,0) #ImageMarker2においてgeometry_msgs/Point position # used for CIRCLE/TEXT, 2D in pixel-coords.マーカーの位置を、msg.rectの中心に設定する。
     pub.publish(marker)#markerを送信する
 
-    rospy.init_node('client')#nodeの名前（これによりMasterと通信できるようになる）
+rospy.init_node('client')#nodeの名前（これによりMasterと通信できるようになる）
 rospy.Subscriber('/camshift/track_box',RotatedRectStamped,cb)#RotatedRectStamped型のメッセージを、'/camshift/track_box'というtopicからうけとり、cbを受け取ったメッセージを第一引数とするコールバック関数として用いる。
 pub=rospy.Publisher('/image_marker',ImageMarker2)#'/image_marker'というtopicにImageMarker2型のメッセージを送信する
 rospy.spin()#シャットダウンされるまでノードをexitさせない
