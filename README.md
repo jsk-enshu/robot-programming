@@ -12,8 +12,8 @@ $ wstool init .
 $ wstool merge robot-programming/.rosinstall.${ROS_DISTRO}
 $ wstool update
 $ rosdep update
-$ rosdep install --from-paths src --ignore-src -y -r
 $ cd ..
+$ rosdep install --from-paths src --ignore-src -y -r
 $ catkin build
 $ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## bashrcについか
 ```
