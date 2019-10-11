@@ -4,7 +4,7 @@ robot-programming [![Build Status](https://travis-ci.org/jsk-enshu/robot-program
 This is exercise for robot-programming.
 
 ```
-$ source /opt/ros/indigo/setup.bash   
+$ source /opt/ros/melodic/setup.bash
 $ mkdir -p ~/catkin_ws/src
 $ cd ~/catkin_ws/src
 $ git clone https://github.com/jsk-enshu/robot-programming
