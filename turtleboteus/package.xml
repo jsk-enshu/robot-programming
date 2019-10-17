@@ -11,14 +11,12 @@
   <build_depend>kobuki_msgs</build_depend>
   <build_depend>control_msgs</build_depend>
   <build_depend>move_base_msgs</build_depend>
-  <build_depend>linux_peripheral_interfaces</build_depend>
   <build_depend>pr2eus</build_depend>
   <build_depend>rostest</build_depend>
 
   <run_depend>kobuki_msgs</run_depend>
   <run_depend>control_msgs</run_depend>
   <run_depend>move_base_msgs</run_depend>
-  <run_depend>linux_peripheral_interfaces</run_depend>
   <run_depend>pr2eus</run_depend>
   <run_depend>rostest</run_depend>
 </package>

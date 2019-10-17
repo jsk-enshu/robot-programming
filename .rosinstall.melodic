@@ -11,6 +11,9 @@
     local-name: kobuki_desktop
     uri: https://github.com/yujinrobot/kobuki_desktop
 - git:
+    local-name: linux_peripheral_interfaces
+    uri: https://github.com/ros-drivers/linux_peripheral_interfaces.git
+- git:
     local-name: turtlebot
     uri: https://github.com/turtlebot/turtlebot
 - git:
