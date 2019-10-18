@@ -20,5 +20,8 @@
     local-name: turtlebot_apps
     uri: https://github.com/turtlebot/turtlebot_apps
 - git:
+    local-name: turtlebot_interactions
+    uri: https://github.com/turtlebot/turtlebot_interactions.git
+- git:
     local-name: turtlebot_msgs
     uri: https://github.com/turtlebot/turtlebot_msgs
