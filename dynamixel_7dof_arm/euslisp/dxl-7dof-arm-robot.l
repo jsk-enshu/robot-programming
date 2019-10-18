@@ -382,17 +382,15 @@
   (:reset-pose
    ()
    "Reset pose."
-   (let ()
-     (send self :angle-vector (float-vector 0.0 0.0 -90.0 0.0 90.0 0.0))
-     (send (send self :gripper_joint) :joint-angle 0)
-     (send self :angle-vector)))
+   (send self :angle-vector (float-vector 0.0 0.0 -90.0 0.0 90.0 0.0))
+   (send (send self :gripper_joint) :joint-angle 0)
+   (send self :angle-vector))
   (:reset-pose2
    ()
    "Reset pose2."
-   (let ()
-     (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 90.0 0.0))
-     (send (send self :gripper_joint) :joint-angle 0)
-     (send self :angle-vector)))
+   (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 90.0 0.0))
+   (send (send self :gripper_joint) :joint-angle 0)
+   (send self :angle-vector))
   (:tuckarm-pose
    ()
    "Folding arm pose."
