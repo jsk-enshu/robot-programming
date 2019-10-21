@@ -47,8 +47,8 @@
   <run_depend>turtlebot_teleop</run_depend>
   <run_depend>turtleboteus</run_depend>
   <run_depend>turtlebot_navigation</run_depend>
-  <run_depend>turtlebot_interactions</run_depend>
   <run_depend>turtlebot_interactive_markers</run_depend>
+  <run_depend>turtlebot_rviz_launchers</run_depend>
   <run_depend>rqt_joint_trajectory_controller</run_depend>
   <run_depend>rqt_robot_steering</run_depend>
   <run_depend>teleop_twist_keyboard</run_depend>
