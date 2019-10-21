@@ -21,7 +21,7 @@
   (when *bounding-box-list*
     (send *irtviewer* :draw-objects :flush nil)
     (mapcar #'(lambda (b)
-                ;; BoundingBoxは、dimsntion(直方体の幅・奥行き・高さ)をもつ
+                ;; BoundingBoxは、dimensions(直方体の幅・奥行き・高さ)をもつ
                 (let* ((dims (ros::tf-point->pos (send b :dimensions)))
                        (bx (make-cube (elt dims 0) (elt dims 1) (elt dims 2)))
                        ;; (1) BoundingBoxのカメラ相対の座標系は、geometry_msgs/Poseという型で得られるので、Euslispのcoordsに変換する
