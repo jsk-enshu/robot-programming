@@ -64,7 +64,7 @@ gazebo内でも実機と同様にcheckerboardを検出することができる
 
 まず、checkerboader_detectorを起動しましょう:
 ```
-$ roslaunch roseus_tutorials checkerboard-detector.launch rect0_size_x:=0.02 rect0_size_y:=0.02 grid0_size_x:=7 grid0_size_y:=4 translation0:="0 0 0" image:=image_raw  group:=/camera/rgb frame_id:=camera_rgb_frame
+$ roslaunch roseus_tutorials checkerboard-detector.launch rect0_size_x:=0.02 rect0_size_y:=0.02 grid0_size_x:=7 grid0_size_y:=4 translation0:="0 0 0" image:=image_raw  group:=/camera/rgb frame_id:=camera_rgb_optical_frame
 ```
 
 

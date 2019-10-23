@@ -2,6 +2,9 @@
     local-name: dynamixel_urdf
     uri: https://github.com/jsk-enshu/dynamixel_urdf
 - git:
+    local-name: dynamixel_motor
+    uri: https://github.com/arebgun/dynamixel_motor
+- git:
     local-name: kobuki
     uri: https://github.com/yujinrobot/kobuki
 - git:
@@ -16,6 +19,9 @@
 - git:
     local-name: turtlebot_apps
     uri: https://github.com/turtlebot/turtlebot_apps
+- git:
+    local-name: turtlebot_interactions
+    uri: https://github.com/turtlebot/turtlebot_interactions.git
 - git:
     local-name: turtlebot_msgs
     uri: https://github.com/turtlebot/turtlebot_msgs
