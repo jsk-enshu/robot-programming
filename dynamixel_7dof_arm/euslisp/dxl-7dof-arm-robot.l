@@ -346,13 +346,13 @@
        (send (elt ln i) :assoc (elt ln (1+ i))))
      ln))
   ;; joints
-  (:arm_joint1 () jc0)
-  (:arm_joint2 () jc1)
-  (:arm_joint3 () jc2)
-  (:arm_joint4 () jc3)
-  (:arm_joint5 () jc4)
-  (:arm_joint6 () jc5)
-  (:gripper_joint () gripper_jc)
+  (:arm_joint1 (&rest args) (user::forward-message-to jc0 args))
+  (:arm_joint2 (&rest args) (user::forward-message-to jc1 args))
+  (:arm_joint3 (&rest args) (user::forward-message-to jc2 args))
+  (:arm_joint4 (&rest args) (user::forward-message-to jc3 args))
+  (:arm_joint5 (&rest args) (user::forward-message-to jc4 args))
+  (:arm_joint6 (&rest args) (user::forward-message-to jc5 args))
+  (:gripper_joint (&rest args) (user::forward-message-to gripper_jc args))
 
   ;; limbs
   (:arm (&rest args)
@@ -382,15 +382,15 @@
   (:reset-pose
    ()
    "Reset pose."
-   (let ()
-     (send self :angle-vector (float-vector 0.0 0.0 -90.0 0.0 90.0 0.0))
-     (send (send self :gripper_joint) :joint-angle 0)))
+   (send self :angle-vector (float-vector 0.0 0.0 -90.0 0.0 90.0 0.0))
+   (send self :gripper_joint :joint-angle 0)
+   (send self :angle-vector))
   (:reset-pose2
    ()
    "Reset pose2."
-   (let ()
-     (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 90.0 0.0))
-     (send (send self :gripper_joint) :joint-angle 0)))
+   (send self :angle-vector (float-vector 0.0 150.0 -90.0 0.0 90.0 0.0))
+   (send self :gripper_joint :joint-angle 0)
+   (send self :angle-vector))
   (:tuckarm-pose
    ()
    "Folding arm pose."
