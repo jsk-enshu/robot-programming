@@ -16,6 +16,11 @@ if(CATKIN_ENABLE_TESTING)
         continue()
       endif()
     endif()
+    if("${LAUNCH_FILE}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}/launch/checkerboard_detector_5x4.launch")
+      # to avoid error: "ROSLaunch config error: unrecognized tag sphinxdoc"
+      # https://github.com/jsk-ros-pkg/jsk_roseus/blob/master/roseus_tutorials/launch/checkerboard-detector.launch#L35
+      continue()
+    endif()
     roslaunch_add_file_check(${LAUNCH_FILE})
   endforeach()
   # test

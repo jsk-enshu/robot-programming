@@ -17,7 +17,6 @@
 (setq *target-object* (chessboard-30-7x5 :name "/test_object"))
 (objects (list *target-object* *dxl-armed-turtlebot*))
 
-(defvar *root-frame-id* "camera_rgb_frame")
 (setq *tfb* (instance ros::transform-broadcaster :init))
 
 (ros::roseus "objectdetection_client")
