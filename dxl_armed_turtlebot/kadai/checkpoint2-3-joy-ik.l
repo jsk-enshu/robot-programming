@@ -3,7 +3,7 @@
 (load "package://dxl_armed_turtlebot/euslisp/dxl-armed-turtlebot-interface.l")
 (load "package://roseus/test/joy.l")
 
-(ros::roseus "kadai2_3_joy_ik")
+(ros::roseus "checkpoint2_3_joy_ik")
 
 (dxl-armed-turtlebot-init)
 (init-ps3joy)

@@ -2,7 +2,7 @@
 
 (ros::roseus-add-msgs "kobuki_msgs")
 
-(ros::roseus "kadai1_3_2_led_euslisp")
+(ros::roseus "checkpoint1_3_2_led_euslisp")
 
 (ros::advertise "/mobile_base/commands/led1" kobuki_msgs::Led)
 (unix::sleep 1)

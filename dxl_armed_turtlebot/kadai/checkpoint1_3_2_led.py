@@ -4,7 +4,7 @@ import rospy
 from kobuki_msgs.msg import Led
 
 if __name__ == '__main__':
-    rospy.init_node("kadai1_3_2_led_python", anonymous=True)
+    rospy.init_node("checkpoint1_3_2_led_python", anonymous=True)
 
     pub = rospy.Publisher("/mobile_base/commands/led1", Led, queue_size=1)
     rospy.sleep(1)
