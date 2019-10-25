@@ -2,7 +2,7 @@
 
 (ros::roseus-add-msgs "kobuki_msgs")
 
-(ros::roseus "kadai1_3_1_button_euslisp")
+(ros::roseus "checkpoint1_3_1_button_euslisp")
 
 (defun button-cb
     (msg)

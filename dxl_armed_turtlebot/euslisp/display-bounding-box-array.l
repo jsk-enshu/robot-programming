@@ -4,7 +4,7 @@
 
 ;; jsk_pcl_rosのmsgを使うため、loadする
 ;;(ros::load-ros-manifest "jsk_pcl_ros")
-(ros::load-ros-manifest "jsk_recognition_msgs")
+(ros::roseus-add-msgs "jsk_recognition_msgs")
 
 ;; クラスタリング結果であるBoundingBoxのtopic名
 ;;(defvar *topic-name* "/camera/depth_registered/cluster_decomposer/boxes")

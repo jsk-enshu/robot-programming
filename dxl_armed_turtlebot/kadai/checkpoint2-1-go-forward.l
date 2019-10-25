@@ -2,7 +2,7 @@
 
 (load "package://turtleboteus/euslisp/turtlebot-interface")
 
-(ros::roseus "kadai2_1_go_forward")
+(ros::roseus "checkpoint2_1_go_forward")
 
 (turtlebot-init)
 
