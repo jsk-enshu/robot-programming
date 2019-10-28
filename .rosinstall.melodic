@@ -5,6 +5,10 @@
     local-name: dynamixel_motor
     uri: https://github.com/arebgun/dynamixel_motor
 - git:
+    local-name: freenect_stack
+    uri: https://github.com/mmurooka/freenect_stack.git
+    version: include-apt-libfreenect
+- git:
     local-name: kobuki
     uri: https://github.com/yujinrobot/kobuki
 - git:
