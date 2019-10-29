@@ -7,6 +7,8 @@
 - git:
     local-name: freenect_stack
     uri: https://github.com/mmurooka/freenect_stack.git
+    # for libfreenect-dev installed via apt (ros-melodic-libfreenect is not released)
+    # ref. https://github.com/ros-drivers/freenect_stack/pull/20#issuecomment-101602630
     version: include-apt-libfreenect
 - git:
     local-name: kobuki
