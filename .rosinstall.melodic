@@ -17,6 +17,7 @@
     local-name: kobuki_desktop
     uri: https://github.com/yujinrobot/kobuki_desktop
 - git:
+    # waiting for https://github.com/ros-drivers/linux_peripheral_interfaces/issues/13
     local-name: linux_peripheral_interfaces
     uri: https://github.com/ros-drivers/linux_peripheral_interfaces.git
 - git:
