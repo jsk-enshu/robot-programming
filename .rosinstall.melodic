@@ -5,12 +5,19 @@
     local-name: dynamixel_motor
     uri: https://github.com/arebgun/dynamixel_motor
 - git:
+    local-name: freenect_stack
+    uri: https://github.com/mmurooka/freenect_stack.git
+    # for libfreenect-dev installed via apt (ros-melodic-libfreenect is not released)
+    # ref. https://github.com/ros-drivers/freenect_stack/pull/20#issuecomment-101602630
+    version: include-apt-libfreenect
+- git:
     local-name: kobuki
     uri: https://github.com/yujinrobot/kobuki
 - git:
     local-name: kobuki_desktop
     uri: https://github.com/yujinrobot/kobuki_desktop
 - git:
+    # waiting for https://github.com/ros-drivers/linux_peripheral_interfaces/issues/13
     local-name: linux_peripheral_interfaces
     uri: https://github.com/ros-drivers/linux_peripheral_interfaces.git
 - git:

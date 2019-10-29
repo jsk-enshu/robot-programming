@@ -13,7 +13,7 @@
   <!--   turtlebot関係 -->
   <include file="$(find turtlebot_bringup)/launch/minimal.launch"/>
 
-  <include file="$(find dxl_armed_turtlebot)/launch/3dsensor.launch" />
+  <include file="$(find turtlebot_bringup)/launch/3dsensor.launch" />
 
   <include file="$(find dxl_armed_turtlebot)/launch/turtlebot_joystick_teleop.launch"
            if="$(arg RUN_PS3JOY)"/>
