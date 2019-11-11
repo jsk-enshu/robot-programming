@@ -2,8 +2,8 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+6.1.0 (2019-11-11)
+------------------
 * update dependency and rosinstall for installing unreleased packages in melodic
 
   * add dynamixel_motor (`#284 <https://github.com/jsk-enshu/robot-programming/issues/284>`_)
