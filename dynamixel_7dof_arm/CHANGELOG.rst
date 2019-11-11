@@ -2,6 +2,11 @@
 Changelog for package dynamixel_7dof_arm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update dxl-7dof-arm-robot's joint and pose method (`#291 <https://github.com/jsk-enshu/robot-programming/issues/291>`_)
+* Contributors: Kei Okada, Masaki Murooka
+
 6.0.0 (2019-06-16)
 ------------------
 * fix for melodic and add test on travis (`#272 <https://github.com/jsk-enshu/robot-programming/issues/272>`_)

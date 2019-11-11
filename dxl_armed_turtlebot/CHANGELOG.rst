@@ -2,6 +2,22 @@
 Changelog for package dxl_armed_turtlebot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update dependency and rosinstall for installing unreleased packages in melodic
+
+  * add dynamixel_motor (`#284 <https://github.com/jsk-enshu/robot-programming/issues/284>`_)
+  * add linux_peripheral_interfaces (`#288 <https://github.com/jsk-enshu/robot-programming/issues/288>`_)
+  * add turtlebot_interactions (`#290 <https://github.com/jsk-enshu/robot-programming/issues/290>`_)
+  * add freenect_stack (`#305 <https://github.com/jsk-enshu/robot-programming/issues/305>`_)
+  * depend on jsk_tools (`#289 <https://github.com/jsk-enshu/robot-programming/issues/289>`_)
+
+* increase the compatibility of teleop GUI between real and simulator robot (`#298 <https://github.com/jsk-enshu/robot-programming/issues/298>`_)
+
+* add reference programs for enshu2019 (`#299 <https://github.com/jsk-enshu/robot-programming/issues/299>`_, `#301 <https://github.com/jsk-enshu/robot-programming/issues/301>`_)
+
+* Contributors: Kei Okada, Masaki Murooka
+
 6.0.0 (2019-06-16)
 ------------------
 * add melodic test on travis (`#272 <https://github.com/jsk-enshu/robot-programming/issues/272>`_)
