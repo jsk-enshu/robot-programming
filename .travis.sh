@@ -14,8 +14,6 @@ sudo sh -c "echo \"deb ${REPOSITORY} `lsb_release -cs` main\" > /etc/apt/sources
 wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update -qq
 sudo apt-get install -qq -y python-rosdep python-catkin-tools python-wstool ros-${ROS_DISTRO}-catkin
-# install libfreenect-dev by apt because ros-melodic-libfreenect is not released and libfreenect is not resolved by rosdep.
-[ "${ROS_DISTRO}" == "melodic" ] && sudo apt-get install -qq -y libfreenect-dev
 sudo rosdep init
 rosdep update
 # script:
