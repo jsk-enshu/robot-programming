@@ -7,9 +7,9 @@ env:
     - ROS_DISTRO="kinetic"   REPOSITORY=http://packages.ros.org/ros-testing/ubuntu
     - ROS_DISTRO="melodic"   REPOSITORY=http://packages.ros.org/ros/ubuntu
     - ROS_DISTRO="melodic"   REPOSITORY=http://packages.ros.org/ros-testing/ubuntu
-matrix:
-  allow_failures:
-    - env: ROS_DISTRO="melodic"   REPOSITORY=http://packages.ros.org/ros/ubuntu
+# matrix:
+#   allow_failures:
+#     - env: ROS_DISTRO="melodic"   REPOSITORY=http://packages.ros.org/ros/ubuntu
 install:
   - case $ROS_DISTRO in "hydro") export DISTRO=precise;; "indigo") export DISTRO=trusty;; "kinetic") export DISTRO=xenial;; "melodic") export DISTRO=bionic;; esac;
   - export DOCKER_IMAGE=ubuntu:$DISTRO
