@@ -1,0 +1,301 @@
+# Joint State Controllers ---------------------------------------
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50  
+# Trajectory Controllers ---------------------------------------
+fullbody_controller:
+  # type: effort_controllers/JointTrajectoryController
+  type: velocity_controllers/JointTrajectoryController
+  joints:
+    - LARM_JOINT0
+    - LARM_JOINT1
+    - LARM_JOINT2
+    - LARM_JOINT3
+    - LARM_JOINT4
+    - LARM_JOINT5
+    - LARM_JOINT6
+    - LARM_JOINT7
+  constraints:
+    goal_time: 0.5                   # Override default
+    stopped_velocity_tolerance: 0.02 # Override default
+    LARM_JOINT0:
+      goal: 0.02                     # Not enforced if unspecified
+    LARM_JOINT1:
+      goal: 0.02                     # Not enforced if unspecified
+    LARM_JOINT2:
+      goal: 0.02                     # Not enforced if unspecified
+    LARM_JOINT3:
+      goal: 0.02                     # Not enforced if unspecified
+    LARM_JOINT4:
+      goal: 0.02                     # Not enforced if unspecified
+    LARM_JOINT5:
+      goal: 0.02                     # Not enforced if unspecified
+    LARM_JOINT6:
+      goal: 0.02                     # Not enforced if unspecified
+    LARM_JOINT7:
+      goal: 0.02                     # Not enforced if unspecified
+
+  gains: # Required because we're controlling an effort interface
+    LARM_JOINT0: {p: 25, i: 0.0, d: 0.0}
+    LARM_JOINT1: {p: 25, i: 0.0, d: 0.0}
+    LARM_JOINT2: {p: 25, i: 0.0, d: 0.0}
+    LARM_JOINT3: {p: 25, i: 0.0, d: 0.0}
+    LARM_JOINT4: {p: 25, i: 0.0, d: 0.0}
+    LARM_JOINT5: {p: 25, i: 0.0, d: 0.0}
+    LARM_JOINT6: {p: 25, i: 0.0, d: 0.0}
+    LARM_JOINT7: {p: 25, i: 0.0, d: 0.0}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+
+
+larm_controller:
+  type: effort_controllers/JointTrajectoryController
+  joints:
+    - LARM_JOINT0
+    - LARM_JOINT1
+    - LARM_JOINT2
+    - LARM_JOINT3
+    - LARM_JOINT4
+    - LARM_JOINT5
+    - LARM_JOINT6
+    - LARM_JOINT7
+  gains: # Required because we're controlling an effort interface
+    LARM_JOINT0: {p: 100, i: 0.0, d: 1.0}
+    LARM_JOINT1: {p: 100, i: 0.0, d: 1.0}
+    LARM_JOINT2: {p: 100, i: 0.0, d: 1.0}
+    LARM_JOINT3: {p: 100, i: 0.0, d: 1.0}
+    LARM_JOINT4: {p: 100, i: 0.0, d: 1.0}
+    LARM_JOINT5: {p: 10, i: 0.0, d: 1.0}
+    LARM_JOINT6: {p: 10, i: 0.0, d: 1.0}
+    LARM_JOINT7: {p: 10, i: 0.0, d: 1.0}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+
+
+rarm_controller:
+  type: effort_controllers/JointTrajectoryController
+  joints:
+    - RARM_JOINT0
+    - RARM_JOINT1
+    - RARM_JOINT2
+    - RARM_JOINT3
+    - RARM_JOINT4
+    - RARM_JOINT5
+    - RARM_JOINT6
+    - RARM_JOINT7
+  gains: # Required because we're controlling an effort interface
+    RARM_JOINT0: {p: 1000, i: 0.0, d: 10.0}
+    RARM_JOINT1: {p: 1000, i: 0.0, d: 10.0}
+    RARM_JOINT2: {p: 1000, i: 0.0, d: 10.0}
+    RARM_JOINT3: {p: 1000, i: 0.0, d: 10.0}
+    RARM_JOINT4: {p: 1000, i: 0.0, d: 10.0}
+    RARM_JOINT5: {p: 100, i: 0.0, d: 1.0}
+    RARM_JOINT6: {p: 100, i: 0.0, d: 1.0}
+    RARM_JOINT7: {p: 100, i: 0.0, d: 1.0}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+
+
+lleg_controller:
+  type: effort_controllers/JointTrajectoryController
+  joints:
+    - LLEG_JOINT0
+    - LLEG_JOINT1
+    - LLEG_JOINT2
+    - LLEG_JOINT3
+    - LLEG_JOINT4
+    - LLEG_JOINT5
+  gains: # Required because we're controlling an effort interface
+    LLEG_JOINT0: {p: 1000, i: 0.0, d: 10.0}
+    LLEG_JOINT1: {p: 1000, i: 0.0, d: 10.0}
+    LLEG_JOINT2: {p: 1000, i: 0.0, d: 10.0}
+    LLEG_JOINT3: {p: 1000, i: 0.0, d: 10.0}
+    LLEG_JOINT4: {p: 100, i: 0.0, d: 1.0}
+    LLEG_JOINT5: {p: 100, i: 0.0, d: 1.0}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+
+
+rleg_controller:
+  type: effort_controllers/JointTrajectoryController
+  joints:
+    - RLEG_JOINT0
+    - RLEG_JOINT1
+    - RLEG_JOINT2
+    - RLEG_JOINT3
+    - RLEG_JOINT4
+    - RLEG_JOINT5
+  gains: # Required because we're controlling an effort interface
+    RLEG_JOINT0: {p: 1000, i: 0.0, d: 10.0}
+    RLEG_JOINT1: {p: 1000, i: 0.0, d: 10.0}
+    RLEG_JOINT2: {p: 1000, i: 0.0, d: 10.0}
+    RLEG_JOINT3: {p: 1000, i: 0.0, d: 10.0}
+    RLEG_JOINT4: {p: 100, i: 0.0, d: 1.0}
+    RLEG_JOINT5: {p: 100, i: 0.0, d: 1.0}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+
+# gripper_controller:
+#   #type: effort_controllers/JointTrajectoryController
+#   type: velocity_controllers/JointTrajectoryController
+#   joints:
+#     - gripper_joint
+#   constraints:
+#     goal_time: 0.5                   # Override default
+#     stopped_velocity_tolerance: 0.02 # Override default
+#     gripper_joint:
+#       #trajectory: 0.05               # Not enforced if unspecified
+#       goal: 0.02                     # Not enforced if unspecified
+
+#   gains: # Required because we're controlling an effort interface
+#     gripper_joint: {p: 10.0, i: 0.0, d: 0.0}
+#   state_publish_rate:  100            # Override default
+#   action_monitor_rate: 100            # Override default
+#   stop_trajectory_duration: 0        # Override default
+
+# gazebo_ros_control:
+#   pid_gains:
+#     LARM_JOINT0: {p: 0, i: 0, d: 0}
+#     LARM_JOINT1: {p: 0, i: 0, d: 0}
+#     LARM_JOINT2: {p: 0, i: 0, d: 0}
+#     LARM_JOINT3: {p: 0, i: 0, d: 0}
+#     LARM_JOINT4: {p: 0, i: 0, d: 0}
+#     LARM_JOINT5: {p: 0, i: 0, d: 0}
+#     LARM_JOINT6: {p: 0, i: 0, d: 0}
+#     LARM_JOINT7: {p: 0, i: 0, d: 0}
+
+#     RARM_JOINT0: {p: 0, i: 0, d: 0}
+#     RARM_JOINT1: {p: 0, i: 0, d: 0}
+#     RARM_JOINT2: {p: 0, i: 0, d: 0}
+#     RARM_JOINT3: {p: 0, i: 0, d: 0}
+#     RARM_JOINT4: {p: 0, i: 0, d: 0}
+#     RARM_JOINT5: {p: 0, i: 0, d: 0}
+#     RARM_JOINT6: {p: 0, i: 0, d: 0}
+#     RARM_JOINT7: {p: 0, i: 0, d: 0}
+
+
+# LLEG_JOINT0_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LLEG_JOINT0
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# LLEG_JOINT1_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LLEG_JOINT1
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# LLEG_JOINT2_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LLEG_JOINT2
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# LLEG_JOINT3_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LLEG_JOINT3
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# LLEG_JOINT4_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LLEG_JOINT4
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# LLEG_JOINT5_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LLEG_JOINT5
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+
+# RLEG_JOINT0_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RLEG_JOINT0
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# RLEG_JOINT1_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RLEG_JOINT1
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# RLEG_JOINT2_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RLEG_JOINT2
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# RLEG_JOINT3_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RLEG_JOINT3
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# RLEG_JOINT4_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RLEG_JOINT4
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# RLEG_JOINT5_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RLEG_JOINT5
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+    
+# LARM_JOINT0_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LARM_JOINT0
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# LARM_JOINT1_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LARM_JOINT1
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# LARM_JOINT2_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LARM_JOINT2
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# LARM_JOINT3_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LARM_JOINT3
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# LARM_JOINT4_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LARM_JOINT4
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# LARM_JOINT5_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LARM_JOINT5
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# LARM_JOINT6_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LARM_JOINT6
+#   pid: {p: 1.0, i: 0.01, d: 0.0}
+# LARM_JOINT7_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: LARM_JOINT7
+#   pid: {p: 1.0, i: 0.01, d: 0.0}
+
+# RARM_JOINT0_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RARM_JOINT0
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# RARM_JOINT1_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RARM_JOINT1
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# RARM_JOINT2_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RARM_JOINT2
+#   pid: {p: 100.0, i: 0.01, d: 0.0}
+# RARM_JOINT3_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RARM_JOINT3
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# RARM_JOINT4_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RARM_JOINT4
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# RARM_JOINT5_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RARM_JOINT5
+#   pid: {p: 10.0, i: 0.01, d: 0.0}
+# RARM_JOINT6_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RARM_JOINT6
+#   pid: {p: 1.0, i: 0.01, d: 0.0}
+# RARM_JOINT7_position_controller:
+#   type: effort_controllers/JointPositionController
+#   joint: RARM_JOINT7
+#   pid: {p: 1.0, i: 0.01, d: 0.0}
