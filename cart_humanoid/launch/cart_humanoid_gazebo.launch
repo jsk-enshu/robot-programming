@@ -4,10 +4,11 @@
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
-  <arg name="world_file" default="$(find cart_humanoid)/worlds/empty.world" />
+  <arg name="world_file" default="$(find cart_humanoid)/worlds/humanoid_workspace.world" />
   <arg name="model" value="$(find cart_humanoid)/urdf/robot.urdf.xacro"  />
+  <arg name="fix_base_link" default="true"  />
 
-  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model) fix_base_link:=$(arg fix_base_link) --inorder" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="30.0" />
@@ -18,6 +19,7 @@
         args=" /camera/depth/points /camera/depth_registered/points" />
   <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cart_humanoid)/config/cart_humanoid.rviz"/> -->
 
+  <!-- <remap from="/fullbody_controller/follow_joint_trajectory" to="/fullbody_controller/follow_joint_trajectory_action"/> -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
@@ -56,12 +58,12 @@
   </node>
 
   <!-- Velocity muxer -->
-  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
-  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux"
-        args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
-    <param name="yaml_cfg_file" value="$(find turtlebot_bringup)/param/mux.yaml" />
-    <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
-  </node>
+  <!-- <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/> -->
+  <!-- <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" -->
+  <!--       args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager"> -->
+  <!--   <param name="yaml_cfg_file" value="$(find turtlebot_bringup)/param/mux.yaml" /> -->
+  <!--   <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/> -->
+  <!-- </node> -->
 
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <!-- load the controllers -->
@@ -71,31 +73,11 @@
         output="screen"
         args="--shutdown-timeout 0.1
               joint_state_controller
-	      larm_controller
-	      rarm_controller
-	      lleg_controller
-	      rleg_controller
+	      fullbody_controller
+	      l_gripper_controller
+	      r_gripper_controller
 	      "/>
 
-
-              <!-- joint0_position_controller -->
-	      <!-- joint1_position_controller -->
-	      <!-- joint2_position_controller -->
-	      <!-- joint3_position_controller -->
-	      <!-- joint4_position_controller -->
-	      <!-- joint5_position_controller -->
-	      <!-- joint6_position_controller -->
-	      <!-- joint7_position_controller -->
-
-
-  <!-- <node name="controller_spawner" pkg="controller_manager" -->
-  <!--       type="spawner" respawn="false" -->
-  <!--       output="screen" -->
-  <!--       args="-\-shutdown-timeout 0.1 -->
-  <!--             joint_state_controller -->
-  <!--             fullbody_controller -->
-  <!--             gripper_controller -->
-  <!--             "/> -->
   <!-- send tuck pose -->
   <!-- <node name="tuck_arm" pkg="cart_humanoid" type="tuck_arm.py" args="-t" /> -->
 </launch>

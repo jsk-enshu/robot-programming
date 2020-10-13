@@ -1,27 +1,24 @@
 <?xml version="1.0"?>
 <robot name="cart_humanoid" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:include filename="$(find kobuki_description)/urdf/kobuki.urdf.xacro"/>
-  <xacro:include filename="$(find turtlebot_description)/urdf/stacks/hexagons.urdf.xacro" />
-  <xacro:include filename="$(find turtlebot_description)/urdf/sensors/kinect.urdf.xacro" />
-  <!-- <xacro:include filename="$(find dynamixel_7dof_arm)/urdf/dynamixel_7dof_arm.urdf.xacro" /> -->
   <xacro:include filename="$(find cart_humanoid)/urdf/JAXON_RED.urdf.xacro" />
+  <xacro:arg name="fix_base_link" default="false"/>
+
+  <xacro:if value="$(arg fix_base_link)">
+    <xacro:property name="base_link_joint_type" value="fixed" />
+  </xacro:if>
+  <xacro:unless value="$(arg fix_base_link)">
+    <xacro:property name="base_link_joint_type" value="prismatic" />
+  </xacro:unless>
   
-  <!-- <kobuki/> -->
   <JAXON_RED/>
 
-  <!-- <joint name="joint0" type="fixed"> -->
-  <!--   <parent link="plate_top_link"/> -->
-  <!--   <child link="BODY"/> -->
-  <!--   <origin xyz="0 0 1" rpy="0 0 0" /> -->
-  <!-- </joint> -->
-
   <link name="world"/>
-  <joint name="slide_x" type="prismatic">
+  <joint name="slide_x" type="${base_link_joint_type}">
     <parent link="world"/>
     <child link="slide_y_link"/>
-    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <limit effort="1000.0" lower="-999" upper="999" velocity="1"/>
     <axis xyz="1 0 0"/>
-    <origin xyz="0 0 1" rpy="0 0 0" />
+    <origin xyz="0 0 0.95" rpy="0 0 0" />
   </joint>
 
   <link name="slide_y_link">
@@ -32,24 +29,14 @@
     </inertial>
   </link>
   
-  <joint name="slide_y" type="prismatic">
+  <joint name="slide_y" type="${base_link_joint_type}">
     <parent link="slide_y_link"/>
     <child link="BODY"/>
-    <limit effort="1000.0" lower="-1" upper="1" velocity="0.5"/>
+    <limit effort="1000.0" lower="-999" upper="999" velocity="1"/>
     <axis xyz="0 1 0"/>
     <origin xyz="0 0 0" rpy="0 0 0" />
   </joint>
   
-  <!-- <stack_hexagons parent="base_link"/> -->
-  <!-- <sensor_kinect  parent="base_link"/> -->
-
-  <!-- <dynamixel_7dof_arm /> -->
-  <!-- <joint name="joint0" type="fixed"> -->
-  <!--   <parent link="plate_top_link"/> -->
-  <!--   <child link="arm_base_link"/> -->
-  <!--   <origin xyz="0.182 0 -0.025" rpy="0 0 0" /> -->
-  <!-- </joint> -->
-
 </robot>
 
 
