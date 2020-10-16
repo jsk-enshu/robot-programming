@@ -20,7 +20,7 @@
   <arg name="s_max" default="255" doc="maximum satuation 255 corresponds to 1. Satuation is calucrated as (1-(min r g b)/intensity) * 255"/>
   <arg name="s_min" default="120" doc="minimum satuation 0 corresponds to 0. Satuation is calucrated as (1-(min r g b)/intensity) * 255"/>
   <arg name="i_max" default="255" doc="maximum intensity 255 corresponds to 1. Intensity is calculated as (r + g + b)/3"/>
-  <arg name="i_min" default="70" doc="minimum intensity 0 corresponds to 0. Intensity is calculated as (r + g + b)/3"/>
+  <arg name="i_min" default="0" doc="minimum intensity 0 corresponds to 0. Intensity is calculated as (r + g + b)/3"/>
 
   <arg name="create_manager" default="true" />
   <arg name="manager" default="hsi_filter_manager$(arg FILTER_NAME_SUFFIX)" />
