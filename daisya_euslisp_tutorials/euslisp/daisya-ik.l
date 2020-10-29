@@ -43,26 +43,27 @@
           (make-cascoords :pos (send (send robot :arm :end-coords :copy-worldcoords) :worldpos)))
     ;;ループを回す
     (while t
-      (setq w (read-line)) ;;文字を取得
+      (setq w (kbhit))
+      ;;(setq w (read-line)) ;;old version, need enter <Enter> after keystroke
       ;;文字によって操作を変える
       (cond
-       ((equal w "e")
+       ((equal w 101) ;; "e"
         (return-from nil)) ;;loopから抜けて終了
-       ((equal w "h")  ;;左へ動かす
+       ((equal w 104)  ;;"h" 左へ動かす
         (send goal-endcoords :locate (float-vector 0 step 0)))
-       ((equal w "j")  ;;下へ動かす
+       ((equal w 106)  ;;"j" 下へ動かす
         (send goal-endcoords :locate (float-vector 0 0 (* -1 step))))
-       ((equal w "k")  ;;上へ動かす
+       ((equal w 107)  ;;"k" 上へ動かす
         (send goal-endcoords :locate (float-vector 0 0 step)))
-       ((equal w "l")  ;;右へ動かす
+       ((equal w 108)  ;;"l" 右へ動かす
         (send goal-endcoords :locate (float-vector 0 (* -1 step) 0)))
-       ((equal w "f")  ;;前へ動かす
+       ((equal w 102)  ;;"f" 前へ動かす
         (send goal-endcoords :locate (float-vector step 0 0)))
-       ((equal w "b")  ;;後へ動かす
+       ((equal w 98)  ;;"b" 後へ動かす
         (send goal-endcoords :locate (float-vector (* -1 step) 0 0)))
        ((not w)) ;;何も入れられなければ何もしない
        (t
-        (warn ";; no such command~%")
+        (warn ";; no such command: ~c ~%" w)
         (warn ";; if stop, then enter e~%")
         (warn ";;  h:left, j:down, k:up, l:right, f:forward, b:back~%")
         ))
