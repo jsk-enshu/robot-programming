@@ -69,7 +69,7 @@ void range_loop()
   digitalWrite(TRIG_PIN, LOW);
 
   float duration = pulseIn(ECHO_PIN, HIGH);
-  range_msg.range = (duration*.0343)/2; // // ultrasonic speed is 340m/s = 0.034cm/us
+  range_msg.range = (duration*.0343)/2; // ultrasonic speed is 340m/s = 0.034cm/us
   range_msg.header.stamp = nh.now();
 
   // setup range publisher
