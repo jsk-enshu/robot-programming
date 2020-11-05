@@ -50,8 +50,8 @@ void range_setup()
   pinMode(ECHO_PIN, INPUT);
   range_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
   range_msg.field_of_view = 0.261799;// 15degree
-  range_msg.min_range = 0.02;
-  range_msg.max_range = 4;
+  range_msg.min_range = 0.02; // [m]
+  range_msg.max_range = 4.5;  // [m]
   range_msg.header.frame_id = "/range";
 
   nh.advertise(range_pub);
@@ -69,7 +69,7 @@ void range_loop()
   digitalWrite(TRIG_PIN, LOW);
 
   float duration = pulseIn(ECHO_PIN, HIGH);
-  range_msg.range = (duration*.0343)/2; // ultrasonic speed is 340m/s = 0.034cm/us
+  range_msg.range = (duration*.000343)/2; // ultrasonic speed is 340m/s = 0.00034m/us
   range_msg.header.stamp = nh.now();
 
   // setup range publisher
