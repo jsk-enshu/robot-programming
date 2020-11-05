@@ -1,0 +1,12 @@
+<launch>
+  <include file="$(find roseus_tutorials)/launch/checkerboard-detector.launch" >
+    <arg name="rect0_size_x" value="0.02" />
+    <arg name="rect0_size_y" value="0.02" />
+    <arg name="grid0_size_x" value="7" />
+    <arg name="grid0_size_y" value="4" />
+    <arg name="translation0" value="0 0 0" />
+    <arg name="image" value="image_raw" />
+    <arg name="group" value="/camera/rgb" />
+    <arg name="frame_id" value="camera_rgb_optical_frame" />
+  </include>
+</launch>
