@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot name="cart_humanoid" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find cart_humanoid)/urdf/JAXON_RED.urdf.xacro" />
+  <xacro:arg name="fix_base_link" default="false"/>
+
+  <xacro:if value="$(arg fix_base_link)">
+    <xacro:property name="base_link_joint_type" value="fixed" />
+  </xacro:if>
+  <xacro:unless value="$(arg fix_base_link)">
+    <xacro:property name="base_link_joint_type" value="prismatic" />
+  </xacro:unless>
+  
+  <JAXON_RED/>
+
+  <link name="world"/>
+  <joint name="slide_x" type="${base_link_joint_type}">
+    <parent link="world"/>
+    <child link="slide_y_link"/>
+    <limit effort="1000.0" lower="-999" upper="999" velocity="1"/>
+    <axis xyz="1 0 0"/>
+    <origin xyz="0 0 0.95" rpy="0 0 0" />
+  </joint>
+
+  <link name="slide_y_link">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="1.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </inertial>
+  </link>
+  
+  <joint name="slide_y" type="${base_link_joint_type}">
+    <parent link="slide_y_link"/>
+    <child link="BODY"/>
+    <limit effort="1000.0" lower="-999" upper="999" velocity="1"/>
+    <axis xyz="0 1 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </joint>
+  
+</robot>
+
+
+

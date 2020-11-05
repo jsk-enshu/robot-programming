@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name='my_model'>
+    <link name='my_link'>
+      <inertial>
+        <mass>1.0</mass>
+        <inertia>
+          <ixx>0.1</ixx>
+          <ixy>0.0</ixy>
+	  <ixz>0.0</ixz>
+          <iyy>0.1</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.1</izz>
+        </inertia>
+      </inertial>
+      <collision name='my_collision'>
+	<pose> -0.1 0.04 0 1.5708 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://my_model/my_mesh.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='my_visual'>
+	<pose> -0.1 0.04 0 1.5708 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://my_model/my_mesh.stl</uri>
+            <scale>0.001 0.001 0.001</scale>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

@@ -1,0 +1,34 @@
+<launch>
+
+  <arg name="debug_view" value="false" />
+
+  <node pkg="usb_cam" type="usb_cam_node" name="usb_cam">
+    <param name="framerate" value="10"/>
+    <param name="pixel_format" value="yuyv"/>
+  </node>
+
+  <group ns="head_arm">
+    <!-- detect skin color (sample)-->
+    <include file="$(find opencv_apps)/launch/hsv_color_filter.launch">
+      <arg name="image" value="/usb_cam/image_raw"/>
+      <arg name="debug_view" value="$(arg debug_view)"/>
+      <arg name="h_limit_max" default="50"/>
+      <arg name="h_limit_min" default="0"/>
+      <arg name="s_limit_max" default="255"/>
+      <arg name="s_limit_min" default="50"/>
+      <arg name="v_limit_max" default="150"/>
+      <arg name="v_limit_min" default="50"/>
+    </include>
+    <!-- publish ellipse fitting for head larm rarm area -->
+    <include file="$(find opencv_apps)/launch/general_contours.launch">
+      <arg name="image" value="hsv_color_filter/image"/>
+      <arg name="debug_view" value="$(arg debug_view)"/>
+    </include>
+  </group>
+
+  <!-- simple labeling on top 3 area -->
+  <node pkg="cart_humanoid" type="skin_ellipse_area_to_ik_tgt.py" name="skin_ellipse_area_to_ik_tgt" output="screen"/>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cart_humanoid)/config/sample_head_arm_skin_detect.rviz"/> 
+  
+</launch>
