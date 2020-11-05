@@ -19,6 +19,7 @@
       <origin xyz="0 0 -0.05" />
       <geometry>
         <cylinder length="0.1" radius="0.003"/>
+	<!-- <mesh filename="package://mechatrobot/urdf/sample-3d-model.stl" scale="0.001 0.001 0.001" /> -->
       </geometry>
     </visual>
   </link>
