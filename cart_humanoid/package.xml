@@ -1,10 +1,10 @@
 <package>
   <name>cart_humanoid</name>
-  <version>6.1.0</version>
-  <description>Turtlebot with dynamixel 7dof arm</description>
+  <version>1.0.0</version>
+  <description>Humanoid robot gazebo simulation with fixed base link</description>
   <license>BSD</license>
-  <maintainer email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</maintainer>
-  <author email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</author>
+  <maintainer email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</maintainer>
+  <author email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -17,7 +17,7 @@
 
   <run_depend>controller_manager</run_depend>
   <run_depend>depthimage_to_laserscan</run_depend>
-  <run_depend>dynamixel_7dof_arm</run_depend>
+  <!-- <run_depend>dynamixel_7dof_arm</run_depend> -->
   <run_depend>gazebo_plugins</run_depend>
   <run_depend>gazebo_ros</run_depend>
   <run_depend>gazebo_ros_control</run_depend>
@@ -29,26 +29,26 @@
   <run_depend>jsk_pcl_ros</run_depend>
   <run_depend>jsk_tools</run_depend>
   <run_depend>joystick_drivers</run_depend>
-  <run_depend>kobuki_dashboard</run_depend>
-  <run_depend>kobuki_gazebo</run_depend>
-  <run_depend>libbluetooth-dev</run_depend>
-  <run_depend>libjack-dev</run_depend>
+  <!-- <run_depend>kobuki_dashboard</run_depend> -->
+  <!-- <run_depend>kobuki_gazebo</run_depend> -->
+  <!-- <run_depend>libbluetooth-dev</run_depend> -->
+  <!-- <run_depend>libjack-dev</run_depend> -->
   <run_depend>map_server</run_depend>
   <run_depend>nodelet</run_depend>
   <run_depend>opencv_apps</run_depend>
-  <run_depend>ps3joy</run_depend>
+  <!-- <run_depend>ps3joy</run_depend> -->
   <run_depend>robot_state_publisher</run_depend>
   <run_depend>rqt_reconfigure</run_depend>
   <run_depend>rviz</run_depend>
   <run_depend>topic_tools</run_depend>
-  <run_depend>turtlebot_bringup</run_depend>
-  <run_depend>turtlebot_description</run_depend>
-  <run_depend>turtlebot_navigation</run_depend>
-  <run_depend>turtlebot_teleop</run_depend>
-  <run_depend>turtleboteus</run_depend>
-  <run_depend>turtlebot_navigation</run_depend>
-  <run_depend>turtlebot_interactive_markers</run_depend>
-  <run_depend>turtlebot_rviz_launchers</run_depend>
+  <!-- <run_depend>turtlebot_bringup</run_depend> -->
+  <!-- <run_depend>turtlebot_description</run_depend> -->
+  <!-- <run_depend>turtlebot_navigation</run_depend> -->
+  <!-- <run_depend>turtlebot_teleop</run_depend> -->
+  <!-- <run_depend>turtleboteus</run_depend> -->
+  <!-- <run_depend>turtlebot_navigation</run_depend> -->
+  <!-- <run_depend>turtlebot_interactive_markers</run_depend> -->
+  <!-- <run_depend>turtlebot_rviz_launchers</run_depend> -->
   <run_depend>rqt_joint_trajectory_controller</run_depend>
   <run_depend>rqt_robot_steering</run_depend>
   <run_depend>teleop_twist_keyboard</run_depend>
