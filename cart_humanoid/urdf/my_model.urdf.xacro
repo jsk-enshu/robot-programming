@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="my_model">
+  <xacro:macro name="my_nmodel" params="prefix parent type *origin">
+    <link name="${prefix}palm">
+      <inertial>
+        <origin xyz="0.0835 0 -0.0181" rpy="0 0 0" />
+        <mass value="0.8" />
+        <inertia ixx="0.001314416" ixy="0" ixz="0" iyy="0.002746271" iyz="0" izz="0.002284148"/>
+      </inertial>
+      <visual>
+        <geometry>
+          <mesh filename="package://cart_humanoid/urdf/my_mesh.stl" />
+        </geometry>
+        <material name="red">
+          <color rgba="0.8 0.0 0.0 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://cart_humanoid/urdf/my_mesh.stl" />
+        </geometry>
+      </collision>
+    </link>
+  </xacro:macro>
+</robot>
