@@ -10,7 +10,7 @@
 const int StepsPerRotate = STEPS_PER_ROTATE_28BYJ48;
 
 // 毎分の回転数(rpm)
-int rpm = 15; // 1-15rpmでないと動かない
+int rpm = 5; // 1-15rpmでないと動かない
 
 // モータに与えるステップ数
 int Steps = 512; // 90度回転. 360deg : 90deg = 2048 : 512
