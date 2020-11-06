@@ -310,7 +310,7 @@
 
     <model name="table">
       <static>1</static>
-      <pose>1.0 0.0 0.5 0 0 0</pose>
+      <pose>0.5 0.0 0.5 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>10</mass>
@@ -355,7 +355,7 @@
 
     <!-- grasp target -->
     <model name="target_cylinder">
-      <pose>1.0 0 1.05 0 0 0</pose>
+      <pose>0.5 0 1.05 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>1</mass>
@@ -402,7 +402,7 @@
 
     <!-- grasp target2 -->
     <model name="target_cylinder">
-      <pose>1.0 0.2 1.1 0 0 0</pose>
+      <pose>0.5 0.2 1.1 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.1</mass>
@@ -449,7 +449,7 @@
 
     <!-- grasp target3 -->
     <model name="target_cylinder">
-      <pose>1.0 -0.2 1.1 0 0 0</pose>
+      <pose>0.5 -0.2 1.1 0 0 0</pose>
       <link name="link">
         <inertial>
           <mass>0.1</mass>
@@ -504,7 +504,7 @@
 
     <!-- my_model -->
     <!-- <model name="my_model" > -->
-    <!--   <pose>1.0 -0.4 1 0 0 0</pose> -->
+    <!--   <pose>0.5 -0.4 1 0 0 0</pose> -->
     <!--   <include> -->
     <!--     <uri>model://my_model</uri> -->
     <!--   </include> -->

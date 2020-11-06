@@ -8,8 +8,8 @@
 (setq larm-tgt (make-coords :pos #f(500  300    0)))
 (setq rarm-tgt (make-coords :pos #f(500 -300    0)))
 (setq head-tgt (make-coords :pos #f(500    0    0)))
-(setq lleg-tgt (make-coords :pos #f(  0  100 -955)))
-(setq rleg-tgt (make-coords :pos #f(  0 -100 -955)))
+(setq lleg-tgt (make-coords :pos #f(  0  100 -970)))
+(setq rleg-tgt (make-coords :pos #f(  0 -100 -970)))
 
 (objects *robot*)
 
@@ -27,34 +27,24 @@
    )
   (:larm-cb
    (msg)
-   (setq larm-tgt (send self :ros-pose-to-eus-coords msg)))
+   (setq larm-tgt (ros::tf-pose->coords (send msg :pose))))
 
   (:rarm-cb
    (msg)
-   (setq rarm-tgt (send self :ros-pose-to-eus-coords msg)))
+   (setq rarm-tgt (ros::tf-pose->coords (send msg :pose))))
 
   (:lleg-cb
    (msg)
-   (setq lleg-tgt (send self :ros-pose-to-eus-coords msg)))
+   (setq lleg-tgt (ros::tf-pose->coords (send msg :pose))))
 
   (:rleg-cb
    (msg)
-   (setq rleg-tgt (send self :ros-pose-to-eus-coords msg)))
+   (setq rleg-tgt (ros::tf-pose->coords (send msg :pose))))
 
   (:head-cb
    (msg)
-   (setq head-tgt (send self :ros-pose-to-eus-coords msg)))
+   (setq head-tgt (ros::tf-pose->coords (send msg :pose))))
 
-  (:ros-pose-to-eus-coords
-   (msg)
-   (setq pos
-	 (map float-vector #'(lambda (x) (* x 1000))
-	      (list
-	       (send msg :pose :position :x)
-	       (send msg :pose :position :y)
-	       (send msg :pose :position :z))))
-   (setq rpy #f(0 0 0))
-   (make-coords :pos pos :rpy rpy))
   )
 
 
