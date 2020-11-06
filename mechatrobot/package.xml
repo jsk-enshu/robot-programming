@@ -14,6 +14,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>controller_manager</build_depend>
+  <build_depend>cmake_modules</build_depend>
   <build_depend>diagnostic_updater</build_depend>
   <build_depend>hardware_interface</build_depend>
   <build_depend>std_msgs</build_depend>
