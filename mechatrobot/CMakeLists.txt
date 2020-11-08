@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(mechatrobot)
 
+## https://stackoverflow.com/questions/35856969/chrono-literals-is-not-a-namespace-name
+if(CMAKE_COMPILER_IS_GNUCXX)
+  execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+  if (GCC_VERSION VERSION_LESS 6.1)
+    set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+  endif()
+endif()
+
 find_package(catkin REQUIRED COMPONENTS controller_manager cmake_modules diagnostic_updater hardware_interface std_msgs)
 find_package(TinyXML REQUIRED)
 
