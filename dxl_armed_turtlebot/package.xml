@@ -1,6 +1,6 @@
 <package>
   <name>dxl_armed_turtlebot</name>
-  <version>5.0.0</version>
+  <version>6.1.0</version>
   <description>Turtlebot with dynamixel 7dof arm</description>
   <license>BSD</license>
   <maintainer email="nozawa@jsk.imi.i.u-tokyo.ac.jp">Shunichi Nozawa</maintainer>
@@ -27,6 +27,7 @@
   <run_depend>joy</run_depend>
   <run_depend>jsk_perception</run_depend>
   <run_depend>jsk_pcl_ros</run_depend>
+  <run_depend>jsk_tools</run_depend>
   <run_depend>joystick_drivers</run_depend>
   <run_depend>kobuki_dashboard</run_depend>
   <run_depend>kobuki_gazebo</run_depend>
@@ -45,12 +46,19 @@
   <run_depend>turtlebot_navigation</run_depend>
   <run_depend>turtlebot_teleop</run_depend>
   <run_depend>turtleboteus</run_depend>
-  <run_depend>turtlebot_apps</run_depend>
-  <run_depend>turtlebot_interactions</run_depend>
+  <run_depend>turtlebot_navigation</run_depend>
   <run_depend>turtlebot_interactive_markers</run_depend>
+  <run_depend>turtlebot_rviz_launchers</run_depend>
   <run_depend>rqt_joint_trajectory_controller</run_depend>
   <run_depend>rqt_robot_steering</run_depend>
   <run_depend>teleop_twist_keyboard</run_depend>
   <run_depend>roseus_tutorials</run_depend>
   <run_depend>slam_karto</run_depend>
+  <run_depend>roseus</run_depend>
+  <run_depend>openni_launch</run_depend>
+
+  <export>
+    <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />
+  </export>
+
 </package>

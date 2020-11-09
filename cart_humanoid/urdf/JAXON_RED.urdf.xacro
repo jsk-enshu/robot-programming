@@ -1,0 +1,130 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="JAXON_RED" >
+  <xacro:include filename="JAXON_RED_body_stable_inertia.urdf" />
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so" />
+  </gazebo>
+  <link name="LARM_LINK7">
+    <visual>
+      <origin xyz="0 0.0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://cart_humanoid/urdf/JAXON_RED_meshes/l_hand_attached_link.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0.0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://cart_humanoid/urdf/JAXON_RED_meshes/l_hand_attached_link.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial> <!-- mass propaties should be corrected -->
+      <mass value="4.219" />
+      <origin xyz="-0.02359 0.12884 -0.02825" rpy="0 -0 0"/>
+      <inertia ixx="0.0527968" ixy="0" ixz="0" iyy="0.057042" iyz="0" izz="0.0492541"/>
+    </inertial>
+  </link>
+  <gazebo reference="LARM_LINK7">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+
+  <link name="RARM_LINK7">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://cart_humanoid/urdf/JAXON_RED_meshes/r_hand_attached_link.dae" scale="1 1 1" />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 -0 0"/>
+      <geometry>
+        <mesh filename="package://cart_humanoid/urdf/JAXON_RED_meshes/r_hand_attached_link.dae" scale="1 1 1" />
+      </geometry>
+    </collision>
+    <inertial> <!-- mass propaties should be corrected -->
+      <mass value="4.219" />
+      <origin xyz="0.02359 -0.12884 -0.02825" rpy="0 -0 0"/>
+      <inertia ixx="0.0527968" ixy="0" ixz="0" iyy="0.057042" iyz="0" izz="0.0492541"/>
+    </inertial>
+  </link>
+  <gazebo reference="RARM_LINK7">
+    <mu1>0.9</mu1>
+    <mu2>0.9</mu2>
+  </gazebo>
+
+  <!-- HEAD -->
+  <xacro:include filename="$(find turtlebot_description)/urdf/common_properties.urdf.xacro" />
+  <xacro:include filename="$(find turtlebot_description)/urdf/sensors/kinect.urdf.xacro" />
+  <joint name="adjuster_joint" type="fixed">                                                                                                  
+    <origin xyz="0.2 0 -0.2" rpy="0 0 0" />
+    <parent link="HEAD_LINK1" />
+    <child link="adjuster_link" />
+  </joint>
+  <link name="adjuster_link"/>
+  <sensor_kinect  parent="adjuster_link"/>
+  
+  <!-- HAND -->
+  <xacro:include filename="$(find cart_humanoid)/urdf/hand.urdf.xacro" />
+  <xacro:jvrc_hand prefix="L_" parent="LARM_LINK7" type="revolute">
+    <origin xyz="0 0 -0.085" rpy="3.141592654 1.5707963268 0" />
+  </xacro:jvrc_hand>
+  <xacro:jvrc_hand prefix="R_" parent="RARM_LINK7" type="revolute">
+    <origin xyz="0 0 -0.085" rpy="0 1.5707963268 0" />
+  </xacro:jvrc_hand>
+
+  <xacro:property name="joint_interface" value="EffortJointInterface" />  
+  <xacro:macro name="simple_transmission" params="name interface" >
+    <transmission name="${name}_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${name}">
+        <hardwareInterface>${interface}</hardwareInterface>
+      </joint>
+      <actuator name="${name}_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+        <hardwareInterface>${interface}</hardwareInterface>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+  
+  <xacro:simple_transmission name="LLEG_JOINT0" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LLEG_JOINT1" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LLEG_JOINT2" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LLEG_JOINT3" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LLEG_JOINT4" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LLEG_JOINT5" interface="${joint_interface}" />
+
+  <xacro:simple_transmission name="RLEG_JOINT0" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RLEG_JOINT1" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RLEG_JOINT2" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RLEG_JOINT3" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RLEG_JOINT4" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RLEG_JOINT5" interface="${joint_interface}" />
+
+  <xacro:simple_transmission name="LARM_JOINT0" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LARM_JOINT1" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LARM_JOINT2" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LARM_JOINT3" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LARM_JOINT4" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LARM_JOINT5" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LARM_JOINT6" interface="${joint_interface}" />
+  <xacro:simple_transmission name="LARM_JOINT7" interface="${joint_interface}" />
+
+  <xacro:simple_transmission name="RARM_JOINT0" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RARM_JOINT1" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RARM_JOINT2" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RARM_JOINT3" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RARM_JOINT4" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RARM_JOINT5" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RARM_JOINT6" interface="${joint_interface}" />
+  <xacro:simple_transmission name="RARM_JOINT7" interface="${joint_interface}" />
+
+  <xacro:simple_transmission name="CHEST_JOINT0" interface="${joint_interface}" />
+  <xacro:simple_transmission name="CHEST_JOINT1" interface="${joint_interface}" />
+  <xacro:simple_transmission name="CHEST_JOINT2" interface="${joint_interface}" />
+  
+  <xacro:simple_transmission name="HEAD_JOINT0" interface="${joint_interface}" />
+  <xacro:simple_transmission name="HEAD_JOINT1" interface="${joint_interface}" />
+  
+  <xacro:simple_transmission name="L_finger1_joint" interface="${joint_interface}" />
+  <xacro:simple_transmission name="R_finger1_joint" interface="${joint_interface}" />
+
+</robot>

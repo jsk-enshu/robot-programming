@@ -14,6 +14,8 @@
   </node>
   <node name="cmd_vel_renamer" pkg="topic_tools" type="relay"
         args=" /cmd_vel /mobile_base/commands/velocity" />
+  <node name="depth_renamer" pkg="topic_tools" type="relay"
+        args=" /camera/depth/points /camera/depth_registered/points" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dxl_armed_turtlebot)/config/dxl_armed_turtlebot.rviz"/>
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -53,14 +55,24 @@
     <remap from="$(arg camera)/scan" to="$(arg scan_topic)"/>
   </node>
 
+  <!-- Velocity muxer -->
+  <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux"
+        args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+    <param name="yaml_cfg_file" value="$(find turtlebot_bringup)/param/mux.yaml" />
+    <remap from="cmd_vel_mux/output" to="mobile_base/commands/velocity"/>
+  </node>
+
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <!-- load the controllers -->
   <rosparam file="$(find dxl_armed_turtlebot)/config/dxl_armed_turtlebot_controllers.yaml" />
   <node name="controller_spawner" pkg="controller_manager"
         type="spawner" respawn="false"
         output="screen"
-        args="joint_state_controller
-              trajectory_controller
+        args="--shutdown-timeout 0.1
+              joint_state_controller
+              fullbody_controller
+              gripper_controller
               "/>
   <!-- send tuck pose -->
   <node name="tuck_arm" pkg="dxl_armed_turtlebot" type="tuck_arm.py" args="-t" />

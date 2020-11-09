@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot name="robot">
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.04 0.08 0.01"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="motor_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.02" radius="0.02"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="joint_link">
+    <visual>
+      <origin xyz="0 0 -0.05" />
+      <geometry>
+        <cylinder length="0.1" radius="0.003"/>
+	<!-- <mesh filename="package://mechatrobot/urdf/sample-3d-model.stl" scale="0.001 0.001 0.001" /> -->
+      </geometry>
+    </visual>
+  </link>
+  <link name="range">
+  </link>
+
+  <joint name="base_to_motor" type="fixed">
+    <parent link="base_link" />
+    <child link="motor_link" />
+    <origin xyz="-0.04 0 0" />
+  </joint>
+  <joint name="base_to_range" type="fixed">
+    <parent link="base_link" />
+    <child link="range" />
+    <origin xyz="0.04 0 0" />
+  </joint>
+  <joint name="joint1" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
+    <origin xyz="0 0 0.1" />
+    <parent link="motor_link" />
+    <child link="joint_link" />
+  </joint>
+
+</robot>

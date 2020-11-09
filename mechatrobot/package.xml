@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>mechatrobot</name>
+  <version>0.0.0</version>
+  <description>The mechatrobot package</description>
+
+  <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>
+  <author email="asano@jsk.t.u-tokyo.ac.jp">Yuki Asano</author>
+  <maintainer email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</maintainer>
+  <maintainer email="asano@jsk.t.u-tokyo.ac.jp">Yuki Asano</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>controller_manager</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>diagnostic_updater</build_depend>
+  <build_depend>hardware_interface</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tinyxml</build_depend>
+
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>diagnostic_updater</exec_depend>
+  <exec_depend>hardware_interface</exec_depend>
+  <exec_depend>opencv_apps</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rosserial_client</exec_depend>
+  <exec_depend>rosserial_python</exec_depend>
+  <exec_depend>rqt_joint_trajectory_controller</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>tinyxml</exec_depend>
+  <exec_depend>usb_cam</exec_depend>
+
+  <test_depend>roslaunch</test_depend>
+  <test_depend>roslint</test_depend>
+
+  <export/>
+
+</package>

@@ -2,6 +2,14 @@
 Changelog for package turtleboteus
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+6.1.0 (2019-11-11)
+------------------
+
+6.0.0 (2019-06-16)
+------------------
+* run test/*.test only when pr2eus installed (`#272 <https://github.com/jsk-enshu/robot-programming/issues/272>`_)
+* Contributors: Kei Okada
+
 5.0.0 (2018-09-14)
 ------------------
 

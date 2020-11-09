@@ -3,17 +3,53 @@ robot-programming [![Build Status](https://travis-ci.org/jsk-enshu/robot-program
 
 This is exercise for robot-programming.
 
+Setup
+-----
+
 ```
-$ source /opt/ros/indigo/setup.bash   
+$ source /opt/ros/melodic/setup.bash
 $ mkdir -p ~/catkin_ws/src
-$ cd ~/catkin_ws   
-$ wstool init src
-$ wstool set robot-programming https://github.com/jsk-enshu/robot-programming --git -t src
-$ wstool update -t src
-$ rosdep update                                                                                          
-$ rosdep install --from-paths src --ignore-src -y -r                                                                 
+$ cd ~/catkin_ws/src
+$ git clone https://github.com/jsk-enshu/robot-programming
+$ wstool init .
+$ wstool merge robot-programming/.rosinstall.${ROS_DISTRO}
+$ wstool update
+$ rosdep update
+$ cd ..
+$ rosdep install --from-paths src --ignore-src -y -r
 $ catkin build
-$ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## bashrcについか
+# $ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## > と >> の違いが理解できていればbashrcに追加してもよい
+```
+
+Start simulator
+---------------
+```
+$ source ~/catkin_ws/devel/setup.bash
+$ roslaunch dxl_armed_turtlebot dxl_armed_turtlebot_gazebo.launch
+```
+
+Start RQT GUI
+-------------
+```
+$ roscd dxl_armed_turtbot/launch
+$ rqt --perspective-file enshu.perspective
+```
+
+Start Color Tracking node
+-------------------------
+```
+$ roslaunch opencv_apps camshift.launch image:=/camera/rgb/image_raw
+$ rosrun image_view2 image_view2 image:=/camera/rgb/image_raw ~image_transport:=compressed
+```
+
+Start Checkerboard Tracking Tracking node
+-----------------------------------------
+```
+$ roslaunch checkerboard-detector.launch rect0_size_x:=0.02 rect0_size_y:=0.02
+      grid0_size_x:=7 grid0_size_y:=4 translation0:="0 0 0"
+      image:=image_raw  group:=/camera/rgb frame_id:=camera_rgb_optical_frame
+$ ROS_NAMESPACE=/camera/rgb rosrun checkerard_detector objectdetection_tf_publisher.py
+       _use_simple_tf:=true
 ```
 
 Documentations

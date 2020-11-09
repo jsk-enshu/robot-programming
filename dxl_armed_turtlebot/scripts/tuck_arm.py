@@ -14,12 +14,12 @@ class Tuck(object):
         self._tuck_rate = rospy.Rate(5.0)  # Hz
         self._tuck_threshold = 0.3  # radians
         self._joint_moves = {
-            'tuck': [pi/2, 0, pi/4, 0, pi/2, pi/2, 0],
-            'untuck': [0, 0, -pi/2, 0, pi/2, 0, 0],
+            'tuck': [pi/2, 0, pi/4, 0, pi/2, pi/2],
+            'untuck': [0, 0, -pi/2, 0, pi/2, 0],
         }
         self._arm_state = 'none'
-        self._pub = rospy.Publisher('/trajectory_controller/command', JointTrajectory, queue_size=1)
-        self._sub = rospy.Subscriber('/trajectory_controller/state', JointTrajectoryControllerState, self._check_arm_state)
+        self._pub = rospy.Publisher('/fullbody_controller/command', JointTrajectory, queue_size=1)
+        self._sub = rospy.Subscriber('/fullbody_controller/state', JointTrajectoryControllerState, self._check_arm_state)
 
     def _check_arm_state(self, msg):
         diff_check = lambda a, b: abs(a - b) <= self._tuck_threshold
@@ -40,13 +40,12 @@ class Tuck(object):
     def _move_to(self, goal):
         traj = JointTrajectory()
         traj.joint_names  = [
-            'arm_link1_joint', 
-            'arm_link2_joint', 
-            'arm_link3_joint',
-            'arm_link4_joint',
-            'arm_link5_joint',
-            'arm_link6_joint',
-            'arm_link7_joint'
+            'arm_joint1', 
+            'arm_joint2', 
+            'arm_joint3',
+            'arm_joint4',
+            'arm_joint5',
+            'arm_joint6',
         ]
         traj.points.append(JointTrajectoryPoint())
         traj.points[0].positions = self._joint_moves[goal]

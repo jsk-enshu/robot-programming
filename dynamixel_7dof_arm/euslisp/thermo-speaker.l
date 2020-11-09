@@ -9,12 +9,19 @@
 
 (defun state-cb
   (msg)
-  (setf (elt *state-list* (1- (read-from-string (string-left-trim "arm_joint" (send msg :name))))) msg))
+  (setf
+   (elt *state-list*
+	(if (string= (send msg :name) "gripper_joint")
+	    6 (1- (read-from-string (string-left-trim "arm_joint" (send msg :name))))))
+   msg))
 
 (dotimes (i *arm-dof*)
-  (ros::subscribe (format nil "/arm_j~d_controller/state" (1+ i))
-                  dynamixel_msgs::JointState
-                  #'state-cb))
+  (ros::subscribe
+   (if (eq i 6)
+       (format nil "/gripper_joint_controller/state")
+     (format nil "/arm_j~d_controller/state" (1+ i)))
+   dynamixel_msgs::JointState
+   #'state-cb))
 
 (defun main () ;; [deg]
   (ros::rate 0.1)
