@@ -1,0 +1,10 @@
+<launch>
+  <!-- Start rviz -->
+  <node pkg="rviz" type="rviz" name="rviz"
+        args="-d $(find mechatrobot)/config/robot.rviz" />
+
+  <!-- position_trajectory_controller -->
+  <node name="rqt_joint_trajectory_controller" pkg="rqt_joint_trajectory_controller"
+        type="rqt_joint_trajectory_controller" />
+
+</launch>

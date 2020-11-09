@@ -1,0 +1,11 @@
+<launch>
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cart_humanoid)/config/click_ik.rviz"/>
+
+  <!-- convert /clicked_point (PointStamped) into /ik_rarm_tgt (PoseStamed) -->
+  <node name="point2pose" pkg="topic_tools" type="transform" args="/clicked_point /ik_rarm_tgt geometry_msgs/PoseStamped 'geometry_msgs.msg.PoseStamped(header=m.header, pose=geometry_msgs.msg.Pose( position=geometry_msgs.msg.Vector3( m.point.x, m.point.y, m.point.z)))' --import geometry_msgs --wait-for-start" output="screen"/>
+
+  <!-- relay from /ik_rarm_tgt to /ik_head_tgt to keep watching target -->
+  <node name="copy_rarm_tgt_to_head_tgt" pkg="topic_tools" type="relay" args="/ik_rarm_tgt /ik_head_tgt"/>
+
+</launch>

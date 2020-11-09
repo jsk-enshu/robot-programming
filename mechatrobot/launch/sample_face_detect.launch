@@ -1,0 +1,15 @@
+<launch>
+
+  <arg name="debug_view" value="true" />
+
+  <node pkg="usb_cam" type="usb_cam_node" name="usb_cam">
+    <param name="framerate" value="10"/>
+    <param name="pixel_format" value="yuyv"/>
+  </node>
+
+  <include file="$(find opencv_apps)/launch/face_detection.launch">
+    <arg name="image" value="/usb_cam/image_raw"/>
+    <arg name="debug_view" value="$(arg debug_view)"/>
+  </include>
+    
+</launch>
