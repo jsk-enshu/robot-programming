@@ -52,7 +52,7 @@ void range_setup()
   range_msg.field_of_view = 0.261799;// 15degree
   range_msg.min_range = 0.02; // [m]
   range_msg.max_range = 4.5;  // [m]
-  range_msg.header.frame_id = "range";
+  range_msg.header.frame_id = "range_sensor";
 
   nh.advertise(range_pub);
 }

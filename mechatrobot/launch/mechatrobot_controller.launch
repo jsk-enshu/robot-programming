@@ -28,6 +28,6 @@
         args="start position_trajectory_controller joint_state_controller" />
 
   <!-- publish tf for range sensors -->
-  <node pkg="tf" type="static_transform_publisher" name="map_to_range"
+  <node pkg="tf" type="static_transform_publisher" name="map_to_base"
         args="-0.2 0 0 3.1415 0 0 /map /base_link 100"/>
 </launch>

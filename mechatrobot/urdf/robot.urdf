@@ -2,46 +2,54 @@
 <robot name="robot">
   <link name="base_link">
     <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.04 0.08 0.01"/>
+        <box size="0.053 0.082 0.01"/>
       </geometry>
     </visual>
   </link>
   <link name="motor_link">
     <visual>
+      <origin xyz="0 0 0" rpy="0 0 1.57"/>
       <geometry>
-        <cylinder length="0.02" radius="0.02"/>
+	<mesh filename="package://mechatrobot/urdf/28BYJ-48.STL" scale="0.001 0.001 0.001" />
       </geometry>
     </visual>
   </link>
-  <link name="joint_link">
+  <link name="link1">
     <visual>
-      <origin xyz="0 0 -0.05" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <cylinder length="0.1" radius="0.003"/>
+	<box size="0.01 0.1 0.005"/>
 	<!-- <mesh filename="package://mechatrobot/urdf/sample-3d-model.stl" scale="0.001 0.001 0.001" /> -->
       </geometry>
     </visual>
   </link>
-  <link name="range">
+  <link name="range_sensor">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 1.57" />
+      <geometry>
+	<mesh filename="package://mechatrobot/urdf/HC-SR04.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
   </link>
 
   <joint name="base_to_motor" type="fixed">
     <parent link="base_link" />
     <child link="motor_link" />
-    <origin xyz="-0.04 0 0" />
+    <origin xyz="0 0.08 0" rpy="0 0 0" />
   </joint>
-  <joint name="base_to_range" type="fixed">
+  <joint name="base_to_sensor" type="fixed">
     <parent link="base_link" />
-    <child link="range" />
-    <origin xyz="0.04 0 0" />
+    <child link="range_sensor" />
+    <origin xyz="0.02 -0.03 0.02" />
   </joint>
   <joint name="joint1" type="revolute">
-    <axis xyz="0 0 1"/>
+    <axis xyz="0 0 -1"/>
     <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
-    <origin xyz="0 0 0.1" />
+    <origin xyz="-0.008 0 0.03" />
     <parent link="motor_link" />
-    <child link="joint_link" />
+    <child link="link1" />
   </joint>
 
 </robot>
