@@ -11,7 +11,6 @@ motor_angle = 0 # [deg]
 def face_detection_cb(msg):
     pub = rospy.Publisher('motor1/command', Int64, queue_size=1)
 
-    face_msg = FaceArrayStamped()
     motor_command_msg = Int64()
     face_pos = [0, 0]
     global motor_angle

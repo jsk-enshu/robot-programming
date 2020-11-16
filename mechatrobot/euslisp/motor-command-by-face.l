@@ -23,8 +23,7 @@
 (setq *motor-angle* 0) ;; [deg]
 
 (defun face-detection-cb (msg)
-  (let ((face-msg (instance opencv_apps::FaceArrayStamped :init))
-        (motor-command-msg (instance std_msgs::Int64 :init))
+  (let ((motor-command-msg (instance std_msgs::Int64 :init))
         face)
     ;; face check
     (if (send msg :faces)
