@@ -2,8 +2,8 @@
 Changelog for package mechatrobot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+7.0.0 (2020-11-24)
+------------------
 * fix invalid version number in package.xml
 * Merge pull request #384 from yuki-asano/mechatrobot-fix
   fix program

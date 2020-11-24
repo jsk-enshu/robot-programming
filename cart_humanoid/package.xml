@@ -1,6 +1,6 @@
 <package>
   <name>cart_humanoid</name>
-  <version>6.1.0</version>
+  <version>7.0.0</version>
   <description>Humanoid robot gazebo simulation with fixed base link</description>
   <license>BSD</license>
   <maintainer email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</maintainer>

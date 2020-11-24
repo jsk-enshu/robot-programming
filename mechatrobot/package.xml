@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>mechatrobot</name>
-  <version>6.1.0</version>
+  <version>7.0.0</version>
   <description>The mechatrobot package</description>
 
   <author email="k-okada@jsk.t.u-tokyo.ac.jp">Kei Okada</author>

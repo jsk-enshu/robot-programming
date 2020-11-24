@@ -2,8 +2,8 @@
 Changelog for package cart_humanoid
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+7.0.0 (2020-11-24)
+------------------
 * fix invalid version number in package.xml
 * Merge pull request #386 from ishiguroJSK/2020
   add sample julius node
