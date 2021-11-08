@@ -4,7 +4,8 @@
 (ros::roseus "cart_humanoid_ik_node")
 
 (cart_humanoid-init)
-;; (setq *robot* *cart_humanoid*) ;; already set
+(setq *robot* *cart_humanoid*)
+
 (setq larm-tgt (make-coords :pos #f(500  300    0)))
 (setq rarm-tgt (make-coords :pos #f(500 -300    0)))
 (setq head-tgt (make-coords :pos #f(500    0    0)))
