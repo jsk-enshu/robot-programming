@@ -2,7 +2,9 @@
 
   <arg name="debug_view" value="false" />
 
+  <arg name="video_device" default="/dev/video0"/>
   <node pkg="usb_cam" type="usb_cam_node" name="usb_cam">
+    <param name="video_device" value="$(arg video_device)"/>
     <param name="framerate" value="10"/>
     <param name="pixel_format" value="yuyv"/>
   </node>
