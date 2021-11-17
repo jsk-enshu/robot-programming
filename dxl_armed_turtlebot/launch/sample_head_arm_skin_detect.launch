@@ -1,7 +1,0 @@
-<launch>
-  <include file="$(find cart_humanoid)/launch/sample_head_arm_skin_detect.launch">
-    <arg name="ik_frame_id" value="base_footprint"/>
-    <arg name="const_depth" value="0.35"/>
-    <arg name="ik_l_arm_target" value="ik_arm_tgt"/>
-  </include>
-</launch>

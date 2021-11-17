@@ -9,11 +9,6 @@ class skin_ellipse_area_to_ik_tgt:
 
     def __init__(self):
         rospy.init_node("skin_ellipse_area_to_ik_tgt")
-
-        # get params from roslaunch
-        self.frame_id = rospy.get_param('~frame_id')
-        self.const_depth = rospy.get_param('~const_depth')
-
         rospy.Subscriber("/head_arm/general_contours/ellipses", RotatedRectArrayStamped, self.cb)
         self.head_pub = rospy.Publisher("/ik_head_tgt", PoseStamped, queue_size=1)
         self.larm_pub = rospy.Publisher("/ik_larm_tgt", PoseStamped, queue_size=1)
@@ -64,23 +59,22 @@ class skin_ellipse_area_to_ik_tgt:
         # 2D image coords [0~640, 0~480] -> 3D robot coords [CONST_DEPTH, -0.5~0.5, 0~1]
         IMAGE_W = 640.0 # [pixel]
         IMAGE_H = 480.0 # [pixel]
-        CONST_DEPTH = self.const_depth # for 2D -> 3D []
+        CONST_DEPTH = 0.5 # for 2D -> 3D []
         val = PoseStamped()
-        val.pose.orientation.w = 1.0
         
-        val.header.frame_id = self.frame_id
+        val.header.frame_id = "BODY"
         val.pose.position.x = CONST_DEPTH
         val.pose.position.y =  (head_pos[0] - (IMAGE_W/2)) / (IMAGE_W/2) * 0.5
         val.pose.position.z = -(head_pos[1] - (IMAGE_H/2)) / (IMAGE_H/2) * 0.5 + 0.5
         self.head_pub.publish(val)
 
-        val.header.frame_id = self.frame_id
+        val.header.frame_id = "BODY"
         val.pose.position.x = CONST_DEPTH
         val.pose.position.y =  (larm_pos[0] - (IMAGE_W/2)) / (IMAGE_W/2) * 0.5
         val.pose.position.z = -(larm_pos[1] - (IMAGE_H/2)) / (IMAGE_H/2) * 0.5 + 0.5
         self.larm_pub.publish(val)
 
-        val.header.frame_id = self.frame_id
+        val.header.frame_id = "BODY"
         val.pose.position.x = CONST_DEPTH
         val.pose.position.y =  (rarm_pos[0] - (IMAGE_W/2)) / (IMAGE_W/2) * 0.5
         val.pose.position.z = -(rarm_pos[1] - (IMAGE_H/2)) / (IMAGE_H/2) * 0.5 + 0.5

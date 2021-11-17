@@ -2,9 +2,7 @@
 
   <arg name="debug_view" value="false" />
 
-  <arg name="video_device" default="/dev/video0"/>
   <node pkg="usb_cam" type="usb_cam_node" name="usb_cam">
-    <param name="video_device" value="$(arg video_device)"/>
     <param name="framerate" value="10"/>
     <param name="pixel_format" value="yuyv"/>
   </node>
@@ -28,16 +26,8 @@
     </include>
   </group>
 
-  <arg name="ik_frame_id" default="BODY"/>
-  <arg name="const_depth" default="0.5"/>
-  <arg name="ik_l_arm_target" default="ik_larm_tgt"/>
-
   <!-- simple labeling on top 3 area -->
-  <node pkg="cart_humanoid" type="skin_ellipse_area_to_ik_tgt.py" name="skin_ellipse_area_to_ik_tgt" output="screen">
-    <param name="frame_id" type="string" value="$(arg ik_frame_id)"/>
-    <param name="const_depth" type="double" value="$(arg const_depth)"/>
-    <remap from="ik_larm_tgt" to="$(arg ik_l_arm_target)"/>
-  </node>
+  <node pkg="cart_humanoid" type="skin_ellipse_area_to_ik_tgt.py" name="skin_ellipse_area_to_ik_tgt" output="screen"/>
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find cart_humanoid)/config/sample_head_arm_skin_detect.rviz"/> 
   

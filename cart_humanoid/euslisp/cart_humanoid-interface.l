@@ -35,16 +35,16 @@
    (x_m y_m z_m)
    (defun leg-ik
        (lleg-pos rleg-pos)
-       (send *cart_humanoid* :inverse-kinematics (list (make-coords :pos lleg-pos) (make-coords :pos rleg-pos))
+       (send *robot* :inverse-kinematics (list (make-coords :pos lleg-pos) (make-coords :pos rleg-pos))
 	     :move-target (list
-			   (send *cart_humanoid* :lleg :end-coords)
-			   (send *cart_humanoid* :rleg :end-coords))
+			   (send *robot* :lleg :end-coords)
+			   (send *robot* :rleg :end-coords))
 	     :translation-axis (list t t)
 	     :rotation-axis (list t t)
 	     :stop 10
 	     :revert-if-fail nil :debug-view nil
 	     )
-     (send *ri* :angle-vector (send *cart_humanoid* :angle-vector) 10)
+     (send *ri* :angle-vector (send *robot* :angle-vector) 10)
      (send *ri* :wait-interpolation)
      )
    (let ((dx (* x_m 500)) (dy (* y_m 500)))
@@ -129,8 +129,8 @@
 (defun cart_humanoid-init (&rest args)
   (if (not (boundp '*ri*))
       (setq *ri* (instance* cart_humanoid-interface :init args)))
-  (if (not (boundp '*cart_humanoid*))
-      (setq *cart_humanoid* (instance *cart_humanoid-class* :init))))
+  (if (not (boundp '*robot*))
+      (setq *robot* (instance *cart_humanoid-class* :init))))
 
 ;;
 ;;
