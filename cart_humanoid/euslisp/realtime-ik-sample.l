@@ -4,7 +4,8 @@
 (ros::roseus "cart_humanoid_ik_node")
 
 (cart_humanoid-init)
-;; (setq *robot* *cart_humanoid*) ;; already set
+(setq *robot* *cart_humanoid*)
+
 (setq larm-tgt (make-coords :pos #f(500  300    0)))
 (setq rarm-tgt (make-coords :pos #f(500 -300    0)))
 (setq head-tgt (make-coords :pos #f(500    0    0)))
@@ -72,7 +73,8 @@
     (send *robot* :look-at-target head-tgt)
     (send *ri* :angle-vector (send *robot* :angle-vector) 10)
     (send *irtviewer* :draw-objects :flush nil)
-    (dolist (tgt (list larm-tgt rarm-tgt lleg-tgt rleg-tgt head-tgt)) (send tgt :draw-on :flush t))
+    (dolist (tgt (list larm-tgt rarm-tgt lleg-tgt rleg-tgt head-tgt)) (send tgt :draw-on :flush nil))
+    (send *irtviewer* :viewer :viewsurface :redraw)
     (x::window-main-one)
     (ros::spin-once)
     (ros::sleep)
