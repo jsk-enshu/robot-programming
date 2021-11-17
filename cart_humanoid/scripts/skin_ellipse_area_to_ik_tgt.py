@@ -66,6 +66,7 @@ class skin_ellipse_area_to_ik_tgt:
         IMAGE_H = 480.0 # [pixel]
         CONST_DEPTH = self.const_depth # for 2D -> 3D []
         val = PoseStamped()
+        val.pose.orientation.w = 1.0
         
         val.header.frame_id = self.frame_id
         val.pose.position.x = CONST_DEPTH
