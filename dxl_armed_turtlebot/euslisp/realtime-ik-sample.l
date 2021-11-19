@@ -28,14 +28,14 @@
   (send *ri* :angle-vector (send *robot* :reset-pose) 2000)
   (send *ri* :wait-interpolation)
 
-  (ros::rate 10)
+  (ros::rate 1)
   (while (ros::ok)
     (send *robot* :inverse-kinematics arm-tgt
           :translation-axis t :rotation-axis nil
           :stop 2
           :revert-if-fail nil :debug-view nil
           )
-    (send *ri* :angle-vector (send *robot* :angle-vector) 10)
+    (send *ri* :angle-vector (send *robot* :angle-vector) 1000)
 
     (send arm-tgt :draw-on :flush t :color #f(1 0 0))
     (send *irtviewer* :draw-objects :flush nil)
