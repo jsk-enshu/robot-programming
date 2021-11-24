@@ -12,6 +12,8 @@
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="30.0" />
   </node>
+  <node name="cmd_vel_renamer" pkg="topic_tools" type="relay"
+        args=" /cmd_vel /cmd_vel_mux/input/teleop" />
   <node name="depth_renamer" pkg="topic_tools" type="relay"
         args=" /camera/depth/points /camera/depth_registered/points" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dxl_armed_turtlebot)/config/dxl_armed_turtlebot.rviz"/>

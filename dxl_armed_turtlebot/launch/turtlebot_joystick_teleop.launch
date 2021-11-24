@@ -1,5 +1,5 @@
 <launch>
-  <node name="cmd_vel_renamer" pkg="topic_tools" type="relay"
+  <node name="$(anon cmd_vel_renamer)" pkg="topic_tools" type="relay"
         args=" /cmd_vel /cmd_vel_mux/input/teleop" />
 
   <arg name="joy_dev" default="/dev/input/js0" doc="device file name for joystick"/>
