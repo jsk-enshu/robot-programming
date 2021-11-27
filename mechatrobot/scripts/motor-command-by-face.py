@@ -22,9 +22,9 @@ def face_detection_cb(msg):
         face_pos[1] = face.y
         # check face position. left or right
         if face_pos[0] <= image_center[0]:
-            motor_angle -= 1
+            motor_angle -= 5
         else:
-            motor_angle += 1
+            motor_angle += 5
 
         motor_command_msg.data = motor_angle
 

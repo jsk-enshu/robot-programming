@@ -32,8 +32,8 @@
           (setq *face-pos* (float-vector (send face :x) (send face :y)))
 	  ;;顔がカメラの左右どちらかをチェック
 	  (if (<= (elt *face-pos* 0) (elt *image-center* 0))
-	      (setq *motor-angle* (1- *motor-angle*))
-	    (setq *motor-angle* (1+ *motor-angle*)))
+          (setq *motor-angle* (- *motor-angle* 5))
+        (setq *motor-angle* (+ *motor-angle* 5)))
 	  ;;
 	  (send motor-command-msg :data *motor-angle*)
 	  ;; print
