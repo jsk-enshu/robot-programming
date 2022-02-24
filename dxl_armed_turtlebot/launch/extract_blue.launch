@@ -1,0 +1,7 @@
+<launch>
+    <include file="$(find opencv_apps)/launch/camshift.launch" >
+        <arg name="image" value="/camera/rgb/image_raw"/>
+        <arg name="histogram" value="[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                        0.0, 0.0, 255.0, 0.0, 0.0, 0.0, 0.0, 0.0]" />
+    </include>
+</launch>
