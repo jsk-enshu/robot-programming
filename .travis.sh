@@ -15,7 +15,7 @@ wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
 sudo apt-get update -qq
 sudo apt-get install -qq -y python-rosdep python-catkin-tools python-wstool ros-${ROS_DISTRO}-catkin
 sudo rosdep init
-rosdep update
+rosdep update --include-eol-distros
 # script:
 (cd ${CI_SOURCE_PATH}; git log --oneline | head -10)
 mkdir -p ~/catkin_ws/src
