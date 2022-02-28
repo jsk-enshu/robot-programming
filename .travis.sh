@@ -23,7 +23,7 @@ cd ~/catkin_ws
 ln -sf ${CI_SOURCE_PATH} src/${REPOSITORY_NAME}
 wstool init src
 [ -e src/${REPOSITORY_NAME}/.rosinstall.${ROS_DISTRO} ] && wstool merge -t src src/${REPOSITORY_NAME}/.rosinstall.${ROS_DISTRO}
-wstool update -t src
+wstool update -t src --continue-on-error
 rosdep install --from-paths src -y -r -q --ignore-src --rosdistro ${ROS_DISTRO}
 source /opt/ros/${ROS_DISTRO}/setup.bash
 env | grep ROS
