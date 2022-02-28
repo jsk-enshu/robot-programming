@@ -58,6 +58,7 @@
   <run_depend>slam_karto</run_depend>
   <run_depend>roseus</run_depend>
   <run_depend>openni_launch</run_depend>
+  <run_depend>usb_cam</run_depend>
 
   <export>
     <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />
