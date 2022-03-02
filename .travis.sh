@@ -4,7 +4,7 @@ set -x
 set -e
 
 apt-get update
-apt-get install -y sudo software-properties-common git wget sed sudo
+apt-get install -y sudo software-properties-common git wget sed
 
 # fix stopping tzdata for 18.04
 echo 'debconf debconf/frontend select Noninteractive' | sudo debconf-set-selections
