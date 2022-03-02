@@ -1,37 +1,37 @@
 - git:
     local-name: robot-programming
-    uri: https://github.com/jsk-enshu/robot-programming
+    uri: https://github.com/jsk-enshu/robot-programming.git
 - git:
     local-name: dynamixel_urdf
-    uri: https://github.com/jsk-enshu/dynamixel_urdf
+    uri: https://github.com/jsk-enshu/dynamixel_urdf.git
 - git:
     local-name: dynamixel_motor
-    uri: https://github.com/arebgun/dynamixel_motor
+    uri: https://github.com/arebgun/dynamixel_motor.git
 - git:
     local-name: kobuki
-    uri: https://github.com/yujinrobot/kobuki
+    uri: https://github.com/yujinrobot/kobuki.git
     version: 0.7.6
 - git:
     local-name: kobuki_desktop
-    uri: https://github.com/yujinrobot/kobuki_desktop
+    uri: https://github.com/yujinrobot/kobuki_desktop.git
     version: 58459065087c7f9786cc2d1dc25a059280b5ca47
 - git:
     local-name: turtlebot
-    uri: https://github.com/turtlebot/turtlebot
+    uri: https://github.com/turtlebot/turtlebot.git
     version: feb176b10f13bcdc517e7f305c39327dac6388f0 # this has not been testd on real robot, fix xtion visual? or back to 2019 version?
 - git:
     local-name: turtlebot_simulator
-    uri: https://github.com/turtlebot/turtlebot_simulator
+    uri: https://github.com/turtlebot/turtlebot_simulator.git
     version: beae4b3cdf806fe82ab75fd933189c67e89ed8b0 # this has not been testd on real robot, fix tf warning? or back to 2017 version
 - git:
     local-name: turtlebot_apps
-    uri: https://github.com/turtlebot/turtlebot_apps
+    uri: https://github.com/turtlebot/turtlebot_apps.git
     version: 4bbafc7bfdfc5888ba03b52611bdb56d86b22967
 - git:
     local-name: turtlebot_interactions
-    uri: https://github.com/turtlebot/turtlebot_interactions
+    uri: https://github.com/turtlebot/turtlebot_interactions.git
     version: 2.3.1
 - git:
     local-name: turtlebot_msgs
-    uri: https://github.com/turtlebot/turtlebot_msgs
+    uri: https://github.com/turtlebot/turtlebot_msgs.git
     version: 2.2.1

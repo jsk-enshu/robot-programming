@@ -56,6 +56,7 @@
   <run_depend>slam_karto</run_depend>
   <run_depend>roseus</run_depend>
   <run_depend>openni_launch</run_depend>
+  <run_depend>cart_humanoid</run_depend> <!-- launch/sample_head_arm_skin_detect.launch depends on cart_humanoid/launch/sample_head_arm_skin_detect.launch -->
 
   <export>
     <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />
