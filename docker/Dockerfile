@@ -12,6 +12,7 @@ RUN apt -y update \
     net-tools \
     novnc \
     supervisor \
+    fluxbox \
     x11vnc \
     xterm \
     xvfb \
