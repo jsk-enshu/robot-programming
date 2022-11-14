@@ -15,10 +15,14 @@
     local-name: kobuki_desktop
     uri: https://github.com/yujinrobot/kobuki_desktop.git
     version: 58459065087c7f9786cc2d1dc25a059280b5ca47
+# - git:
+#     local-name: turtlebot
+#     uri: https://github.com/turtlebot/turtlebot.git
+#     version: feb176b10f13bcdc517e7f305c39327dac6388f0 # this has not been testd on real robot, fix xtion visual? or back to 2019 version?
 - git:
     local-name: turtlebot
-    uri: https://github.com/turtlebot/turtlebot.git
-    version: feb176b10f13bcdc517e7f305c39327dac6388f0 # this has not been testd on real robot, fix xtion visual? or back to 2019 version?
+    uri: https://github.com/kindsenior/turtlebot.git
+    version: use-freenect # fix for launching 3dsensor.launch in students' PC until https://github.com/turtlebot/turtlebot/pull/294 will be merged
 - git:
     local-name: turtlebot_simulator
     uri: https://github.com/turtlebot/turtlebot_simulator.git
