@@ -124,8 +124,10 @@
   
   )
 
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ヒューマノイドロボットJAXON用初期化関数
+;;   robot-interface (*ri*) とモデル (*cart_humanoid*)を生成する
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun cart_humanoid-init (&rest args)
   (if (not (boundp '*ri*))
       (setq *ri* (instance* cart_humanoid-interface :init args)))
@@ -152,3 +154,5 @@
  (t
   (warn ";; you should load robot-file before loading this file!")
   ))
+
+(warn ";; (cart_humanoid-init) ;; for initialize and generating *cart_humanoid* and *ri*~%")
