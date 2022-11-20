@@ -22,7 +22,7 @@
 - git:
     local-name: turtlebot
     uri: https://github.com/kindsenior/turtlebot.git
-    version: use-freenect # fix for launching 3dsensor.launch in students' PC until https://github.com/turtlebot/turtlebot/pull/294 will be merged
+    version: use-freenect-feb176b # fix for launching 3dsensor.launch in students' PC until https://github.com/turtlebot/turtlebot/pull/294 will be merged
 - git:
     local-name: turtlebot_simulator
     uri: https://github.com/turtlebot/turtlebot_simulator.git
