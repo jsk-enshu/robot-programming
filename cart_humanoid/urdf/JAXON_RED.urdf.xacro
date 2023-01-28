@@ -60,7 +60,7 @@
     <child link="adjuster_link" />
   </joint>
   <link name="adjuster_link"/>
-  <sensor_kinect  parent="adjuster_link"/>
+  <xacro:sensor_kinect  parent="adjuster_link"/>
   
   <!-- HAND -->
   <xacro:include filename="$(find cart_humanoid)/urdf/hand.urdf.xacro" />
