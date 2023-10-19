@@ -124,7 +124,7 @@
     <!-- wall -->
     <model name='grey_wall_0'>
       <static>1</static>
-      <link name='link'>
+      <link name='grey_wall_0_link'>
         <pose>0 0 0.165 0 0 0</pose>
         <collision name='collision'>
           <geometry>
@@ -143,7 +143,7 @@
             </contact>
           </surface>
         </collision>
-        <visual name='visual'>
+        <visual name='grey_wall_0_visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
@@ -170,7 +170,7 @@
     </model>
     <model name='grey_wall_1'>
       <static>1</static>
-      <link name='link'>
+      <link name='grey_wall_1_link'>
         <pose>0 0 0.165 0 0 0</pose>
         <collision name='collision'>
           <geometry>
@@ -189,7 +189,7 @@
             </contact>
           </surface>
         </collision>
-        <visual name='visual'>
+        <visual name='grey_wall_1_visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
@@ -216,7 +216,7 @@
     </model>
     <model name='grey_wall_2'>
       <static>1</static>
-      <link name='link'>
+      <link name='grey_wall_2_link'>
         <pose>0 0 0.165 0 0 0</pose>
         <collision name='collision'>
           <geometry>
@@ -235,7 +235,7 @@
             </contact>
           </surface>
         </collision>
-        <visual name='visual'>
+        <visual name='grey_wall_2_visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
@@ -262,7 +262,7 @@
     </model>
     <model name='grey_wall_3'>
       <static>1</static>
-      <link name='link'>
+      <link name='grey_wall_3_link'>
         <pose>0 0 0.165 0 0 0</pose>
         <collision name='collision'>
           <geometry>
@@ -281,7 +281,7 @@
             </contact>
           </surface>
         </collision>
-        <visual name='visual'>
+        <visual name='grey_wall_3_visual'>
           <cast_shadows>0</cast_shadows>
           <geometry>
             <box>
