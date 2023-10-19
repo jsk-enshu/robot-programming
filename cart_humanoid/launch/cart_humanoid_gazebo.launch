@@ -8,7 +8,7 @@
   <arg name="model" value="$(find cart_humanoid)/urdf/robot.urdf.xacro"  />
   <arg name="fix_base_link" default="true"  />
 
-  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model) fix_base_link:=$(arg fix_base_link) --inorder" />
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model) fix_base_link:=$(arg fix_base_link) --inorder" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="30.0" />

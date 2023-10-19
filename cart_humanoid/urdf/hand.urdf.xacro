@@ -81,7 +81,7 @@
     </joint>
 
     <joint name="${prefix}palm" type="fixed">
-      <insert_block name="origin"/>
+      <xacro:insert_block name="origin"/>
       <parent link="${parent}"/>
       <child link="${prefix}palm"/>
     </joint>
