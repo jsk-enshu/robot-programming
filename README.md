@@ -7,7 +7,7 @@ Setup
 -----
 
 ```
-$ source /opt/ros/melodic/setup.bash
+$ source /opt/ros/noetic/setup.bash
 $ mkdir -p ~/catkin_ws/src
 $ cd ~/catkin_ws/src
 $ git clone https://github.com/jsk-enshu/robot-programming
