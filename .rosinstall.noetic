@@ -6,7 +6,9 @@
     uri: https://github.com/jsk-enshu/dynamixel_urdf.git
 - git:
     local-name: dynamixel_motor
-    uri: https://github.com/arebgun/dynamixel_motor.git
+    # uri: https://github.com/arebgun/dynamixel_motor.git
+    uri: https://github.com/kindsenior/dynamixel_motor.git
+    version: noetic-support-python3 # need until https://github.com/arebgun/dynamixel_motor/pull/104 wil be merged
 - git:
     local-name: kobuki
     uri: https://github.com/yujinrobot/kobuki.git

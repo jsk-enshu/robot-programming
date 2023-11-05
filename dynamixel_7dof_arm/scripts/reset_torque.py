@@ -32,10 +32,10 @@ if __name__ == '__main__':
 
     try:
         dxl_io = dynamixel_io.DynamixelIO(port, baudrate)
-    except dynamixel_io.SerialOpenError, soe:
-        print 'ERROR:', soe
+    except dynamixel_io.SerialOpenError as soe:
+        print('ERROR:', soe)
     else:
-        print 'Turning torque %s for motor %d' % (torque_on, motor_id)
+        print('Turning torque %s for motor %d' % (torque_on, motor_id))
         ret = dxl_io.ping(motor_id)
         if ret:
             from dynamixel_driver import dynamixel_const
@@ -44,23 +44,23 @@ if __name__ == '__main__':
             elif torque_on.lower() == 'on':
                 if not ret[4] & dynamixel_const.DXL_OVERHEATING_ERROR == 0:
                     dxl_io.set_torque_limit(motor_id, 1023)
-                    print "OVERHEATING -> Reset Torque"
+                    print("OVERHEATING -> Reset Torque")
                 if not ret[4] & dynamixel_const.DXL_OVERLOAD_ERROR == 0:
                     dxl_io.set_torque_limit(motor_id, 1023)
-                    print "OVERLOAD -> Reset Torque"
+                    print("OVERLOAD -> Reset Torque")
                 torque_on = True
             else:
                 parser.print_help()
                 exit(1)
             ret = dxl_io.set_torque_enabled(motor_id, torque_on)
             if not ret[4] & dynamixel_const.DXL_OVERHEATING_ERROR == 0:
-                print "OVERHEATING"
+                print("OVERHEATING")
                 exit (1)
             if not ret[4] & dynamixel_const.DXL_OVERLOAD_ERROR == 0:
-                print "OVERLOAD"
+                print("OVERLOAD")
                 exit (1)
-            print "done."
+            print("done.")
         else:
-            print 'ERROR: motor %d did not respond. Make sure to specify the correct baudrate.' % motor_id
+            print('ERROR: motor %d did not respond. Make sure to specify the correct baudrate.' % motor_id)
             exit (1)
 
