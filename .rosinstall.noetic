@@ -67,3 +67,8 @@
 #     local-name: jsk_pr2eus
 #     uri: https://github.com/jsk-ros-pkg/jsk_pr2eus.git
 #     version: master # add CATKIN_IGNORE in packages except for pr2eus
+- git:
+    local-name: jsk_roseus # for disabling warning of tf dupulications
+    # uri: https://github.com/jsk-ros-pkg/jsk_roseus.git
+    uri: https://github.com/kindsenior/jsk_roseus.git
+    version: set-log-level-to-error
