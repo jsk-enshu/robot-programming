@@ -70,5 +70,5 @@
 - git:
     local-name: jsk_roseus # for disabling warning of tf dupulications
     # uri: https://github.com/jsk-ros-pkg/jsk_roseus.git
-    uri: https://github.com/kindsenior/jsk_roseus.git
+    uri: https://github.com/k-okada/jsk_roseus.git
     version: set-log-level-to-error
