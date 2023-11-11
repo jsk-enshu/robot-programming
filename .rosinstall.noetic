@@ -15,8 +15,10 @@
     version: melodic
 - git:
     local-name: kobuki_desktop
-    uri: https://github.com/yujinrobot/kobuki_desktop.git
-    version: melodic
+    # uri: https://github.com/yujinrobot/kobuki_desktop.git
+    # version: melodic
+    uri: https://github.com/kindsenior/kobuki_desktop.git
+    version: remove-repeated-tf-publication # need until https://github.com/yujinrobot/kobuki_desktop/pull/69 wil be merged
 - git:
     local-name: turtlebot
     uri: https://github.com/turtlebot/turtlebot.git
