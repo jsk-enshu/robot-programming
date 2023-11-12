@@ -31,12 +31,12 @@ if __name__ == '__main__':
     
     try:
         dxl_io = dynamixel_io.DynamixelIO(port, baudrate)
-    except dynamixel_io.SerialOpenError, soe:
-        print 'ERROR:', soe
+    except dynamixel_io.SerialOpenError as soe:
+        print('ERROR:', soe)
     else:
-        for idx in map(lambda x : x + options.from_id , range(options.to_id - options.from_id + 1)):
-            print 'Scanning %d...' %(idx),
+        for idx in [x + options.from_id for x in range(options.to_id - options.from_id + 1)]:
+            print('Scanning %d...' %(idx), end=' ')
             if dxl_io.ping(idx):
-                print 'The motor %d respond to a ping' %(idx)
+                print('The motor %d respond to a ping' %(idx))
             else:
-                print 'ERROR: The specified motor did not respond to id %d.' % idx
+                print('ERROR: The specified motor did not respond to id %d.' % idx)

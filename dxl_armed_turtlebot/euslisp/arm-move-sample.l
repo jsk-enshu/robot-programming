@@ -64,7 +64,7 @@
     ;;gripper
     (send *dxl-armed-turtlebot* :gripper :arm :angle-vector #f(50))
     (send *irtviewer* :draw-objects)
-    (send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 1000 :gripper-controller)
+    (send *ri* :move-gripper (send *dxl-armed-turtlebot* :gripper :arm :joint-angle) :tm 1000 :wait t)
     (warn ";;~%")
     (warn ";; The gripper was moved. Are real robot and model same? Check it, then press enter~%")
     (warn ";;~%")
@@ -74,12 +74,12 @@
     (if (y-or-n-p)
 	(progn
 	  (send *dxl-armed-turtlebot* :gripper :arm :angle-vector #f(0))
-	  (send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 1000 :gripper-controller)
+	  (send *ri* :move-gripper (send *dxl-armed-turtlebot* :gripper :arm :joint-angle) :tm 1000 :wait t)
 	  (send *irtviewer* :draw-objects))
       (progn
 	(warn ";; fix gripper direction!!!~%")
 	(send *dxl-armed-turtlebot* :gripper :arm :angle-vector #f(0))
-	(send *ri* :angle-vector (send *dxl-armed-turtlebot* :angle-vector) 1000 :gripper-controller)
+	(send *ri* :move-gripper (send *dxl-armed-turtlebot* :gripper :arm :joint-angle) :tm 1000 :wait t)
 	(send *irtviewer* :draw-objects)
 	(return-from dxl-arm-check)))
     ;;

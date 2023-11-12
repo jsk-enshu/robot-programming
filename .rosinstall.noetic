@@ -6,15 +6,19 @@
     uri: https://github.com/jsk-enshu/dynamixel_urdf.git
 - git:
     local-name: dynamixel_motor
-    uri: https://github.com/arebgun/dynamixel_motor.git
+    # uri: https://github.com/arebgun/dynamixel_motor.git
+    uri: https://github.com/kindsenior/dynamixel_motor.git
+    version: noetic-support-python3 # need until https://github.com/arebgun/dynamixel_motor/pull/104 wil be merged
 - git:
     local-name: kobuki
     uri: https://github.com/yujinrobot/kobuki.git
     version: melodic
 - git:
     local-name: kobuki_desktop
-    uri: https://github.com/yujinrobot/kobuki_desktop.git
-    version: melodic
+    # uri: https://github.com/yujinrobot/kobuki_desktop.git
+    # version: melodic
+    uri: https://github.com/kindsenior/kobuki_desktop.git
+    version: remove-repeated-tf-publication # need until https://github.com/yujinrobot/kobuki_desktop/pull/69 wil be merged
 - git:
     local-name: turtlebot
     uri: https://github.com/turtlebot/turtlebot.git
@@ -37,8 +41,10 @@
     version: indigo
 - git:
     local-name: yujin_ocs
-    uri: https://github.com/yujinrobot/yujin_ocs.git
-    version: devel # add CATKIN_IGNORE in packages except for cmd_vel_mux, controllers, math_toolkit, velocity_smoother, and virtual_sensor
+    # uri: https://github.com/yujinrobot/yujin_ocs.git
+    # version: devel # add CATKIN_IGNORE in packages except for cmd_vel_mux, controllers, math_toolkit, velocity_smoother, and virtual_sensor
+    uri: https://github.com/kindsenior/yujin_ocs.git
+    version: noetic-enshu2023 # for ignoring those packages
 - git:
     local-name: ar_track_alvar_msgs
     uri: https://github.com/ros-gbp/ar_track_alvar-release.git
@@ -63,3 +69,8 @@
 #     local-name: jsk_pr2eus
 #     uri: https://github.com/jsk-ros-pkg/jsk_pr2eus.git
 #     version: master # add CATKIN_IGNORE in packages except for pr2eus
+- git:
+    local-name: jsk_roseus # for disabling warning of tf dupulications
+    # uri: https://github.com/jsk-ros-pkg/jsk_roseus.git
+    uri: https://github.com/k-okada/jsk_roseus.git
+    version: set-log-level-to-error
