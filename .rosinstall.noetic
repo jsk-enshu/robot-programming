@@ -74,3 +74,7 @@
     # uri: https://github.com/jsk-ros-pkg/jsk_roseus.git
     uri: https://github.com/k-okada/jsk_roseus.git
     version: set-log-level-to-error
+- git:
+    local-name: ros_controllers
+    uri: https://github.com/ros-controls/ros_controllers.git
+    version: 0.20.0 # after this version, ros_control does not publish /motor1/position based on /position_trajectory_controller/command from /rqt_joint_trajectory_controller because of the same warning https://github.com/ros-controls/ros_controllers/issues/291
