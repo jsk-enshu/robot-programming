@@ -5,7 +5,7 @@ from opencv_apps.msg import FaceArrayStamped
 from std_msgs.msg import Int64
 
 image_size = [640, 480] # pixel
-image_center = list(map(lambda x: x/2, image_size))
+image_center = list([x/2 for x in image_size])
 motor_angle = 0 # [deg]
 
 def face_detection_cb(msg):
@@ -29,13 +29,13 @@ def face_detection_cb(msg):
         motor_command_msg.data = motor_angle
 
         # print
-        print "face_pos(x, y): ({} {})".format(face_pos[0], face_pos[1])
-        print "/motor1/command: {}\n".format(motor_command_msg.data)
+        print("face_pos(x, y): ({} {})".format(face_pos[0], face_pos[1]))
+        print("/motor1/command: {}\n".format(motor_command_msg.data))
 
         # publish
         pub.publish(motor_command_msg)
     else:
-        print "no faces"
+        print("no faces")
     
         
 def main():

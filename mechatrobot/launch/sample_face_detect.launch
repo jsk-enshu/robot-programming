@@ -10,6 +10,9 @@
   <include file="$(find opencv_apps)/launch/face_detection.launch">
     <arg name="image" value="/usb_cam/image_raw"/>
     <arg name="debug_view" value="$(arg debug_view)"/>
+    <!-- maybe it is correct to setting use_opencv4 arg but it does not work in face_detection.launch -->
+    <arg name="face_cascade_name" value="/usr/share/opencv4/haarcascades/haarcascade_frontalface_alt.xml" />
+    <arg name="eyes_cascade_name" value="/usr/share/opencv4/haarcascades/haarcascade_eye_tree_eyeglasses.xml" />
   </include>
     
 </launch>
