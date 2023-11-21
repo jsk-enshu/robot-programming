@@ -14,10 +14,10 @@ $ git clone https://github.com/jsk-enshu/robot-programming
 $ wstool init .
 $ wstool merge robot-programming/.rosinstall.${ROS_DISTRO}
 $ wstool update
-$ rosdep update
+$ rosdep update  # If you have never run rosdep init, run `sudo rosdep init` before this command.
 $ cd ..
 $ rosdep install --from-paths src --ignore-src -y -r
-$ catkin build
+$ catkin build -j1
 # $ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## > と >> の違いが理解できていればbashrcに追加してもよい
 ```
 
