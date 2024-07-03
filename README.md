@@ -54,6 +54,16 @@ $ ROS_NAMESPACE=/camera/rgb rosrun checkerboard_detector objectdetection_tf_publ
        _use_simple_tf:=true
 ```
 
+# cart_humanoid (JAXON) simulation
+## Start simulator
+---------------
+```
+$ source ~/catkin_ws/devel/setup.bash
+$ roslaunch cart_humanoid cart_humanoid_gazebo.launch
+# If you launch simulators with the robot's base link unfixed, use the following command instead.
+$ roslaunch cart_humanoid cart_humanoid_gazebo.launch fix_base_link:=false
+```
+
 # Documentations
 =================
 See online [manual](http://jsk-enshu.github.io/robot-programming/) for Euslisp models and interfaces.
