@@ -3,7 +3,7 @@ robot-programming [![Build Status](https://app.travis-ci.com/jsk-enshu/robot-pro
 
 This is exercise for robot-programming.
 
-Setup
+# Setup
 -----
 
 ```
@@ -21,14 +21,15 @@ $ catkin build
 # $ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## > と >> の違いが理解できていればbashrcに追加してもよい
 ```
 
-Start simulator
+# Turtlebot simulation
+## Start simulator
 ---------------
 ```
 $ source ~/catkin_ws/devel/setup.bash
 $ roslaunch dxl_armed_turtlebot dxl_armed_turtlebot_gazebo.launch
 ```
 
-Start RQT GUI
+## Start RQT GUI
 -------------
 ```
 $ roscd dxl_armed_turtlebot/launch
@@ -36,14 +37,14 @@ $ roscd dxl_armed_turtlebot/launch
 $ rqt --perspective-file enshu.perspective
 ```
 
-Start Color Tracking node
+## Start Color Tracking node
 -------------------------
 ```
 $ roslaunch opencv_apps camshift.launch image:=/camera/rgb/image_raw
 $ rosrun image_view2 image_view2 image:=/camera/rgb/image_raw ~image_transport:=compressed
 ```
 
-Start Checkerboard Tracking Tracking node
+## Start Checkerboard Tracking Tracking node
 -----------------------------------------
 ```
 $ roslaunch roseus_tutorials checkerboard-detector.launch rect0_size_x:=0.02 rect0_size_y:=0.02 \
@@ -53,7 +54,7 @@ $ ROS_NAMESPACE=/camera/rgb rosrun checkerboard_detector objectdetection_tf_publ
        _use_simple_tf:=true
 ```
 
-Documentations
+# Documentations
 =================
 See online [manual](http://jsk-enshu.github.io/robot-programming/) for Euslisp models and interfaces.
 
