@@ -65,6 +65,12 @@ $ roslaunch cart_humanoid cart_humanoid_gazebo.launch
 $ roslaunch cart_humanoid cart_humanoid_gazebo.launch fix_base_link:=false
 ```
 
+## Start RQT GUI
+-------------
+```
+$ rosrun rqt_joint_trajectory_controller rqt_joint_trajectory_controller
+```
+
 # Documentations
 =================
 See online [manual](http://jsk-enshu.github.io/robot-programming/) for Euslisp models and interfaces.
