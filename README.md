@@ -60,6 +60,7 @@ $ ROS_NAMESPACE=/camera/rgb rosrun checkerboard_detector objectdetection_tf_publ
 ```
 $ source ~/catkin_ws/devel/setup.bash
 $ roslaunch cart_humanoid cart_humanoid_gazebo.launch
+# It may take a few minutes to start the simulator for the first time.
 # If you launch simulators with the robot's base link unfixed, use the following command instead.
 $ roslaunch cart_humanoid cart_humanoid_gazebo.launch fix_base_link:=false
 ```
