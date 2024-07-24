@@ -55,6 +55,8 @@ $ ROS_NAMESPACE=/camera/rgb rosrun checkerboard_detector objectdetection_tf_publ
 ```
 
 # cart_humanoid (JAXON) simulation
+![cart humanoid](./cart_humanoid/images/cart_humanoid_gazebo.png)
+
 ## Start simulator
 ---------------
 ```
