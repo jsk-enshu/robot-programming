@@ -55,6 +55,8 @@ $ ROS_NAMESPACE=/camera/rgb rosrun checkerboard_detector objectdetection_tf_publ
 ```
 
 # cart_humanoid (JAXON) simulation
+![cart humanoid](./cart_humanoid/images/cart_humanoid_gazebo.png)
+
 ## Start simulator
 ---------------
 ```
@@ -72,7 +74,9 @@ $ rosrun rqt_joint_trajectory_controller rqt_joint_trajectory_controller
 ```
 
 # Documentations
-=================
+----------------
+
+
 See online [manual](http://jsk-enshu.github.io/robot-programming/) for Euslisp models and interfaces.
 
 PDF files are also available from [here](http://jsk-enshu.github.io/robot-programming/robot_programming_manual.pdf)
