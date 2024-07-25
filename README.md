@@ -17,8 +17,9 @@ $ wstool update
 $ rosdep update
 $ cd ..
 $ rosdep install --from-paths src --ignore-src -y -r
+# Some packages may not have their rosdep keys resolved (turtlebot_bringup, turtlebot_dashboard, turtlebot_rapps, and kobuki_capabilities).
 $ catkin build
-# $ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## > と >> の違いが理解できていればbashrcに追加してもよい
+# $ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## You may source the setup.bash by this line if you understand the difference between > and >>.
 ```
 
 # Turtlebot simulation
