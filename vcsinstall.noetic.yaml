@@ -1,9 +1,17 @@
 repositories:
+  jsk_roseus:
+    type: git
+    url: https://github.com/k-okada/jsk_roseus.git
+    version: set-log-level-to-error
   rcb4:
     type: git
-    url: https://github.com/rcb4
+    url: https://github.com/iory/rcb4
     version: master
   robot-programming:
     type: git
     url: https://github.com/iory/robot-programming
     version: kx-pr2
+  turtlebot:
+    type: git
+    url: https://github.com/turtlebot/turtlebot.git
+    version: melodic
