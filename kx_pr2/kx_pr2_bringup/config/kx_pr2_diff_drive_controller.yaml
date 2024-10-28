@@ -10,7 +10,7 @@ diff_drive_controller:
   # Odometry fused with IMU is published by robot_localization, so
   # no need to publish a TF based on encoders alone.
   enable_odom_tf: true
-  base_frame_id: bodyset94855827795112
+  base_frame_id: base_link
 
   # Wheel separation and radius multipliers
   wheel_separation_multiplier: 1.0 # default: 1.0
