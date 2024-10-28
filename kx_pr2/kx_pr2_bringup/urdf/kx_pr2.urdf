@@ -21,6 +21,32 @@
     </inertial>
   </link>
 
+  <link name="base_laser">
+    <visual>
+      <origin xyz="0.1 0 0.2" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.01"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.1 0 0.2" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.01"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <origin xyz="0.1 0 0.2"/>
+      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <joint name="base_laser_joint" type="fixed">
+    <origin xyz="0.1 0 -0.0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="base_laser"/>
+  </joint>
+
   <link name="HEAD_LINK0">
     <visual>
       <origin xyz="-0.00725 0 0.1065" rpy="0 -0 0" />
@@ -216,6 +242,38 @@
         <frameName>base_link</frameName>
       </plugin>
       <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="base_laser">
+    <sensor type="ray" name="laser">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>30</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.5708</min_angle>
+            <max_angle>1.5708</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.1</min>
+          <max>10.0</max>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_laser" filename="libgazebo_ros_laser.so">
+        <robotNamespace>/</robotNamespace>
+        <frameName>base_laser</frameName>
+        <topicName>scan</topicName>
+      </plugin>
     </sensor>
   </gazebo>
 
