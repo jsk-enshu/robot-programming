@@ -1,0 +1,33 @@
+<launch>
+  <arg name="custom_param_file" default="$(find turtlebot_navigation)/param/dummy.yaml"/>
+
+  <!-- Map server -->
+  <arg name="map_file" default="$(find kx_pr2_bringup)/config/map.yaml"/>
+  <node name="map_server"
+        pkg="map_server" type="map_server"
+        args="$(arg map_file)" />
+
+  <arg name="initial_pose_x" default="0.0"/>
+  <arg name="initial_pose_y" default="0.0"/>
+  <arg name="initial_pose_a" default="0.0"/>
+  <!-- 2.3.7 changed the locaiton, but released version is 2.3.3 -->
+  <!-- <include file="$(find turtlebot_navigation)/launch/includes/amcl/amcl.launch.xml"> -->
+  <include file="$(find kx_pr2_bringup)/launch/includes/amcl.launch.xml">
+    <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+    <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+    <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+  </include>
+
+  <!-- skip velocity smoother and kobuki_safety_controller -->
+  <!-- <node pkg="nodelet" type="nodelet" -->
+  <!--       name="mobile_base_nodelet_manager" args="manager"/> -->
+  <!-- <node name="velocity_smoother_renamer" pkg="topic_tools" type="transform" -->
+  <!--       args="-\-wait-for-start /navigation_velocity_smoother/raw_cmd_vel /cmd_vel -->
+  <!--             geometry_msgs/Twist '[m.linear,geometry_msgs.msg.Vector3(0,0,m.angular.z/2)]' -\-import geometry_msgs" /> -->
+
+  <include file="$(find kx_pr2_bringup)/launch/move_base.launch.xml">
+    <arg name="custom_param_file" value="$(arg custom_param_file)"/>
+    <arg name="base_frame_id"   default="base_link"/>
+  </include>
+
+</launch>
