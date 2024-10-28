@@ -1,4 +1,5 @@
-<package>
+<package format="2">
+
     <name>kx_pr2_bringup</name>
     <version>7.0.0</version>
     <description>KX-PR2 bringup for jsk robot proramming enshu</description>
@@ -11,5 +12,16 @@
     <author email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</author>
 
     <buildtool_depend>catkin</buildtool_depend>
+
+    <exec_depend>gazebo_plugins</exec_depend>
+    <exec_depend>gazebo_ros</exec_depend>
+    <exec_depend>gazebo_ros_control</exec_depend>
+    <exec_depend>kxr_controller</exec_depend>
+    <exec_depend>kxr_models</exec_depend>
+    <exec_depend>kxreus</exec_depend>
+
+    <export>
+        <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />
+    </export>
 
 </package>

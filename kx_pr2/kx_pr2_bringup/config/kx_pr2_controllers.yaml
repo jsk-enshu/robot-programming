@@ -1,0 +1,118 @@
+# Joint State Controllers ---------------------------------------
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+# Trajectory Controllers ---------------------------------------
+fullbody_controller:
+  #type: effort_controllers/JointTrajectoryController
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - HEAD_JOINT0
+    - HEAD_JOINT1
+    # - LARM_JOINT0
+    # - LARM_JOINT1
+    # - LARM_JOINT2
+    # - LARM_JOINT3
+    # - LARM_JOINT4
+    # - LARM_JOINT5
+    # - LARM_JOINT6
+    # - LARM_JOINT7
+    # - RARM_JOINT0
+    # - RARM_JOINT1
+    # - RARM_JOINT2
+    # - RARM_JOINT3
+    # - RARM_JOINT4
+    # - RARM_JOINT5
+    # - RARM_JOINT6
+    # - RARM_JOINT7
+  constraints:
+    goal_time: 0.5                   # Override default
+    stopped_velocity_tolerance: 0.02 # Override default
+    arm_joint1:
+      #trajectory: 0.1               # Not enforced if unspecified
+      goal: 0.02                     # Not enforced if unspecified
+    arm_joint2:
+      #trajectory: 0.1               # Not enforced if unspecified
+      goal: 0.02                     # Not enforced if unspecified
+    arm_joint3:
+      #trajectory: 0.1               # Not enforced if unspecified
+      goal: 0.02                     # Not enforced if unspecified
+    arm_joint4:
+      #trajectory: 0.1               # Not enforced if unspecified
+      goal: 0.02                     # Not enforced if unspecified
+    arm_joint5:
+      #trajectory: 0.1               # Not enforced if unspecified
+      goal: 0.02                     # Not enforced if unspecified
+    arm_joint6:
+      #trajectory: 0.1               # Not enforced if unspecified
+      goal: 0.02                     # Not enforced if unspecified
+
+  gains: # Required because we're controlling an effort interface
+    HEAD_JOINT0: {p: 25.0, i: 0.0, d: 0.0}
+    HEAD_JOINT1: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT0: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT1: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT2: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT3: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT4: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT5: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT6: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT7: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT0: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT1: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT2: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT3: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT4: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT5: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT6: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT7: {p: 25.0, i: 0.0, d: 0.0}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+# gripper_controller:
+#   #type: effort_controllers/JointTrajectoryController
+#   type: velocity_controllers/JointTrajectoryController
+#   joints:
+#     - gripper_joint
+#   constraints:
+#     goal_time: 0.5                   # Override default
+#     stopped_velocity_tolerance: 0.02 # Override default
+#     gripper_joint:
+#       #trajectory: 0.05               # Not enforced if unspecified
+#       goal: 0.02                     # Not enforced if unspecified
+
+#   gains: # Required because we're controlling an effort interface
+#     gripper_joint: {p: 10.0, i: 0.0, d: 0.0}
+#   state_publish_rate:  100            # Override default
+#   action_monitor_rate: 100            # Override default
+#   stop_trajectory_duration: 0        # Override default
+
+kxr_fullbody_controller:
+  joints:
+    - HEAD_JOINT0
+    - HEAD_JOINT1
+# gazebo_ros_control:
+#   pid_gains:
+#     HEAD_JOINT0: {p: 25.0, i: 0.0, d: 0.0}
+#     HEAD_JOINT1: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT0: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT1: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT2: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT3: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT4: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT5: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT6: {p: 25.0, i: 0.0, d: 0.0}
+    # LARM_JOINT7: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT0: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT1: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT2: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT3: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT4: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT5: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT6: {p: 25.0, i: 0.0, d: 0.0}
+    # RARM_JOINT7: {p: 25.0, i: 0.0, d: 0.0}
+    # LLEG_JOINT0: {p: 25.0, i: 0.0, d: 0.0}
+    # LLEG_JOINT1: {p: 25.0, i: 0.0, d: 0.0}
+    # RLEG_JOINT0: {p: 25.0, i: 0.0, d: 0.0}
+    # RLEG_JOINT1: {p: 25.0, i: 0.0, d: 0.0}
