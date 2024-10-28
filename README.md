@@ -7,34 +7,30 @@ This is exercise for robot-programming.
 -----
 
 ```
+$ sudo apt install python3-vcstool
 $ source /opt/ros/noetic/setup.bash
-$ mkdir -p ~/catkin_ws/src
-$ cd ~/catkin_ws/src
-$ git clone https://github.com/jsk-enshu/robot-programming
-$ wstool init .
-$ wstool merge robot-programming/.rosinstall.${ROS_DISTRO}
-$ wstool update
+$ mkdir -p ~/ros/enshu_ws/src
+$ cd ~/ros/enshu_ws/src
+$ wget https://raw.githubusercontent.com/iory/robot-programming/refs/heads/kx-pr2/vcsinstall.noetic.yaml -O- | vcs import
 $ rosdep update
-$ cd ..
+$ cd ~/ros/enshu_ws
 $ rosdep install --from-paths src --ignore-src -y -r
-# You will get a warning because some packages (turtlebot_bringup, turtlebot_dashboard, turtlebot_rapps, and kobuki_capabilities) have not resolved the rosdep key, but you can ignore it.
 $ catkin build
-# $ echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc ## You may source the setup.bash by this line if you understand the difference between > and >>.
+# $ echo 'source ~/ros/enshu_ws/devel/setup.bash' >> ~/.bashrc ## You may source the setup.bash by this line if you understand the difference between > and >>.
 ```
 
-# Turtlebot simulation
+# KX-PR2 simulation
 ## Start simulator
 ---------------
 ```
-$ source ~/catkin_ws/devel/setup.bash
-$ roslaunch dxl_armed_turtlebot dxl_armed_turtlebot_gazebo.launch
+$ source ~/ros/enshu_ws/devel/setup.bash
+$ roslaunch kx_pr2_bringup kx_pr2_gazebo.launch
 ```
 
 ## Start RQT GUI
 -------------
 ```
-$ roscd dxl_armed_turtlebot/launch
-
+$ roscd kx_pr2_bringup/launch
 $ rqt --perspective-file enshu.perspective
 ```
 
@@ -61,7 +57,7 @@ $ ROS_NAMESPACE=/camera/rgb rosrun checkerboard_detector objectdetection_tf_publ
 ## Start simulator
 ---------------
 ```
-$ source ~/catkin_ws/devel/setup.bash
+$ source ~/ros/enshu_ws/devel/setup.bash
 $ roslaunch cart_humanoid cart_humanoid_gazebo.launch
 # It may take a few minutes to start the simulator for the first time.
 # If you launch simulators with the robot's base link unfixed, use the following command instead.
