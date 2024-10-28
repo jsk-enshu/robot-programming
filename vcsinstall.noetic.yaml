@@ -1,0 +1,9 @@
+repositories:
+  rcb4:
+    type: git
+    url: https://github.com/rcb4
+    version: master
+  robot-programming:
+    type: git
+    url: https://github.com/iory/robot-programming
+    version: kx-pr2
