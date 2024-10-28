@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<robot name="kxrmw4a6h2m">
+<robot name="kx_pr2">
 
   <link name="base_link">
     <visual>
