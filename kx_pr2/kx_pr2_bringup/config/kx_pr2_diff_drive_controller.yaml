@@ -3,8 +3,8 @@ diff_drive_controller:
   left_wheel: ['LLEG_JOINT0', 'LLEG_JOINT1']
   right_wheel: ['RLEG_JOINT0', 'RLEG_JOINT1']
   publish_rate: 20
-  pose_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 0.03]
-  twist_covariance_diagonal: [0.001, 0.001, 0.001, 1000000.0, 1000000.0, 0.03]
+  pose_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 0.1]
+  twist_covariance_diagonal: [0.001, 0.001, 0.001, 1000000.0, 1000000.0, 0.1]
   cmd_vel_timeout: 0.25
 
   # Odometry fused with IMU is published by robot_localization, so
