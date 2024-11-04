@@ -1,6 +1,15 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <robot name="jedy">
   <link name="base_link">
+  </link>
+  <joint name="pseudo_base_joint" type="fixed" >
+    <limit effort="0" velocity="0" lower="0" upper="0"/>
+    <parent link="base_link"/>
+    <child link="real_base_link"/>
+    <axis xyz="0. 0. 0."/>
+    <origin xyz="0 0 0" rpy="1.5707926535897931 0 1.5707926535897931"/>
+  </joint>
+  <link name="real_base_link">
     <inertial>
       <origin xyz="-0.000351195235755456 -0.00810559992797557 -0.00714910691571756" rpy="0.0 -0.0 0.0"/>
       <mass value="0.642084743261537"/>
@@ -502,7 +511,7 @@
   </link>
   <joint name="rarm_joint0" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
-    <parent link="base_link"/>
+    <parent link="real_base_link"/>
     <child link="rarm_link0"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="-0.0505 0.0685 -0.0075" rpy="-1.5707926535897931 -1.5707926535897931 -0.0015926535897931142"/>
@@ -566,7 +575,7 @@
   </joint>
   <joint name="larm_joint0" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
-    <parent link="base_link"/>
+    <parent link="real_base_link"/>
     <child link="larm_link0"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="0.0505 0.0685 -0.0075" rpy="-1.5707926535897931 -1.5707926535897931 3.141592653589793"/>
@@ -630,7 +639,7 @@
   </joint>
   <joint name="head_joint0" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
-    <parent link="base_link"/>
+    <parent link="real_base_link"/>
     <child link="head_link0"/>
     <axis xyz="0. 0. 1."/>
     <origin xyz="0.0 0.086 -0.0075" rpy="-3.141592653589793 -1.5707926535897931 1.5707926535897931"/>
@@ -644,28 +653,28 @@
   </joint>
   <joint name="front_right_wheel_joint" type="continuous">
     <limit effort="0.48" velocity="6.55"/>
-    <parent link="base_link"/>
+    <parent link="real_base_link"/>
     <child link="front_right_wheel_link"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="-0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="front_left_wheel_joint" type="continuous">
     <limit effort="0.48" velocity="6.55"/>
-    <parent link="base_link"/>
+    <parent link="real_base_link"/>
     <child link="front_left_wheel_link"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="rear_right_wheel_joint" type="continuous">
     <limit effort="0.48" velocity="6.55"/>
-    <parent link="base_link"/>
+    <parent link="real_base_link"/>
     <child link="rear_right_wheel_link"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="-0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="rear_left_wheel_joint" type="continuous">
     <limit effort="0.48" velocity="6.55"/>
-    <parent link="base_link"/>
+    <parent link="real_base_link"/>
     <child link="rear_left_wheel_link"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
