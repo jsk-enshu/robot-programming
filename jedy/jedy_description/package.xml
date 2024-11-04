@@ -1,0 +1,24 @@
+<package format="2">
+  <name>jedy_description</name>
+  <version>1.0.0</version>
+  <description>
+    <p>URDF Description package for jedy_description</p>
+    <p>This package contains configuration data, 3D models and launch files for jedy robot</p>
+  </description>
+
+  <license>BSD</license>
+  <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
+  <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
+  <maintainer email="k-kojima@jsk.imi.i.u-tokyo.ac.jp">Kunio Kojima</maintainer>
+  <author email="k-kojima@jsk.imi.i.u-tokyo.ac.jp">Kunio Kojima</author>
+  <maintainer email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</maintainer>
+  <author email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roslaunch</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>rviz</depend>
+  <depend>joint_state_publisher_gui</depend>
+
+</package>
