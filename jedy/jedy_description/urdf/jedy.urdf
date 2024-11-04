@@ -531,7 +531,7 @@
     <origin xyz="0.0 0.0 -0.0175" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="rarm_joint3" type="revolute">
-    <limit effort="0.48" velocity="6.55" lower="0.0" upper="-2.35"/>
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
     <parent link="rarm_link2"/>
     <child link="rarm_link3"/>
     <axis xyz="0. 1. 0."/>
@@ -595,7 +595,7 @@
     <origin xyz="0.0 0.0 -0.0175" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="larm_joint3" type="revolute">
-    <limit effort="0.48" velocity="6.55" lower="0.0" upper="-2.35"/>
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
     <parent link="larm_link2"/>
     <child link="larm_link3"/>
     <axis xyz="0. 1. 0."/>
