@@ -42,6 +42,10 @@
           output="screen"
           respawn="true" >
     </node>
+
+    <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
+      <arg name="namespace" value="$(arg namespace)" />
+    </include>
   </group>
 
   <group unless="$(eval len(arg('namespace')) > 0)">
@@ -52,6 +56,10 @@
           output="screen"
           respawn="true" >
     </node>
+
+    <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
+      <arg name="namespace" value="$(arg namespace)" />
+    </include>
   </group>
 
 </launch>
