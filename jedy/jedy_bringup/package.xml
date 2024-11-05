@@ -1,0 +1,28 @@
+<package format="2">
+
+    <name>jedy_bringup</name>
+    <version>7.0.0</version>
+    <description>JEDY bringup for jsk robot proramming enshu</description>
+    <license>BSD</license>
+    <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
+    <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
+    <maintainer email="k-kojima@jsk.imi.i.u-tokyo.ac.jp">Kunio Kojima</maintainer>
+    <author email="k-kojima@jsk.imi.i.u-tokyo.ac.jp">Kunio Kojima</author>
+    <maintainer email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</maintainer>
+    <author email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</author>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <exec_depend>gazebo_plugins</exec_depend>
+    <exec_depend>gazebo_ros</exec_depend>
+    <exec_depend>gazebo_ros_control</exec_depend>
+    <exec_depend>kxr_controller</exec_depend>
+    <exec_depend>kxr_models</exec_depend>
+    <exec_depend>kxreus</exec_depend>
+    <exec_depend>jedy_description</exec_depend>
+
+    <export>
+        <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />
+    </export>
+
+</package>
