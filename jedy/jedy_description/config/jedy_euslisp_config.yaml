@@ -6,7 +6,7 @@ rarm:
  - rarm_joint4 : rarm-wrist-y
  - rarm_joint5 : rarm-wrist-p
  - rarm_joint6 : rarm-wrist-r
- - rarm_joint7 : rarm-gripper
+ - rarm_gripper_joint : rarm-gripper
 larm:
  - larm_joint0 : larm-shoulder-p
  - larm_joint1 : larm-shoulder-r
@@ -15,7 +15,7 @@ larm:
  - larm_joint4 : larm-wrist-y
  - larm_joint5 : larm-wrist-p
  - larm_joint6 : larm-wrist-r
- - larm_joint7 : larm-gripper
+ - larm_gripper_joint : larm-gripper
 head:
  - head_joint0 : head-neck-y
  - head_joint1 : head-neck-p
@@ -35,20 +35,9 @@ head-end-coords:
   rotate : [-0.57735, 0.57735, -0.57735, 120.0]
   parent : head_link1
 
-# angle-vector:
-#      reset-pose: [
-#              0.0, 0, ## :rleg
-#              0.0, 0, ## :lleg
-#              0, 0, 0.0, 0, 0, 0, 0.0, 0.0, ## :rarm
-#              0, 0, 0.0, 0, 0, 0, 0.0, 0.0, ## :larm
-#              0.0, 0.0, ## :head
-#              ## :torso
-#              ]
-#      reset-manip-pose: [
-#              0.0, 0, ## :rleg
-#              0.0, 0, ## :lleg
-#              0, 0, 0.0, 0, 0, 0, 0.0, 0.0, ## :rarm
-#              0, 0, 0.0, 0, 0, 0, 0.0, 0.0, ## :larm
-#              0.0, 0.0, ## :head
-#              ## :torso
-#              ]
+angle-vector:
+     reset-pose: [
+             90, -4, -30, -100, -3, -88, -1, 0,  # :rarm
+             -90, 4, 30, -100, -88, -6, 89, -1,  # :larm
+             0, 0 # :head
+             ]
