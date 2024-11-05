@@ -35,11 +35,11 @@
   </include>
 
   <group if="$(eval len(arg('namespace')) > 0)" ns="$(arg namespace)" >
-    <include file="$(find kxr_controller)/launch/diff_drive_controller.launch" />
+    <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" />
   </group>
 
   <group unless="$(eval len(arg('namespace')) > 0)">
-    <include file="$(find kxr_controller)/launch/diff_drive_controller.launch" />
+    <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" />
   </group>
 
 </launch>
