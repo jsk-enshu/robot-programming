@@ -45,6 +45,7 @@
 
     <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
       <arg name="namespace" value="$(arg namespace)" />
+      <arg name="loop_rate" default="50" />
     </include>
   </group>
 
@@ -59,6 +60,7 @@
 
     <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
       <arg name="namespace" value="$(arg namespace)" />
+      <arg name="loop_rate" default="50" />
     </include>
   </group>
 
