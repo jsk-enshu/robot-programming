@@ -443,10 +443,10 @@
       <origin xyz="0.0505000000000009 0.097 -0.0434999999999994" rpy="0.0 -0.0 0.0"/>
     </visual>
     <collision>
+      <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/front_right_wheel_link.dae"/>
+        <cylinder radius="0.03" length="0.02"/>
       </geometry>
-      <origin xyz="0.0505000000000009 0.097 -0.0434999999999994" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="front_left_wheel_link">
@@ -463,10 +463,10 @@
       <origin xyz="-0.0504999999999993 0.0970000000000006 -0.0434999999999985" rpy="0.0 -0.0 0.0"/>
     </visual>
     <collision>
+      <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/front_left_wheel_link.dae"/>
+        <cylinder radius="0.03" length="0.02"/>
       </geometry>
-      <origin xyz="-0.0504999999999993 0.0970000000000006 -0.0434999999999985" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rear_right_wheel_link">
@@ -483,10 +483,10 @@
       <origin xyz="0.0505000000000012 0.0969999999999992 0.0435000000000006" rpy="0.0 -0.0 0.0"/>
     </visual>
     <collision>
+      <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rear_right_wheel_link.dae"/>
+        <cylinder radius="0.03" length="0.02"/>
       </geometry>
-      <origin xyz="0.0505000000000012 0.0969999999999992 0.0435000000000006" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rear_left_wheel_link">
@@ -503,10 +503,10 @@
       <origin xyz="-0.0504999999999999 0.0969999999999994 0.0435000000000005" rpy="0.0 -0.0 0.0"/>
     </visual>
     <collision>
+      <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rear_left_wheel_link.dae"/>
+        <cylinder radius="0.03" length="0.02"/>
       </geometry>
-      <origin xyz="-0.0504999999999999 0.0969999999999994 0.0435000000000005" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <joint name="rarm_joint0" type="revolute">
