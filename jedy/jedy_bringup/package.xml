@@ -20,6 +20,8 @@
     <exec_depend>kxr_models</exec_depend>
     <exec_depend>kxreus</exec_depend>
     <exec_depend>jedy_description</exec_depend>
+    <exec_depend>pr2eus</exec_depend>
+    <exec_depend>riberry_startup</exec_depend>
 
     <export>
         <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />

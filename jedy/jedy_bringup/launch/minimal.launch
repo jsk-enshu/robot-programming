@@ -36,10 +36,22 @@
 
   <group if="$(eval len(arg('namespace')) > 0)" ns="$(arg namespace)" >
     <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" />
+
+    <node name="change_atom_echo_led_color"
+          pkg="riberry_startup" type="change_atom_echo_led_color.py"
+          output="screen"
+          respawn="true" >
+    </node>
   </group>
 
   <group unless="$(eval len(arg('namespace')) > 0)">
     <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" />
+
+    <node name="change_atom_echo_led_color"
+          pkg="riberry_startup" type="change_atom_echo_led_color.py"
+          output="screen"
+          respawn="true" >
+    </node>
   </group>
 
 </launch>
