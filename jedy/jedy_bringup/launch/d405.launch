@@ -1,0 +1,25 @@
+<launch>
+  <arg name="color_width" default="480" />
+  <arg name="color_height" default="270" />
+  <arg name="color_fps" default="5" />
+  <arg name="depth_width" default="480" />
+  <arg name="depth_height" default="270" />
+  <arg name="depth_fps" default="5" />
+  <arg name="align_depth" default="true" />
+  <arg name="enable_pointcloud" default="true" />
+  <arg name="ordered_pc" default="true" />
+  <arg name="respawn" default="true" />
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="color_width" value="$(arg color_width)" />
+    <arg name="color_height" value="$(arg color_height)" />
+    <arg name="color_fps" value="$(arg color_fps)" />
+    <arg name="depth_width" value="$(arg depth_width)" />
+    <arg name="depth_height" value="$(arg depth_height)" />
+    <arg name="depth_fps" value="$(arg depth_fps)" />
+    <arg name="align_depth" value="$(arg align_depth)" />
+    <arg name="enable_pointcloud" value="$(arg enable_pointcloud)" />
+    <arg name="ordered_pc" value="$(arg ordered_pc)" />
+    <arg name="respawn" value="true" />
+  </include>
+</launch>
