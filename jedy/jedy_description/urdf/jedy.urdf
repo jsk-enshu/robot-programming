@@ -3,7 +3,6 @@
   <link name="base_link">
   </link>
   <joint name="pseudo_base_joint" type="fixed" >
-    <limit effort="0" velocity="0" lower="0" upper="0"/>
     <parent link="base_link"/>
     <child link="real_base_link"/>
     <axis xyz="0. 0. 0."/>
@@ -11,9 +10,10 @@
   </joint>
   <link name="real_base_link">
     <inertial>
-      <origin xyz="-0.000351195235755456 -0.00810559992797557 -0.00714910691571756" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="-0.000351195235755456 -0.00810559992797557 -0.00714910691571756" rpy="0.0 -0.0 0.0"/> -->
+      <origin xyz="-0.000351195235755456 -0.00810559992797557 -0.0714910691571756" rpy="0.0 -0.0 0.0"/>
       <mass value="0.642084743261537"/>
-      <inertia ixx="0.000162581139421146" ixy="5.0286786144231e-07" ixz="-9.48818029464138e-07" iyy="0.00024560311724061" iyz="-4.58171534930513e-07" izz="0.000278850372812181"/>
+      <inertia ixx="0.000162581139421146" ixy="5.0286786144231E-07" ixz="-9.48818029464138E-07" iyy="0.00024560311724061" iyz="-4.58171534930513E-07" izz="0.000278850372812181"/>
     </inertial>
     <visual>
       <geometry>
@@ -33,7 +33,7 @@
     <inertial>
       <origin xyz="0.00750000000000114 0.0511983289893697 -0.0774229781318287" rpy="0.0 -0.0 0.0"/>
       <mass value="0.00775312250160503"/>
-      <inertia ixx="4.27540101999966e-07" ixy="-4.58771592464844e-22" ixz="-7.33040243663335e-09" iyy="6.49398350259101e-07" iyz="1.01388737603722e-21" izz="7.15408183770753e-07"/>
+      <inertia ixx="1e-04" ixy="0.0" ixz="-1e-04" iyy="1e-04" iyz="1e-4" izz="1e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -53,7 +53,8 @@
     <inertial>
       <origin xyz="0.0060726594429343 0.0630174693748998 -0.076278104560333" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0488819579417231"/>
-      <inertia ixx="5.3897919395433e-06" ixy="-2.40958659059239e-08" ixz="-1.15959128616825e-08" iyy="6.30201298165015e-06" iyz="-4.77616974109193e-10" izz="6.89791246161299e-06"/>
+      <!-- <inertia ixx="5.3897919395433e-06" ixy="-2.40958659059239e-08" ixz="-1.15959128616825e-08" iyy="6.30201298165015e-06" iyz="-4.77616974109193e-10" izz="6.89791246161299e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-1.000000e-04" ixz="-1.000000e-04" iyy="1.000000e-04" iyz="-1.000000e-04" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -73,7 +74,8 @@
     <inertial>
       <origin xyz="-0.013781849714382 0.078576090677525 -0.0510708977208851" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0267722516782373"/>
-      <inertia ixx="3.14025785519115e-06" ixy="-2.1054501660018e-08" ixz="1.16767691320589e-08" iyy="2.73993530782118e-06" iyz="3.18816576527695e-09" izz="3.21445108840275e-06"/>
+      <!-- <inertia ixx="3.14025785519115e-06" ixy="-2.1054501660018e-08" ixz="1.16767691320589e-08" iyy="2.73993530782118e-06" iyz="3.18816576527695e-09" izz="3.21445108840275e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-2.1054501660018e-08" ixz="1.16767691320589e-08" iyy="1.000000e-04" iyz="3.18816576527695e-09" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -93,7 +95,7 @@
     <inertial>
       <origin xyz="-0.0419797687715683 0.0785695933122011 -0.0231515381895025" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0356190541582585"/>
-      <inertia ixx="3.94460755819088e-06" ixy="5.40131440804977e-08" ixz="-3.18560639543114e-09" iyy="4.39573822732425e-06" iyz="1.16768356053738e-08" izz="4.85566182610951e-06"/>
+      <inertia ixx="1.000000e-04" ixy="5.40131440804977e-08" ixz="-3.18560639543114e-09" iyy="1.000000e-04" iyz="1.16768356053738e-08" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -113,7 +115,8 @@
     <inertial>
       <origin xyz="0.0016510438589472 0.0778057578962844 0.0566210301742714" rpy="0.0 -0.0 0.0"/>
       <mass value="0.00736377671410321"/>
-      <inertia ixx="6.23026208790114e-07" ixy="4.64911587686377e-09" ixz="-1.21774119934071e-14" iyy="4.1517508351772e-07" iyz="-1.47706067420849e-12" izz="5.58392363215573e-07"/>
+      <!-- <inertia ixx="6.23026208790114e-07" ixy="4.64911587686377e-09" ixz="-1.21774119934071e-14" iyy="4.1517508351772e-07" iyz="-1.47706067420849e-12" izz="5.58392363215573e-07"/> -->
+      <inertia ixx="1.000000e-04" ixy="4.64911587686377e-09" ixz="-1.21774119934071e-14" iyy="1.000000e-04" iyz="-1.47706067420849e-12" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -133,7 +136,8 @@
     <inertial>
       <origin xyz="-0.000466911885189514 0.0624063256412892 0.0815726594429263" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0488819579417229"/>
-      <inertia ixx="6.30201298165013e-06" ixy="-1.80131374142072e-08" ixz="-2.38311555265213e-08" iyy="5.38979193954328e-06" iyz="1.15959128617003e-08" izz="6.89791246161297e-06"/>
+      <!-- <inertia ixx="6.30201298165013e-06" ixy="-1.80131374142072e-08" ixz="-2.38311555265213e-08" iyy="5.38979193954328e-06" iyz="1.15959128617003e-08" izz="6.89791246161297e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-1.80131374142072e-08" ixz="-2.38311555265213e-08" iyy="1.000000e-04" iyz="1.15959128617003e-08" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -153,7 +157,8 @@
     <inertial>
       <origin xyz="-0.0330277428947269 0.0768233052251458 0.100619882815324" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0333926389608614"/>
-      <inertia ixx="3.30636322891007e-06" ixy="2.99884795330491e-07" ixz="1.36097064864093e-08" iyy="3.77315458100189e-06" iyz="2.71887959762946e-08" izz="3.96432574101108e-06"/>
+      <!-- <inertia ixx="3.30636322891007e-06" ixy="2.99884795330491e-07" ixz="1.36097064864093e-08" iyy="3.77315458100189e-06" iyz="2.71887959762946e-08" izz="3.96432574101108e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="2.99884795330491e-07" ixz="1.36097064864093e-08" iyy="1.000000e-04" iyz="2.71887959762946e-08" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -173,7 +178,8 @@
     <inertial>
       <origin xyz="-0.00575793188359448 0.0909946641170031 0.154628764458567" rpy="0.0 -0.0 0.0"/>
       <mass value="0.00895541725275716"/>
-      <inertia ixx="1.56881539249378e-06" ixy="2.90079247027908e-07" ixz="1.36850293455652e-12" iyy="4.24237090037039e-07" iyz="5.6685247064795e-13" izz="1.66621992553874e-06"/>
+      <!-- <inertia ixx="1.56881539249378e-06" ixy="2.90079247027908e-07" ixz="1.36850293455652e-12" iyy="4.24237090037039e-07" iyz="5.6685247064795e-13" izz="1.66621992553874e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="2.90079247027908e-07" ixz="1.36850293455652e-12" iyy="1.000000e-04" iyz="5.6685247064795e-13" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -193,7 +199,8 @@
     <inertial>
       <origin xyz="-0.00575793188359814 0.064611878473499 0.165977177563427" rpy="0.0 -0.0 0.0"/>
       <mass value="0.00895541725275716"/>
-      <inertia ixx="1.56881539249378e-06" ixy="-2.90079247027908e-07" ixz="1.3685029352065e-12" iyy="4.24237090037038e-07" iyz="-5.66852472660774e-13" izz="1.66621992553874e-06"/>
+      <!-- <inertia ixx="1.56881539249378e-06" ixy="-2.90079247027908e-07" ixz="1.3685029352065e-12" iyy="4.24237090037038e-07" iyz="-5.66852472660774e-13" izz="1.66621992553874e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-2.90079247027908e-07" ixz="1.3685029352065e-12" iyy="1.000000e-04" iyz="-5.66852472660774e-13" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -213,7 +220,8 @@
     <inertial>
       <origin xyz="0.00750000000000804 0.0498016710106214 0.0774229781318285" rpy="0.0 -0.0 0.0"/>
       <mass value="0.00775312250160503"/>
-      <inertia ixx="4.27540101999965e-07" ixy="3.76136064915158e-22" ixz="7.33040243663328e-09" iyy="6.49398350259101e-07" iyz="-9.82862838779766e-22" izz="7.15408183770753e-07"/>
+      <!-- <inertia ixx="4.27540101999965e-07" ixy="3.76136064915158e-22" ixz="7.33040243663328e-09" iyy="6.49398350259101e-07" iyz="-9.82862838779766e-22" izz="7.15408183770753e-07"/> -->
+      <inertia ixx="1.000000e-04" ixy="3.76136064915158e-22" ixz="7.33040243663328e-09" iyy="1.000000e-04" iyz="-9.82862838779766e-22" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -233,7 +241,8 @@
     <inertial>
       <origin xyz="0.00742734055676281 -0.0939825306250985 -0.0607218954396666" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0488819579417233"/>
-      <inertia ixx="5.38979193954333e-06" ixy="-2.40958659059249e-08" ixz="1.15959128616777e-08" iyy="6.30201298165015e-06" iyz="4.77616974083206e-10" izz="6.89791246161303e-06"/>
+      <!-- <inertia ixx="5.38979193954333e-06" ixy="-2.40958659059249e-08" ixz="1.15959128616777e-08" iyy="6.30201298165015e-06" iyz="4.77616974083206e-10" izz="6.89791246161303e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-2.40958659059249e-08" ixz="1.15959128616777e-08" iyy="1.000000e-04" iyz="4.77616974083206e-10" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -253,7 +262,8 @@
     <inertial>
       <origin xyz="-0.0137818497143928 -0.0785760906775208 -0.0509291022791145" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0267722516782377"/>
-      <inertia ixx="3.14025785519116e-06" ixy="2.10545016600191e-08" ixz="1.16767691320627e-08" iyy="2.73993530782123e-06" iyz="-3.18816576528393e-09" izz="3.21445108840279e-06"/>
+      <!-- <inertia ixx="3.14025785519116e-06" ixy="2.10545016600191e-08" ixz="1.16767691320627e-08" iyy="2.73993530782123e-06" iyz="-3.18816576528393e-09" izz="3.21445108840279e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="2.10545016600191e-08" ixz="1.16767691320627e-08" iyy="1.000000e-04" iyz="-3.18816576528393e-09" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -273,7 +283,8 @@
     <inertial>
       <origin xyz="-0.0419797687715708 -0.0785572640137325 -0.012692437828887" rpy="0.0 -0.0 0.0"/>
       <mass value="0.035619054158259"/>
-      <inertia ixx="3.94460755819094e-06" ixy="-4.07455626958971e-08" ixz="-3.18560639540328e-09" iyy="4.39573822732428e-06" iyz="-1.1676718625715e-08" izz="4.85566182610956e-06"/>
+      <!-- <inertia ixx="3.94460755819094e-06" ixy="-4.07455626958971e-08" ixz="-3.18560639540328e-09" iyy="4.39573822732428e-06" iyz="-1.1676718625715e-08" izz="4.85566182610956e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-4.07455626958971e-08" ixz="-3.18560639540328e-09" iyy="1.000000e-04" iyz="-1.1676718625715e-08" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -293,7 +304,8 @@
     <inertial>
       <origin xyz="0.00165104385894364 -0.0778057578962786 0.0573789698257278" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0073637767141032"/>
-      <inertia ixx="6.23026208790113e-07" ixy="-4.64911587686424e-09" ixz="-1.21774114868373e-14" iyy="4.15175083517719e-07" iyz="1.47706067387539e-12" izz="5.58392363215573e-07"/>
+      <!-- <inertia ixx="6.23026208790113e-07" ixy="-4.64911587686424e-09" ixz="-1.21774114868373e-14" iyy="4.15175083517719e-07" iyz="1.47706067387539e-12" izz="5.58392363215573e-07"/> -->
+      <inertia ixx="1.000000e-04" ixy="-4.64911587686424e-09" ixz="-1.21774114868373e-14" iyy="1.000000e-04" iyz="1.47706067387539e-12" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -313,7 +325,8 @@
     <inertial>
       <origin xyz="-0.000466911885188184 -0.0932044741964692 0.083072659443248" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0488819579417233"/>
-      <inertia ixx="6.30201298165017e-06" ixy="-1.80131374141397e-08" ixz="-2.38311555265008e-08" iyy="5.38979193954332e-06" iyz="1.15959128617046e-08" izz="6.89791246161298e-06"/>
+      <!-- <inertia ixx="6.30201298165017e-06" ixy="-1.80131374141397e-08" ixz="-2.38311555265008e-08" iyy="5.38979193954332e-06" iyz="1.15959128617046e-08" izz="6.89791246161298e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-1.80131374141397e-08" ixz="-2.38311555265008e-08" iyy="1.000000e-04" iyz="1.15959128617046e-08" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -333,7 +346,8 @@
     <inertial>
       <origin xyz="-0.033027742894731 -0.0777001820412116 0.107380117184671" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0333926389608612"/>
-      <inertia ixx="3.30636322891005e-06" ixy="-2.99884795330496e-07" ixz="1.36097064863934e-08" iyy="3.77315458100187e-06" iyz="-1.25309536168303e-08" izz="3.96432574101107e-06"/>
+      <!-- <inertia ixx="3.30636322891005e-06" ixy="-2.99884795330496e-07" ixz="1.36097064863934e-08" iyy="3.77315458100187e-06" iyz="-1.25309536168303e-08" izz="3.96432574101107e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-2.99884795330496e-07" ixz="1.36097064863934e-08" iyy="1.000000e-04" iyz="-1.25309536168303e-08" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -353,7 +367,8 @@
     <inertial>
       <origin xyz="-0.00575793188358857 -0.0909946641169996 0.165977177563423" rpy="0.0 -0.0 0.0"/>
       <mass value="0.00895541725275716"/>
-      <inertia ixx="1.56881539249378e-06" ixy="-2.90079247027908e-07" ixz="1.3685029341339e-12" iyy="4.24237090037038e-07" iyz="-5.66852473175791e-13" izz="1.66621992553874e-06"/>
+      <!-- <inertia ixx="1.56881539249378e-06" ixy="-2.90079247027908e-07" ixz="1.3685029341339e-12" iyy="4.24237090037038e-07" iyz="-5.66852473175791e-13" izz="1.66621992553874e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-2.90079247027908e-07" ixz="1.3685029341339e-12" iyy="1.000000e-04" iyz="-5.66852473175791e-13" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -373,7 +388,8 @@
     <inertial>
       <origin xyz="-0.00575793188358593 -0.0646118784734955 0.154628764458567" rpy="0.0 -0.0 0.0"/>
       <mass value="0.00895541725275716"/>
-      <inertia ixx="1.56881539249378e-06" ixy="2.90079247027908e-07" ixz="1.36850293341796e-12" iyy="4.24237090037038e-07" iyz="5.66852471090155e-13" izz="1.66621992553874e-06"/>
+      <!-- <inertia ixx="1.56881539249378e-06" ixy="2.90079247027908e-07" ixz="1.36850293341796e-12" iyy="4.24237090037038e-07" iyz="5.66852471090155e-13" izz="1.66621992553874e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="2.90079247027908e-07" ixz="1.36850293341796e-12" iyy="1.000000e-04" iyz="5.66852471090155e-13" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -393,7 +409,8 @@
     <inertial>
       <origin xyz="0.0287818497143985 7.60906775256067e-05 -0.0859291022791144" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0267722516782374"/>
-      <inertia ixx="3.14025785519115e-06" ixy="-2.10545016600164e-08" ixz="-1.16767691320583e-08" iyy="2.7399353078212e-06" iyz="-3.18816576528483e-09" izz="3.21445108840277e-06"/>
+      <!-- <inertia ixx="3.14025785519115e-06" ixy="-2.10545016600164e-08" ixz="-1.16767691320583e-08" iyy="2.7399353078212e-06" iyz="-3.18816576528483e-09" izz="3.21445108840277e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-2.10545016600164e-08" ixz="-1.16767691320583e-08" iyy="1.000000e-04" iyz="-3.18816576528483e-09" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -413,7 +430,8 @@
     <inertial>
       <origin xyz="0.0563071474852643 0.00458336726096902 -0.118986177954781" rpy="0.0 -0.0 0.0"/>
       <mass value="0.184305345878305"/>
-      <inertia ixx="2.6255357924015e-05" ixy="3.04375090051604e-08" ixz="-4.80511209762755e-08" iyy="2.79766917910753e-05" iyz="-2.78258729227929e-08" izz="4.63202146600336e-05"/>
+      <!-- <inertia ixx="2.6255357924015e-05" ixy="3.04375090051604e-08" ixz="-4.80511209762755e-08" iyy="2.79766917910753e-05" iyz="-2.78258729227929e-08" izz="4.63202146600336e-05"/> -->
+      <inertia ixx="1.000000e-04" ixy="3.04375090051604e-08" ixz="-4.80511209762755e-08" iyy="1.000000e-04" iyz="-2.78258729227929e-08" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -433,7 +451,8 @@
     <inertial>
       <origin xyz="0.0344932842136683 0.0970000970916309 -0.0435000024416005" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0620356799852319"/>
-      <inertia ixx="1.17891072454946e-05" ixy="-4.41939757993746e-11" ixz="2.8155029764713e-12" iyy="9.70723532361731e-06" iyz="2.3526216007568e-12" izz="9.707219297398e-06"/>
+      <!-- <inertia ixx="1.17891072454946e-05" ixy="-4.41939757993746e-11" ixz="2.8155029764713e-12" iyy="9.70723532361731e-06" iyz="2.3526216007568e-12" izz="9.707219297398e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-4.41939757993746e-11" ixz="2.8155029764713e-12" iyy="1.000000e-04" iyz="2.3526216007568e-12" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -441,19 +460,31 @@
       </geometry>
       <material name=""/>
       <origin xyz="0.0505000000000009 0.097 -0.0434999999999994" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/> -->
+      <!-- <geometry> -->
+      <!--   <cylinder radius="0.03" length="0.02"/> -->
+      <!-- </geometry> -->
     </visual>
+    <!-- <collision> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://jedy_description/meshes/front_right_wheel_link.dae"/> -->
+    <!--   </geometry> -->
+    <!--   <origin xyz="0.0505000000000009 0.097 -0.0434999999999994" rpy="0.0 -0.0 0.0"/> -->
+    <!-- </collision> -->
     <collision>
       <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/>
       <geometry>
         <cylinder radius="0.03" length="0.02"/>
       </geometry>
+      <self_collide>false</self_collide>
     </collision>
   </link>
   <link name="front_left_wheel_link">
     <inertial>
       <origin xyz="-0.0344932901302818 0.0969999049831629 -0.0435000004047774" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0620331863909222"/>
-      <inertia ixx="1.17881307318182e-05" ixy="-4.52960489509934e-11" ixz="2.33278294698924e-12" iyy="9.70649490175883e-06" iyz="3.34165767029261e-12" izz="9.7064772842312e-06"/>
+      <!-- <inertia ixx="1.17881307318182e-05" ixy="-4.52960489509934e-11" ixz="2.33278294698924e-12" iyy="9.70649490175883e-06" iyz="3.34165767029261e-12" izz="9.7064772842312e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-4.52960489509934e-11" ixz="2.33278294698924e-12" iyy="1.000000e-04" iyz="3.34165767029261e-12" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -461,19 +492,31 @@
       </geometry>
       <material name=""/>
       <origin xyz="-0.0504999999999993 0.0970000000000006 -0.0434999999999985" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/> -->
+      <!-- <geometry> -->
+      <!--   <cylinder radius="0.03" length="0.02"/> -->
+      <!-- </geometry> -->
     </visual>
+    <!-- <collision> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://jedy_description/meshes/front_left_wheel_link.dae"/> -->
+    <!--   </geometry> -->
+    <!--   <origin xyz="-0.0504999999999993 0.0970000000000006 -0.0434999999999985" rpy="0.0 -0.0 0.0"/> -->
+    <!-- </collision> -->
     <collision>
       <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/>
       <geometry>
         <cylinder radius="0.03" length="0.02"/>
       </geometry>
+      <self_collide>false</self_collide>
     </collision>
   </link>
   <link name="rear_right_wheel_link">
     <inertial>
       <origin xyz="0.0344932842136686 0.0970000970916324 0.0434999975583993" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0620356799852319"/>
-      <inertia ixx="1.17891072454946e-05" ixy="-4.41939758006981e-11" ixz="2.81550297072405e-12" iyy="9.70723532361731e-06" iyz="2.35262160013476e-12" izz="9.707219297398e-06"/>
+      <!-- <inertia ixx="1.17891072454946e-05" ixy="-4.41939758006981e-11" ixz="2.81550297072405e-12" iyy="9.70723532361731e-06" iyz="2.35262160013476e-12" izz="9.707219297398e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-4.41939758006981e-11" ixz="2.81550297072405e-12" iyy="1.000000e-04" iyz="2.35262160013476e-12" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -481,19 +524,31 @@
       </geometry>
       <material name=""/>
       <origin xyz="0.0505000000000012 0.0969999999999992 0.0435000000000006" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/> -->
+      <!-- <geometry> -->
+      <!--   <cylinder radius="0.03" length="0.02"/> -->
+      <!-- </geometry> -->
     </visual>
+    <!-- <collision> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://jedy_description/meshes/rear_right_wheel_link.dae"/> -->
+    <!--   </geometry> -->
+    <!--   <origin xyz="0.0505000000000012 0.0969999999999992 0.0435000000000006" rpy="0.0 -0.0 0.0"/> -->
+    <!-- </collision> -->
     <collision>
       <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/>
       <geometry>
         <cylinder radius="0.03" length="0.02"/>
       </geometry>
+      <self_collide>false</self_collide>
     </collision>
   </link>
   <link name="rear_left_wheel_link">
     <inertial>
       <origin xyz="-0.0344932901302836 0.0969999049831609 0.0434999995952184" rpy="0.0 -0.0 0.0"/>
       <mass value="0.0620331863909222"/>
-      <inertia ixx="1.17881307318182e-05" ixy="-4.52960489535212e-11" ixz="2.33278294290793e-12" iyy="9.70649490175883e-06" iyz="3.34165766872427e-12" izz="9.70647728423119e-06"/>
+      <!-- <inertia ixx="1.17881307318182e-05" ixy="-4.52960489535212e-11" ixz="2.33278294290793e-12" iyy="9.70649490175883e-06" iyz="3.34165766872427e-12" izz="9.70647728423119e-06"/> -->
+      <inertia ixx="1.000000e-04" ixy="-4.52960489535212e-11" ixz="2.33278294290793e-12" iyy="1.000000e-04" iyz="3.34165766872427e-12" izz="1.000000e-04"/>
     </inertial>
     <visual>
       <geometry>
@@ -501,12 +556,23 @@
       </geometry>
       <material name=""/>
       <origin xyz="-0.0504999999999999 0.0969999999999994 0.0435000000000005" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/> -->
+      <!-- <geometry> -->
+      <!--   <cylinder radius="0.03" length="0.02"/> -->
+      <!-- </geometry> -->
     </visual>
+    <!-- <collision> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://jedy_description/meshes/rear_left_wheel_link.dae"/> -->
+    <!--   </geometry> -->
+    <!--   <origin xyz="-0.0504999999999999 0.0969999999999994 0.0435000000000005" rpy="0.0 -0.0 0.0"/> -->
+    <!-- </collision> -->
     <collision>
       <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/>
       <geometry>
         <cylinder radius="0.03" length="0.02"/>
       </geometry>
+      <self_collide>false</self_collide>
     </collision>
   </link>
   <joint name="rarm_joint0" type="revolute">
@@ -652,28 +718,32 @@
     <origin xyz="0.0 0.0 0.033" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="front_right_wheel_joint" type="continuous">
-    <limit effort="0.48" velocity="6.55"/>
+    <!-- <limit effort="0.48" velocity="6.55"/> -->
+    <limit effort="100" velocity="6.55"/>
     <parent link="real_base_link"/>
     <child link="front_right_wheel_link"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="-0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="front_left_wheel_joint" type="continuous">
-    <limit effort="0.48" velocity="6.55"/>
+    <!-- <limit effort="0.48" velocity="6.55"/> -->
+    <limit effort="100" velocity="6.55"/>
     <parent link="real_base_link"/>
     <child link="front_left_wheel_link"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="rear_right_wheel_joint" type="continuous">
-    <limit effort="0.48" velocity="6.55"/>
+    <!-- <limit effort="0.48" velocity="6.55"/> -->
+    <limit effort="100" velocity="6.55"/>
     <parent link="real_base_link"/>
     <child link="rear_right_wheel_link"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="-0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="rear_left_wheel_joint" type="continuous">
-    <limit effort="0.48" velocity="6.55"/>
+    <!-- <limit effort="0.48" velocity="6.55"/> -->
+    <limit effort="100" velocity="6.55"/>
     <parent link="real_base_link"/>
     <child link="rear_left_wheel_link"/>
     <axis xyz="1. 0. 0."/>
@@ -682,4 +752,500 @@
   <material name="">
     <color rgba="0.75294118 0.75294118 0.75294118 1.        "/>
   </material>
+
+  <gazebo reference="real_base_link">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>__default_topic__</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <robotNamespace>/imu_publisher</robotNamespace>
+        <topicName>imu</topicName>
+        <bodyName>real_base_link</bodyName>
+        <updateRateHZ>100.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>real_base_link</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="rarm_joint0">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+    <self_collide>false</self_collide>
+  </gazebo>
+  <gazebo reference="rarm_joint1">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint2">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint3">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint4">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint5">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint6">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_gripper_joint">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_mimic_gripper_joint">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint0">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint1">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint2">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint3">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint4">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint5">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint6">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_gripper_joint">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_mimic_gripper_joint">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="head_joint0">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="head_joint1">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="front_right_wheel_joint">
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="front_left_wheel_joint">
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="rear_right_wheel_joint">
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="rear_left_wheel_joint">
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+
+  <!-- <joint name="camera_joint" type="fixed"> -->
+  <!--   <origin rpy="0 0 0" xyz="-0.031 0.0125 -0.016"/> -->
+  <!--   <parent link="head_link1"/> -->
+  <!--   <child link="camera_link"/> -->
+  <!-- </joint> -->
+
+  <!-- <link name="camera_link"> -->
+  <!--   <visual> -->
+  <!--     <origin rpy="0 0 1.5707963267948966" xyz="0 0 0"/> -->
+  <!--   </visual> -->
+  <!--   <collision> -->
+  <!--     <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/> -->
+  <!--   </collision> -->
+  <!--   <inertial> -->
+  <!--     <mass value="0.564"/> -->
+  <!--     <origin xyz="0 0 0"/> -->
+  <!--     <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257"/> -->
+  <!--   </inertial> -->
+  <!-- </link> -->
+  <!-- <!-\- The fixed joints & links below are usually published by static_transformers launched by the OpenNi launch -->
+  <!--      files. However, for Gazebo simulation we need them, so we add them here. -->
+  <!--      (Hence, don't publish them additionally!) -\-> -->
+  <!-- <joint name="camera_depth_joint" type="fixed"> -->
+  <!--   <origin rpy="0 0 0" xyz="0 0.025 0"/> -->
+  <!--   <parent link="camera_link"/> -->
+  <!--   <child link="camera_depth_frame"/> -->
+  <!-- </joint> -->
+  <!-- <link name="camera_depth_frame"/> -->
+  <!-- <joint name="camera_depth_optical_joint" type="fixed"> -->
+  <!--   <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/> -->
+  <!--   <parent link="camera_depth_frame"/> -->
+  <!--   <child link="camera_depth_optical_frame"/> -->
+  <!-- </joint> -->
+  <!-- <link name="camera_depth_optical_frame"/> -->
+  <!-- <gazebo reference="camera_link"> -->
+  <!--   <sensor name="camera" type="depth"> -->
+  <!--     <always_on>true</always_on> -->
+  <!--     <update_rate>20.0</update_rate> -->
+  <!--     <camera> -->
+  <!--       <horizontal_fov>1.0471975511965976</horizontal_fov> -->
+  <!--       <image> -->
+  <!--         <format>B8G8R8</format> -->
+  <!--         <width>640</width> -->
+  <!--         <height>480</height> -->
+  <!--       </image> -->
+  <!--       <clip> -->
+  <!--         <near>0.05</near> -->
+  <!--         <far>8.0</far> -->
+  <!--       </clip> -->
+  <!--     </camera> -->
+  <!--     <plugin filename="libgazebo_ros_openni_kinect.so" name="kinect_camera_controller"> -->
+  <!--       <cameraName>camera</cameraName> -->
+  <!--       <alwaysOn>true</alwaysOn> -->
+  <!--       <updateRate>10</updateRate> -->
+  <!--       <imageTopicName>rgb/image_raw</imageTopicName> -->
+  <!--       <depthImageTopicName>depth/image_raw</depthImageTopicName> -->
+  <!--       <pointCloudTopicName>depth/points</pointCloudTopicName> -->
+  <!--       <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName> -->
+  <!--       <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName> -->
+  <!--       <frameName>camera_depth_optical_frame</frameName> -->
+  <!--       <baseline>0.1</baseline> -->
+  <!--       <distortion_k1>0.0</distortion_k1> -->
+  <!--       <distortion_k2>0.0</distortion_k2> -->
+  <!--       <distortion_k3>0.0</distortion_k3> -->
+  <!--       <distortion_t1>0.0</distortion_t1> -->
+  <!--       <distortion_t2>0.0</distortion_t2> -->
+  <!--       <pointCloudCutoff>0.4</pointCloudCutoff> -->
+  <!--     </plugin> -->
+  <!--   </sensor> -->
+  <!-- </gazebo> -->
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control"/>
+  </gazebo>
+
+  <transmission name="rarm_joint0_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint0">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint0_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint1_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint2_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint2">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint2_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint3_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint3">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint3_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint4_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint4">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint4_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint5_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint5">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint5_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint6_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint6">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint6_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rarm_gripper_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_gripper_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_gripper_joint_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rarm_mimic_gripper_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_mimic_gripper_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_mimic_gripper_joint_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint0_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint0">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint0_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint1_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint2_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint2">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint2_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint3_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint3">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint3_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint4_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint4">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint4_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint5_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint5">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint5_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint6_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint6">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint6_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_gripper_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_gripper_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_gripper_joint_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="larm_mimic_gripper_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_mimic_gripper_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_mimic_gripper_joint_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="head_joint0_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="head_joint0">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="head_joint0_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="head_joint1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="head_joint1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="head_joint1_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="front_right_wheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="front_right_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="front_right_wheel_joint_motor">
+      <mechanicalReduction>80</mechanicalReduction>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="front_left_wheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="front_left_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="front_left_wheel_joint_motor">
+      <mechanicalReduction>80</mechanicalReduction>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rear_right_wheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rear_right_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rear_right_wheel_joint_motor">
+      <mechanicalReduction>80</mechanicalReduction>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rear_left_wheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rear_left_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rear_left_wheel_joint_motor">
+      <mechanicalReduction>80</mechanicalReduction>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+
 </robot>
