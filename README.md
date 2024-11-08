@@ -11,7 +11,7 @@ $ sudo apt install python3-vcstool
 $ source /opt/ros/noetic/setup.bash
 $ mkdir -p ~/ros/enshu_ws/src
 $ cd ~/ros/enshu_ws/src
-$ wget https://raw.githubusercontent.com/iory/robot-programming/refs/heads/kx-pr2/vcsinstall.noetic.yaml -O- | vcs import
+$ wget https://raw.githubusercontent.com/iory/robot-programming/refs/heads/jedy/vcsinstall.noetic.yaml -O- | vcs import
 $ rosdep update
 $ cd ~/ros/enshu_ws
 $ rosdep install --from-paths src --ignore-src -y -r

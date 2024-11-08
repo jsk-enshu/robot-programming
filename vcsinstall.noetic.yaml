@@ -10,7 +10,7 @@ repositories:
   robot-programming:
     type: git
     url: https://github.com/iory/robot-programming
-    version: kx-pr2
+    version: jedy
   turtlebot:
     type: git
     url: https://github.com/turtlebot/turtlebot.git
