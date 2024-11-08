@@ -4,7 +4,7 @@
 
   <node name="diff_drive_controller_spawner"
         pkg="controller_manager" type="spawner"
-        respawn="false" output="screen"
+        respawn="true" respawn_delay="5" output="screen"
         args="diff_drive_controller" >
   </node>
 
