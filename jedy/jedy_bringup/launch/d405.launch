@@ -5,8 +5,8 @@
   <arg name="depth_width" default="424" />
   <arg name="depth_height" default="240" />
   <arg name="depth_fps" default="5" />
-  <arg name="align_depth" default="true" />
-  <arg name="enable_pointcloud" default="true" />
+  <arg name="align_depth" default="false" />
+  <arg name="enable_pointcloud" default="false" />
   <arg name="ordered_pc" default="true" />
   <arg name="respawn" default="true" />
 
