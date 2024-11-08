@@ -1,9 +1,9 @@
 <launch>
-  <arg name="color_width" default="480" />
-  <arg name="color_height" default="270" />
+  <arg name="color_width" default="848" />
+  <arg name="color_height" default="480" />
   <arg name="color_fps" default="5" />
-  <arg name="depth_width" default="480" />
-  <arg name="depth_height" default="270" />
+  <arg name="depth_width" default="424" />
+  <arg name="depth_height" default="240" />
   <arg name="depth_fps" default="5" />
   <arg name="align_depth" default="true" />
   <arg name="enable_pointcloud" default="true" />
