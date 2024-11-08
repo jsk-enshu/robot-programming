@@ -24,7 +24,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/base_link.dae"/>
+        <mesh filename="package://jedy_description/meshes/base_link.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
@@ -44,7 +44,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link0.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link0.stl"/>
       </geometry>
       <origin xyz="0.00750000000000109 0.0504999999999999 -0.0685000000000001" rpy="1.57079632679489 1.986959066873071e-15 1.57079632679489"/>
     </collision>
@@ -65,7 +65,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link1.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link1.stl"/>
       </geometry>
       <origin xyz="0.00750000000000735 0.0785 -0.0684999999999999" rpy="1.57079632679489 -3.54391442388401e-16 1.5707963267949"/>
     </collision>
@@ -86,7 +86,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link2.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link2.stl"/>
       </geometry>
       <origin xyz="0.00750000000001602 0.0784999999999998 -0.0509999999999999" rpy="1.5707963267949 -2.17212264999435e-15 1.57079632679485"/>
     </collision>
@@ -106,7 +106,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link3.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link3.stl"/>
       </geometry>
       <origin xyz="0.00750000000000905 0.0785000000000006 -0.0179999999999999" rpy="1.5707963267949 -2.37767691456137e-15 1.57079632679488"/>
     </collision>
@@ -127,7 +127,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link4.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link4.stl"/>
       </geometry>
       <origin xyz="0.00997906015717234 0.077805399918878 0.0569999999999997" rpy="1.5707963267949 -0.0 1.5707963267949"/>
     </collision>
@@ -148,7 +148,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link5.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link5.stl"/>
       </geometry>
       <origin xyz="0.00997906015717333 0.077805399918878 0.0829999999999996" rpy="1.5707963267949 -0.0 1.57079632679489"/>
     </collision>
@@ -169,7 +169,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link6.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link6.stl"/>
       </geometry>
       <origin xyz="0.00997906015717347 0.0778053999188794 0.103999999999997" rpy="1.5707963267949 -3.6845526629748716e-15 1.57079632679492"/>
     </collision>
@@ -190,7 +190,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link7.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link7.stl"/>
       </geometry>
       <origin xyz="0.00997906015717007 0.0895426281771284 0.160302971010996" rpy="1.57079632679491 -4.18415302405635e-15 1.57079632679491"/>
     </collision>
@@ -211,7 +211,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link8.dae"/>
+        <mesh filename="package://jedy_description/meshes/rarm_link8.stl"/>
       </geometry>
       <origin xyz="0.00997906015716632 0.0660639144133757 0.160302971010998" rpy="1.57079632679488 4.184153024056432e-15 1.57079632679492"/>
     </collision>
@@ -232,7 +232,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link0.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link0.stl"/>
       </geometry>
       <origin xyz="0.00750000000000825 0.0505000000000001 0.0684999999999997" rpy="-1.57079632679489 -2.08412807937063e-15 -1.5707963267949"/>
     </collision>
@@ -253,7 +253,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link1.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link1.stl"/>
       </geometry>
       <origin xyz="0.00750000000000863 -0.0785000000000002 -0.0684999999999996" rpy="1.5707963267949 3.62060067618232e-15 1.5707963267949"/>
     </collision>
@@ -274,7 +274,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link2.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link2.stl"/>
       </geometry>
       <origin xyz="0.00750000000000532 -0.0785 -0.0509999999999999" rpy="1.5707963267949 2.1371793224098e-15 1.57079632679491"/>
     </collision>
@@ -295,7 +295,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link3.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link3.stl"/>
       </geometry>
       <origin xyz="0.00750000000000711 -0.0785000000000005 -0.0180000000000003" rpy="1.5707963267949 2.37767691456137e-15 1.57079632679491"/>
     </collision>
@@ -316,7 +316,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link4.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link4.stl"/>
       </geometry>
       <origin xyz="0.00997906015716914 -0.077805399918878 0.0569999999999994" rpy="1.5707963267949 2.109502468254791e-15 1.57079632679489"/>
     </collision>
@@ -337,7 +337,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link5.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link5.stl"/>
       </geometry>
       <origin xyz="0.00997906015717186 -0.0778053999188787 0.0830000000000017" rpy="1.5707963267949 -6.64973364763795e-15 1.5707963267949"/>
     </collision>
@@ -358,7 +358,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link6.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link6.stl"/>
       </geometry>
       <origin xyz="0.00997906015716958 -0.0778053999188793 0.103999999999997" rpy="1.5707963267949 3.684552662974871e-15 1.57079632679487"/>
     </collision>
@@ -379,7 +379,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link7.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link7.stl"/>
       </geometry>
       <origin xyz="0.00997906015717492 -0.089542628177131 0.160302971010997" rpy="1.57079632679489 4.1841530240560895e-15 1.57079632679488"/>
     </collision>
@@ -400,7 +400,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link8.dae"/>
+        <mesh filename="package://jedy_description/meshes/larm_link8.stl"/>
       </geometry>
       <origin xyz="0.00997906015717727 -0.0660639144133791 0.160302971010999" rpy="1.5707963267949 -4.184153024056081e-15 1.57079632679487"/>
     </collision>
@@ -421,7 +421,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/head_link0.dae"/>
+        <mesh filename="package://jedy_description/meshes/head_link0.stl"/>
       </geometry>
       <origin xyz="0.00749999999999987 -5.38287282543344e-17 -0.086" rpy="1.57079632679491 -1.22464679914727e-16 1.5707963267949"/>
     </collision>
@@ -442,7 +442,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/head_link1.dae"/>
+        <mesh filename="package://jedy_description/meshes/head_link1.stl"/>
       </geometry>
       <origin xyz="0.00749999999999211 1.66972953365245e-15 -0.119" rpy="1.57079632679491 -2.044002511535201e-16 1.57079632679492"/>
     </collision>
@@ -467,7 +467,7 @@
     </visual>
     <!-- <collision> -->
     <!--   <geometry> -->
-    <!--     <mesh filename="package://jedy_description/meshes/front_right_wheel_link.dae"/> -->
+    <!--     <mesh filename="package://jedy_description/meshes/front_right_wheel_link.stl"/> -->
     <!--   </geometry> -->
     <!--   <origin xyz="0.0505000000000009 0.097 -0.0434999999999994" rpy="0.0 -0.0 0.0"/> -->
     <!-- </collision> -->
@@ -499,7 +499,7 @@
     </visual>
     <!-- <collision> -->
     <!--   <geometry> -->
-    <!--     <mesh filename="package://jedy_description/meshes/front_left_wheel_link.dae"/> -->
+    <!--     <mesh filename="package://jedy_description/meshes/front_left_wheel_link.stl"/> -->
     <!--   </geometry> -->
     <!--   <origin xyz="-0.0504999999999993 0.0970000000000006 -0.0434999999999985" rpy="0.0 -0.0 0.0"/> -->
     <!-- </collision> -->
@@ -531,7 +531,7 @@
     </visual>
     <!-- <collision> -->
     <!--   <geometry> -->
-    <!--     <mesh filename="package://jedy_description/meshes/rear_right_wheel_link.dae"/> -->
+    <!--     <mesh filename="package://jedy_description/meshes/rear_right_wheel_link.stl"/> -->
     <!--   </geometry> -->
     <!--   <origin xyz="0.0505000000000012 0.0969999999999992 0.0435000000000006" rpy="0.0 -0.0 0.0"/> -->
     <!-- </collision> -->
@@ -563,7 +563,7 @@
     </visual>
     <!-- <collision> -->
     <!--   <geometry> -->
-    <!--     <mesh filename="package://jedy_description/meshes/rear_left_wheel_link.dae"/> -->
+    <!--     <mesh filename="package://jedy_description/meshes/rear_left_wheel_link.stl"/> -->
     <!--   </geometry> -->
     <!--   <origin xyz="-0.0504999999999999 0.0969999999999994 0.0435000000000005" rpy="0.0 -0.0 0.0"/> -->
     <!-- </collision> -->
