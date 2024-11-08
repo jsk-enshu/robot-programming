@@ -1,0 +1,108 @@
+# # Definitions of tags to detect
+#
+# ## General remarks
+#
+# - All length in meters
+# - 'size' refers to the length of the shared border between solid black and solid white rectangle.
+#   See README.md or https://github.com/AprilRobotics/apriltag/wiki/AprilTag-User-Guide#pose-estimation for details.
+# - Ellipsis (...) signifies that the previous element can be repeated multiple times.
+#
+# ## Standalone tag definitions
+# ### Remarks
+#
+# - name is optional
+#
+# ### Syntax
+#
+# standalone_tags:
+#   [
+#     {id: ID, size: SIZE, name: NAME},
+#     ...
+#   ]
+standalone_tags:
+  [
+      {id: 0, size: 0.032, name: id_0},
+      {id: 1, size: 0.032, name: id_1},
+      {id: 2, size: 0.032, name: id_2},
+      {id: 3, size: 0.032, name: id_3},
+      {id: 4, size: 0.032, name: id_4},
+      {id: 5, size: 0.032, name: id_5},
+      {id: 6, size: 0.032, name: id_6},
+      {id: 7, size: 0.032, name: id_7},
+      {id: 8, size: 0.032, name: id_8},
+      {id: 9, size: 0.032, name: id_9},
+      {id: 10, size: 0.032, name: id_10},
+      {id: 11, size: 0.032, name: id_11},
+      {id: 12, size: 0.032, name: id_12},
+      {id: 13, size: 0.032, name: id_13},
+      {id: 14, size: 0.032, name: id_14},
+      {id: 15, size: 0.032, name: id_15},
+      {id: 16, size: 0.032, name: id_16},
+      {id: 17, size: 0.032, name: id_17},
+      {id: 18, size: 0.032, name: id_18},
+      {id: 19, size: 0.032, name: id_19},
+      {id: 20, size: 0.032, name: id_20},
+      {id: 21, size: 0.032, name: id_21},
+      {id: 22, size: 0.032, name: id_22},
+      {id: 23, size: 0.032, name: id_23},
+      {id: 24, size: 0.032, name: id_24},
+      {id: 25, size: 0.032, name: id_25},
+      {id: 26, size: 0.032, name: id_26},
+      {id: 27, size: 0.032, name: id_27},
+      {id: 28, size: 0.032, name: id_28},
+      {id: 29, size: 0.032, name: id_29},
+      {id: 30, size: 0.032, name: id_30},
+      {id: 31, size: 0.032, name: id_31},
+      {id: 32, size: 0.032, name: id_32},
+      {id: 33, size: 0.032, name: id_33},
+      {id: 34, size: 0.032, name: id_34},
+      {id: 35, size: 0.032, name: id_35},
+      {id: 36, size: 0.032, name: id_36},
+      {id: 37, size: 0.032, name: id_37},
+      {id: 38, size: 0.032, name: id_38},
+      {id: 39, size: 0.032, name: id_39},
+      {id: 40, size: 0.032, name: id_40},
+      {id: 41, size: 0.032, name: id_40},
+      {id: 42, size: 0.032, name: id_41},
+      {id: 43, size: 0.032, name: id_42},
+      {id: 44, size: 0.032, name: id_43},
+      {id: 45, size: 0.032, name: id_44},
+      {id: 46, size: 0.032, name: id_45},
+      {id: 47, size: 0.032, name: id_46},
+      {id: 48, size: 0.032, name: id_47},
+      {id: 49, size: 0.032, name: id_48},
+      {id: 50, size: 0.032, name: id_49},
+      {id: 51, size: 0.032, name: id_51},
+      {id: 52, size: 0.032, name: id_52},
+      {id: 53, size: 0.032, name: id_53},
+      {id: 54, size: 0.032, name: id_54},
+      {id: 55, size: 0.032, name: id_55},
+      {id: 56, size: 0.032, name: id_56},
+      {id: 57, size: 0.032, name: id_57},
+      {id: 58, size: 0.032, name: id_58},
+      {id: 59, size: 0.032, name: id_59},
+    ]
+# ## Tag bundle definitions
+# ### Remarks
+#
+# - name is optional
+# - x, y, z have default values of 0 thus they are optional
+# - qw has default value of 1 and qx, qy, qz have default values of 0 thus they are optional
+#
+# ### Syntax
+#
+# tag_bundles:
+#   [
+#     {
+#       name: 'CUSTOM_BUNDLE_NAME',
+#       layout:
+#         [
+#           {id: ID, size: SIZE, x: X_POS, y: Y_POS, z: Z_POS, qw: QUAT_W_VAL, qx: QUAT_X_VAL, qy: QUAT_Y_VAL, qz: QUAT_Z_VAL},
+#           ...
+#         ]
+#     },
+#     ...
+#   ]
+tag_bundles:
+  [
+  ]
