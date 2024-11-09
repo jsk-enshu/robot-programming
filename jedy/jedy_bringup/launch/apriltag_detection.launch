@@ -1,14 +1,17 @@
 <launch>
   <arg name="camera_name" default="camera" />
   <arg name="rgb" value="color" />
-  <arg name="queue_size" default="30" />
+  <arg name="queue_size" default="5" />
+  <arg name="simulation" default="false" />
   <arg name="manager" default="/$(arg camera_name)/realsense2_camera_manager" />
+  <arg name="load_or_standalone" default="standalone" if="$(arg simulation)"/>
+  <arg name="load_or_standalone" default="load" unless="$(arg simulation)"/>
 
   <group ns="$(arg camera_name)" >
     <group ns="$(arg rgb)" >
       <node name="apriltag_ros_continuous_node"
             pkg="nodelet" type="nodelet"
-            args="load apriltag_ros/ContinuousDetector $(arg manager)"
+            args="$(arg load_or_standalone) apriltag_ros/ContinuousDetector $(arg manager)"
             clear_params="true"
             output="screen" >
         <remap from="image_rect" to="image_raw" />
@@ -17,7 +20,8 @@
         <param name="publish_tag_detections_image" type="bool" value="true" />
         <param name="queue_size" type="int" value="$(arg queue_size)" />
         <rosparam command="load" file="$(find apriltag_ros)/config/settings.yaml" />
-        <rosparam command="load" file="$(find jedy_bringup)/config/tags.yaml" />
+        <rosparam command="load" file="$(find jedy_bringup)/config/tags_simulation.yaml" if="$(arg simulation)" />
+        <rosparam command="load" file="$(find jedy_bringup)/config/tags.yaml" unless="$(arg simulation)" />
       </node>
     </group>
   </group>
