@@ -19,11 +19,12 @@
   </include>
 
   <!-- skip velocity smoother and kobuki_safety_controller -->
-  <!-- <node pkg="nodelet" type="nodelet" -->
-  <!--       name="mobile_base_nodelet_manager" args="manager"/> -->
-  <!-- <node name="velocity_smoother_renamer" pkg="topic_tools" type="transform" -->
-  <!--       args="-\-wait-for-start /navigation_velocity_smoother/raw_cmd_vel /cmd_vel -->
-  <!--             geometry_msgs/Twist '[m.linear,geometry_msgs.msg.Vector3(0,0,m.angular.z/2)]' -\-import geometry_msgs" /> -->
+  <node pkg="nodelet" type="nodelet"
+        name="mobile_base_nodelet_manager" args="manager"/>
+  <node name="velocity_smoother_renamer"
+        pkg="topic_tools" type="transform"
+        args="--wait-for-start /navigation_velocity_smoother/raw_cmd_vel /cmd_vel
+              geometry_msgs/Twist '[m.linear,geometry_msgs.msg.Vector3(0,0,m.angular.z/2)]' --import geometry_msgs" />
 
   <include file="$(find jedy_bringup)/launch/includes/move_base.launch.xml">
     <arg name="custom_param_file" value="$(arg custom_param_file)"/>
