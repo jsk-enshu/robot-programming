@@ -408,5 +408,13 @@
       </include>
     </model>
 
+    <!-- apriltag -->
+    <model name="apriltag" >
+      <pose>1.0 0.2 0.3 0 1.5708 0</pose>
+      <include>
+        <uri>model://Apriltag36_11_00000</uri>
+      </include>
+    </model>
+
   </world>
 </sdf>
