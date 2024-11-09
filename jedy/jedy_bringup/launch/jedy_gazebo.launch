@@ -48,10 +48,8 @@
   <rosparam file="$(find jedy_bringup)/config/jedy_controllers.yaml" />
   <node name="controller_spawner"
         pkg="controller_manager" type="spawner"
-        respawn="false"
-        output="screen"
-        args="--shutdown-timeout 0.1
-              joint_state_controller
+        respawn="true" respawn_delay="5" output="screen"
+        args="joint_state_controller
               fullbody_controller
               "/>
 
