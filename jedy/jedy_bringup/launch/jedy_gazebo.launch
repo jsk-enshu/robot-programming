@@ -4,11 +4,9 @@
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
   <arg name="world_file" default="$(find jedy_bringup)/worlds/empty.world" />
-  <arg name="model" value="$(find jedy_description)/urdf/jedy.urdf"  />
-  <!-- <arg name="model" value="$(find jedy_description)/urdf/robot.urdf.xacro"  /> -->
-  <arg name="fix_base_link" default="false"  />
+  <arg name="model" value="$(find jedy_description)/urdf/jedy_no_arm.urdf"  />
 
-  <param name="robot_description" command="$(find xacro)/xacro $(arg model) fix_base_link:=$(arg fix_base_link)" />
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
 
   <node pkg="robot_state_publisher"
         type="robot_state_publisher" name="robot_state_publisher">
@@ -33,19 +31,20 @@
         pkg="gazebo_ros" type="spawn_model"
         respawn="false" output="screen"
         args="-x 0.0 -y 0.0 -z 0.15 -R 0 -urdf -model jedy -param robot_description
+              -unpause
         "/>
 
-  <node name="set_gazebo_pose"
-        pkg="jedy_bringup" type="set_gazebo_pose.py"
-        output="screen"
-        />
+  <!-- <node name="set_gazebo_pose" -->
+  <!--       pkg="jedy_bringup" type="set_gazebo_pose.py" -->
+  <!--       output="screen" -->
+  <!--       /> -->
 
   <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" >
   </include>
 
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <!-- load the controllers -->
-  <rosparam file="$(find jedy_bringup)/config/jedy_controllers.yaml" />
+  <rosparam file="$(find jedy_bringup)/config/jedy_no_arm_controllers.yaml" />
   <node name="controller_spawner"
         pkg="controller_manager" type="spawner"
         respawn="true" respawn_delay="5" output="screen"
