@@ -10,7 +10,6 @@
 (ros::roseus-add-msgs "jsk_recognition_msgs")
 
 ;; クラスタリング結果であるBoundingBoxのtopic名
-;; (defvar *topic-name* "/camera/depth_registered/cluster_decomposer/boxes")
 (if (ros::get-param "/use_sim_time" nil)
     (defvar *topic-name* "/camera/aligned_depth_to_color/boxes")
     (defvar *topic-name* "/remote/aligned_depth_to_color/boxes"))
