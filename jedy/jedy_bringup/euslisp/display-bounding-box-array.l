@@ -11,7 +11,9 @@
 
 ;; クラスタリング結果であるBoundingBoxのtopic名
 ;; (defvar *topic-name* "/camera/depth_registered/cluster_decomposer/boxes")
-(defvar *topic-name* "/camera/depth_registered/boxes")
+(if (ros::get-param "/use_sim_time" nil)
+    (defvar *topic-name* "/camera/aligned_depth_to_color/boxes")
+    (defvar *topic-name* "/remote/aligned_depth_to_color/boxes"))
 (defvar *bounding-box-list* nil)
 
 ;; ros::initする
@@ -30,8 +32,7 @@
                        ;; (1) BoundingBoxのカメラ相対の座標系は、geometry_msgs/Poseという型で得られるので、Euslispのcoordsに変換する
                        (cam->obj-coords (ros::tf-pose->coords (send b :pose)))
                        ;; (2) *robot*モデルがカメラの座標系をもってるので、取得する
-                       ;; (cam-coords (send (send *jedy* :camera_rgb_optical_frame_lk) :copy-worldcoords))
-                       (cam-coords (send (send *jedy* :camera_depth_optical_frame_lk) :copy-worldcoords))
+                       (cam-coords (send (send *jedy* :camera_color_optical_frame_lk) :copy-worldcoords))
                        )
                   ;; (3) Euslisp内部でのworld座標系の値にして、そこにmake-cubeの箱を設置する
                   (send bx :newcoords (send cam-coords :transform cam->obj-coords))

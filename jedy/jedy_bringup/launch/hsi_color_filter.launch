@@ -11,7 +11,9 @@
   -->
   <arg name="INPUT" default="points"/>
   <arg name="CENTROID_FRAME" default="target"/>
-  <arg name="DEFAULT_NAMESPACE" default="/remote/aligned_depth_to_color"/>
+  <arg name="simulation" default="false" />
+  <arg name="DEFAULT_NAMESPACE" default="/camera/aligned_depth_to_color" if="$(arg simulation)"/>
+  <arg name="DEFAULT_NAMESPACE" default="/remote/aligned_depth_to_color" unless="$(arg simulation)"/>
   <arg name="FILTER_NAME_SUFFIX" default=""/>
   <arg name="OUTPUT" default="hsi_output$(arg FILTER_NAME_SUFFIX)"/>
 

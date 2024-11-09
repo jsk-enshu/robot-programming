@@ -457,7 +457,7 @@
         <updateRate>5</updateRate>
         <imageTopicName>/camera/color/image_raw</imageTopicName>
         <depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
-        <pointCloudTopicName>/camera/depth/points</pointCloudTopicName>
+        <pointCloudTopicName>/camera/aligned_depth_to_color/points</pointCloudTopicName>
         <cameraInfoTopicName>/camera/color/camera_info</cameraInfoTopicName>
         <depthImageCameraInfoTopicName>/camera/depth/camera_info</depthImageCameraInfoTopicName>
         <frameName>camera_depth_optical_frame</frameName>
