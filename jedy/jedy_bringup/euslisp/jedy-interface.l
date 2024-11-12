@@ -34,7 +34,7 @@
                                          "head_joint0"
                                          "head_joint1")
                 args)
-   (ros::ros-info "Initializing jedy-interface"))
+   (ros::ros-info "Initializing jedy-interface")))
 
 
 (defun jedy-init (&key
