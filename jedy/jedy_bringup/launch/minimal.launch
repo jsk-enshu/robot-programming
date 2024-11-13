@@ -10,7 +10,7 @@
   <arg name="model_server_port" default="8123" />
   <arg name="namespace" default="" />
   <arg name="joint_group_description" default="" />
-  <arg name="frame_count" default="50" />
+  <arg name="frame_count" default="1" />
   <arg name="current_limit" default="4.0" doc="current limit in Amp" />
   <arg name="temperature_limit" default="80" doc="Temperature limit in celsius" />
   <arg name="read_current" default="false" />
