@@ -29,6 +29,7 @@
     <exec_depend>topic_tools</exec_depend>
     <exec_depend>slam_karto</exec_depend>
     <exec_depend>map_server</exec_depend>
+    <exec_depend>ldlidar_stl_ros</exec_depend>
 
     <export>
         <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />
