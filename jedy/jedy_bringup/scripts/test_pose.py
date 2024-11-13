@@ -39,3 +39,4 @@ robot_model.rarm_joint0.joint_angle(-np.pi / 2)
 robot_model.larm_joint0.joint_angle(np.pi / 2)
 
 ri.angle_vector(robot_model.angle_vector(), 5)
+ri.wait_interpolation()
