@@ -3,9 +3,21 @@ repositories:
     type: git
     url: https://github.com/k-okada/jsk_roseus.git
     version: set-log-level-to-error
+  kobuki:
+    type: git
+    url: https://github.com/yujinrobot/kobuki
+    version: 4f7f1beea87a970519f8d842be0eb40f0d5cde68
+  ldlidar_stl_ros:
+    type: git
+    url: https://github.com/ldrobotSensorTeam/ldlidar_stl_ros/
+    version: 964afad8b41ca7ee1a66e5b37acaafdc55190ea8
   rcb4:
     type: git
     url: https://github.com/iory/rcb4
+    version: master
+  riberry:
+    type: git
+    url: https://github.com/iory/riberry
     version: master
   robot-programming:
     type: git
@@ -15,3 +27,11 @@ repositories:
     type: git
     url: https://github.com/turtlebot/turtlebot.git
     version: melodic
+  turtlebot_apps:
+    type: git
+    url: https://github.com/turtlebot/turtlebot_apps/
+    version: 4bbafc7bfdfc5888ba03b52611bdb56d86b22967
+  yujin_ocs:
+    type: git
+    url: https://github.com/yujinrobot/yujin_ocs
+    version: 17337e5a2d0a0f3711c55e272e656eb59174d657
