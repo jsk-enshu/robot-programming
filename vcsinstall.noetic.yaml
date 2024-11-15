@@ -14,7 +14,7 @@ repositories:
   rcb4:
     type: git
     url: https://github.com/iory/rcb4
-    version: master
+    version: enshu
   riberry:
     type: git
     url: https://github.com/iory/riberry
