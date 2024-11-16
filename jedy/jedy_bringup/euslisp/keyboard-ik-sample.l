@@ -22,8 +22,12 @@
   )
 
 
-(jedy-init :without-ri t)
-;; (jedy-init :without-ri nil)
+;; (jedy-init :without-ri t)
+;; もし実機に指令を送りたい場合には:without-riキーワード引数をnil (false)にする
+(jedy-init :without-ri nil)
+
+(when (boundp '*ri*)
+  (send *ri* :servo-on))
 
 
 #|*********************************************
@@ -79,7 +83,7 @@
        ((equal w "b")  ;;後へ動かす
         (send goal-endcoords :locate #f(-20 0 0) :local))
        ((equal w "r")  ;;reset-poseになる
-        (send *jedy* :reset-pose)
+        (send robot :reset-pose)
         (setq goal-endcoords
               (make-cascoords :pos (send (send robot target-arm :end-coords :copy-worldcoords) :worldpos))))
        ((equal w "s")
@@ -99,11 +103,11 @@
       ;;目標値goal-endcoordsに向かって逆運動学を解く．
       ;;  inverse-kinematicsという逆運動学を解くmethodを呼び出す．
       (if lookup-ik-mode
-          (setq ik-result (send *jedy* :inverse-kinematics-loop-for-look-at :head
+          (setq ik-result (send robot :inverse-kinematics-loop-for-look-at :head
                                 (send goal-endcoords :worldpos)
-                                :move-target (send *jedy* :camera_color_optical_frame_lk)
+                                :move-target (send robot :camera_color_optical_frame_lk)
                                 :warnp nil))
-          (setq ik-result (send *jedy* target-arm :inverse-kinematics goal-endcoords :rotation-axis nil
+          (setq ik-result (send robot target-arm :inverse-kinematics goal-endcoords :rotation-axis nil
                                 :warnp nil)))
       (when (null ik-result)
         (warn "Failed to solve inverse kinematics~%")
