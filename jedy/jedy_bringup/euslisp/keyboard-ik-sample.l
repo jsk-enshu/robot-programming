@@ -2,6 +2,25 @@
 
 (load "package://jedy_bringup/euslisp/jedy-interface.l")
 
+
+(setq *pressed-key* nil)
+
+;; irtviewer上でキーが押されるとそのキーの値を取る
+(defmethod gl::glviewsurface
+    (:keyrelease (event)
+     (let ((buf (make-string 1)))
+       (x::lookupstring event buf 1 0 0)
+       ;; (format t ";; my :keyrelease event=~A, buf=~A ch=~A~%" event buf (char buf 0))
+       ))
+  (:keypress (event)
+             (let ((buf (make-string 1)))
+	             (format t ";; my :keypress event=~A~%" event)
+               (x::lookupstring event buf 1 0 0)
+               (setq *pressed-key* buf)
+	             ;; (x::print-event event)
+	           ))
+  )
+
 (jedy-init :without-ri t)
 ;; (jedy-init :without-ri nil)
 
@@ -31,8 +50,9 @@
           (make-cascoords :pos (send (send robot :rarm :end-coords :copy-worldcoords) :worldpos)))
     ;;ループを回す
     (while t
-      (setq w (read-line)) ;;文字を取得
-      (format t "hoge")
+      (x::window-main-one)
+      (setq w *pressed-key*) ;;文字を取得
+      (setq *pressed-key* nil)
       ;;文字によって操作を変える
       (cond
        ((equal w "e")
@@ -62,6 +82,7 @@
 
       (send *irtviewer* :objects (list robot goal-endcoords))
       (send *irtviewer* :draw-objects)
+      (unix::usleep (* 1000 10))
 
       ;;angle-vectorで逆運動学を解いた姿勢に移行する
       (when (boundp '*ri*)
