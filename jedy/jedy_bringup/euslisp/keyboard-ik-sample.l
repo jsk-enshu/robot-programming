@@ -21,6 +21,7 @@
 	           ))
   )
 
+
 (jedy-init :without-ri t)
 ;; (jedy-init :without-ri nil)
 
@@ -41,13 +42,15 @@
 
   ;;
   ;;'e'を押すまで続ける
-  (warn ";; if stop, then enter e~%")
-  (warn ";;  h:left, j:down, k:up, l:right, f:forward, b:back~%")
-  (let (w goal-endcoords ll ik-result)
+  (warn ";; if stop, then enter q~%")
+  (warn ";;  h:left, j:down, k:up, l:right, f:forward, b:back, r:reset-pose, s:switch target arm, e:switch lookup ik mode ~%")
+  (let (w goal-endcoords ll ik-result
+          (target-arm :rarm)
+          lookup-ik-mode)
     ;;もし腕しか使わない場合はlinklistをあらかじめ用意しておく
     ;;目標座標を作成する(デフォルトは手先位置と同じにする)
     (setq goal-endcoords
-          (make-cascoords :pos (send (send robot :rarm :end-coords :copy-worldcoords) :worldpos)))
+          (make-cascoords :pos (send (send robot target-arm :end-coords :copy-worldcoords) :worldpos)))
     ;;ループを回す
     (while t
       (x::window-main-one)
@@ -55,8 +58,14 @@
       (setq *pressed-key* nil)
       ;;文字によって操作を変える
       (cond
-       ((equal w "e")
+       ((equal w "q")
         (return-from nil)) ;;loopから抜けて終了
+       ((equal w "e")
+        (setq lookup-ik-mode t)
+        (setq goal-endcoords
+              (make-cascoords :pos (send (send (send robot :camera_color_optical_frame_lk :copy-worldcoords) :translate (float-vector 0 0 100)) :worldpos))
+              )
+        )
        ((equal w "h")  ;;左へ動かす
         (send goal-endcoords :locate #f(0  20 0) :local))
        ((equal w "j")  ;;下へ動かす
@@ -72,23 +81,34 @@
        ((equal w "r")  ;;reset-poseになる
         (send *jedy* :reset-pose)
         (setq goal-endcoords
-              (make-cascoords :pos (send (send robot :rarm :end-coords :copy-worldcoords) :worldpos))))
+              (make-cascoords :pos (send (send robot target-arm :end-coords :copy-worldcoords) :worldpos))))
+       ((equal w "s")
+        (setq lookup-ik-mode nil)
+        (if (eq target-arm :rarm)
+            (setq target-arm :larm)
+            (setq target-arm :rarm))
+        (setq goal-endcoords
+              (make-cascoords :pos (send (send robot target-arm :end-coords :copy-worldcoords) :worldpos))))
        ((not w)) ;;何も入れられなければ何もしない
        (t
         (warn ";; no such command~%")
-        (warn ";; if stop, then enter e~%")
-        (warn ";;  h:left, j:down, k:up, l:right, f:forward, b:back, r:reset-pose~%")
+        (warn ";; if stop, then enter q~%")
+        (warn ";;  h:left, j:down, k:up, l:right, f:forward, b:back, r:reset-pose, s:switch target arm, e:switch lookup ik mode ~%")
         ))
 
       ;;目標値goal-endcoordsに向かって逆運動学を解く．
       ;;  inverse-kinematicsという逆運動学を解くmethodを呼び出す．
-      (setq ik-result (send *jedy* :rarm :inverse-kinematics goal-endcoords :rotation-axis nil
-                            :warnp nil))
+      (if lookup-ik-mode
+          (setq ik-result (send *jedy* :inverse-kinematics-loop-for-look-at :head
+                                (send goal-endcoords :worldpos)
+                                :move-target (send *jedy* :camera_color_optical_frame_lk)
+                                :warnp nil))
+          (setq ik-result (send *jedy* target-arm :inverse-kinematics goal-endcoords :rotation-axis nil
+                                :warnp nil)))
       (when (null ik-result)
         (warn "Failed to solve inverse kinematics~%")
-        (warn ";; no such command~%")
-        (warn ";; if stop, then enter e~%")
-        (warn ";;  h:left, j:down, k:up, l:right, f:forward, b:back, r:reset-pose~%"))
+        (warn ";; if stop, then enter q~%")
+        (warn ";;  h:left, j:down, k:up, l:right, f:forward, b:back, r:reset-pose, s:switch target arm, e:switch lookup ik mode ~%"))
 
       (send *irtviewer* :objects (list robot goal-endcoords))
       (send *irtviewer* :draw-objects)
