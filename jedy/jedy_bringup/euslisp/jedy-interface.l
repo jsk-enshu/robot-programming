@@ -82,20 +82,21 @@
 
 (defun jedy-init (&key
                    (namespace nil)
+                   (without-ri nil)
                    (create-viewer t)
                    (controller-name "fullbody_controller"))
   (unless (boundp '*jedy*)
     (setq *jedy* (jedy)))
-  (unless (ros::ok) (ros::roseus "jedy_eus_interface"))
-  (unless (boundp '*ri*)
-    (setq *ri* (instance jedy-interface :init *jedy* :namespace namespace
-                         :controller-name controller-name)))
+  (unless without-ri
+    (unless (ros::ok) (ros::roseus "jedy_eus_interface"))
+    (unless (boundp '*ri*)
+      (setq *ri* (instance jedy-interface :init *jedy* :namespace namespace
+                           :controller-name controller-name)))
 
-  (ros::spin-once)
-  (send *ri* :spin-once)
-  (send *jedy* :angle-vector (send *ri* :state :potentio-vector))
+    (ros::spin-once)
+    (send *ri* :spin-once)
+    (send *jedy* :angle-vector (send *ri* :state :potentio-vector)))
   (when create-viewer (objects (list *jedy*))))
-
 
 (defun servo-off-sequence ()
   (send *ri* :angle-vector (send *jedy* :reset-pose) 5000)
