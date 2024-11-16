@@ -121,7 +121,7 @@
       ;;angle-vectorで逆運動学を解いた姿勢に移行する
       (when (boundp '*ri*)
         (send *ri* :angle-vector (send robot :angle-vector) 500)
-        (send *ri* :wait-interpolation)
+        ;; (send *ri* :wait-interpolation)
         )
       ))
   (warn ";; finished~%")
