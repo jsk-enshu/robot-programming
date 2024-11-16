@@ -36,17 +36,19 @@ def set_joint_angles():
     # 関節名と設定する角度のリスト
     joint_names = [
         "jedy::rarm_joint0", "jedy::rarm_joint1", "jedy::rarm_joint2", "jedy::rarm_joint3",
-        "jedy::rarm_joint4", "jedy::rarm_joint5", "jedy::rarm_joint6", "jedy::rarm_gripper_joint",
+        "jedy::rarm_joint4", "jedy::rarm_joint5", "rarm_joint6", "rarm_gripper_joint",
         "jedy::larm_joint0", "jedy::larm_joint1", "jedy::larm_joint2", "jedy::larm_joint3",
-        "jedy::larm_joint4", "jedy::larm_joint5", "jedy::larm_joint6", "jedy::larm_gripper_joint",
-        "jedy::head_joint0", "jedy::head_joint1"
+        "jedy::larm_joint4", "jedy::larm_joint5", "larm_joint6", "larm_gripper_joint",
+        "jedy::head_joint0", "jedy::head_joint1",
+        'jedy::front_right_wheel_joint', 'jedy::front_left_wheel_joint', 'jedy::rear_right_wheel_joint', 'jedy::rear_left_wheel_joint',
     ]
 
 
     joint_positions = [
         1.5708, -0.069813, -0.523599, -1.74533, -0.05236, -1.53589, -0.017453, 0.0,
         -1.5708, 0.069813, 0.523599, -1.74533, -1.53589, -0.10472, 1.55334, -0.017453,
-        0.0, 0.0
+        0.5, 0.5,
+        0, 0, 0, 0
     ]
 
     # `set_model_configuration` サービスが利用可能になるまで待機

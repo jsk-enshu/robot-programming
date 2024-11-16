@@ -55,10 +55,10 @@
               -J jedy::rear_left_wheel_joint 0
         "/>
 
-  <!-- <node name="set_gazebo_pose" -->
-  <!--       pkg="jedy_bringup" type="set_gazebo_pose.py" -->
-  <!--       output="screen" -->
-  <!--       /> -->
+  <node name="set_gazebo_pose"
+        pkg="jedy_bringup" type="set_gazebo_pose.py"
+        output="screen"
+        />
 
   <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" >
   </include>
