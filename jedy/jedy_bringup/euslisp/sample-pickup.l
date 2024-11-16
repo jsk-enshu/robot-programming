@@ -20,31 +20,38 @@
 (ros::rate 1)
 
 
-(send *ri* :servo-on :names (list "rarm_joint0"
-                                  "rarm_joint1"
-                                  "rarm_joint2"
-                                  "rarm_joint3"
-                                  "rarm_joint4"
-                                  "rarm_joint5"
-                                  "rarm_joint6"
-                                  "rarm_gripper_joint"
-                                  "head_joint0"
-                                  "head_joint1"
-                                  ))
-;; (send *ri* :send-stretch :value 30)
+(when (boundp '*ri*)
+  (send *ri* :servo-on :names (list "rarm_joint0"
+                                    "rarm_joint1"
+                                    "rarm_joint2"
+                                    "rarm_joint3"
+                                    "rarm_joint4"
+                                    "rarm_joint5"
+                                    "rarm_joint6"
+                                    "rarm_gripper_joint"
+                                    "head_joint0"
+                                    "head_joint1"
+                                    )))
+  ;; (send *ri* :send-stretch :value 30)
 (send *jedy* :reset-pose)
 (send *jedy* :rarm_joint2 :joint-angle -60)
-(send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
-(send *ri* :wait-interpolation)
 
-(send *jedy* :angle-vector (send *ri* :state :potentio-vector))
+(when (boundp '*ri*)
+  (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+  (send *ri* :wait-interpolation)
+  (send *jedy* :angle-vector (send *ri* :state :potentio-vector))
 
 (send *jedy* :head_joint0 :joint-angle 0)
 (send *jedy* :head_joint1 :joint-angle 60)
 (send *irtviewer* :draw-objects)
 
-(send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
-(send *ri* :wait-interpolation)
+(when (boundp '*ri*)
+  (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+  (send *ri* :wait-interpolation))
+
+
+(setq *send-ri-flag* nil)
+;; 実機に指令を送りたい場合はこれをtにする
 
 
 (do-until-key
@@ -72,8 +79,9 @@
             (send bx :draw-on :flush nil :color #f(1 0 0)) ;; 描画
 
             (send *jedy* :rarm_gripper_joint :joint-angle -30)
-            (send *ri* :angle-vector (send *jedy* :angle-vector) 1000) ;; gripperをオープンする
-            (send *ri* :wait-interpolation)
+            (when *send-ri-flag*
+              (send *ri* :angle-vector (send *jedy* :angle-vector) 1000) ;; gripperをオープンする
+              (send *ri* :wait-interpolation))
 
             (send *jedy* :rarm :inverse-kinematics
                   target-coords
@@ -81,28 +89,29 @@
                   :revert-if-fail t)
             (setq pick-angle-vector (send *jedy* :angle-vector))
 
-            ;; (send *jedy* :rarm :move-end-pos #f(-50 0 0) :local :revert-if-fail nil)
-            ;; (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
-            ;; (send *ri* :wait-interpolation)
+            (when *send-ri-flag*
+              (send *jedy* :rarm :move-end-pos #f(-50 0 0) :local :revert-if-fail nil)
+              (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+              (send *ri* :wait-interpolation)
 
-            ;; (send *jedy* :angle-vector pick-angle-vector)
-            ;; (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
-            ;; (send *ri* :wait-interpolation)
+              (send *jedy* :angle-vector pick-angle-vector)
+              (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+              (send *ri* :wait-interpolation)
 
-            ;; (send *jedy* :rarm_gripper_joint :joint-angle 0)
-            ;; (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
-            ;; (send *ri* :wait-interpolation)
+              (send *jedy* :rarm_gripper_joint :joint-angle 0)
+              (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+              (send *ri* :wait-interpolation)
 
-            ;; (send *jedy* :rarm :move-end-pos #f(-50 0 0) :local :revert-if-fail nil)
-            ;; (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
-            ;; (send *ri* :wait-interpolation)
+              (send *jedy* :rarm :move-end-pos #f(-50 0 0) :local :revert-if-fail nil)
+              (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+              (send *ri* :wait-interpolation)
 
-            ;; (send *jedy* :reset-pose)
-            ;; (send *jedy* :rarm_joint2 :joint-angle -60)
-            ;; (send *jedy* :head_joint0 :joint-angle 0)
-            ;; (send *jedy* :head_joint1 :joint-angle 60)
-            ;; (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
-            ;; (send *ri* :wait-interpolation)
+              (send *jedy* :reset-pose)
+              (send *jedy* :rarm_joint2 :joint-angle -60)
+              (send *jedy* :head_joint0 :joint-angle 0)
+              (send *jedy* :head_joint1 :joint-angle 60)
+              (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+              (send *ri* :wait-interpolation))
 
             )))
     )
