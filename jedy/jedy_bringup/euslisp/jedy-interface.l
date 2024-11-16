@@ -77,6 +77,32 @@
                           (setq imu-msg-raw msg))
   (:publish-atom-s3-string (text)
     (ros::publish atom-s3-additional-info-topic-name msg))
+  (:stop-grasp (&key arm :arms)
+               (send robot :angle-vector (send self :state :potentio-vector))
+               (cond arm
+                     (:rarm
+                      (send robot :rarm_gripper_joint :joint-angle 30))
+                     (:larm
+                      (send robot :larm_gripper_joint :joint-angle 30))
+                     (:arms
+                      (send robot :rarm_gripper_joint :joint-angle 30)
+                      (send robot :larm_gripper_joint :joint-angle 30))
+                     (t (format t "[stop-grasp] Invalid arm ")))
+               (send self :angle-vector (send robot :angle-vector) 1000)
+               )
+  (:start-grasp (&key arm :arms)
+               (send robot :angle-vector (send self :state :potentio-vector))
+               (cond arm
+                     (:rarm
+                      (send robot :rarm_gripper_joint :joint-angle 30))
+                     (:larm
+                      (send robot :larm_gripper_joint :joint-angle 30))
+                     (:arms
+                      (send robot :rarm_gripper_joint :joint-angle 30)
+                      (send robot :larm_gripper_joint :joint-angle 30))
+                     (t (format t "[start-grasp] Invalid arm ")))
+               (send self :angle-vector (send robot :angle-vector) 1000)
+               )
   )
 
 
