@@ -1,0 +1,82 @@
+<launch>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="world_file" default="$(find jedy_bringup)/worlds/empty.world" />
+  <arg name="model" value="$(find jedy_description)/urdf/jedy_fullbody.urdf"  />
+
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+
+  <node pkg="robot_state_publisher"
+        type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="30.0" />
+  </node>
+
+  <node name="depth_renamer"
+        pkg="topic_tools" type="relay"
+        args=" /camera/depth/points /camera/depth_registered/points" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="true"/>
+    <!-- https://answers.ros.org/question/216420/initial-joint-angles/ -->
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="world_name" value="$(arg world_file)"/>
+  </include>
+
+  <node name="urdf_spawner"
+        pkg="gazebo_ros" type="spawn_model"
+        respawn="false" output="screen"
+        args="-x 0.0 -y 0.0 -z 0.13 -R 0 -urdf -model jedy -param robot_description
+              -J jedy::rarm_joint0 1.5708
+              -J jedy::rarm_joint1 -0.069813
+              -J jedy::rarm_joint2 -0.523599
+              -J jedy::rarm_joint3 -1.74533
+              -J jedy::rarm_joint4 -0.05236
+              -J jedy::rarm_joint5 -1.53589
+              -J jedy::rarm_joint6 -0.017453
+              -J jedy::rarm_gripper_joint 0.0
+              -J jedy::larm_joint0 -1.5708
+              -J jedy::larm_joint1 0.069813
+              -J jedy::larm_joint2 0.523599
+              -J jedy::larm_joint3 -1.74533
+              -J jedy::larm_joint4 -1.53589
+              -J jedy::larm_joint5 -0.10472
+              -J jedy::larm_joint6 1.55334
+              -J jedy::larm_gripper_joint 0.0
+              -J jedy::head_joint0 0.0
+              -J jedy::head_joint1 0.0
+              -J jedy::front_right_wheel_joint 0
+              -J jedy::front_left_wheel_joint 0
+              -J jedy::rear_right_wheel_joint 0
+              -J jedy::rear_left_wheel_joint 0
+        "/>
+
+  <!-- <node name="set_gazebo_pose" -->
+  <!--       pkg="jedy_bringup" type="set_gazebo_pose.py" -->
+  <!--       output="screen" -->
+  <!--       /> -->
+
+  <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" >
+  </include>
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <!-- load the controllers -->
+  <rosparam file="$(find jedy_bringup)/config/jedy_fullbody_controllers.yaml" />
+  <node name="controller_spawner"
+        pkg="controller_manager" type="spawner"
+        respawn="true" respawn_delay="5" output="screen"
+        args="joint_state_controller
+              fullbody_controller
+              "/>
+
+  <group if="$(arg gui)" >
+    <node name="$(anon rviz)"
+          pkg="rviz" type="rviz"
+          args="-d $(find jedy_bringup)/config/jedy.rviz" />
+  </group>
+
+</launch>
