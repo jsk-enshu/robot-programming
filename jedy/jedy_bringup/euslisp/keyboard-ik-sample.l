@@ -22,9 +22,9 @@
   )
 
 
-;; (jedy-init :without-ri t)
+(jedy-init :without-ri t)
 ;; もし実機に指令を送りたい場合には:without-riキーワード引数をnil (false)にする
-(jedy-init :without-ri nil)
+;; (jedy-init :without-ri nil)
 
 (when (boundp '*ri*)
   (send *ri* :servo-on))
