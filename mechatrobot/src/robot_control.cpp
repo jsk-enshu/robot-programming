@@ -234,7 +234,7 @@ void controlLoop()
   // Create controller manager
   controller_manager::ControllerManager cm(&robot);
 
-  ros::Duration durp(100);  // 100 msec;
+  ros::Duration durp(0.1);  // 100 msec;
 
   ROS_INFO("started controlLoop");
   while (!g_quit)
