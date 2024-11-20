@@ -43,5 +43,6 @@
   (send *robot-b* :angle-vector robot-a-angle-vector)
   (send *robot-b-ri* :angle-vector (send *robot-b* :angle-vector) 500)
   (send *irtviewer* :draw-objects)
+  (x::window-main-one)
   (ros::sleep)
   )
