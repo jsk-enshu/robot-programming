@@ -34,22 +34,17 @@
     <arg name="read_temperature" value="$(arg read_temperature)" />
   </include>
 
+  <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
+    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="loop_rate" default="50" />
+  </include>
+
   <group if="$(eval len(arg('namespace')) > 0)" ns="$(arg namespace)" >
     <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" />
-
-    <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
-      <arg name="namespace" value="$(arg namespace)" />
-      <arg name="loop_rate" default="50" />
-    </include>
   </group>
 
   <group unless="$(eval len(arg('namespace')) > 0)">
     <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" />
-
-    <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
-      <arg name="namespace" value="$(arg namespace)" />
-      <arg name="loop_rate" default="50" />
-    </include>
   </group>
 
 </launch>
