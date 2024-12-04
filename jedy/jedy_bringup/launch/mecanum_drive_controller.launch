@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+
+  <rosparam command="load" file="$(find jedy_bringup)/config/jedy_mecanum_drive_controller.yaml" />
+
+  <node name="mecanum_drive_controller_spawner"
+        pkg="controller_manager" type="spawner"
+        respawn="true" respawn_delay="5" output="screen"
+        args="ridgeback_control" >
+  </node>
+
+</launch>
