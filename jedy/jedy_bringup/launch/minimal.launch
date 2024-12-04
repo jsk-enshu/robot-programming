@@ -34,6 +34,12 @@
     <arg name="read_temperature" value="$(arg read_temperature)" />
   </include>
 
+  <node name="$(anon controller_spawner)"
+        pkg="controller_manager" type="spawner"
+        args="head_controller rarm_controller"
+        output="screen" />
+  <rosparam file="$(find jedy_bringup)/config/jedy_controllers.yaml" />
+
   <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
     <arg name="namespace" value="$(arg namespace)" />
     <arg name="loop_rate" default="50" />

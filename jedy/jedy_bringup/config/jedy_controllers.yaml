@@ -29,6 +29,49 @@ fullbody_controller:
   action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
 
+head_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - head_joint0
+    - head_joint1
+
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+rarm_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - rarm_joint0
+    - rarm_joint1
+    - rarm_joint2
+    - rarm_joint3
+    - rarm_joint4
+    - rarm_joint5
+    - rarm_joint6
+    - rarm_gripper_joint
+
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+larm_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - larm_joint0
+    - larm_joint1
+    - larm_joint2
+    - larm_joint3
+    - larm_joint4
+    - larm_joint5
+    - larm_joint6
+    - larm_gripper_joint
+
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+
 kxr_fullbody_controller:
   joints:
     - rarm_joint0
