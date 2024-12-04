@@ -30,6 +30,7 @@
     <exec_depend>slam_karto</exec_depend>
     <exec_depend>map_server</exec_depend>
     <exec_depend>ldlidar_stl_ros</exec_depend>
+    <exec_depend>ridgeback_control</exec_depend>
 
     <export>
         <gazebo_ros gazebo_model_path="${prefix}/worlds/model" />
