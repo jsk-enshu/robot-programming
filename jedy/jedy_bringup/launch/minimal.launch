@@ -32,12 +32,14 @@
     <arg name="temperature_limit" value="$(arg temperature_limit)" />
     <arg name="read_current" value="$(arg read_current)" />
     <arg name="read_temperature" value="$(arg read_temperature)" />
+    <arg name="use_fullbody_controller" value="false" />
   </include>
 
-  <node name="$(anon controller_spawner)"
-        pkg="controller_manager" type="spawner"
-        args="head_controller rarm_controller larm_controller"
-        output="screen" />
+  <rosparam param="default_controller">
+    - head_controller
+    - rarm_controller
+    - larm_controller
+  </rosparam>
   <rosparam file="$(find jedy_bringup)/config/jedy_controllers.yaml" />
 
   <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
