@@ -1,0 +1,11 @@
+<launch>
+
+  <rosparam command="load" file="$(find jedy_bringup)/config/jedy_diff_drive_controller.yaml" />
+
+  <node name="diff_drive_controller_spawner"
+        pkg="controller_manager" type="spawner"
+        respawn="true" respawn_delay="5" output="screen"
+        args="diff_drive_controller" >
+  </node>
+
+</launch>

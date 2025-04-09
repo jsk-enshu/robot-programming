@@ -1,0 +1,58 @@
+<launch>
+
+  <arg name="urdf_path" default="$(find jedy_description)/urdf/jedy.urdf" />
+  <arg name="servo_config_path" default="$(find jedy_description)/config/jedy_servo_config.yaml" />
+  <arg name="publish_imu" default="true" />
+  <arg name="publish_sensor" default="false" />
+  <arg name="publish_battery_voltage" default="false" />
+  <arg name="use_rcb4" default="false" doc="Flag to use RCB4 mini board"/>
+  <arg name="device" default="" doc="Device path"/>
+  <arg name="model_server_port" default="8123" />
+  <arg name="namespace" default="" />
+  <arg name="joint_group_description" default="" />
+  <arg name="frame_count" default="1" />
+  <arg name="current_limit" default="4.0" doc="current limit in Amp" />
+  <arg name="temperature_limit" default="80" doc="Temperature limit in celsius" />
+  <arg name="read_current" default="false" />
+  <arg name="read_temperature" default="false" />
+
+  <include file="$(find kxr_controller)/launch/kxr_controller.launch" >
+    <arg name="urdf_path" value="$(arg urdf_path)" />
+    <arg name="servo_config_path" value="$(arg servo_config_path)" />
+    <arg name="use_rcb4" value="$(arg use_rcb4)" />
+    <arg name="device" value="$(arg device)" />
+    <arg name="model_server_port" value="$(arg model_server_port)" />
+    <arg name="publish_imu" value="$(arg publish_imu)" />
+    <arg name="publish_sensor" value="$(arg publish_sensor)" />
+    <arg name="publish_battery_voltage" value="$(arg publish_battery_voltage)" />
+    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="joint_group_description" value="$(arg joint_group_description)" />
+    <arg name="frame_count" value="$(arg frame_count)" />
+    <arg name="current_limit" value="$(arg current_limit)" />
+    <arg name="temperature_limit" value="$(arg temperature_limit)" />
+    <arg name="read_current" value="$(arg read_current)" />
+    <arg name="read_temperature" value="$(arg read_temperature)" />
+    <arg name="use_fullbody_controller" value="false" />
+  </include>
+
+  <rosparam param="default_controller">
+    - head_controller
+    - rarm_controller
+    - larm_controller
+  </rosparam>
+  <rosparam file="$(find jedy_bringup)/config/jedy_controllers.yaml" />
+
+  <include file="$(find riberry_startup)/launch/mpu6886_imu_publisher.launch" >
+    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="loop_rate" default="50" />
+  </include>
+
+  <group if="$(eval len(arg('namespace')) > 0)" ns="$(arg namespace)" >
+    <include file="$(find jedy_bringup)/launch/mecanum_drive_controller.launch" />
+  </group>
+
+  <group unless="$(eval len(arg('namespace')) > 0)">
+    <include file="$(find jedy_bringup)/launch/mecanum_drive_controller.launch" />
+  </group>
+
+</launch>

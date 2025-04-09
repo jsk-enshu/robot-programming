@@ -1,0 +1,541 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot name="jedy">
+  <link name="base_link">
+  </link>
+  <joint name="pseudo_base_joint" type="fixed" >
+    <parent link="base_link"/>
+    <child link="real_base_link"/>
+    <axis xyz="0. 0. 0."/>
+    <origin xyz="0 0 0" rpy="1.5707926535897931 0 1.5707926535897931"/>
+  </joint>
+  <link name="real_base_link">
+    <inertial>
+      <!-- <origin xyz="-0.000351195235755456 -0.00810559992797557 -0.00714910691571756" rpy="0.0 -0.0 0.0"/> -->
+      <!-- <origin xyz="-0.000351195235755456 -0.00810559992797557 -0.0714910691571756" rpy="0.0 -0.0 0.0"/> -->
+      <!-- <mass value="0.642084743261537"/> -->
+      <!-- <inertia ixx="0.000162581139421146" ixy="5.0286786144231E-07" ixz="-9.48818029464138E-07" iyy="0.00024560311724061" iyz="-4.58171534930513E-07" izz="0.000278850372812181"/> -->
+      <mass value="0.671312" />
+      <origin xyz="0.00124 1.38911e-10 0.02081" rpy="0 -0 0" />
+      <inertia ixx="0.001849" ixy="-8.30713e-06" ixz="-1.71308e-06" iyy="0.002122" iyz="1.45167e-06" izz="0.003179" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/base_link.dae"/>
+      </geometry>
+      <material name=""/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/base_link.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+
+  <joint name="base_laser_joint" type="fixed">
+    <origin xyz="0.1 0 -0.0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="base_laser"/>
+  </joint>
+  <link name="base_laser">
+  </link>
+
+
+  <link name="head_link0">
+    <inertial>
+      <!-- <origin xyz="0.0287818497143985 7.60906775256067e-05 -0.0859291022791144" rpy="0.0 -0.0 0.0"/> -->
+      <!-- <mass value="0.0267722516782374"/> -->
+      <!-- <!-\- <inertia ixx="3.14025785519115e-06" ixy="-2.10545016600164e-08" ixz="-1.16767691320583e-08" iyy="2.7399353078212e-06" iyz="-3.18816576528483e-09" izz="3.21445108840277e-06"/> -\-> -->
+      <!-- <inertia ixx="1.000000e-04" ixy="-2.10545016600164e-08" ixz="-1.16767691320583e-08" iyy="1.000000e-04" iyz="-3.18816576528483e-09" izz="1.000000e-04"/> -->
+      <mass value="0.037398" />
+      <origin xyz="-1.73472e-18 1.22056e-18 0.023093" rpy="0 -0 0" />
+      <inertia ixx="8.69139e-05" ixy="-8.96373e-22" ixz="8.61164e-09" iyy="9.09972e-05" iyz="-5.25778e-09" izz="2.5436e-05" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/head_link0.dae"/>
+      </geometry>
+      <material name=""/>
+      <origin xyz="0.00749999999999987 -5.38287282543344e-17 -0.086" rpy="1.57079632679491 -1.22464679914727e-16 1.5707963267949"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/head_link0.stl"/>
+      </geometry>
+      <origin xyz="0.00749999999999987 -5.38287282543344e-17 -0.086" rpy="1.57079632679491 -1.22464679914727e-16 1.5707963267949"/>
+    </collision>
+  </link>
+  <link name="head_link1">
+    <inertial>
+      <mass value="0.093045" />
+      <origin xyz="-0.001016 3.60351e-18 0.186465" rpy="0 -0 0" />
+      <inertia ixx="0.000665" ixy="-1.79922e-07" ixz="-6.65543e-08" iyy="0.000652" iyz="-1.79583e-08" izz="0.000109" />
+      <!-- <origin xyz="0.0563071474852643 0.00458336726096902 -0.118986177954781" rpy="0.0 -0.0 0.0"/> -->
+      <!-- <mass value="0.184305345878305"/> -->
+      <!-- <!-\- <inertia ixx="2.6255357924015e-05" ixy="3.04375090051604e-08" ixz="-4.80511209762755e-08" iyy="2.79766917910753e-05" iyz="-2.78258729227929e-08" izz="4.63202146600336e-05"/> -\-> -->
+      <!-- <inertia ixx="1.000000e-04" ixy="3.04375090051604e-08" ixz="-4.80511209762755e-08" iyy="1.000000e-04" iyz="-2.78258729227929e-08" izz="1.000000e-04"/> -->
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/head_link1.dae"/>
+      </geometry>
+      <material name=""/>
+      <origin xyz="0.00749999999999211 1.66972953365245e-15 -0.119" rpy="1.57079632679491 -2.044002511535201e-16 1.57079632679492"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/head_link1.stl"/>
+      </geometry>
+      <origin xyz="0.00749999999999211 1.66972953365245e-15 -0.119" rpy="1.57079632679491 -2.044002511535201e-16 1.57079632679492"/>
+    </collision>
+  </link>
+  <link name="front_right_wheel_link">
+    <inertial>
+      <!-- <origin xyz="0.0344932842136683 0.0970000970916309 -0.0435000024416005" rpy="0.0 -0.0 0.0"/> -->
+      <!-- <mass value="0.0620356799852319"/> -->
+      <!-- <!-\- <inertia ixx="1.17891072454946e-05" ixy="-4.41939757993746e-11" ixz="2.8155029764713e-12" iyy="9.70723532361731e-06" iyz="2.3526216007568e-12" izz="9.707219297398e-06"/> -\-> -->
+      <!-- <inertia ixx="1.000000e-04" ixy="-4.41939757993746e-11" ixz="2.8155029764713e-12" iyy="1.000000e-04" iyz="2.3526216007568e-12" izz="1.000000e-04"/> -->
+      <mass value="0.095024" />
+      <origin xyz="-6.93889e-18 0.016915 0" rpy="0 -0 0"/>
+      <inertia ixx="0.000174" ixy="5.9261e-22" ixz="5.04911e-20" iyy="0.000173" iyz="-1.9762e-20" izz="0.000262"/>
+
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/front_right_wheel_link.dae"/>
+      </geometry>
+      <material name=""/>
+      <origin xyz="0.0505000000000009 0.097 -0.0434999999999994" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/> -->
+      <!-- <geometry> -->
+      <!--   <cylinder radius="0.03" length="0.02"/> -->
+      <!-- </geometry> -->
+    </visual>
+    <!-- <collision> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://jedy_description/meshes/front_right_wheel_link.stl"/> -->
+    <!--   </geometry> -->
+    <!--   <origin xyz="0.0505000000000009 0.097 -0.0434999999999994" rpy="0.0 -0.0 0.0"/> -->
+    <!-- </collision> -->
+    <collision>
+      <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/>
+      <geometry>
+        <cylinder radius="0.03" length="0.02"/>
+      </geometry>
+      <self_collide>false</self_collide>
+    </collision>
+  </link>
+  <link name="front_left_wheel_link">
+    <inertial>
+      <!-- <origin xyz="-0.0344932901302818 0.0969999049831629 -0.0435000004047774" rpy="0.0 -0.0 0.0"/> -->
+      <!-- <mass value="0.0620331863909222"/> -->
+      <!-- <!-\- <inertia ixx="1.17881307318182e-05" ixy="-4.52960489509934e-11" ixz="2.33278294698924e-12" iyy="9.70649490175883e-06" iyz="3.34165767029261e-12" izz="9.7064772842312e-06"/> -\-> -->
+      <!-- <inertia ixx="1.000000e-04" ixy="-4.52960489509934e-11" ixz="2.33278294698924e-12" iyy="1.000000e-04" iyz="3.34165767029261e-12" izz="1.000000e-04"/> -->
+      <mass value="0.095024" />
+      <origin xyz="-6.93889e-18 0.016915 0" rpy="0 -0 0"/>
+      <inertia ixx="0.000174" ixy="5.9261e-22" ixz="5.04911e-20" iyy="0.000173" iyz="-1.9762e-20" izz="0.000262"/>
+
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/front_left_wheel_link.dae"/>
+      </geometry>
+      <material name=""/>
+      <origin xyz="-0.0504999999999993 0.0970000000000006 -0.0434999999999985" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/> -->
+      <!-- <geometry> -->
+      <!--   <cylinder radius="0.03" length="0.02"/> -->
+      <!-- </geometry> -->
+    </visual>
+    <!-- <collision> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://jedy_description/meshes/front_left_wheel_link.stl"/> -->
+    <!--   </geometry> -->
+    <!--   <origin xyz="-0.0504999999999993 0.0970000000000006 -0.0434999999999985" rpy="0.0 -0.0 0.0"/> -->
+    <!-- </collision> -->
+    <collision>
+      <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/>
+      <geometry>
+        <cylinder radius="0.03" length="0.02"/>
+      </geometry>
+      <self_collide>false</self_collide>
+    </collision>
+  </link>
+  <link name="rear_right_wheel_link">
+    <inertial>
+      <mass value="0.095024" />
+      <origin xyz="-6.93889e-18 0.016915 0" rpy="0 -0 0"/>
+      <inertia ixx="0.000174" ixy="5.9261e-22" ixz="5.04911e-20" iyy="0.000173" iyz="-1.9762e-20" izz="0.000262"/>
+
+      <!-- <origin xyz="0.0344932842136686 0.0970000970916324 0.0434999975583993" rpy="0.0 -0.0 0.0"/> -->
+      <!-- <mass value="0.0620356799852319"/> -->
+      <!-- <!-\- <inertia ixx="1.17891072454946e-05" ixy="-4.41939758006981e-11" ixz="2.81550297072405e-12" iyy="9.70723532361731e-06" iyz="2.35262160013476e-12" izz="9.707219297398e-06"/> -\-> -->
+      <!-- <inertia ixx="1.000000e-04" ixy="-4.41939758006981e-11" ixz="2.81550297072405e-12" iyy="1.000000e-04" iyz="2.35262160013476e-12" izz="1.000000e-04"/> -->
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rear_right_wheel_link.dae"/>
+      </geometry>
+      <material name=""/>
+      <origin xyz="0.0505000000000012 0.0969999999999992 0.0435000000000006" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/> -->
+      <!-- <geometry> -->
+      <!--   <cylinder radius="0.03" length="0.02"/> -->
+      <!-- </geometry> -->
+    </visual>
+    <!-- <collision> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://jedy_description/meshes/rear_right_wheel_link.stl"/> -->
+    <!--   </geometry> -->
+    <!--   <origin xyz="0.0505000000000012 0.0969999999999992 0.0435000000000006" rpy="0.0 -0.0 0.0"/> -->
+    <!-- </collision> -->
+    <collision>
+      <origin xyz="-0.02 0 0" rpy="0 1.5707963267948966 0"/>
+      <geometry>
+        <cylinder radius="0.03" length="0.02"/>
+      </geometry>
+      <self_collide>false</self_collide>
+    </collision>
+  </link>
+  <link name="rear_left_wheel_link">
+    <inertial>
+      <!-- <origin xyz="-0.0344932901302836 0.0969999049831609 0.0434999995952184" rpy="0.0 -0.0 0.0"/> -->
+      <!-- <mass value="0.0620331863909222"/> -->
+      <!-- <!-\- <inertia ixx="1.17881307318182e-05" ixy="-4.52960489535212e-11" ixz="2.33278294290793e-12" iyy="9.70649490175883e-06" iyz="3.34165766872427e-12" izz="9.70647728423119e-06"/> -\-> -->
+      <!-- <inertia ixx="1.000000e-04" ixy="-4.52960489535212e-11" ixz="2.33278294290793e-12" iyy="1.000000e-04" iyz="3.34165766872427e-12" izz="1.000000e-04"/> -->
+      <mass value="0.095024" />
+      <origin xyz="-6.93889e-18 0.016915 0" rpy="0 -0 0"/>
+      <inertia ixx="0.000174" ixy="5.9261e-22" ixz="5.04911e-20" iyy="0.000173" iyz="-1.9762e-20" izz="0.000262"/>
+
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rear_left_wheel_link.dae"/>
+      </geometry>
+      <material name=""/>
+      <origin xyz="-0.0504999999999999 0.0969999999999994 0.0435000000000005" rpy="0.0 -0.0 0.0"/>
+      <!-- <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/> -->
+      <!-- <geometry> -->
+      <!--   <cylinder radius="0.03" length="0.02"/> -->
+      <!-- </geometry> -->
+    </visual>
+    <!-- <collision> -->
+    <!--   <geometry> -->
+    <!--     <mesh filename="package://jedy_description/meshes/rear_left_wheel_link.stl"/> -->
+    <!--   </geometry> -->
+    <!--   <origin xyz="-0.0504999999999999 0.0969999999999994 0.0435000000000005" rpy="0.0 -0.0 0.0"/> -->
+    <!-- </collision> -->
+    <collision>
+      <origin xyz="0.02 0 0" rpy="0 1.5707963267948966 0"/>
+      <geometry>
+        <cylinder radius="0.03" length="0.02"/>
+      </geometry>
+      <self_collide>false</self_collide>
+    </collision>
+  </link>
+
+  <joint name="head_joint0" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="real_base_link"/>
+    <child link="head_link0"/>
+    <axis xyz="0. 0. 1."/>
+    <origin xyz="0.0 0.086 -0.0075" rpy="-3.141592653589793 -1.5707926535897931 1.5707926535897931"/>
+  </joint>
+  <joint name="head_joint1" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.57"/>
+    <parent link="head_link0"/>
+    <child link="head_link1"/>
+    <axis xyz="0. 1. 0."/>
+    <origin xyz="0.0 0.0 0.033" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="front_right_wheel_joint" type="continuous">
+    <!-- <limit effort="0.48" velocity="6.55"/> -->
+    <limit effort="100" velocity="6.55"/>
+    <parent link="real_base_link"/>
+    <child link="front_right_wheel_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="-0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="front_left_wheel_joint" type="continuous">
+    <!-- <limit effort="0.48" velocity="6.55"/> -->
+    <limit effort="100" velocity="6.55"/>
+    <parent link="real_base_link"/>
+    <child link="front_left_wheel_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rear_right_wheel_joint" type="continuous">
+    <!-- <limit effort="0.48" velocity="6.55"/> -->
+    <limit effort="100" velocity="6.55"/>
+    <parent link="real_base_link"/>
+    <child link="rear_right_wheel_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="-0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rear_left_wheel_joint" type="continuous">
+    <!-- <limit effort="0.48" velocity="6.55"/> -->
+    <limit effort="100" velocity="6.55"/>
+    <parent link="real_base_link"/>
+    <child link="rear_left_wheel_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <material name="">
+    <color rgba="0.75294118 0.75294118 0.75294118 1.        "/>
+  </material>
+
+  <gazebo reference="real_base_link">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+    <gravity>true</gravity>
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <topic>__default_topic__</topic>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <robotNamespace>/imu_publisher</robotNamespace>
+        <topicName>imu</topicName>
+        <bodyName>real_base_link</bodyName>
+        <updateRateHZ>100.0</updateRateHZ>
+        <gaussianNoise>0.0</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>real_base_link</frameName>
+      </plugin>
+      <pose>0 0 0 0 0 0</pose>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="base_laser">
+    <sensor type="ray" name="laser">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>10</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.5708</min_angle>
+            <max_angle>1.5708</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.1</min>
+          <max>12.0</max>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </ray>
+      <plugin name="gazebo_ros_laser" filename="libgazebo_ros_laser.so">
+        <robotNamespace>/</robotNamespace>
+        <frameName>base_laser</frameName>
+        <topicName>scan</topicName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="head_joint0">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="head_joint1">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="front_right_wheel_joint">
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="front_left_wheel_joint">
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="rear_right_wheel_joint">
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="rear_left_wheel_joint">
+    <mu1>1000</mu1>
+    <mu2>1000</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+
+  <joint name="camera_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0 0.005 0.05"/>
+    <parent link="head_link1"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <link name="camera_link">
+    <visual>
+      <origin rpy="0 0 1.5707963267948966" xyz="0 0 0"/>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+    </collision>
+    <inertial>
+      <mass value="0.564"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.000498940" iyz="0.0" izz="0.003879257"/>
+    </inertial>
+  </link>
+
+  <link name="camera_color_frame"></link>
+  <joint name="camera_color_frame_joint" type="fixed"> <origin rpy="0 0 0" xyz="0 0 0"/> <parent link="camera_link"/> <child link="camera_color_frame"/> </joint>
+  <link name="camera_color_optical_frame"></link>
+  <joint name="camera_color_optical_frame_joint" type="fixed"> <origin rpy="-1.57 0 -1.57" xyz="0 0 0"/> <parent link="camera_color_frame"/> <child link="camera_color_optical_frame"/> </joint>
+
+  <link name="camera_depth_frame"></link>
+  <joint name="camera_depth_frame_joint" type="fixed"> <origin rpy="0 0 0" xyz="0 0 0"/> <parent link="camera_link"/> <child link="camera_depth_frame"/> </joint>
+  <link name="camera_depth_optical_frame"></link>
+  <joint name="camera_depth_optical_frame_joint" type="fixed"> <origin rpy="-1.57 0 -1.57" xyz="0 0 0"/> <parent link="camera_depth_frame"/> <child link="camera_depth_optical_frame"/> </joint>
+
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="depth">
+      <always_on>true</always_on>
+      <update_rate>5.0</update_rate>
+      <camera>
+        <horizontal_fov>1.0471975511965976</horizontal_fov>
+        <image>
+          <format>B8G8R8</format>
+          <width>640</width>
+          <height>480</height>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>8.0</far>
+        </clip>
+      </camera>
+      <!-- <plugin filename="libgazebo_ros_openni_kinect.so" name="kinect_camera_controller"> -->
+      <!--   <cameraName>camera</cameraName> -->
+      <!--   <alwaysOn>true</alwaysOn> -->
+      <!--   <updateRate>5</updateRate> -->
+      <!--   <imageTopicName>rgb/image_raw</imageTopicName> -->
+      <!--   <depthImageTopicName>depth/image_raw</depthImageTopicName> -->
+      <!--   <pointCloudTopicName>depth/points</pointCloudTopicName> -->
+      <!--   <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName> -->
+      <!--   <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName> -->
+      <!--   <frameName>camera_depth_optical_frame</frameName> -->
+      <!--   <baseline>0.1</baseline> -->
+      <!--   <distortion_k1>0.0</distortion_k1> -->
+      <!--   <distortion_k2>0.0</distortion_k2> -->
+      <!--   <distortion_k3>0.0</distortion_k3> -->
+      <!--   <distortion_t1>0.0</distortion_t1> -->
+      <!--   <distortion_t2>0.0</distortion_t2> -->
+      <!--   <pointCloudCutoff>0.4</pointCloudCutoff> -->
+      <!-- </plugin> -->
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="kinect_camera_controller">
+        <cameraName>camera</cameraName>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>5</updateRate>
+        <imageTopicName>/camera/color/image_raw</imageTopicName>
+        <depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
+        <pointCloudTopicName>/camera/aligned_depth_to_color/points</pointCloudTopicName>
+        <cameraInfoTopicName>/camera/color/camera_info</cameraInfoTopicName>
+        <depthImageCameraInfoTopicName>/camera/depth/camera_info</depthImageCameraInfoTopicName>
+        <frameName>camera_depth_optical_frame</frameName>
+        <baseline>0.1</baseline>
+        <distortion_k1>0.0</distortion_k1>
+        <distortion_k2>0.0</distortion_k2>
+        <distortion_k3>0.0</distortion_k3>
+        <distortion_t1>0.0</distortion_t1>
+        <distortion_t2>0.0</distortion_t2>
+        <pointCloudCutoff>0.4</pointCloudCutoff>
+      </plugin>
+
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros_control.so" name="gazebo_ros_control"/>
+  </gazebo>
+
+  <transmission name="head_joint0_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="head_joint0">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="head_joint0_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="head_joint1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="head_joint1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="head_joint1_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="front_right_wheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="front_right_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="front_right_wheel_joint_motor">
+      <mechanicalReduction>80</mechanicalReduction>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="front_left_wheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="front_left_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="front_left_wheel_joint_motor">
+      <mechanicalReduction>80</mechanicalReduction>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rear_right_wheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rear_right_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rear_right_wheel_joint_motor">
+      <mechanicalReduction>80</mechanicalReduction>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <transmission name="rear_left_wheel_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rear_left_wheel_joint">
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rear_left_wheel_joint_motor">
+      <mechanicalReduction>80</mechanicalReduction>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+
+</robot>

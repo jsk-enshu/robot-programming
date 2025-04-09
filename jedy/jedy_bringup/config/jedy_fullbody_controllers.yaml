@@ -1,0 +1,99 @@
+# Joint State Controllers ---------------------------------------
+joint_state_controller:
+  type:  joint_state_controller/JointStateController
+  publish_rate: 50
+# Trajectory Controllers ---------------------------------------
+fullbody_controller:
+  type: position_controllers/JointTrajectoryController
+  # type: velocity_controllers/JointTrajectoryController
+  joints:
+    - rarm_joint0
+    - rarm_joint1
+    - rarm_joint2
+    - rarm_joint3
+    - rarm_joint4
+    - rarm_joint5
+    - rarm_joint6
+    - rarm_gripper_joint
+    - larm_joint0
+    - larm_joint1
+    - larm_joint2
+    - larm_joint3
+    - larm_joint4
+    - larm_joint5
+    - larm_joint6
+    - larm_gripper_joint
+    - head_joint0
+    - head_joint1
+
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+  gains: # Required because we're controlling an effort interface
+    rarm_joint0: {p: 100.0, i: 0.0, d: 0.0}
+    rarm_joint1: {p: 100.0, i: 0.0, d: 0.0}
+    rarm_joint2: {p: 100.0, i: 0.0, d: 0.0}
+    rarm_joint3: {p: 100.0, i: 0.0, d: 0.0}
+    rarm_joint4: {p: 100.0, i: 0.0, d: 0.0}
+    rarm_joint5: {p: 100.0, i: 0.0, d: 0.0}
+    rarm_joint6: {p: 100.0, i: 0.0, d: 0.0}
+    rarm_gripper_joint: {p: 100.0, i: 0.0, d: 0.0}
+    larm_joint0: {p: 100.0, i: 0.0, d: 0.0}
+    larm_joint1: {p: 100.0, i: 0.0, d: 0.0}
+    larm_joint2: {p: 100.0, i: 0.0, d: 0.0}
+    larm_joint3: {p: 100.0, i: 0.0, d: 0.0}
+    larm_joint4: {p: 100.0, i: 0.0, d: 0.0}
+    larm_joint5: {p: 100.0, i: 0.0, d: 0.0}
+    larm_joint6: {p: 100.0, i: 0.0, d: 0.0}
+    larm_gripper_joint: {p: 100.0, i: 0.0, d: 0.0}
+    head_joint0: {p: 25.0, i: 0.0, d: 0.0}
+    head_joint1: {p: 25.0, i: 0.0, d: 0.0}
+
+kxr_head_joint1fullbody_controller:
+  joints:
+    - rarm_joint0
+    - rarm_joint1
+    - rarm_joint2
+    - rarm_joint3
+    - rarm_joint4
+    - rarm_joint5
+    - rarm_joint6
+    - rarm_gripper_joint
+    - larm_joint0
+    - larm_joint1
+    - larm_joint2
+    - larm_joint3
+    - larm_joint4
+    - larm_joint5
+    - larm_joint6
+    - larm_gripper_joint
+    - head_joint0
+    - head_joint1
+
+# gazebo_ros_control:
+#   pid_gains:
+#     head_joint0: {p: 1.0, i: 0.01, d: 0.1, i_clamp: 200.0}
+#     head_joint1: {p: 1.0, i: 0.01, d: 0.1, i_clamp: 200.0}
+#     larm_joint0: {p: 1000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     larm_joint1: {p: 1000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     larm_joint2: {p: 2000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     larm_joint3: {p: 10000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     larm_joint4: {p: 10000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     larm_joint5: {p: 10000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     # larm_joint6: {p: 1.0, i: 0.01, d: 0.1}
+#     # larm_joint7: {p: 1.0, i: 0.01, d: 0.1}
+#     # larm_gripper_joint: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint0: {p: 1000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     rarm_joint1: {p: 1000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     rarm_joint2: {p: 2000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     rarm_joint3: {p: 10000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     rarm_joint4: {p: 10000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     rarm_joint5: {p: 10000.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     front_right_wheel_joint: {p: 1.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     rear_right_wheel_joint: {p: 1.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     front_left_wheel_joint: {p: 1.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     rear_left_wheel_joint: {p: 1.0, i: 1, d: 0.1, i_clamp: 200.0}
+#     # rarm_joint6: {p: 1.0, i: 0.01, d: 0.1}
+#     # rarm_joint7: {p: 1.0, i: 0.01, d: 0.1}
+#     # rarm_gripper_joint: {p: 1.0, i: 0.01, d: 0.1}

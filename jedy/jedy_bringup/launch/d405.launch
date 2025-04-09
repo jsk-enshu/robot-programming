@@ -1,0 +1,83 @@
+<launch>
+  <arg name="camera" default="camera" />
+  <arg name="color_width" default="480" />
+  <arg name="color_height" default="270" />
+  <arg name="color_fps" default="5" />
+  <arg name="depth_width" default="480" />
+  <arg name="depth_height" default="270" />
+  <arg name="depth_fps" default="5" />
+  <arg name="align_depth" default="false" />
+  <arg name="enable_pointcloud" default="false" />
+  <arg name="ordered_pc" default="true" />
+  <arg name="respawn" default="true" />
+
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="camera" value="$(arg camera)" />
+    <arg name="color_width" value="$(arg color_width)" />
+    <arg name="color_height" value="$(arg color_height)" />
+    <arg name="color_fps" value="$(arg color_fps)" />
+    <arg name="depth_width" value="$(arg depth_width)" />
+    <arg name="depth_height" value="$(arg depth_height)" />
+    <arg name="depth_fps" value="$(arg depth_fps)" />
+    <arg name="align_depth" value="$(arg align_depth)" />
+    <arg name="enable_pointcloud" value="$(arg enable_pointcloud)" />
+    <arg name="ordered_pc" value="$(arg ordered_pc)" />
+    <arg name="respawn" value="true" />
+  </include>
+
+  <group ns="$(arg camera)" >
+    <group ns="color" >
+      <group ns="image_raw" >
+        <rosparam param="disable_pub_plugins">
+          - 'image_transport/compressedDepth'
+          - 'image_transport/theora'
+        </rosparam>
+      </group>
+      <group ns="image_rect_color" >
+        <rosparam param="disable_pub_plugins">
+          - 'image_transport/compressedDepth'
+          - 'image_transport/theora'
+        </rosparam>
+      </group>
+    </group>  <!-- end of color ns -->
+
+    <group ns="depth" >
+      <group ns="image_raw" >
+        <rosparam param="disable_pub_plugins">
+          - 'image_transport/compressed'
+          - 'image_transport/theora'
+        </rosparam>
+        <param name="compressedDepth/format" value="rvl" />
+        <param name="compressedDepth/png_level" value="9" />
+      </group>
+      <group ns="image_rect_raw" >
+        <rosparam param="disable_pub_plugins">
+          - 'image_transport/compressed'
+          - 'image_transport/theora'
+        </rosparam>
+        <param name="compressedDepth/format" value="rvl" />
+        <param name="compressedDepth/png_level" value="9" />
+      </group>
+    </group>  <!-- end of depth ns -->
+
+    <group ns="aligned_depth_to_color" >
+      <group ns="image_raw" >
+        <rosparam param="disable_pub_plugins">
+          - 'image_transport/compressed'
+          - 'image_transport/theora'
+        </rosparam>
+        <param name="compressedDepth/format" value="rvl" />
+        <param name="compressedDepth/png_level" value="9" />
+      </group>
+      <group ns="image_rect_raw" >
+        <rosparam param="disable_pub_plugins">
+          - 'image_transport/compressed'
+          - 'image_transport/theora'
+        </rosparam>
+        <param name="compressedDepth/format" value="rvl" />
+        <param name="compressedDepth/png_level" value="9" />
+      </group>
+    </group>  <!-- end of aligned_depth_to_color ns -->
+  </group>
+
+</launch>

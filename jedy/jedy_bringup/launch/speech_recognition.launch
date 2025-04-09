@@ -1,0 +1,11 @@
+<launch>
+
+    <!-- Speech Recognition Node -->
+    <include file="$(find ros_speech_recognition)/launch/speech_recognition.launch">
+        <!-- Set the language to Japanese -->
+        <arg name="language" value="ja-JP" />
+        <!-- Enable continuous recognition -->
+        <arg name="continuous" value="true" />
+    </include>
+
+</launch>

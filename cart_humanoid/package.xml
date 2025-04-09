@@ -44,7 +44,7 @@
   <run_depend>rviz</run_depend>
   <run_depend>topic_tools</run_depend>
   <!-- <run_depend>turtlebot_bringup</run_depend> -->
-  <!-- <run_depend>turtlebot_description</run_depend> -->
+  <run_depend>turtlebot_description</run_depend>
   <!-- <run_depend>turtlebot_navigation</run_depend> -->
   <!-- <run_depend>turtlebot_teleop</run_depend> -->
   <!-- <run_depend>turtleboteus</run_depend> -->

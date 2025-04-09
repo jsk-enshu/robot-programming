@@ -1,0 +1,41 @@
+# Joint State Controllers ---------------------------------------
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+# Trajectory Controllers ---------------------------------------
+fullbody_controller:
+  type: position_controllers/JointTrajectoryController
+  joints:
+    - head_joint0
+    - head_joint1
+
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
+  stop_trajectory_duration: 0        # Override default
+
+kxr_fullbody_controller:
+  joints:
+    - head_joint0
+    - head_joint1
+# gazebo_ros_control:
+#   pid_gains:
+#     head_joint0: {p: 1.0, i: 0.01, d: 0.1}
+#     head_joint1: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_joint0: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_joint1: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_joint2: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_joint3: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_joint4: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_joint5: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_joint6: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_joint7: {p: 1.0, i: 0.01, d: 0.1}
+#     larm_gripper_joint: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint0: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint1: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint2: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint3: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint4: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint5: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint6: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_joint7: {p: 1.0, i: 0.01, d: 0.1}
+#     rarm_gripper_joint: {p: 1.0, i: 0.01, d: 0.1}

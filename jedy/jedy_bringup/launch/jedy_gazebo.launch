@@ -1,0 +1,61 @@
+<launch>
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
+  <arg name="debug" default="false"/>
+  <arg name="world_file" default="$(find jedy_bringup)/worlds/empty.world" />
+  <arg name="model" value="$(find jedy_description)/urdf/jedy_no_arm.urdf"  />
+
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+
+  <node pkg="robot_state_publisher"
+        type="robot_state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="30.0" />
+  </node>
+
+  <node name="depth_renamer"
+        pkg="topic_tools" type="relay"
+        args=" /camera/depth/points /camera/depth_registered/points" />
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="true"/>
+    <!-- https://answers.ros.org/question/216420/initial-joint-angles/ -->
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="world_name" value="$(arg world_file)"/>
+  </include>
+
+  <node name="urdf_spawner"
+        pkg="gazebo_ros" type="spawn_model"
+        respawn="false" output="screen"
+        args="-x 0.0 -y 0.0 -z 0.15 -R 0 -urdf -model jedy -param robot_description
+              -unpause
+        "/>
+
+  <!-- <node name="set_gazebo_pose" -->
+  <!--       pkg="jedy_bringup" type="set_gazebo_pose.py" -->
+  <!--       output="screen" -->
+  <!--       /> -->
+
+  <include file="$(find jedy_bringup)/launch/diff_drive_controller.launch" >
+  </include>
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <!-- load the controllers -->
+  <rosparam file="$(find jedy_bringup)/config/jedy_no_arm_controllers.yaml" />
+  <node name="controller_spawner"
+        pkg="controller_manager" type="spawner"
+        respawn="true" respawn_delay="5" output="screen"
+        args="joint_state_controller
+              fullbody_controller
+              "/>
+
+  <group if="$(arg gui)" >
+    <node name="$(anon rviz)"
+          pkg="rviz" type="rviz"
+          args="-d $(find jedy_bringup)/config/jedy.rviz" />
+  </group>
+
+</launch>

@@ -1,0 +1,420 @@
+<sdf version='1.4'>
+  <world name='default'>
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <!-- Light weight simulation settings -->
+    <physics type='ode'>
+      <max_step_size>0.01</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>100</real_time_update_rate>
+      <gravity>0 0 -9.8</gravity>
+    </physics>
+    <!-- A red ball -->
+    <model name="sphere">
+      <pose>0 1.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <sphere>
+              <radius>0.5</radius>
+            </sphere>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <sphere>
+              <radius>0.5</radius>
+            </sphere>
+          </geometry>
+          <material>
+            <script>
+              <name>Gazebo/RedBright</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- A green cube -->
+    <model name="cube1">
+      <pose>3.0 -1.5 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1 1 1</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <name>Gazebo/Green</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- A blue cylinder -->
+    <model name="cylinder">
+      <pose>-1.0 -3.0 0.5 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.5</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.5</radius>
+              <length>1.0</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <script>
+              <name>Gazebo/Blue</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- A red small cube -->
+    <model name="cube2">
+      <pose>-3.0 0.0 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.5 0.5 0.5</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <name>Gazebo/Red</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- wall -->
+    <model name='grey_wall_0'>
+      <static>1</static>
+      <link name='grey_wall_0_link'>
+        <pose>0 0 0.165 0 0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>8 0.1 0.33</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='grey_wall_0_visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>8 0.1 0.33</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://grey_wall/materials/scripts</uri>
+              <uri>model://grey_wall/materials/textures</uri>
+              <name>vrc/grey_wall</name>
+            </script>
+          </material>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>0 4 0 0 -0 0</pose>
+    </model>
+    <model name='grey_wall_1'>
+      <static>1</static>
+      <link name='grey_wall_1_link'>
+        <pose>0 0 0.165 0 0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>8 0.1 0.33</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='grey_wall_1_visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>8 0.1 0.33</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://grey_wall/materials/scripts</uri>
+              <uri>model://grey_wall/materials/textures</uri>
+              <name>vrc/grey_wall</name>
+            </script>
+          </material>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>0 -4 0 0 -0 0</pose>
+    </model>
+    <model name='grey_wall_2'>
+      <static>1</static>
+      <link name='grey_wall_2_link'>
+        <pose>0 0 0.165 0 0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>8 0.1 0.33</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='grey_wall_2_visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>8 0.1 0.33</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://grey_wall/materials/scripts</uri>
+              <uri>model://grey_wall/materials/textures</uri>
+              <name>vrc/grey_wall</name>
+            </script>
+          </material>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>4 0 0 0 -0 1.57102</pose>
+    </model>
+    <model name='grey_wall_3'>
+      <static>1</static>
+      <link name='grey_wall_3_link'>
+        <pose>0 0 0.165 0 0 0</pose>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>8 0.1 0.33</size>
+            </box>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <bounce/>
+            <friction>
+              <ode/>
+            </friction>
+            <contact>
+              <ode/>
+            </contact>
+          </surface>
+        </collision>
+        <visual name='grey_wall_3_visual'>
+          <cast_shadows>0</cast_shadows>
+          <geometry>
+            <box>
+              <size>8 0.1 0.33</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <uri>model://grey_wall/materials/scripts</uri>
+              <uri>model://grey_wall/materials/textures</uri>
+              <name>vrc/grey_wall</name>
+            </script>
+          </material>
+        </visual>
+        <velocity_decay>
+          <linear>0</linear>
+          <angular>0</angular>
+        </velocity_decay>
+        <self_collide>0</self_collide>
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+      <pose>-4 0 0 0 0 1.57102</pose>
+    </model>
+
+    <!-- grasp target -->
+    <model name="table">
+      <static>1</static>
+      <pose>1.0 0.0 0.06 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>10</mass>
+          <inertia> <!-- inertias are tricky to compute -->
+            <ixx>0.1</ixx>       <!-- for a box: ixx = 0.083 * mass * (y*y + z*z) -->
+            <ixy>0.0</ixy>         <!-- for a box: ixy = 0 -->
+            <ixz>0.0</ixz>         <!-- for a box: ixz = 0 -->
+            <iyy>0.015</iyy>       <!-- for a box: iyy = 0.083 * mass * (x*x + z*z) -->
+            <iyz>0.0</iyz>         <!-- for a box: iyz = 0 -->
+            <izz>0.1</izz>       <!-- for a box: izz = 0.083 * mass * (x*x + y*y) -->
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>0.2 0.4 0.12</size>
+            </box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.4</mu>
+                <mu2>0.4</mu2>
+              </ode>
+            </friction>
+          </surface>
+
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.2 0.4 0.12</size>
+            </box>
+          </geometry>
+          <material>
+            <script>
+              <name>Gazebo/Red</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+    <model name="target_cylinder">
+      <pose>1.0 0 0.18 0 0 0</pose>
+      <link name="link">
+        <inertial>
+          <mass>0.01</mass>
+          <inertia> <!-- inertias are tricky to compute -->
+            <ixx>0.001</ixx>       <!-- for a box: ixx = 0.083 * mass * (y*y + z*z) -->
+            <ixy>0.0</ixy>         <!-- for a box: ixy = 0 -->
+            <ixz>0.0</ixz>         <!-- for a box: ixz = 0 -->
+            <iyy>0.001</iyy>       <!-- for a box: iyy = 0.083 * mass * (x*x + z*z) -->
+            <iyz>0.0</iyz>         <!-- for a box: iyz = 0 -->
+            <izz>0.001</izz>       <!-- for a box: izz = 0.083 * mass * (x*x + y*y) -->
+          </inertia>
+        </inertial>
+        <collision name="collision">
+          <geometry>
+            <cylinder>
+              <radius>0.025</radius>
+              <length>0.12</length>
+            </cylinder>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>0.9</mu>
+                <mu2>0.9</mu2>
+              </ode>
+            </friction>
+          </surface>
+
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <cylinder>
+              <radius>0.025</radius>
+              <length>0.12</length>
+            </cylinder>
+          </geometry>
+          <material>
+            <script>
+              <name>Gazebo/Blue</name>
+            </script>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- checkerboard -->
+    <model name="checkerboard" >
+      <pose>0 1.3 0.3 0 1.5708 -1.5708</pose>
+      <include>
+        <uri>model://checkerboard</uri>
+      </include>
+    </model>
+
+    <!-- apriltag -->
+    <model name="apriltag" >
+      <pose>1.0 0.2 0.3 0 1.5708 0</pose>
+      <include>
+        <uri>model://Apriltag36_11_00000</uri>
+      </include>
+    </model>
+
+  </world>
+</sdf>
