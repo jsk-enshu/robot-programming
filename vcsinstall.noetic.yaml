@@ -14,11 +14,11 @@ repositories:
   rcb4:
     type: git
     url: https://github.com/iory/rcb4
-    version: enshu
+    version: v0.1.0
   riberry:
     type: git
     url: https://github.com/iory/riberry
-    version: master
+    version: v0.1.3
   robot-programming:
     type: git
     url: https://github.com/iory/robot-programming
