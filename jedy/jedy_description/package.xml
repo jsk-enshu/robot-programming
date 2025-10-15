@@ -14,7 +14,10 @@
 
   <depend>robot_state_publisher</depend>
   <depend>rviz2</depend>
+  <depend>joint_state_publisher</depend>
   <depend>joint_state_publisher_gui</depend>
+  <depend>xacro</depend>
+  <exec_depend>launch_ros</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
