@@ -750,8 +750,8 @@
       <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>10</update_rate>
-      <topic>scan</topic>
-      <gz_frame_id>base_laser</gz_frame_id>
+      <topic>/scan_raw</topic>
+      <gz:frame_id xmlns:gz="http://sdformat.org/schemas/sensor">base_laser</gz:frame_id>
       <lidar>
         <scan>
           <horizontal>

@@ -24,6 +24,7 @@ install(
     scripts/track_box_to_cmd_vel_1.py
     scripts/send_joint_position.py
     scripts/send_joint_position_action.py
+    scripts/scan_frame_changer.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

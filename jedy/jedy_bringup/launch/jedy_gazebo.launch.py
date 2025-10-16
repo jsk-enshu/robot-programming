@@ -219,23 +219,42 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
-            '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
+            '/scan_raw@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan',
             '--ros-args',
-            '-p', 'qos_overrides./scan.subscription.reliability:=best_effort',
-            '-p', 'qos_overrides./scan.publisher.reliability:=best_effort'
+            '-p', 'qos_overrides./scan_raw.subscription.reliability:=best_effort',
+            '-p', 'qos_overrides./scan_raw.publisher.reliability:=best_effort'
+        ],
+        output='screen'
+    )
+
+    # Scan frame changer - changes frame_id from Gazebo's auto-generated name to base_laser
+    scan_frame_changer = Node(
+        package='jedy_bringup',
+        executable='scan_frame_changer.py',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'input_topic': '/scan_raw'},
+            {'output_topic': '/scan'},
+            {'target_frame': 'base_laser'}
         ],
         output='screen'
     )
 
     # Note: diff_drive_controller publishes odom and TF directly, so no bridge needed
 
-    # RViz2 node with config file
+    # RViz2 node with config file - delayed to ensure /scan topic exists
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
         arguments=['-d', os.path.join(pkg_jedy_bringup, 'config', 'jedy.rviz')],
         parameters=[{'use_sim_time': use_sim_time}],
         output='screen'
+    )
+
+    # Delay RViz2 to ensure scan topic is ready with correct QoS
+    delayed_rviz = TimerAction(
+        period=8.0,
+        actions=[rviz_node]
     )
 
     return LaunchDescription([
@@ -251,10 +270,11 @@ def generate_launch_description():
         base_footprint_publisher,  # Add base_footprint frame for Nav2
         point_cloud_xyzrgb,
         lidar_bridge,
+        scan_frame_changer,
         delayed_joint_state_broadcaster,
         delayed_diff_drive_controller,
         delayed_head_controller,
         delayed_rarm_controller,
         delayed_larm_controller,
-        rviz_node,
+        delayed_rviz,  # Delay RViz2 to avoid QoS mismatch with /scan
     ])
