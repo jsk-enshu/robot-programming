@@ -5,6 +5,22 @@ This is exercise for robot-programming.
 
 # ROS2 Jazzy (Recommended)
 
+## ⚠️ **重要: ネットワーク設定**
+
+**<span style="color:red">演習中や同一ネットワークで複数人が ROS2 を起動すると、通信が相互に干渉してしまいます。</span>**
+**<span style="color:red">必ず以下の環境変数を設定してください:</span>**
+
+```bash
+export ROS_LOCALHOST_ONLY=1
+```
+
+**bashrc に追加して永続化する場合:**
+
+```bash
+echo 'export ROS_LOCALHOST_ONLY=1' >> ~/.bashrc
+source ~/.bashrc
+```
+
 ## JEDY Robot - Dual-arm Mobile Manipulator
 
 For ROS2 Jazzy users, see **[jedy/README.md](./jedy/README.md)** for the JEDY robot simulation.

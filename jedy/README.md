@@ -2,6 +2,24 @@
 
 JEDY is a dual-arm mobile manipulator robot for ROS2 robot programming exercises.
 
+## ⚠️ **重要: ネットワーク設定**
+
+**<span style="color:red">演習中や同一ネットワークで複数人が ROS2 を起動すると、通信が相互に干渉してしまいます。</span>**
+**<span style="color:red">必ず以下の環境変数を設定してください:</span>**
+
+```bash
+export ROS_LOCALHOST_ONLY=1
+```
+
+**bashrc に追加して永続化する場合:**
+
+```bash
+echo 'export ROS_LOCALHOST_ONLY=1' >> ~/.bashrc
+source ~/.bashrc
+```
+
+この設定により、ROS2 の通信がローカルホストのみに制限され、他の受講者との通信干渉を防ぐことができます。
+
 ## Features
 
 - Differential drive base with 4 wheels
