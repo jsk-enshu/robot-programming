@@ -229,6 +229,15 @@ def generate_launch_description():
 
     # Note: diff_drive_controller publishes odom and TF directly, so no bridge needed
 
+    # RViz2 node with config file
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d', os.path.join(pkg_jedy_bringup, 'config', 'jedy.rviz')],
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
+    )
+
     return LaunchDescription([
         SetEnvironmentVariable(name='GZ_SIM_RESOURCE_PATH', value=gz_resource_path),
         SetEnvironmentVariable(name='DISPLAY', value=':1'),
@@ -247,4 +256,5 @@ def generate_launch_description():
         delayed_head_controller,
         delayed_rarm_controller,
         delayed_larm_controller,
+        rviz_node,
     ])
