@@ -3,6 +3,45 @@ robot-programming [![Build Status](https://app.travis-ci.com/jsk-enshu/robot-pro
 
 This is exercise for robot-programming.
 
+# ROS2 Jazzy (Recommended)
+
+## JEDY Robot - Dual-arm Mobile Manipulator
+
+For ROS2 Jazzy users, see **[jedy/README.md](./jedy/README.md)** for the JEDY robot simulation.
+
+### Setup
+
+```bash
+# Create workspace
+mkdir -p ~/ros2_ws/src
+cd ~/ros2_ws/src
+
+# Clone this repository
+git clone https://github.com/jsk-enshu/robot-programming.git
+
+# Import dependencies using vcs
+cd ~/ros2_ws
+sudo apt install -y python3-vcstool
+vcs import src < src/robot-programming/.repos.jazzy
+
+# Install dependencies
+rosdep update
+rosdep install --from-paths src --ignore-src -y -r
+
+# Build
+colcon build --symlink-install
+source install/setup.bash
+
+# Launch simulation with RViz
+ros2 launch jedy_bringup jedy_gazebo.launch.py
+```
+
+---
+
+# ROS1 (Deprecated)
+
+**Note**: The following sections are for ROS1 and are deprecated. Please use ROS2 Jazzy with JEDY robot above.
+
 # Setup
 -----
 

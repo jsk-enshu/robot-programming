@@ -1,0 +1,9 @@
+repositories:
+  robot-programming:
+    type: git
+    url: https://github.com/iory/robot-programming.git
+    version: ros2
+  opencv_apps:
+    type: git
+    url: https://github.com/iory/opencv_apps.git
+    version: ros2
