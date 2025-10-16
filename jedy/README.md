@@ -8,17 +8,19 @@ JEDY is a dual-arm mobile manipulator robot for ROS2 robot programming exercises
 **<span style="color:red">必ず以下の環境変数を設定してください:</span>**
 
 ```bash
-export ROS_LOCALHOST_ONLY=1
+export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 ```
 
 **bashrc に追加して永続化する場合:**
 
 ```bash
-echo 'export ROS_LOCALHOST_ONLY=1' >> ~/.bashrc
+echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc
 source ~/.bashrc
 ```
 
 この設定により、ROS2 の通信がローカルホストのみに制限され、他の受講者との通信干渉を防ぐことができます。
+
+> **注意:** ROS 2 Jazzy 以前では `ROS_LOCALHOST_ONLY=1` が使用されていましたが、Jazzy で非推奨となり削除されました。代わりに `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` を使用してください。詳細は [Improved Dynamic Discovery](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Improved-Dynamic-Discovery.html) を参照してください。
 
 ## Features
 
