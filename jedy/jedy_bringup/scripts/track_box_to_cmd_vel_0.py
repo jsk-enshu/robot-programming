@@ -12,7 +12,7 @@ class TrackBoxToCmdVel(Node):
         self.publisher_ = self.create_publisher(TwistStamped, '/diff_drive_controller/cmd_vel', 10)
         self.subscription = self.create_subscription(
             RotatedRectStamped,
-            '/track_box',
+            '/camshift/track_box',
             self.listener_callback,
             10)
 
