@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>jedy_description</name>
+  <version>1.0.0</version>
+  <description>
+    <p>URDF Description package for jedy_description (ROS2)</p>
+    <p>This package contains configuration data, 3D models and launch files for jedy robot</p>
+  </description>
+
+  <license>BSD</license>
+  <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>robot_state_publisher</depend>
+  <depend>rviz2</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>joint_state_publisher_gui</depend>
+  <depend>xacro</depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

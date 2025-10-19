@@ -3,6 +3,63 @@ robot-programming [![Build Status](https://app.travis-ci.com/jsk-enshu/robot-pro
 
 This is exercise for robot-programming.
 
+# ROS2 Jazzy (Recommended)
+
+## ⚠️ **重要: ネットワーク設定**
+
+**<span style="color:red">演習中や同一ネットワークで複数人が ROS2 を起動すると、通信が相互に干渉してしまいます。</span>**
+**<span style="color:red">必ず以下の環境変数を設定してください:</span>**
+
+```bash
+export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+```
+
+**bashrc に追加して永続化する場合:**
+
+```bash
+echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc
+source ~/.bashrc
+```
+
+> **注意:** ROS 2 Jazzy 以前では `ROS_LOCALHOST_ONLY=1` が使用されていましたが、Jazzy で非推奨となり削除されました。代わりに `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` を使用してください。詳細は [Improved Dynamic Discovery](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Improved-Dynamic-Discovery.html) を参照してください。
+
+## JEDY Robot - Dual-arm Mobile Manipulator
+
+For ROS2 Jazzy users, see **[jedy/README.md](./jedy/README.md)** for the JEDY robot simulation.
+
+### Setup
+
+```bash
+# Create workspace
+mkdir -p ~/ros2_ws/src
+cd ~/ros2_ws/src
+
+# Clone this repository
+git clone https://github.com/jsk-enshu/robot-programming.git
+
+# Import dependencies using vcs
+cd ~/ros2_ws
+sudo apt install -y python3-vcstool
+vcs import src < src/robot-programming/.repos.jazzy
+
+# Install dependencies
+rosdep update
+rosdep install --from-paths src --ignore-src -y -r
+
+# Build
+colcon build --symlink-install
+source install/setup.bash
+
+# Launch simulation with RViz
+ros2 launch jedy_bringup jedy_gazebo.launch.py
+```
+
+---
+
+# ROS1 (Deprecated)
+
+**Note**: The following sections are for ROS1 and are deprecated. Please use ROS2 Jazzy with JEDY robot above.
+
 # Setup
 -----
 

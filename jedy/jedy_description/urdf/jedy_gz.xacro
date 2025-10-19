@@ -1,0 +1,1206 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<robot name="jedy">
+  <link name="base_link"/>
+  <link name="real_base_link">
+    <inertial>
+      <origin xyz="0.00124 1.38911e-10 0.02081" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.671312"/>
+      <inertia ixx="0.001849" ixy="-8.30713e-06" ixz="-1.71308e-06" iyy="0.002122" iyz="1.45167e-06" izz="0.003179"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/base_link.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/base_link.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="base_laser"/>
+  <link name="rarm_link0">
+    <inertial>
+      <origin xyz="0.00750000000000114 0.0511983289893697 -0.0774229781318287" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.00775312250160503"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link0.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link0.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="rarm_link1">
+    <inertial>
+      <origin xyz="0.0060726594429343 0.0630174693748998 -0.076278104560333" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0488819579417231"/>
+      <inertia ixx="0.0001" ixy="-2.40958659059239e-08" ixz="-1.15959128616825e-08" iyy="0.0001" iyz="-4.77616974109193e-10" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link1.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link1.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="rarm_link2">
+    <inertial>
+      <origin xyz="-0.013781849714382 0.078576090677525 -0.0510708977208851" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0267722516782373"/>
+      <inertia ixx="0.0001" ixy="-2.1054501660018e-08" ixz="1.16767691320589e-08" iyy="0.0001" iyz="3.18816576527695e-09" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link2.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link2.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="rarm_link3">
+    <inertial>
+      <origin xyz="-0.0419797687715683 0.0785695933122011 -0.0231515381895025" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0356190541582585"/>
+      <inertia ixx="0.0001" ixy="5.40131440804977e-08" ixz="-3.18560639543114e-09" iyy="0.0001" iyz="1.16768356053738e-08" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link3.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link3.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="rarm_link4">
+    <inertial>
+      <origin xyz="0.0016510438589472 0.0778057578962844 0.0566210301742714" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.00736377671410321"/>
+      <inertia ixx="0.0001" ixy="4.64911587686377e-09" ixz="-1.21774119934071e-14" iyy="0.0001" iyz="-1.47706067420849e-12" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link4.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link4.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="rarm_link5">
+    <inertial>
+      <origin xyz="-0.000466911885189514 0.0624063256412892 0.0815726594429263" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0488819579417229"/>
+      <inertia ixx="0.0001" ixy="-1.80131374142072e-08" ixz="-2.38311555265213e-08" iyy="0.0001" iyz="1.15959128617003e-08" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link5.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link5.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="rarm_link6">
+    <inertial>
+      <origin xyz="-0.0330277428947269 0.0768233052251458 0.100619882815324" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0333926389608614"/>
+      <inertia ixx="0.0001" ixy="2.99884795330491e-07" ixz="1.36097064864093e-08" iyy="0.0001" iyz="2.71887959762946e-08" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link6.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link6.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="rarm_link7">
+    <inertial>
+      <origin xyz="-0.00575793188359448 0.0909946641170031 0.154628764458567" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.00895541725275716"/>
+      <inertia ixx="0.0001" ixy="2.90079247027908e-07" ixz="1.36850293455652e-12" iyy="0.0001" iyz="5.6685247064795e-13" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link7.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link7.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="rarm_link8">
+    <inertial>
+      <origin xyz="-0.00575793188359814 0.064611878473499 0.165977177563427" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.00895541725275716"/>
+      <inertia ixx="0.0001" ixy="-2.90079247027908e-07" ixz="1.3685029352065e-12" iyy="0.0001" iyz="-5.66852472660774e-13" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link8.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/rarm_link8.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link0">
+    <inertial>
+      <origin xyz="0.00750000000000804 0.0498016710106214 0.0774229781318285" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.00775312250160503"/>
+      <inertia ixx="0.0001" ixy="3.76136064915158e-22" ixz="7.33040243663328e-09" iyy="0.0001" iyz="-9.82862838779766e-22" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link0.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link0.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link1">
+    <inertial>
+      <origin xyz="0.00742734055676281 -0.0939825306250985 -0.0607218954396666" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0488819579417233"/>
+      <inertia ixx="0.0001" ixy="-2.40958659059249e-08" ixz="1.15959128616777e-08" iyy="0.0001" iyz="4.77616974083206e-10" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link1.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link1.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link2">
+    <inertial>
+      <origin xyz="-0.0137818497143928 -0.0785760906775208 -0.0509291022791145" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0267722516782377"/>
+      <inertia ixx="0.0001" ixy="2.10545016600191e-08" ixz="1.16767691320627e-08" iyy="0.0001" iyz="-3.18816576528393e-09" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link2.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link2.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link3">
+    <inertial>
+      <origin xyz="-0.0419797687715708 -0.0785572640137325 -0.012692437828887" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.035619054158259"/>
+      <inertia ixx="0.0001" ixy="-4.07455626958971e-08" ixz="-3.18560639540328e-09" iyy="0.0001" iyz="-1.1676718625715e-08" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link3.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link3.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link4">
+    <inertial>
+      <origin xyz="0.00165104385894364 -0.0778057578962786 0.0573789698257278" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0073637767141032"/>
+      <inertia ixx="0.0001" ixy="-4.64911587686424e-09" ixz="-1.21774114868373e-14" iyy="0.0001" iyz="1.47706067387539e-12" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link4.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link4.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link5">
+    <inertial>
+      <origin xyz="-0.000466911885188184 -0.0932044741964692 0.083072659443248" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0488819579417233"/>
+      <inertia ixx="0.0001" ixy="-1.80131374141397e-08" ixz="-2.38311555265008e-08" iyy="0.0001" iyz="1.15959128617046e-08" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link5.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link5.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link6">
+    <inertial>
+      <origin xyz="-0.033027742894731 -0.0777001820412116 0.107380117184671" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0333926389608612"/>
+      <inertia ixx="0.0001" ixy="-2.99884795330496e-07" ixz="1.36097064863934e-08" iyy="0.0001" iyz="-1.25309536168303e-08" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link6.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link6.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link7">
+    <inertial>
+      <origin xyz="-0.00575793188358857 -0.0909946641169996 0.165977177563423" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.00895541725275716"/>
+      <inertia ixx="0.0001" ixy="-2.90079247027908e-07" ixz="1.3685029341339e-12" iyy="0.0001" iyz="-5.66852473175791e-13" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link7.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link7.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="larm_link8">
+    <inertial>
+      <origin xyz="-0.00575793188358593 -0.0646118784734955 0.154628764458567" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.00895541725275716"/>
+      <inertia ixx="0.0001" ixy="2.90079247027908e-07" ixz="1.36850293341796e-12" iyy="0.0001" iyz="5.66852471090155e-13" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link8.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/larm_link8.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="head_link0">
+    <inertial>
+      <origin xyz="-1.73472e-18 1.22056e-18 0.023093" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.037398"/>
+      <inertia ixx="8.69139e-05" ixy="-8.96373e-22" ixz="8.61164e-09" iyy="9.09972e-05" iyz="-5.25778e-09" izz="2.5436e-05"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/head_link0.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/head_link0.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="head_link1">
+    <inertial>
+      <origin xyz="-0.001016 3.60351e-18 0.186465" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.093045"/>
+      <inertia ixx="0.000665" ixy="-1.79922e-07" ixz="-6.65543e-08" iyy="0.000652" iyz="-1.79583e-08" izz="0.000109"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/head_link1.dae"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://jedy_description/meshes/head_link1.stl"/>
+      </geometry>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+    </collision>
+  </link>
+  <link name="front_right_wheel_link">
+    <inertial>
+      <origin xyz="-6.93889e-18 0.016915 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.095024"/>
+      <inertia ixx="0.000174" ixy="5.9261e-22" ixz="5.04911e-20" iyy="0.000173" iyz="-1.9762e-20" izz="0.000262"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.030082940123975277" length="0.0336999895516783"/>
+      </geometry>
+      <origin xyz="-0.01364997576456517 2.9239803552627563e-05 -8.88695940375328e-05" rpy="0.0 1.5707963267948963 0.0"/>
+      <material name="yellow">
+        <color rgba="1.0 1.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.030082940123975277" length="0.0336999895516783"/>
+      </geometry>
+      <origin xyz="-0.01364997576456517 2.9239803552627563e-05 -8.88695940375328e-05" rpy="0.0 1.5707963267948963 0.0"/>
+    </collision>
+  </link>
+  <link name="front_left_wheel_link">
+    <inertial>
+      <origin xyz="-6.93889e-18 0.016915 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.095024"/>
+      <inertia ixx="0.000174" ixy="5.9261e-22" ixz="5.04911e-20" iyy="0.000173" iyz="-1.9762e-20" izz="0.000262"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.03012910485267639" length="0.0336999895516783"/>
+      </geometry>
+      <origin xyz="0.01364997576456517 -0.00011649541556835175 -0.00010368041694164276" rpy="0.0 1.5707963267948963 0.0"/>
+      <material name="yellow">
+        <color rgba="1.0 1.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.03012910485267639" length="0.0336999895516783"/>
+      </geometry>
+      <origin xyz="0.01364997576456517 -0.00011649541556835175 -0.00010368041694164276" rpy="0.0 1.5707963267948963 0.0"/>
+    </collision>
+  </link>
+  <link name="rear_right_wheel_link">
+    <inertial>
+      <origin xyz="-6.93889e-18 0.016915 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.095024"/>
+      <inertia ixx="0.000174" ixy="5.9261e-22" ixz="5.04911e-20" iyy="0.000173" iyz="-1.9762e-20" izz="0.000262"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.030142544768750668" length="0.0336999895516783"/>
+      </geometry>
+      <origin xyz="-0.01364997576456517 0.00010615494102239609 -3.0875205993652344e-05" rpy="0.0 1.5707963267948963 0.0"/>
+      <material name="yellow">
+        <color rgba="1.0 1.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.030142544768750668" length="0.0336999895516783"/>
+      </geometry>
+      <origin xyz="-0.01364997576456517 0.00010615494102239609 -3.0875205993652344e-05" rpy="0.0 1.5707963267948963 0.0"/>
+    </collision>
+  </link>
+  <link name="rear_left_wheel_link">
+    <inertial>
+      <origin xyz="-6.93889e-18 0.016915 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.095024"/>
+      <inertia ixx="0.000174" ixy="5.9261e-22" ixz="5.04911e-20" iyy="0.000173" iyz="-1.9762e-20" izz="0.000262"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <cylinder radius="0.030229220166802406" length="0.0336999895516783"/>
+      </geometry>
+      <origin xyz="0.01364997576456517 0.00011532939970493317 5.5635347962379456e-05" rpy="0.0 1.5707963267948963 0.0"/>
+      <material name="yellow">
+        <color rgba="1.0 1.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <cylinder radius="0.030229220166802406" length="0.0336999895516783"/>
+      </geometry>
+      <origin xyz="0.01364997576456517 0.00011532939970493317 5.5635347962379456e-05" rpy="0.0 1.5707963267948963 0.0"/>
+    </collision>
+  </link>
+  <link name="camera_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.0"/>
+      <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.00049894" iyz="0.0" izz="0.003879257"/>
+    </inertial>
+  </link>
+  <link name="camera_color_frame"/>
+  <link name="camera_color_optical_frame"/>
+  <link name="camera_depth_frame"/>
+  <link name="camera_depth_optical_frame"/>
+  <joint name="pseudo_base_joint" type="fixed">
+    <limit effort="0.0" velocity="0.0"/>
+    <parent link="base_link"/>
+    <child link="real_base_link"/>
+    <axis xyz="0. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="1.5707926535897931 -0.0 1.5707926535897931"/>
+  </joint>
+  <joint name="base_laser_joint" type="fixed">
+    <limit effort="0.0" velocity="0.0"/>
+    <parent link="base_link"/>
+    <child link="base_laser"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.1 0.0 -0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rarm_joint0" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="real_base_link"/>
+    <child link="rarm_link0"/>
+    <axis xyz="0. 1. 0."/>
+    <origin xyz="-0.0505 0.0685 -0.0075" rpy="-1.5707926535897931 -1.5707926535897931 -0.001592653589793114"/>
+  </joint>
+  <joint name="rarm_joint1" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="0.52"/>
+    <parent link="rarm_link0"/>
+    <child link="rarm_link1"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 -0.028 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rarm_joint2" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="rarm_link1"/>
+    <child link="rarm_link2"/>
+    <axis xyz="0. 0. 1."/>
+    <origin xyz="0.0 0.0 -0.0175" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rarm_joint3" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="rarm_link2"/>
+    <child link="rarm_link3"/>
+    <axis xyz="0. 1. 0."/>
+    <origin xyz="0.0 0.0 -0.033" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rarm_joint4" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="rarm_link3"/>
+    <child link="rarm_link4"/>
+    <axis xyz="0. 0. 1."/>
+    <origin xyz="-0.0024791 0.0006946 -0.075" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rarm_joint5" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.05"/>
+    <parent link="rarm_link4"/>
+    <child link="rarm_link5"/>
+    <axis xyz="0. 1. 0."/>
+    <origin xyz="0.0 0.0 -0.026" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rarm_joint6" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.57"/>
+    <parent link="rarm_link5"/>
+    <child link="rarm_link6"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 -0.021" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rarm_gripper_joint" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="0.5"/>
+    <parent link="rarm_link6"/>
+    <child link="rarm_link7"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 -0.011737 -0.056303" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rarm_mimic_gripper_joint" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-0.5" upper="1.57"/>
+    <mimic joint="rarm_gripper_joint" multiplier="-1.0" offset="0.0"/>
+    <parent link="rarm_link6"/>
+    <child link="rarm_link8"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.011741 -0.056303" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="larm_joint0" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="real_base_link"/>
+    <child link="larm_link0"/>
+    <axis xyz="0. 1. 0."/>
+    <origin xyz="0.0505 0.0685 -0.0075" rpy="-1.5707926535897931 -1.5707926535897931 3.141592653589793"/>
+  </joint>
+  <joint name="larm_joint1" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-0.56" upper="2.35"/>
+    <parent link="larm_link0"/>
+    <child link="larm_link1"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 -0.028 0.0" rpy="3.1415853071795867 -0.0 0.0"/>
+  </joint>
+  <joint name="larm_joint2" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="larm_link1"/>
+    <child link="larm_link2"/>
+    <axis xyz="0. 0. 1."/>
+    <origin xyz="0.0 0.0 -0.0175" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="larm_joint3" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="larm_link2"/>
+    <child link="larm_link3"/>
+    <axis xyz="0. 1. 0."/>
+    <origin xyz="0.0 0.0 -0.033" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="larm_joint4" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="larm_link3"/>
+    <child link="larm_link4"/>
+    <axis xyz="0. 0. 1."/>
+    <origin xyz="-0.0024791 -0.0006946 -0.075" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="larm_joint5" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.05"/>
+    <parent link="larm_link4"/>
+    <child link="larm_link5"/>
+    <axis xyz="0. 1. 0."/>
+    <origin xyz="0.0 0.0 -0.026" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="larm_joint6" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.57"/>
+    <parent link="larm_link5"/>
+    <child link="larm_link6"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 -0.021" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="larm_gripper_joint" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-0.5" upper="1.57"/>
+    <parent link="larm_link6"/>
+    <child link="larm_link7"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.011737 -0.056303" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="larm_mimic_gripper_joint" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="0.5"/>
+    <mimic joint="larm_gripper_joint" multiplier="-1.0" offset="0.0"/>
+    <parent link="larm_link6"/>
+    <child link="larm_link8"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 -0.011741 -0.056303" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="head_joint0" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
+    <parent link="real_base_link"/>
+    <child link="head_link0"/>
+    <axis xyz="0. 0. 1."/>
+    <origin xyz="0.0 0.086 -0.0075" rpy="-3.141592653589793 -1.5707926535897931 1.5707926535897931"/>
+  </joint>
+  <joint name="head_joint1" type="revolute">
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.57"/>
+    <parent link="head_link0"/>
+    <child link="head_link1"/>
+    <axis xyz="0. 1. 0."/>
+    <origin xyz="0.0 0.0 0.033" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="front_right_wheel_joint" type="continuous">
+    <limit effort="100.0" velocity="6.55"/>
+    <parent link="real_base_link"/>
+    <child link="front_right_wheel_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="-0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="front_left_wheel_joint" type="continuous">
+    <limit effort="100.0" velocity="6.55"/>
+    <parent link="real_base_link"/>
+    <child link="front_left_wheel_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rear_right_wheel_joint" type="continuous">
+    <limit effort="100.0" velocity="6.55"/>
+    <parent link="real_base_link"/>
+    <child link="rear_right_wheel_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="-0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="rear_left_wheel_joint" type="continuous">
+    <limit effort="100.0" velocity="6.55"/>
+    <parent link="real_base_link"/>
+    <child link="rear_left_wheel_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="camera_joint" type="fixed">
+    <limit effort="0.0" velocity="0.0"/>
+    <parent link="head_link1"/>
+    <child link="camera_link"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.005 0.05" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="camera_color_frame_joint" type="fixed">
+    <limit effort="0.0" velocity="0.0"/>
+    <parent link="camera_link"/>
+    <child link="camera_color_frame"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="camera_color_optical_frame_joint" type="fixed">
+    <limit effort="0.0" velocity="0.0"/>
+    <parent link="camera_color_frame"/>
+    <child link="camera_color_optical_frame"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="-1.57 -0.0 -1.57"/>
+  </joint>
+  <joint name="camera_depth_frame_joint" type="fixed">
+    <limit effort="0.0" velocity="0.0"/>
+    <parent link="camera_link"/>
+    <child link="camera_depth_frame"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+  </joint>
+  <joint name="camera_depth_optical_frame_joint" type="fixed">
+    <limit effort="0.0" velocity="0.0"/>
+    <parent link="camera_depth_frame"/>
+    <child link="camera_depth_optical_frame"/>
+    <axis xyz="1. 0. 0."/>
+    <origin xyz="0.0 0.0 0.0" rpy="-1.57 -0.0 -1.57"/>
+  </joint>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="head_j0_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="head_j1_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="rarm_j0_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="rarm_j1_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="rarm_j2_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="rarm_j3_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="rarm_j4_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="rarm_j5_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="rarm_j6_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="rarm_gripper_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="larm_j0_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="larm_j1_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="larm_j2_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="larm_j3_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="larm_j4_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="larm_j5_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="larm_j6_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="larm_gripper_init" default="0.0"/>
+  <xacro:arg xmlns:xacro="http://www.ros.org/wiki/xacro" name="controllers_config" default=""/>
+  <gazebo reference="real_base_link">
+    <mu1>0.5</mu1>
+    <mu2>0.5</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+    <gravity>true</gravity>
+  </gazebo>
+  <gazebo reference="base_laser">
+    <sensor name="laser" type="gpu_lidar">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>true</visualize>
+      <update_rate>10</update_rate>
+      <topic>/scan_raw</topic>
+      <gz:frame_id xmlns:gz="http://sdformat.org/schemas/sensor">base_laser</gz:frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.5708</min_angle>
+            <max_angle>1.5708</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.12</min>
+          <max>10.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+  <gazebo reference="rarm_joint0">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+    <self_collide>false</self_collide>
+  </gazebo>
+  <gazebo reference="rarm_joint1">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint2">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint3">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint4">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint5">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_joint6">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_gripper_joint">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="rarm_mimic_gripper_joint">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint0">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint1">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint2">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint3">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint4">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint5">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_joint6">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_gripper_joint">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="larm_mimic_gripper_joint">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="head_joint0">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="head_joint1">
+    <mu1>0.4</mu1>
+    <mu2>0.4</mu2>
+    <kp>100000</kp>
+    <kd>1</kd>
+  </gazebo>
+  <gazebo reference="front_right_wheel_joint">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="front_left_wheel_joint">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="rear_right_wheel_joint">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="rear_left_wheel_joint">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <maxVel value="100.0"/>
+    <minDepth value="0.0"/>
+  </gazebo>
+  <gazebo reference="front_right_wheel_link">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+  <gazebo reference="front_left_wheel_link">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+  <gazebo reference="rear_right_wheel_link">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+  <gazebo reference="rear_left_wheel_link">
+    <mu1>100.0</mu1>
+    <mu2>100.0</mu2>
+    <kp>10000000</kp>
+    <kd>1</kd>
+    <material>Gazebo/Yellow</material>
+  </gazebo>
+  <gazebo reference="camera_link">
+    <sensor name="camera" type="rgbd_camera">
+      <always_on>1</always_on>
+      <update_rate>30</update_rate>
+      <visualize>true</visualize>
+      <topic>camera</topic>
+      <frame_id>camera_depth_optical_frame</frame_id>
+      <camera name="camera">
+        <horizontal_fov>1.0471975511965976</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.05</near>
+          <far>10.0</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+    </sensor>
+  </gazebo>
+  <ros2_control name="GazeboSimSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="head_joint0">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg head_j0_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="head_joint1">
+      <command_interface name="position">
+        <param name="min">-1.57</param>
+        <param name="max">1.57</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg head_j1_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rarm_joint0">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg rarm_j0_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rarm_joint1">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">0.52</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg rarm_j1_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rarm_joint2">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg rarm_j2_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rarm_joint3">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg rarm_j3_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rarm_joint4">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg rarm_j4_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rarm_joint5">
+      <command_interface name="position">
+        <param name="min">-1.57</param>
+        <param name="max">1.05</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg rarm_j5_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rarm_joint6">
+      <command_interface name="position">
+        <param name="min">-1.57</param>
+        <param name="max">1.57</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg rarm_j6_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="larm_joint0">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg larm_j0_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="larm_joint1">
+      <command_interface name="position">
+        <param name="min">-0.56</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg larm_j1_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="larm_joint2">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg larm_j2_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="larm_joint3">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg larm_j3_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="larm_joint4">
+      <command_interface name="position">
+        <param name="min">-2.35</param>
+        <param name="max">2.35</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg larm_j4_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="larm_joint5">
+      <command_interface name="position">
+        <param name="min">-1.57</param>
+        <param name="max">1.05</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg larm_j5_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="larm_joint6">
+      <command_interface name="position">
+        <param name="min">-1.57</param>
+        <param name="max">1.57</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg larm_j6_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rarm_gripper_joint">
+      <command_interface name="position">
+        <param name="min">-1.57</param>
+        <param name="max">0.5</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg rarm_gripper_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="larm_gripper_joint">
+      <command_interface name="position">
+        <param name="min">-1.57</param>
+        <param name="max">0.5</param>
+      </command_interface>
+      <state_interface name="position">
+        <param name="initial_value">$(arg larm_gripper_init)</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="front_right_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="front_left_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rear_right_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="rear_left_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max">10</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(arg controllers_config)</parameters>
+    </plugin>
+  </gazebo>
+</robot>
