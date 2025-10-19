@@ -11,12 +11,10 @@ class TrackBoxToCmdVel(Node):
         super().__init__('track_box_to_cmd_vel_0')
         self.publisher_ = self.create_publisher(TwistStamped, '/diff_drive_controller/cmd_vel', 10)
         self.subscription = self.create_subscription(
-            RotatedRectStamped,
-            '/camshift/track_box',
-            self.listener_callback,
-            10)
+            RotatedRectStamped, '/camshift/track_box', self.listener_callback, 10)
 
     def listener_callback(self, msg):
+        self.get_logger().info(f'Subscribing: {msg.rect.center}')
         cmd_vel = TwistStamped()
         cmd_vel.header.stamp = self.get_clock().now().to_msg()
         # 認識結果の領域の中心のx座標が320より小さければ（画像の左），右回転する
