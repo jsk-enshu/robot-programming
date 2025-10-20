@@ -25,6 +25,9 @@
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>ros_gz_bridge</exec_depend>
   <exec_depend>depth_image_proc</exec_depend>
+  <exec_depend>rqt_joint_trajectory_controller</exec_depend>
+  <exec_depend>rqt_robot_steering</exec_depend>
+  <exec_depend>image_view</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
