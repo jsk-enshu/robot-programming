@@ -1,0 +1,28 @@
+<package format="3">
+
+  <name>jedyeus</name>
+  <version>0.1.0</version>
+  <description>
+    roseus interface for kxr robots.
+  </description>
+
+  <license>MIT</license>
+  <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
+  <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- ALPHABETICAL ORDER -->
+  <build_depend>kxr_controller</build_depend>
+  <build_depend>kxr_models</build_depend>
+  <!-- ALPHABETICAL ORDER -->
+
+  <!-- ALPHABETICAL ORDER -->
+  <exec_depend>kxr_controller</exec_depend>
+  <exec_depend>kxr_models</exec_depend>
+  <exec_depend>pr2eus</exec_depend>
+  <exec_depend>roseus</exec_depend>
+  <!-- ALPHABETICAL ORDER -->
+
+</package>
+
