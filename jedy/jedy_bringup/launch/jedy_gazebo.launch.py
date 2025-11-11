@@ -28,6 +28,7 @@ def generate_launch_description():
 
     model_file = os.path.join(pkg_jedy_description, 'urdf', 'jedy_gz.xacro')
     controllers_config = os.path.join(pkg_jedy_bringup, 'config', 'jedy_controllers.ros2.yaml')
+    ekf_config = os.path.join(pkg_jedy_bringup, 'config', 'ekf.yaml')
 
     # Gazebo with sensors enabled
     world_file = os.path.join(pkg_jedy_bringup, 'worlds', 'empty.world')
@@ -220,13 +221,14 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time}]
     )
 
-    # TF relay for mecanum_drive_controller odometry
-    odom_tf_relay = Node(
-        package='topic_tools',
-        executable='relay',
-        arguments=['/mecanum_drive_controller/tf_odometry', '/tf'],
+    # Robot localization EKF node for sensor fusion (odom + IMU)
+    ekf_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
         output='screen',
-        parameters=[{'use_sim_time': use_sim_time}]
+        parameters=[ekf_config, {'use_sim_time': use_sim_time}],
+        remappings=[('odometry/filtered', 'odom')]
     )
 
     # LiDAR bridge - bridges Gazebo LiDAR to ROS2 with BEST_EFFORT QoS for sensor data
@@ -256,24 +258,12 @@ def generate_launch_description():
     )
 
     # IMU bridge - bridges Gazebo IMU to ROS2
+    # IMU directly publishes to /imu topic with base_link frame_id (set in URDF)
     imu_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
-            '/imu_raw@sensor_msgs/msg/Imu@gz.msgs.IMU',
-        ],
-        output='screen'
-    )
-
-    # IMU frame changer - changes frame_id from Gazebo's auto-generated name to real_base_link
-    imu_frame_changer = Node(
-        package='jedy_bringup',
-        executable='imu_frame_changer.py',
-        parameters=[
-            {'use_sim_time': use_sim_time},
-            {'input_topic': '/imu_raw'},
-            {'output_topic': '/imu'},
-            {'target_frame': 'real_base_link'}
+            '/imu@sensor_msgs/msg/Imu@gz.msgs.IMU',
         ],
         output='screen'
     )
@@ -319,11 +309,10 @@ def generate_launch_description():
         base_footprint_publisher,  # Add base_footprint frame for Nav2
         point_cloud_xyzrgb,
         cmd_vel_relay,
-        odom_tf_relay,
+        ekf_node,  # Robot localization EKF for sensor fusion
         lidar_bridge,
         scan_frame_changer,
         imu_bridge,
-        imu_frame_changer,
         delayed_joint_state_broadcaster,
         delayed_mecanum_drive_controller,
         delayed_head_controller,

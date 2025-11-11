@@ -41,9 +41,10 @@ mecanum_drive_controller:
 
     base_frame_id: "base_link"
     odom_frame_id: "odom"
-    enable_odom_tf: true  # Publish odom->base_link transform
-    twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
-    pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+    enable_odom_tf: false  # EKF will publish odom->base_link transform instead
+    # Increase yaw covariance (index 5) because mecanum wheels slip during rotation
+    twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.1]
+    pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.1]
 
     # Subscribe to /cmd_vel topic directly (not chained mode)
     tf_frame_prefix_enable: false

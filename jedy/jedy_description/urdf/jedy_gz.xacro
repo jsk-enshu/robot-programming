@@ -981,14 +981,19 @@
       </camera>
     </sensor>
   </gazebo>
-  <gazebo reference="real_base_link">
+  <gazebo reference="base_link">
     <sensor name="imu_sensor" type="imu">
-      <pose>0 0 0 1.5707963267948966 0 0</pose>
+      <pose>0 0 0 0 0 0</pose>
       <always_on>true</always_on>
       <update_rate>100</update_rate>
       <visualize>false</visualize>
-      <topic>/imu_raw</topic>
+      <topic>/imu</topic>
+      <gz_frame_id>base_link</gz_frame_id>
       <imu>
+        <orientation_reference_frame>
+          <localization>CUSTOM</localization>
+          <custom_rpy parent_frame="base_link">0 0 0</custom_rpy>
+        </orientation_reference_frame>
         <angular_velocity>
           <x>
             <noise type="gaussian">
