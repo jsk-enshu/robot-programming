@@ -280,6 +280,15 @@ def generate_launch_description():
         actions=[rviz_node]
     )
 
+    # Virtual Atom S3 GUI - simulates Atom S3 button and display
+    virtual_atom_s3_gui = Node(
+        package='jedy_bringup',
+        executable='virtual_atom_s3_gui.py',
+        name='virtual_atom_s3_gui',
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
+    )
+
     return LaunchDescription([
         SetEnvironmentVariable(name='GZ_SIM_RESOURCE_PATH', value=gz_resource_path),
         SetEnvironmentVariable(name='DISPLAY', value=':1'),
@@ -302,4 +311,5 @@ def generate_launch_description():
         delayed_rarm_controller,
         delayed_larm_controller,
         delayed_rviz,  # Delay RViz2 to avoid QoS mismatch with /scan
+        virtual_atom_s3_gui,  # Virtual Atom S3 GUI for button and display simulation
     ])
