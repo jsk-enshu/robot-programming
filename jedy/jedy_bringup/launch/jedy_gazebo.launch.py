@@ -201,14 +201,6 @@ def generate_launch_description():
         ]
     )
 
-    # Static transform to connect Gazebo's camera frame to optical frame
-    # RGB and depth images should be published in camera_*_optical_frame
-    camera_tf_publisher = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        arguments=['0', '0', '0', '0', '0', '0', 'camera_depth_optical_frame', 'jedy/head_link1/camera'],
-        output='screen'
-    )
 
     # base_footprint frame - required by Nav2 collision monitor
     # This is the projection of base_link onto the ground plane
@@ -324,7 +316,6 @@ def generate_launch_description():
         camera_bridge,
         aligned_depth_relay,
         aligned_depth_info_relay,
-        camera_tf_publisher,
         base_footprint_publisher,  # Add base_footprint frame for Nav2
         point_cloud_xyzrgb,
         cmd_vel_relay,
