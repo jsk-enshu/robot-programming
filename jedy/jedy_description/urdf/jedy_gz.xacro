@@ -689,7 +689,7 @@
     <parent link="head_link1"/>
     <child link="camera_link"/>
     <axis xyz="1. 0. 0."/>
-    <origin xyz="0.0 0.005 0.05" rpy="0.0 -0.0 0.0"/>
+    <origin xyz="0.0 0.015 0.08" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="camera_color_frame_joint" type="fixed">
     <limit effort="0.0" velocity="0.0"/>
