@@ -240,7 +240,30 @@ def generate_launch_description():
         output='screen'
     )
 
-    # Note: diff_drive_controller publishes odom and TF directly, so no bridge needed
+    # IMU bridge - bridges Gazebo IMU to ROS2
+    imu_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/imu_raw@sensor_msgs/msg/Imu@gz.msgs.IMU',
+        ],
+        output='screen'
+    )
+
+    # IMU frame changer - changes frame_id from Gazebo's auto-generated name to real_base_link
+    imu_frame_changer = Node(
+        package='jedy_bringup',
+        executable='imu_frame_changer.py',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'input_topic': '/imu_raw'},
+            {'output_topic': '/imu'},
+            {'target_frame': 'real_base_link'}
+        ],
+        output='screen'
+    )
+
+    # Note: mecanum_drive_controller publishes odom and TF directly, so no bridge needed
 
     # RViz2 node with config file - delayed to ensure /scan topic exists
     rviz_node = Node(
@@ -271,6 +294,8 @@ def generate_launch_description():
         point_cloud_xyzrgb,
         lidar_bridge,
         scan_frame_changer,
+        imu_bridge,
+        imu_frame_changer,
         delayed_joint_state_broadcaster,
         delayed_diff_drive_controller,
         delayed_head_controller,
