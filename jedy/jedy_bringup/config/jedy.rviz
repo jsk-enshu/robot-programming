@@ -6,11 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /RobotModel1
-        - /Image1
-        - /LaserScan1/Status1
       Splitter Ratio: 0.5
-    Tree Height: 892
+    Tree Height: 335
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -258,7 +255,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /camera/depth/points
+        Value: /camera/depth/color/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -274,7 +271,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /camera/rgb/image_raw
+        Value: /camera/color/image_rect_raw
       Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
@@ -285,7 +282,7 @@ Visualization Manager:
       Axis: Z
       Channel Name: intensity
       Class: rviz_default_plugins/LaserScan
-      Color: 255; 255; 0 
+      Color: 255; 255; 0
       Color Transformer: FlatColor
       Decay Time: 0
       Enabled: true
@@ -310,10 +307,162 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Alpha: 0.699999988079071
+      Binary representation: false
+      Binary threshold: 100
+      Class: rviz_default_plugins/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /map
+      Update Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /map_updates
+      Use Timestamp: false
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Filter (blacklist): ""
+      Filter (whitelist): ""
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        base_footprint:
+          Value: false
+        base_laser:
+          Value: false
+        base_link:
+          Value: true
+        camera_color_frame:
+          Value: false
+        camera_color_optical_frame:
+          Value: false
+        camera_depth_frame:
+          Value: false
+        camera_depth_optical_frame:
+          Value: false
+        camera_link:
+          Value: false
+        front_left_wheel_link:
+          Value: false
+        front_right_wheel_link:
+          Value: false
+        head_link0:
+          Value: false
+        head_link1:
+          Value: false
+        jedy/head_link1/camera:
+          Value: false
+        larm_link0:
+          Value: false
+        larm_link1:
+          Value: false
+        larm_link2:
+          Value: false
+        larm_link3:
+          Value: false
+        larm_link4:
+          Value: false
+        larm_link5:
+          Value: false
+        larm_link6:
+          Value: false
+        larm_link7:
+          Value: false
+        larm_link8:
+          Value: false
+        rarm_link0:
+          Value: false
+        rarm_link1:
+          Value: false
+        rarm_link2:
+          Value: false
+        rarm_link3:
+          Value: false
+        rarm_link4:
+          Value: false
+        rarm_link5:
+          Value: false
+        rarm_link6:
+          Value: false
+        rarm_link7:
+          Value: false
+        rarm_link8:
+          Value: false
+        real_base_link:
+          Value: false
+        rear_left_wheel_link:
+          Value: false
+        rear_right_wheel_link:
+          Value: false
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: false
+      Tree:
+        base_link:
+          base_footprint:
+            {}
+          base_laser:
+            {}
+          real_base_link:
+            front_left_wheel_link:
+              {}
+            front_right_wheel_link:
+              {}
+            head_link0:
+              head_link1:
+                camera_link:
+                  camera_color_frame:
+                    camera_color_optical_frame:
+                      {}
+                  camera_depth_frame:
+                    camera_depth_optical_frame:
+                      jedy/head_link1/camera:
+                        {}
+            larm_link0:
+              larm_link1:
+                larm_link2:
+                  larm_link3:
+                    larm_link4:
+                      larm_link5:
+                        larm_link6:
+                          larm_link7:
+                            {}
+                          larm_link8:
+                            {}
+            rarm_link0:
+              rarm_link1:
+                rarm_link2:
+                  rarm_link3:
+                    rarm_link4:
+                      rarm_link5:
+                        rarm_link6:
+                          rarm_link7:
+                            {}
+                          rarm_link8:
+                            {}
+            rear_left_wheel_link:
+              {}
+            rear_right_wheel_link:
+              {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: odom
+    Fixed Frame: base_link
     Frame Rate: 30
   Name: root
   Tools:
@@ -357,7 +506,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 5.7606520652771
+      Distance: 8.629669189453125
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -372,20 +521,20 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7497962117195129
+      Pitch: 1.129796028137207
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 2.593571186065674
+      Yaw: 3.178579330444336
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 2262
+  Height: 1131
   Hide Left Dock: false
   Hide Right Dock: false
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000005aa000007ccfc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b000000b200fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000070000004780000018600fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000004f4000003480000002800ffffff000000010000015d000007ccfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a005600690065007700730100000070000007cc0000013800fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e7c0000005efc0100000002fb0000000800540069006d0065010000000000000e7c0000047a00fffffffb0000000800540069006d006501000000000000045000000000000000000000075d000007cc00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000002f5000003a9fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003f00000219000000cc00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d006100670065010000025e0000018a0000001700ffffff000000010000015d000003a9fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003f000003a9000000a900fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073e0000005efc0100000002fb0000000800540069006d006501000000000000073e0000026f00fffffffb0000000800540069006d00650100000000000004500000000000000000000002e0000003a900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -394,6 +543,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 3708
-  X: 132
-  Y: 64
+  Width: 1854
+  X: 66
+  Y: 32
