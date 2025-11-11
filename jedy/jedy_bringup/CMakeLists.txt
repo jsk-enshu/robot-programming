@@ -27,6 +27,7 @@ install(
     scripts/scan_frame_changer.py
     scripts/imu_frame_changer.py
     scripts/virtual_atom_s3_gui.py
+    scripts/checkerboard_detector.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
