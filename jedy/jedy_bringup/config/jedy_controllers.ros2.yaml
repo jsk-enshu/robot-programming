@@ -5,8 +5,8 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    diff_drive_controller:
-      type: diff_drive_controller/DiffDriveController
+    mecanum_drive_controller:
+      type: mecanum_drive_controller/MecanumDriveController
 
     head_controller:
       type: joint_trajectory_controller/JointTrajectoryController
@@ -17,51 +17,35 @@ controller_manager:
     larm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-diff_drive_controller:
+mecanum_drive_controller:
   ros__parameters:
-    left_wheel_names: ["front_left_wheel_joint", "rear_left_wheel_joint"]
-    right_wheel_names: ["front_right_wheel_joint", "rear_right_wheel_joint"]
+    reference_timeout: 0.5
 
-    wheel_separation: 0.101
-    wheel_radius: 0.030083
+    front_left_wheel_command_joint_name: "front_left_wheel_joint"
+    front_right_wheel_command_joint_name: "front_right_wheel_joint"
+    rear_left_wheel_command_joint_name: "rear_left_wheel_joint"
+    rear_right_wheel_command_joint_name: "rear_right_wheel_joint"
 
-    wheel_separation_multiplier: 1.0
-    left_wheel_radius_multiplier: 1.0
-    right_wheel_radius_multiplier: 1.0
+    kinematics:
+      base_frame_offset: { x: 0.0, y: 0.0, theta: 0.0 }
+      wheels_radius: 0.030083
+      # Wheel positions from URDF real_base_link frame:
+      # front_right: x=-0.0505, y=-0.097, z= 0.0435
+      # front_left:  x= 0.0505, y=-0.097, z= 0.0435
+      # rear_right:  x=-0.0505, y=-0.097, z=-0.0435
+      # rear_left:   x= 0.0505, y=-0.097, z=-0.0435
+      # Track width (X): 0.101m, Wheelbase (Z): 0.087m
+      # Calculated: sqrt(lx^2 + ly^2) = sqrt(0.0505^2 + 0.0435^2) = 0.0666
+      sum_of_robot_center_projection_on_X_Y_axis: 0.0666  # Try sqrt method
 
-    publish_rate: 50.0
-    odom_frame_id: odom
-    base_frame_id: base_link
-    pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+    base_frame_id: "base_link"
+    odom_frame_id: "odom"
+    enable_odom_tf: false  # Set to false only when using robot_localization EKF
     twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
-    open_loop: true
-    enable_odom_tf: true
+    pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
 
-    cmd_vel_timeout: 0.5
-    #publish_limited_velocity: true
-    use_stamped_vel: false
-    #velocity_rolling_window_size: 10
-
-    # Velocity and acceleration limits
-    # Whenever a min_* is unspecified, default to -max_*
-    linear.x.has_velocity_limits: true
-    linear.x.has_acceleration_limits: true
-    linear.x.has_jerk_limits: false
-    linear.x.max_velocity: 1.0
-    linear.x.min_velocity: -1.0
-    linear.x.max_acceleration: 1.0
-    linear.x.max_jerk: 0.0
-    linear.x.min_jerk: 0.0
-
-    angular.z.has_velocity_limits: true
-    angular.z.has_acceleration_limits: true
-    angular.z.has_jerk_limits: false
-    angular.z.max_velocity: 1.0
-    angular.z.min_velocity: -1.0
-    angular.z.max_acceleration: 1.0
-    angular.z.min_acceleration: -1.0
-    angular.z.max_jerk: 0.0
-    angular.z.min_jerk: 0.0
+    # Subscribe to /cmd_vel topic directly (not chained mode)
+    tf_frame_prefix_enable: false
 
 head_controller:
   ros__parameters:

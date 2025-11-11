@@ -88,10 +88,10 @@ def generate_launch_description():
         output='screen',
     )
 
-    diff_drive_controller_spawner = Node(
+    mecanum_drive_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['diff_drive_controller', '--controller-manager', '/controller_manager'],
+        arguments=['mecanum_drive_controller', '--controller-manager', '/controller_manager'],
         output='screen',
     )
 
@@ -122,9 +122,9 @@ def generate_launch_description():
         actions=[joint_state_broadcaster_spawner]
     )
 
-    delayed_diff_drive_controller = TimerAction(
+    delayed_mecanum_drive_controller = TimerAction(
         period=7.0,
-        actions=[diff_drive_controller_spawner]
+        actions=[mecanum_drive_controller_spawner]
     )
 
     delayed_head_controller = TimerAction(
@@ -199,20 +199,23 @@ def generate_launch_description():
         output='screen'
     )
 
-    # cmd_vel_relay removed - DiffDrive plugin accepts regular Twist on /cmd_vel
-    # cmd_vel_relay = Node(
-    #     package='jedy_bringup',
-    #     executable='twist_stamper.py',
-    #     output='screen',
-    #     parameters=[
-    #         {'use_sim_time': use_sim_time},
-    #         {'frame_id': 'base_link'}
-    #     ],
-    #     remappings=[
-    #         ('cmd_vel_in', '/cmd_vel'),
-    #         ('cmd_vel_out', '/mecanum_drive_controller/reference'),
-    #     ]
-    # )
+    # cmd_vel relay for mecanum_drive_controller (converts Twist to TwistStamped)
+    cmd_vel_relay = Node(
+        package='topic_tools',
+        executable='relay',
+        arguments=['/cmd_vel', '/mecanum_drive_controller/reference'],
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
+
+    # TF relay for mecanum_drive_controller odometry
+    odom_tf_relay = Node(
+        package='topic_tools',
+        executable='relay',
+        arguments=['/mecanum_drive_controller/tf_odometry', '/tf'],
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
 
     # LiDAR bridge - bridges Gazebo LiDAR to ROS2 with BEST_EFFORT QoS for sensor data
     lidar_bridge = Node(
@@ -301,12 +304,14 @@ def generate_launch_description():
         camera_tf_publisher,
         base_footprint_publisher,  # Add base_footprint frame for Nav2
         point_cloud_xyzrgb,
+        cmd_vel_relay,
+        odom_tf_relay,
         lidar_bridge,
         scan_frame_changer,
         imu_bridge,
         imu_frame_changer,
         delayed_joint_state_broadcaster,
-        delayed_diff_drive_controller,
+        delayed_mecanum_drive_controller,
         delayed_head_controller,
         delayed_rarm_controller,
         delayed_larm_controller,
