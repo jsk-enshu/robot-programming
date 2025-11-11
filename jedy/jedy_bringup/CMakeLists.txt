@@ -26,7 +26,6 @@ install(
     scripts/send_joint_position.py
     scripts/send_joint_position_action.py
     scripts/scan_frame_changer.py
-    scripts/imu_frame_changer.py
     scripts/virtual_atom_s3_gui.py
     scripts/checkerboard_detector.py
     scripts/bridge_marker.py
