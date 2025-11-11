@@ -37,6 +37,11 @@
   <exec_depend>zstd_image_transport</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>rviz_2d_overlay_msgs</exec_depend>
+
+  <!-- Python dependencies for robocrew_image_to_cmd_vel.py -->
+  <exec_depend>python3-opencv</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
