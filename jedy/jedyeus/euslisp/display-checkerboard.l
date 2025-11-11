@@ -2,7 +2,7 @@
 
 ;; robotの初期化
 (load "package://kxreus/euslisp/kxr-interface.l")
-(load "package://jedy_bringup/euslisp/jedy-interface.l")
+(load "package://jedyeus/euslisp/jedy-interface.l")
 (jedy-init)
 
 ;; ObjectDetection型トピックを使うため
