@@ -158,13 +158,32 @@ def generate_launch_description():
             '/camera/image@sensor_msgs/msg/Image@gz.msgs.Image',
             '/camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
             '/camera/depth_image@sensor_msgs/msg/Image@gz.msgs.Image',
+            '/camera/depth_camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
         ],
         output='screen',
         remappings=[
-            ('/camera/image', '/camera/rgb/image_raw'),
-            ('/camera/camera_info', '/camera/rgb/camera_info'),
-            ('/camera/depth_image', '/camera/depth/image_raw'),
+            ('/camera/image', '/camera/color/image_rect_raw'),
+            ('/camera/camera_info', '/camera/color/camera_info'),
+            ('/camera/depth_image', '/camera/depth/image_rect_raw'),
+            ('/camera/depth_camera_info', '/camera/depth/camera_info'),
         ]
+    )
+
+    # Relay depth topics to aligned_depth_to_color (same data in simulation)
+    aligned_depth_relay = Node(
+        package='topic_tools',
+        executable='relay',
+        arguments=['/camera/depth/image_rect_raw', '/camera/aligned_depth_to_color/image_raw'],
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
+
+    aligned_depth_info_relay = Node(
+        package='topic_tools',
+        executable='relay',
+        arguments=['/camera/depth/camera_info', '/camera/aligned_depth_to_color/camera_info'],
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}]
     )
 
     # Point cloud generation from RGB + Depth (like ROS1 openni2.launch)
@@ -174,10 +193,11 @@ def generate_launch_description():
         output='screen',
         parameters=[{'use_sim_time': use_sim_time}],
         remappings=[
-            ('rgb/image_rect_color', '/camera/rgb/image_raw'),
-            ('rgb/camera_info', '/camera/rgb/camera_info'),
-            ('depth_registered/image_rect', '/camera/depth/image_raw'),
-            ('points', '/camera/depth/points'),
+            ('rgb/image_rect_color', '/camera/color/image_rect_raw'),
+            ('rgb/camera_info', '/camera/color/camera_info'),
+            ('depth_registered/image_rect', '/camera/depth/image_rect_raw'),
+            ('depth_registered/camera_info', '/camera/depth/camera_info'),
+            ('points', '/camera/depth/color/points'),
         ]
     )
 
@@ -294,6 +314,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         SetEnvironmentVariable(name='GZ_SIM_RESOURCE_PATH', value=gz_resource_path),
+        SetEnvironmentVariable(name='GZ_FILE_PATH', value=model_path),
         SetEnvironmentVariable(name='DISPLAY', value=':1'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         gazebo,
@@ -301,6 +322,8 @@ def generate_launch_description():
         robot_state_publisher,
         spawn_entity,
         camera_bridge,
+        aligned_depth_relay,
+        aligned_depth_info_relay,
         camera_tf_publisher,
         base_footprint_publisher,  # Add base_footprint frame for Nav2
         point_cloud_xyzrgb,
