@@ -20,6 +20,7 @@ install(
 
 install(
   PROGRAMS
+    scripts/activate_slam_node.py
     scripts/track_box_to_cmd_vel_0.py
     scripts/track_box_to_cmd_vel_1.py
     scripts/send_joint_position.py
