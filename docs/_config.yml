@@ -1,0 +1,30 @@
+# Jupyter Book configuration
+title: ロボットプログラミング演習
+author: JSK Enshu
+copyright: "2025"
+logo: ""
+
+execute:
+  execute_notebooks: off
+
+repository:
+  url: https://github.com/jsk-enshu/robot-programming
+  path_to_book: docs
+  branch: master
+
+html:
+  use_issues_button: false
+  use_repository_button: true
+  use_edit_page_button: false
+
+parse:
+  myst_enable_extensions:
+    - colon_fence
+
+sphinx:
+  extra_extensions:
+    - sphinx_copybutton
+  config:
+    copybutton_prompt_text: "^(\\$ |irteusgl\\$ )"
+    copybutton_prompt_is_regexp: true
+    copybutton_remove_prompts: true
