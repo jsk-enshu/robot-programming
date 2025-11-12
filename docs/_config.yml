@@ -62,10 +62,12 @@ sphinx:
       table: "表 %s"
       code-block: "リスト %s"
       section: "節 %s"
-    # 画像ディレクトリとカスタムアセットを静的ファイルとして扱う
+    # カスタムアセットを静的ファイルとして扱う
     html_static_path:
-      - fig
       - _static
+    # 画像・動画ディレクトリをビルド出力に直接コピー
+    html_extra_path:
+      - fig
     # カスタムJavaScriptファイルを追加
     html_js_files:
       - custom-copybutton.js
