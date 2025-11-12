@@ -46,6 +46,45 @@ $ catkin build jedyeus
 [ros1_bridge](tips/ros1-bridge.md)を参考にしてros1 bridgeをインストールする．
 
 
+## トラブルシューティング
+
+環境構築時に問題が発生した場合は，以下の点を確認する．
+
+### catkin build jedyeusがエラーになる
+
+`catkin build jedyeus`を実行した際に以下のエラーが表示される場合がある．
+
+```{code-block} console
+[build] Error: Given package 'jedyeus' is not in the workspace and pattern does not match any package
+```
+
+**原因：** `COLCON_IGNORE`ファイルが存在するため，catkin buildがパッケージをスキップしている．
+
+**解決方法：**
+
+```{code-block} console
+$ rm ~/ros_ws/src/robot-programming/jedy/jedyeus/COLCON_IGNORE
+$ cd ~/ros_ws
+$ catkin build jedyeus
+```
+
+### catkin-toolsのバージョンが古い
+
+catkin-toolsのバージョンが0.9.4の場合，上記の問題が発生する可能性がある．バージョン0.9.5にアップグレードすることを推奨する．
+
+```{code-block} console
+$ sudo apt remove catkin-tools
+$ sudo apt install python3-catkin-tools --reinstall
+$ catkin --version
+```
+
+`catkin_tools 0.9.5`と表示されれば成功である．
+
+### より詳細なトラブルシューティング
+
+その他の問題や詳細な解決手順については，[環境構築トラブルシューティング](tips/troubleshooting.md)を参照する．
+
+
 ## 次のステップ
 
 環境構築が完了したら，以下の演習に進む：
