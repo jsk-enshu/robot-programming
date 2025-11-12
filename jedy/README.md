@@ -53,7 +53,7 @@ mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
 
 # Clone this repository
-git clone -b ros2 https://github.com/iory/robot-programming.git
+git clone https://github.com/jsk-enshu/robot-programming.git
 
 # Import dependencies using vcs (optional - imports opencv_apps and other packages)
 cd ~/ros2_ws
