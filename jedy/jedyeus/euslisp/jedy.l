@@ -879,8 +879,8 @@
            (instance rotational-joint :init
                      :name "rarm_gripper_joint"
                      :parent-link rarm_link6_lk :child-link rarm_link7_lk
-                     :axis #f(1.0000000000000000 0.0000000000000000 0.0000000000000000)
-                     :min -89.95437383553924 :max 28.64788975654116
+                     :axis #f(-1.0000000000000000 0.0000000000000000 0.0000000000000000)
+                     :min -28.64788975654116 :max 89.95437383553924
                      :max-joint-velocity 6.55
                      :max-joint-torque 0.48))
 
@@ -889,8 +889,8 @@
            (instance rotational-joint :init
                      :name "rarm_mimic_gripper_joint"
                      :parent-link rarm_link6_lk :child-link rarm_link8_lk
-                     :axis #f(1.0000000000000000 0.0000000000000000 0.0000000000000000)
-                     :min -28.64788975654116 :max 89.95437383553924
+                     :axis #f(-1.0000000000000000 0.0000000000000000 0.0000000000000000)
+                     :min -89.95437383553924 :max 28.64788975654116
                      :max-joint-velocity 6.55
                      :max-joint-torque 0.48))
 

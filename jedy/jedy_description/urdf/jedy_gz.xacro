@@ -564,18 +564,18 @@
     <origin xyz="0.0 0.0 -0.021" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="rarm_gripper_joint" type="revolute">
-    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="0.5"/>
+    <limit effort="0.48" velocity="6.55" lower="-0.5" upper="1.57"/>
     <parent link="rarm_link6"/>
     <child link="rarm_link7"/>
-    <axis xyz="1. 0. 0."/>
+    <axis xyz="-1. 0. 0."/>
     <origin xyz="0.0 -0.011737 -0.056303" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="rarm_mimic_gripper_joint" type="revolute">
-    <limit effort="0.48" velocity="6.55" lower="-0.5" upper="1.57"/>
+    <limit effort="0.48" velocity="6.55" lower="-1.57" upper="0.5"/>
     <mimic joint="rarm_gripper_joint" multiplier="-1.0" offset="0.0"/>
     <parent link="rarm_link6"/>
     <child link="rarm_link8"/>
-    <axis xyz="1. 0. 0."/>
+    <axis xyz="-1. 0. 0."/>
     <origin xyz="0.0 0.011741 -0.056303" rpy="0.0 -0.0 0.0"/>
   </joint>
   <joint name="larm_joint0" type="revolute">
