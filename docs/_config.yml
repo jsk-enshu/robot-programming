@@ -1,30 +1,112 @@
-# Jupyter Book configuration
-title: ロボットプログラミング演習
-author: JSK Enshu
-copyright: "2025"
-logo: ""
-
+# プロジェクトの基本設定
+title: 知能ロボット行動プログラミング演習 2025
+author: Iori Yanokura
+logo: "fig/logo_with_text.png"
+number_figures: true
+exclude_patterns:
+  - .venv/**
+  - .git/**
+  - __pycache__/**
+  - "*.pyc"
+  - _build/**
+  - _static/**
+  - "*.bak"
+  - ".claude/**"
+  - "test-*.md"
 execute:
-  execute_notebooks: off
-
+  execute_notebooks: "off"
 repository:
   url: https://github.com/jsk-enshu/robot-programming
   path_to_book: docs
   branch: master
 
 html:
+  theme: "sphinx_book_theme"
+  baseurl: ""
+  use_repository_button: false
   use_issues_button: false
-  use_repository_button: true
   use_edit_page_button: false
 
 parse:
   myst_enable_extensions:
     - colon_fence
+    - dollarmath
+    - linkify
+    - substitution
+    - tasklist
 
 sphinx:
   extra_extensions:
     - sphinx_copybutton
+    - sphinx_exercise
+    - sphinxcontrib.images
   config:
+    # コピーボタンの設定：$とirteusgl$をプロンプトとして除外
     copybutton_prompt_text: "^(\\$ |irteusgl\\$ )"
     copybutton_prompt_is_regexp: true
+    copybutton_only_copy_prompt_lines: false
     copybutton_remove_prompts: true
+    copybutton_line_continuation_character: ""
+    # 画像のライトボックス設定
+    images_config:
+      backend: LightBox2
+      default_image_width: 100%
+      default_image_height: auto
+      default_group: default
+      show_caption: true
+      override_image_directive: true
+    # sphinx-exerciseの設定：exerciseの名称を「チェックポイント」に変更
+    numfig_format:
+      exercise: "チェックポイント %s"
+      figure: "図 %s"
+      table: "表 %s"
+      code-block: "リスト %s"
+      section: "節 %s"
+    # 画像ディレクトリとカスタムアセットを静的ファイルとして扱う
+    html_static_path:
+      - fig
+      - _static
+    # カスタムJavaScriptファイルを追加
+    html_js_files:
+      - custom-copybutton.js
+    html_theme_options:
+      repository_url: https://github.com/jsk-enshu/robot-programming
+      use_repository_button: false
+      use_download_button: true
+      use_fullscreen_button: true
+      show_toc_level: 4  # サイドバーに第4レベルの見出しまで表示（チェックポイント含む）
+      toc_title: "目次"
+    # Thebeを無効化してJavaScriptエラーを防ぐ
+    thebe_config:
+      use_thebe_lite: false
+    # LaTeXエンジンの設定 (日本語対応)
+    latex_engine: lualatex
+    latex_elements:
+      papersize: "a4paper"
+      pointsize: "10pt"
+      preamble: |
+        % LuaLaTeXで日本語を扱うための設定
+        \usepackage{luatexja}
+        \usepackage[ipaex]{luatexja-preset}
+
+        % 図や表の配置を改善
+        \usepackage{float}
+
+        % ucharclassesはXeTeX専用なので無効化
+        \let\OLDusepackage\usepackage
+        \renewcommand{\usepackage}[2][]{%
+          \def\temp{#2}%
+          \def\uchar{ucharclasses}%
+          \ifx\temp\uchar
+            % ucharclassesを無視
+          \else
+            \OLDusepackage[#1]{#2}%
+          \fi
+        }
+    # LaTeXドキュメントクラスの設定
+    latex_documents:
+      - - index
+        - "lecture.tex"
+        - "知能ロボット行動プログラミング演習"
+        - "Iori Yanokura"
+        - "manual"
