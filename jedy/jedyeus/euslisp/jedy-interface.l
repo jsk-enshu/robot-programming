@@ -2,6 +2,7 @@
 
 (ros::roseus-add-msgs "std_msgs")
 (ros::roseus-add-msgs "sensor_msgs")
+(ros::roseus-add-msgs "geometry_msgs")
 (load "package://kxreus/euslisp/kxr-interface.l")
 (load "package://jedyeus/euslisp/jedy.l")
 
@@ -21,7 +22,7 @@
 
 (defclass jedy-interface
   :super kxr-interface
-  :slots (atom-s3-button-click-count atom-s3-additional-info-topic-name imu-raw-msg))
+  :slots (atom-s3-button-click-count atom-s3-additional-info-topic-name imu-raw-msg cmd-vel-topic-name))
 
 (defmethod jedy-interface
   (:init (robot &rest args &key (namespace nil)
@@ -72,6 +73,9 @@
    (ros::subscribe (if namespace (format nil "~A/imu_publisher/imu" namespace)
                        "/imu_publisher/imu") sensor_msgs::Imu
                        #'send self :atom-s3-imu-callback :groupname groupname)
+   (setq cmd-vel-topic-name (if namespace (format nil "~A/mecanum_drive_controller/reference" namespace)
+                                          "/mecanum_drive_controller/reference"))
+   (ros::advertise cmd-vel-topic-name geometry_msgs::TwistStamped 1)
    (ros::ros-info "Initializing jedy-interface"))
   (:state (&rest args) ;; overwrite robot-interface
           (case (car args)
@@ -156,6 +160,45 @@
        (send self :larm-controller)
        (send self :rarm-controller)
        (send self :head-controller)))
+  (:go-velocity
+   (x y d ;; [m/sec] [m/sec] [rad/sec]
+    &optional (msec 1000) ;; msec is total animation time [msec]
+    &key (stop t) (wait t))
+   "Publish TwistStamped messages to mecanum_drive_controller/reference.
+    x: linear velocity in x direction [m/sec]
+    y: linear velocity in y direction [m/sec]
+    d: angular velocity around z axis [rad/sec]
+    msec: duration to send velocity commands [msec]
+    stop: if t, send zero velocity at the end
+    wait: if t, block until duration completes"
+   (ros::rate 100)
+   (let ((start-time (ros::time-now))
+         (twist-msg (instance geometry_msgs::TwistStamped :init)))
+     (while (and (ros::ok)
+                 (< (* 1000.0 (send (ros::time- (ros::time-now) start-time) :to-sec)) msec))
+       (send twist-msg :header :stamp (ros::time-now))
+       (send twist-msg :header :frame_id "base_link")
+       (send twist-msg :twist :linear :x x)
+       (send twist-msg :twist :linear :y y)
+       (send twist-msg :twist :linear :z 0.0)
+       (send twist-msg :twist :angular :x 0.0)
+       (send twist-msg :twist :angular :y 0.0)
+       (send twist-msg :twist :angular :z d)
+       (ros::publish cmd-vel-topic-name twist-msg)
+       (when wait
+         (send self :spin-once)
+         (ros::sleep)))
+     (when stop
+       (send twist-msg :header :stamp (ros::time-now))
+       (send twist-msg :header :frame_id "base_link")
+       (send twist-msg :twist :linear :x 0.0)
+       (send twist-msg :twist :linear :y 0.0)
+       (send twist-msg :twist :linear :z 0.0)
+       (send twist-msg :twist :angular :x 0.0)
+       (send twist-msg :twist :angular :y 0.0)
+       (send twist-msg :twist :angular :z 0.0)
+       (ros::publish cmd-vel-topic-name twist-msg))
+     t))
   )
 
 
