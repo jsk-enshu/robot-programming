@@ -137,7 +137,7 @@
 	   (cons :action-type control_msgs::FollowJointTrajectoryAction)
 	   (cons :joint-names (list "larm_joint0" "larm_joint1" "larm_joint2"
                               "larm_joint3" "larm_joint4" "larm_joint5"
-                              "larm_joint6" ;; "larm_gripper_joint"
+                              "larm_joint6" "larm_gripper_joint"
 			      )))))
   (:rarm-controller
    ()
@@ -148,7 +148,7 @@
 	   (cons :action-type control_msgs::FollowJointTrajectoryAction)
 	   (cons :joint-names (list "rarm_joint0" "rarm_joint1" "rarm_joint2"
                               "rarm_joint3" "rarm_joint4" "rarm_joint5"
-                              "rarm_joint6" ;; "rarm_gripper_joint"
+                              "rarm_joint6" "rarm_gripper_joint"
 			      )))))
   (:default-controller
       ()
