@@ -24,7 +24,7 @@ $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r
-$ colcon build --symlink-install jedy_bringup
+$ colcon build --symlink-install --packages-select jedy_bringup jedy_description
 ```
 
 ### ROS 1 セットアップ
