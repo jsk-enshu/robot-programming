@@ -1,2 +1,4 @@
-jupyter-book>=1.0.0
+jupyter-book>=1.0.0,<2.0.0
 sphinx-copybutton
+sphinx-exercise
+sphinxcontrib-images
