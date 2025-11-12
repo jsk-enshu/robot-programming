@@ -19,6 +19,8 @@ parts:
       title: デバッグ方法
     - file: tips/terminal-control-keys
       title: ターミナルの制御キー
+    - file: tips/troubleshooting.md
+      title: トラブルシューティング
   - caption: Tips・付録（1日目）
     chapters:
     - file: tips/ros-one-installation
