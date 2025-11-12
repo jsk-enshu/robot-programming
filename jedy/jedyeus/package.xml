@@ -22,6 +22,7 @@
   <exec_depend>kxr_models</exec_depend>
   <exec_depend>pr2eus</exec_depend>
   <exec_depend>roseus</exec_depend>
+  <exec_depend>kxreus</exec_depend>
   <!-- ALPHABETICAL ORDER -->
 
 </package>
