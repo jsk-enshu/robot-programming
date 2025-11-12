@@ -34,12 +34,19 @@ ros::NodeHandle  nh;
 // HC-SR04 Ultrasonic sensor
 // https://create.arduino.cc/projecthub/Isaac100/getting-started-with-the-hc-sr04-ultrasonic-sensor-036380
 #include <sensor_msgs/Range.h>
+#include <std_msgs/Bool.h>
 
 #define TRIG_PIN  9
 #define ECHO_PIN 10
 sensor_msgs::Range range_msg;
 
 ros::Publisher range_pub("range", &range_msg);
+
+// LED state message
+std_msgs::Bool led_state_msg;
+
+// Publisher for LED state
+ros::Publisher led_state_pub("led/state", &led_state_msg);
 
 /*
  * range_setup() : setup PIN and msg for ultrasonic, see HC-SR04 data sheet.
@@ -143,6 +150,8 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(2, OUTPUT);
 
+  nh.advertise(led_state_pub);
+
   // setup Ultrasonic sensor
   range_setup();
 
@@ -162,6 +171,8 @@ void loop()
   // blink LED every 0.5 sec
   if ( (now - led_timer) > 500 ) {
     digitalWrite(LED_BUILTIN, (led_count%2==0)?HIGH:LOW);
+    led_state_msg.data = (led_count%2==0)?true:false;
+    led_state_pub.publish(&led_state_msg);
     digitalWrite(2, (led_count%2==0)?HIGH:LOW);
     led_count++;
     led_timer = now;

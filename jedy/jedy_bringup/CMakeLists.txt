@@ -20,11 +20,15 @@ install(
 
 install(
   PROGRAMS
+    scripts/activate_slam_node.py
     scripts/track_box_to_cmd_vel_0.py
     scripts/track_box_to_cmd_vel_1.py
     scripts/send_joint_position.py
     scripts/send_joint_position_action.py
     scripts/scan_frame_changer.py
+    scripts/virtual_atom_s3_gui.py
+    scripts/checkerboard_detector.py
+    scripts/bridge_marker.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

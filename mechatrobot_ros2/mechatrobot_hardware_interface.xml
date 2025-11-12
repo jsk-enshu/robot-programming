@@ -1,0 +1,9 @@
+<library path="mechatrobot_hardware_interface">
+  <class name="mechatrobot_hardware/MechatrobotSystemHardware"
+         type="mechatrobot_hardware::MechatrobotSystemHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Hardware interface for Mechatrobot that communicates via /motor*/command and /motor*/position topics
+    </description>
+  </class>
+</library>

@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<robot name="robot">
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.053 0.082 0.01"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="breadboard_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.053 0.082 0.01"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <joint name="base_to_breadboard" type="fixed">
+    <parent link="base_link"/>
+    <child link="breadboard_link"/>
+    <origin xyz="0 0 0.005" rpy="0 0 0"/>
+  </joint>
+
+  <link name="motor_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 1.57"/>
+      <geometry>
+        <mesh filename="package://mechatrobot_ros2/urdf/28BYJ-48.STL" scale="0.001 0.001 0.001" />
+      </geometry>
+      <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="link1">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.01 0.1 0.005"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="range_sensor">
+    <visual>
+      <origin xyz="0 0 0" rpy="1.57 0 1.57" />
+      <geometry>
+        <box size="0.045 0.020 0.002"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 1 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="range_sensor_left_transducer">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 1.57 0" />
+      <geometry>
+        <cylinder radius="0.008" length="0.012"/>
+      </geometry>
+      <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="range_sensor_right_transducer">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 1.57 0" />
+      <geometry>
+        <cylinder radius="0.008" length="0.012"/>
+      </geometry>
+      <material name="silver">
+        <color rgba="0.75 0.75 0.75 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="arduino_nano">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.045 0.018 0.005"/>
+      </geometry>
+      <material name="arduino_red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <link name="led">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.0025" length="0.002"/>
+      </geometry>
+      <material name="led_off">
+        <color rgba="0.3 0.3 0.3 1"/>
+      </material>
+    </visual>
+  </link>
+
+  <joint name="base_to_motor" type="fixed">
+    <parent link="breadboard_link" />
+    <child link="motor_link" />
+    <origin xyz="0 0.08 0" rpy="0 0 0" />
+  </joint>
+
+  <joint name="base_to_sensor" type="fixed">
+    <parent link="breadboard_link" />
+    <child link="range_sensor" />
+    <origin xyz="0.02 -0.03 0.02" />
+  </joint>
+
+  <joint name="sensor_to_left_transducer" type="fixed">
+    <parent link="range_sensor" />
+    <child link="range_sensor_left_transducer" />
+    <origin xyz="0.006 0.0166 0" rpy="0 0 0" />
+  </joint>
+
+  <joint name="sensor_to_right_transducer" type="fixed">
+    <parent link="range_sensor" />
+    <child link="range_sensor_right_transducer" />
+    <origin xyz="0.006 -0.0166 0" rpy="0 0 0" />
+  </joint>
+
+  <joint name="breadboard_to_arduino" type="fixed">
+    <parent link="breadboard_link" />
+    <child link="arduino_nano" />
+    <origin xyz="0 0.022 0.0075" rpy="0 0 1.57" />
+  </joint>
+
+  <joint name="arduino_to_led" type="fixed">
+    <parent link="arduino_nano" />
+    <child link="led" />
+    <origin xyz="0.01 0 0.0035" rpy="0 0 0" />
+  </joint>
+
+  <joint name="joint1" type="revolute">
+    <axis xyz="0 0 -1"/>
+    <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="2.0"/>
+    <origin xyz="-0.008 0 0.03" />
+    <parent link="motor_link" />
+    <child link="link1" />
+  </joint>
+
+  <!-- ros2_control hardware interface -->
+  <ros2_control name="MechatrobotHardwareSystem" type="system">
+    <hardware>
+      <plugin>mechatrobot_hardware/MechatrobotSystemHardware</plugin>
+    </hardware>
+    <joint name="joint1">
+      <command_interface name="position">
+        <param name="min">-3.14</param>
+        <param name="max">3.14</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+      <state_interface name="effort"/>
+    </joint>
+  </ros2_control>
+
+</robot>
