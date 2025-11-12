@@ -1,6 +1,6 @@
 #!/usr/bin/env roseus
 
-(load "package://jedy_bringup/euslisp/jedy-interface.l")
+(load "package://jedyeus/euslisp/jedy-interface.l")
 (ros::roseus "teleoperation_node")
 
 (defun jedy-teleop-init (&key
