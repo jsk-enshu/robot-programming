@@ -71,8 +71,8 @@
                        "/atom_s3_button_state") std_msgs::Int32
                        #'send self :atom-s3-button-state-callback :groupname groupname)
    (setq imu-raw-msg (instance sensor_msgs::Imu :init))
-   (ros::subscribe (if namespace (format nil "~A/imu_publisher/imu" namespace)
-                       "/imu_publisher/imu") sensor_msgs::Imu
+   (ros::subscribe (if namespace (format nil "/imu" namespace)
+                       "/imu") sensor_msgs::Imu
                        #'send self :atom-s3-imu-callback :groupname groupname)
    (setq cmd-vel-topic-name (if namespace (format nil "~A/mecanum_drive_controller/reference" namespace)
                                           "/mecanum_drive_controller/reference"))
