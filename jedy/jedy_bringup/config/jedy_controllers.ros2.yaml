@@ -84,6 +84,7 @@ rarm_controller:
       - rarm_joint4
       - rarm_joint5
       - rarm_joint6
+      - rarm_gripper_joint
     command_interfaces:
       - position
     state_interfaces:
@@ -116,6 +117,9 @@ rarm_controller:
       rarm_joint6:
         trajectory: 0.5
         goal: 0.1
+      rarm_gripper_joint:
+        trajectory: 0.5
+        goal: 0.1
 
 larm_controller:
   ros__parameters:
@@ -127,6 +131,7 @@ larm_controller:
       - larm_joint4
       - larm_joint5
       - larm_joint6
+      - larm_gripper_joint
     command_interfaces:
       - position
     state_interfaces:
@@ -157,5 +162,8 @@ larm_controller:
         trajectory: 0.5
         goal: 0.1
       larm_joint6:
+        trajectory: 0.5
+        goal: 0.1
+      larm_gripper_joint:
         trajectory: 0.5
         goal: 0.1
