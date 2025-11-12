@@ -1,6 +1,6 @@
 #!/usr/bin/env roseus
 
-(load "package://jedy_bringup/euslisp/jedy-interface.l")
+(load "package://jedyeus/euslisp/jedy-interface.l")
 (jedy-init)
 
 ;; 利用可能なjointnameをprint

@@ -4,7 +4,7 @@
 (ros::load-ros-manifest "jsk_recognition_msgs")
 (ros::load-ros-manifest "apriltag_ros")
 
-(load "package://jedy_bringup/euslisp/jedy-interface.l")
+(load "package://jedyeus/euslisp/jedy-interface.l")
 (ros::roseus "sample_apriltag_pick")
 (jedy-init :without-ri nil)
 

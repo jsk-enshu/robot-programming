@@ -1,6 +1,6 @@
 #!/usr/bin/env roseus
 
-(load "package://jedy_bringup/euslisp/jedy.l")
+(load "package://jedyeus/euslisp/jedy.l")
 (setq *jedy* (jedy))
 (load "models/arrow-object.l")
 (setq *rarm-end-coords-axes* (arrow))
