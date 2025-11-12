@@ -28,6 +28,7 @@ def generate_launch_description():
 
     model_file = os.path.join(pkg_jedy_description, 'urdf', 'jedy_gz.xacro')
     controllers_config = os.path.join(pkg_jedy_bringup, 'config', 'jedy_controllers.ros2.yaml')
+    ekf_config = os.path.join(pkg_jedy_bringup, 'config', 'ekf.yaml')
 
     # Gazebo with sensors enabled
     world_file = os.path.join(pkg_jedy_bringup, 'worlds', 'empty.world')
@@ -88,10 +89,10 @@ def generate_launch_description():
         output='screen',
     )
 
-    diff_drive_controller_spawner = Node(
+    mecanum_drive_controller_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['diff_drive_controller', '--controller-manager', '/controller_manager'],
+        arguments=['mecanum_drive_controller', '--controller-manager', '/controller_manager'],
         output='screen',
     )
 
@@ -122,9 +123,9 @@ def generate_launch_description():
         actions=[joint_state_broadcaster_spawner]
     )
 
-    delayed_diff_drive_controller = TimerAction(
+    delayed_mecanum_drive_controller = TimerAction(
         period=7.0,
-        actions=[diff_drive_controller_spawner]
+        actions=[mecanum_drive_controller_spawner]
     )
 
     delayed_head_controller = TimerAction(
@@ -158,13 +159,32 @@ def generate_launch_description():
             '/camera/image@sensor_msgs/msg/Image@gz.msgs.Image',
             '/camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
             '/camera/depth_image@sensor_msgs/msg/Image@gz.msgs.Image',
+            '/camera/depth_camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
         ],
         output='screen',
         remappings=[
-            ('/camera/image', '/camera/rgb/image_raw'),
-            ('/camera/camera_info', '/camera/rgb/camera_info'),
-            ('/camera/depth_image', '/camera/depth/image_raw'),
+            ('/camera/image', '/camera/color/image_rect_raw'),
+            ('/camera/camera_info', '/camera/color/camera_info'),
+            ('/camera/depth_image', '/camera/depth/image_rect_raw'),
+            ('/camera/depth_camera_info', '/camera/depth/camera_info'),
         ]
+    )
+
+    # Relay depth topics to aligned_depth_to_color (same data in simulation)
+    aligned_depth_relay = Node(
+        package='topic_tools',
+        executable='relay',
+        arguments=['/camera/depth/image_rect_raw', '/camera/aligned_depth_to_color/image_raw'],
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
+
+    aligned_depth_info_relay = Node(
+        package='topic_tools',
+        executable='relay',
+        arguments=['/camera/depth/camera_info', '/camera/aligned_depth_to_color/camera_info'],
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}]
     )
 
     # Point cloud generation from RGB + Depth (like ROS1 openni2.launch)
@@ -174,21 +194,14 @@ def generate_launch_description():
         output='screen',
         parameters=[{'use_sim_time': use_sim_time}],
         remappings=[
-            ('rgb/image_rect_color', '/camera/rgb/image_raw'),
-            ('rgb/camera_info', '/camera/rgb/camera_info'),
-            ('depth_registered/image_rect', '/camera/depth/image_raw'),
-            ('points', '/camera/depth/points'),
+            ('rgb/image_rect_color', '/camera/color/image_rect_raw'),
+            ('rgb/camera_info', '/camera/color/camera_info'),
+            ('depth_registered/image_rect', '/camera/depth/image_rect_raw'),
+            ('depth_registered/camera_info', '/camera/depth/camera_info'),
+            ('points', '/camera/depth/color/points'),
         ]
     )
 
-    # Static transform to connect Gazebo's camera frame to optical frame
-    # RGB and depth images should be published in camera_*_optical_frame
-    camera_tf_publisher = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        arguments=['0', '0', '0', '0', '0', '0', 'camera_depth_optical_frame', 'jedy/head_link1/camera'],
-        output='screen'
-    )
 
     # base_footprint frame - required by Nav2 collision monitor
     # This is the projection of base_link onto the ground plane
@@ -199,20 +212,24 @@ def generate_launch_description():
         output='screen'
     )
 
-    # cmd_vel_relay removed - DiffDrive plugin accepts regular Twist on /cmd_vel
-    # cmd_vel_relay = Node(
-    #     package='jedy_bringup',
-    #     executable='twist_stamper.py',
-    #     output='screen',
-    #     parameters=[
-    #         {'use_sim_time': use_sim_time},
-    #         {'frame_id': 'base_link'}
-    #     ],
-    #     remappings=[
-    #         ('cmd_vel_in', '/cmd_vel'),
-    #         ('cmd_vel_out', '/mecanum_drive_controller/reference'),
-    #     ]
-    # )
+    # cmd_vel relay for mecanum_drive_controller (converts Twist to TwistStamped)
+    cmd_vel_relay = Node(
+        package='topic_tools',
+        executable='relay',
+        arguments=['/cmd_vel', '/mecanum_drive_controller/reference'],
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
+
+    # Robot localization EKF node for sensor fusion (odom + IMU)
+    ekf_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
+        output='screen',
+        parameters=[ekf_config, {'use_sim_time': use_sim_time}],
+        remappings=[('odometry/filtered', 'odom')]
+    )
 
     # LiDAR bridge - bridges Gazebo LiDAR to ROS2 with BEST_EFFORT QoS for sensor data
     lidar_bridge = Node(
@@ -240,7 +257,18 @@ def generate_launch_description():
         output='screen'
     )
 
-    # Note: diff_drive_controller publishes odom and TF directly, so no bridge needed
+    # IMU bridge - bridges Gazebo IMU to ROS2
+    # IMU directly publishes to /imu topic with base_link frame_id (set in URDF)
+    imu_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/imu@sensor_msgs/msg/Imu@gz.msgs.IMU',
+        ],
+        output='screen'
+    )
+
+    # Note: mecanum_drive_controller publishes odom and TF directly, so no bridge needed
 
     # RViz2 node with config file - delayed to ensure /scan topic exists
     rviz_node = Node(
@@ -257,8 +285,18 @@ def generate_launch_description():
         actions=[rviz_node]
     )
 
+    # Virtual Atom S3 GUI - simulates Atom S3 button and display
+    virtual_atom_s3_gui = Node(
+        package='jedy_bringup',
+        executable='virtual_atom_s3_gui.py',
+        name='virtual_atom_s3_gui',
+        parameters=[{'use_sim_time': use_sim_time}],
+        output='screen'
+    )
+
     return LaunchDescription([
         SetEnvironmentVariable(name='GZ_SIM_RESOURCE_PATH', value=gz_resource_path),
+        SetEnvironmentVariable(name='GZ_FILE_PATH', value=model_path),
         SetEnvironmentVariable(name='DISPLAY', value=':1'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         gazebo,
@@ -266,15 +304,20 @@ def generate_launch_description():
         robot_state_publisher,
         spawn_entity,
         camera_bridge,
-        camera_tf_publisher,
+        aligned_depth_relay,
+        aligned_depth_info_relay,
         base_footprint_publisher,  # Add base_footprint frame for Nav2
         point_cloud_xyzrgb,
+        cmd_vel_relay,
+        ekf_node,  # Robot localization EKF for sensor fusion
         lidar_bridge,
         scan_frame_changer,
+        imu_bridge,
         delayed_joint_state_broadcaster,
-        delayed_diff_drive_controller,
+        delayed_mecanum_drive_controller,
         delayed_head_controller,
         delayed_rarm_controller,
         delayed_larm_controller,
         delayed_rviz,  # Delay RViz2 to avoid QoS mismatch with /scan
+        virtual_atom_s3_gui,  # Virtual Atom S3 GUI for button and display simulation
     ])

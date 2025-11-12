@@ -96,7 +96,7 @@
                   "type": "repr"
                 },
                 "topic": {
-                  "repr": "'/diff_drive_controller/cmd_vel'",
+                  "repr": "'/mecanum_drive_controller/reference'",
                   "type": "repr"
                 },
                 "vw_max": {
