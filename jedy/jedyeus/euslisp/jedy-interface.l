@@ -5,6 +5,7 @@
 (ros::roseus-add-msgs "geometry_msgs")
 (load "package://kxreus/euslisp/kxr-interface.l")
 (load "package://jedyeus/euslisp/jedy.l")
+(load "package://jedyeus/euslisp/jedy-utils.l")
 
 
 (defun calc-yaw-pitch-roll (linear-acceleration)
