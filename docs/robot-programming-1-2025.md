@@ -1153,6 +1153,9 @@ $ ros2 topic list | grep camera
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
+# シミュレーションでは
+$ ros2 launch jedy_bringup remote_camera.launch.py use_sim_time:=true
+# 実機では
 $ ros2 launch jedy_bringup remote_camera.launch.py
 ```
 
@@ -1262,16 +1265,23 @@ $ source /opt/ros/jazzy/setup.bash
 $ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ```
 
+
 ```
 $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
+# シミュレーションでは下記
+$ ros2 launch jedy_bringup remote_camera.launch.py use_sim_time:=true
+# 実機では下記
 $ ros2 launch jedy_bringup remote_camera.launch.py
 ```
 
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
-$ ros2 launch jedy_bringup checkerboard_detector.launch.py use_sim_time:=true
+# シミュレーションでは下記
+$ ros2 launch jedy_bringup checkerboard_detector.launch.py input_topic:=/camera/color/image_rect_raw camera_info_topic:=/camera/color/camera_info use_sim_time:=true
+# 実機では下記
+$ ros2 launch jedy_bringup checkerboard_detector.launch.py
 ```
 
 としてcheckerboard認識プログラムを起動すると`CheckerboardDetector`とかかれたビューワが表示される．
@@ -1370,7 +1380,6 @@ def generate_launch_description():
 のように，グリッド数（6x4）・グリッドの一辺長さ(20mm)を指定しているので
 checkerboard盤面の3次元位置姿勢は2次元画像から計算することができる．
 格子パターンの右上緑線・赤線の部分の位置姿勢がROSのtopicとして取得できる．
-この例では，`/camera/color/ObjectDetection`が位置姿勢を出力するtopicである．
 
 ### <span style="color:green">チェックポイント: checkerboardの認識</span>
 
@@ -1509,8 +1518,14 @@ $ roslaunch jsk_pcl_ros hsi_color_filter.launch FILTER_NAME_SUFFIX:=_hsi INPUT:=
 
 # republish_imageをlaunchしていない場合は別のターミナルで実行する
 $ export ROS_DOMAIN_ID=<Your Jedy's ROS_DOMAIN_ID>
+# シミュレーションでは
+$ ros2 launch jedy_bringup remote_camera.launch.py use_sim_time:=true
+# 実機では
 $ ros2 launch jedy_bringup remote_camera.launch.py
 
+# シミュレーションでは
+$ roslaunch jsk_pcl_ros hsi_color_filter.launch FILTER_NAME_SUFFIX:=_hsi INPUT:=/camera/depth/color/points
+# 実機では
 $ roslaunch jsk_pcl_ros hsi_color_filter.launch FILTER_NAME_SUFFIX:=_hsi INPUT:=/remote/depth/color/points
 ```
 
