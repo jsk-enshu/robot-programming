@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+
+    <name>jedy_ros1_bridge</name>
+    <version>7.0.0</version>
+    <description>JEDY ROS1 Bridge - Bridges ROS1 hardware control to ROS2 for educational purposes</description>
+    <license>BSD</license>
+    <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
+    <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <exec_depend>kxr_controller</exec_depend>
+    <exec_depend>topic_tools</exec_depend>
+    <exec_depend>ridgeback_control</exec_depend>
+    <exec_depend>controller_manager</exec_depend>
+
+</package>

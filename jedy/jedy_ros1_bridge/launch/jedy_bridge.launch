@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!--
+  JEDY ROS1 Bridge Launch File
+
+  This launch file brings up the ROS1 hardware control nodes and ros1_bridge
+  for bridging to ROS2. Students can control the robot using ROS2 action clients
+  while the actual hardware control runs on the stable ROS1 implementation.
+
+  Architecture:
+    ROS2 Client → ros1_bridge (dynamic_bridge) → ROS1 Controllers → Hardware
+  -->
+
+  <!-- Launch arguments -->
+  <arg name="urdf_path" default="$(find jedy_ros1_bridge)/../jedy_description/urdf/jedy_gz.xacro" />
+  <arg name="servo_config_path" default="$(find jedy_ros1_bridge)/config/jedy_servo_config.yaml" />
+  <arg name="publish_imu" default="true" />
+  <arg name="publish_sensor" default="false" />
+  <arg name="publish_battery_voltage" default="false" />
+  <arg name="use_rcb4" default="false" doc="Flag to use RCB4 mini board"/>
+  <arg name="device" default="/dev/ttyAMA5" doc="Device path"/>
+  <arg name="model_server_port" default="8123" />
+  <arg name="namespace" default="" />
+  <arg name="joint_group_description" default="" />
+  <arg name="frame_count" default="1" />
+  <arg name="current_limit" default="4.0" doc="current limit in Amp" />
+  <arg name="temperature_limit" default="80" doc="Temperature limit in celsius" />
+  <arg name="read_current" default="false" />
+  <arg name="read_temperature" default="false" />
+
+  <!-- Include KXR controller (RCB4/ARMH7 hardware interface) -->
+  <include file="$(find kxr_controller)/launch/kxr_controller.launch" >
+    <arg name="urdf_path" value="$(arg urdf_path)" />
+    <arg name="servo_config_path" value="$(arg servo_config_path)" />
+    <arg name="use_rcb4" value="$(arg use_rcb4)" />
+    <arg name="device" value="$(arg device)" />
+    <arg name="model_server_port" value="$(arg model_server_port)" />
+    <arg name="publish_imu" value="$(arg publish_imu)" />
+    <arg name="publish_sensor" value="$(arg publish_sensor)" />
+    <arg name="publish_battery_voltage" value="$(arg publish_battery_voltage)" />
+    <arg name="namespace" value="$(arg namespace)" />
+    <arg name="joint_group_description" value="$(arg joint_group_description)" />
+    <arg name="frame_count" value="$(arg frame_count)" />
+    <arg name="current_limit" value="$(arg current_limit)" />
+    <arg name="temperature_limit" value="$(arg temperature_limit)" />
+    <arg name="read_current" value="$(arg read_current)" />
+    <arg name="read_temperature" value="$(arg read_temperature)" />
+    <arg name="use_fullbody_controller" value="false" />
+  </include>
+
+  <!-- Load controller configurations -->
+  <rosparam param="default_controller">
+    - head_controller
+    - rarm_controller
+    - larm_controller
+  </rosparam>
+  <rosparam file="$(find jedy_ros1_bridge)/config/jedy_controllers.yaml" />
+
+  <!-- Spawn trajectory controllers for head, arms -->
+  <group if="$(eval len(arg('namespace')) > 0)" ns="$(arg namespace)" >
+    <include file="$(find jedy_ros1_bridge)/launch/mecanum_drive_controller.launch" />
+  </group>
+
+  <group unless="$(eval len(arg('namespace')) > 0)">
+    <include file="$(find jedy_ros1_bridge)/launch/mecanum_drive_controller.launch" />
+  </group>
+
+  <node name="velocity_command_joint_state_mux"
+	pkg="topic_tools" type="mux"
+	output="screen"
+	args="velocity_command_joint_state velocity_command_joint_state_from_robot_hardware velocity_command_joint_state_from_joint_state" >
+    <param name="initial_topic" value="velocity_command_joint_state_from_robot_hardware" />
+  </node>
+
+  <node name="relay_stamped_to_twist" pkg="topic_tools" type="transform" respawn="true"
+	args="/mecanum_drive_controller/reference /ridgeback_control/cmd_vel geometry_msgs/Twist 'm.twist' --import geometry_msgs.msg" />
+
+  <!-- Topic relays for controller state and commands -->
+  <node name="relay_rarm_controller_state" pkg="topic_tools" type="relay"
+	args="/rarm_controller/state /rarm_controller/controller_state" />
+  <node name="relay_larm_controller_state" pkg="topic_tools" type="relay"
+	args="/larm_controller/state /larm_controller/controller_state" />
+  <node name="relay_head_controller_state" pkg="topic_tools" type="relay"
+	args="/head_controller/state /head_controller/controller_state" />
+
+  <node name="relay_rarm_joint_trajectory" pkg="topic_tools" type="relay"
+	args="/rarm_controller/joint_trajectory /rarm_controller/command" />
+  <node name="relay_larm_joint_trajectory" pkg="topic_tools" type="relay"
+	args="/larm_controller/joint_trajectory /larm_controller/command" />
+  <node name="relay_head_joint_trajectory" pkg="topic_tools" type="relay"
+	args="/head_controller/joint_trajectory /head_controller/command" />
+
+</launch>
