@@ -1271,7 +1271,7 @@ $ ros2 launch jedy_bringup remote_camera.launch.py
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
-$ roslaunch jedy_bringup checkerboard_detector.launch.py
+$ ros2 launch jedy_bringup checkerboard_detector.launch.py use_sim_time:=true
 ```
 
 としてcheckerboard認識プログラムを起動すると`CheckerboardDetector`とかかれたビューワが表示される．

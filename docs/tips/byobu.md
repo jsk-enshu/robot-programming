@@ -97,7 +97,7 @@ $ ssh robot@192.168.1.100
 # ロボットPC上で
 $ tmux
 # 長時間かかる処理を実行
-$ roslaunch jedy_bringup jedy.launch
+$ ros2 launch jedy_bringup jedy_bringup.launch.py
 # Ctrl+b d でデタッチ
 # SSH接続を切断しても，roslaunchは継続実行される
 ```
