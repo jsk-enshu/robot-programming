@@ -109,3 +109,6 @@ Arduino IDEのエディタで日本語コメントが文字化けする場合は
 
 これにより，日本語が正しく表示されるようになる．
 
+# Arduinoの依存ライブラリのインストール方法
+1. Scketch -> Include Library -> Manage Libraries
+2. Filterで必要なライブラリ名を検索し，Installする

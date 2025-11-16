@@ -23,6 +23,7 @@ $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r
 $ colcon build --symlink-install --packages-select jedy_bringup jedy_description
+$ colcon build --symlink-install --packages-up-to mechatrobot_ros2 # Arduinoの演習日に必要
 ```
 
 ### ROS 1 セットアップ
@@ -37,6 +38,7 @@ $ rosdep update
 $ cd ~/ros_ws
 $ rosdep install --from-paths src --ignore-src -y -r
 $ catkin build jedyeus
+$ catkin build mechatrobot # Arduinoの演習日に必要
 ```
 
 ### ROS1 bridge セットアップ
