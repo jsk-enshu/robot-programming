@@ -73,7 +73,7 @@ $ catkin build jedyeus
 catkin-toolsのバージョンが0.9.4の場合，上記の問題が発生する可能性がある．バージョン0.9.5にアップグレードすることを推奨する．
 
 ```{code-block} console
-$ sudo apt remove catkin-tools
+$ sudo apt remove python3-catkin-tools
 $ sudo apt install python3-catkin-tools --reinstall
 $ catkin --version
 ```
