@@ -828,7 +828,7 @@ tfを表示すると，ロボットモデルのlink, joint等の位置関係が�
 
 ## ロボットモデルの構成
 
-ロボットモデルは[mechatrobot/urdf/robot.urdf](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/urdf/robot.urdf)に定義されている．
+ロボットモデルは[mechatrobot_ros2/urdf/robot.urdf](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/urdf/robot.urdf)に定義されている．
 ロボットモデルは`link`と`joint`の連結で表されており以下に記述の一部を紹介する．
 
 `link`部では`link`名や幾何情報が記述されている．
@@ -1040,15 +1040,6 @@ PC上での`topic`のpub/subによりSeeeduino Nanoを介して接続された�
 rviz上で3Dモデルが回転することが確認できる．
 rvizをスクリーンキャプチャして提出すること．
 
-<div class="screen">
-
-
-1.  [mechatrobot/urdf/robot.urdf](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/urdf/robot.urdf)を見ると`link1`の表示モデルのところで`sample-3d-model.stl`をコメントアウトしている．
-    boxモデルの代わりにこちらをコメントインすると3dモデルを変更することが出来る．
-    urdfを変更したら`mechatrobot_controller.launch.py`と`mechatrobot_display.launch.py`を再起動することに注意．
-
-</div>
-
 ## 課題6(発展)
 
 今回の演習ではステッピングモータと超音波センサ，顔認識を例としたメカトロボットのプログラミングを紹介したがそれ以外の組み合わせでの処理をプログラミングし動作確認してみよう．例えばステッピングモータを配布教材で配っているサーボモータやDCモータに置きかえることや自分でセンサを持っていればそれをSeeeduino Nanoから処理できるようにプログラミングしてみること，画像処理として顔認識以外の処理を試してみることなど．
@@ -1079,7 +1070,7 @@ rvizをスクリーンキャプチャして提出すること．
 
 ## 課題8(発展)
 
-1,2日目のGazebo環境に今回のメカトロボットを表示させ動作シミュレーションしてみよう．
+1,2日目のGazebo環境(ロボットシステムのGazebo環境)に今回のメカトロボットを表示させ動作シミュレーションしてみよう．
 3Dモデルやロボット構成は自由に作ってみるとよい．
 
 ## 課題9(発展)
