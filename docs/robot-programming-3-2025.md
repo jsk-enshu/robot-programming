@@ -933,13 +933,18 @@ PCと通信することでPCでのプログラム処理結果をロボット制�
 以下を実行する[^motor_command_batching].
 
 ```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
 $ roslaunch mechatrobot mechatrobot_driver.launch
+
+$ source ~/ros_ws/devel/setup.bash
 $ roslaunch mechatrobot sample_face_detect.launch
 
 # euslisp sample
+$ source ~/ros_ws/devel/setup.bash
 $ rosrun mechatrobot motor-command-by-face.l
 
 # あるいは python sample
+$ source ~/ros_ws/devel/setup.bash
 $ rosrun mechatrobot motor-command-by-face.py
 ```
 
