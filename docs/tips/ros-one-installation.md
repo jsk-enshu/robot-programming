@@ -20,16 +20,6 @@ source /opt/ros/one/setup.bash
 
 このコマンドをターミナルで実行すると，ROS-Oの環境が有効になり，`roscore`や`roslaunch`などのROSコマンドが使用可能になる．
 
-### 自動的に有効化する方法
-
-毎回sourceコマンドを実行するのが面倒な場合は，`~/.bashrc`に以下の行を追加する：
-
-```{code-block} console
-echo "source /opt/ros/one/setup.bash" >> ~/.bashrc
-```
-
-この設定により，新しいターミナルを開くたびに自動的にROS-O環境が有効化される．
-
 ## 個人PCへのインストール方法
 
 個人のPCにROS-Oをインストールする場合は，以下の手順に従う．
@@ -94,12 +84,6 @@ sudo apt install ros-one-desktop
 source /opt/ros/one/setup.bash
 ```
 
-毎回sourceする手間を省くため，`~/.bashrc`に追加することを推奨する：
-
-```{code-block} console
-echo "source /opt/ros/one/setup.bash" >> ~/.bashrc
-source ~/.bashrc
-```
 
 ## 最新ビルドの使用（オプション）
 

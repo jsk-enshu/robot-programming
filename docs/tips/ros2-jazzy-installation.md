@@ -113,13 +113,6 @@ ROS 2を使用するには，セットアップスクリプトをsourceする必
 source /opt/ros/jazzy/setup.bash
 ```
 
-毎回sourceする手間を省くため，`~/.bashrc`に追加することを推奨する：
-
-```{code-block} console
-echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
-source ~/.bashrc
-```
-
 ## インストール確認
 
 ROS 2が正しくインストールされているか確認するには，以下のコマンドを実行する：
