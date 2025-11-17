@@ -379,7 +379,7 @@ void loop() {
 同じプログラムが[robot-programming/mechatrobot/sketchbook/stepping_motor_sample_28BYJ48/stepping_motor_sample_28BYJ48.ino](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/sketchbook/stepping_motor_sample_28BYJ48/stepping_motor_sample_28BYJ48.ino)にあるので書き込みに利用しても良い．
 
 ビルド＆書き込み時にStepper.hがないというエラーになる場合は，Stepperのライブラリをインストールする．
-インストール方法は[ここ](tips/arduino-errors.md#Arduinoの依存ライブラリのインストール方法)を参照する．
+インストール方法は[ここ](https://jsk-enshu.github.io/robot-programming/tips/arduino-errors.html#arduino)を参照する．
 
 実物回路の作成にあたってはプログラムで設定した信号出力番号とSeeeduino Nanoのデジタルポートが一致するように配線する．また電源としてドライバ基板とSeeeduino Nanoの5VとGNDをそれぞれ接続する．
 
