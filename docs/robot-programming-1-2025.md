@@ -1,5 +1,6 @@
 # 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
 
+
 ## 本日の演習内容
 
 本日の演習では双腕移動台車アームロボット **J**SK **E**ducational **D**ual-armed wheel**Y** robot (**Jedy・ジェディ**) の全体構成について説明し
@@ -40,6 +41,11 @@ ROSによる移動台車の駆動方法と画像・深度センサを用いた�
   ROSのノードのパラメータをGUIから動的に変更するツール
 
 </div>
+
+```{important}
+各チェックポイントを達成しながら，進捗報告シートへの記入を進め，全てのチェックポイントの進捗報告を完了せよ．各チェックポイントの結果をスクリーンショット等で保存しておくこと．
+発展課題に関しては必須ではないが，すべてをこなすとかなりのロボットレベルが上がるため，これからロボットをやっていきたいというロボット経験者も未経験者もぜひチャレンジしてほしい．
+```
 
 ## 本演習の貸出物品
 
@@ -1874,7 +1880,7 @@ $ ros2 topic pub --once /robocrew/prompt std_msgs/msg/String "{data: 'Turn left 
 
 プログラムの詳細は[robot-programming/jedy/jedy_bringup/scripts/robocrew_image_to_cmd_vel.py](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedy_bringup/scripts/robocrew_image_to_cmd_vel.py)を参照のこと．
 
-# 本日の演習課題
+# 本日の発展課題
 
 ## 課題1(発展)
 
