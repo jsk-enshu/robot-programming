@@ -23,6 +23,7 @@ $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r
 $ colcon build --symlink-install --packages-select jedy_bringup jedy_description
+$ colcon build --symlink-install --packages-up-to mechatrobot_ros2 # Arduinoの演習日に必要
 ```
 
 ### ROS 1 セットアップ
@@ -37,6 +38,7 @@ $ rosdep update
 $ cd ~/ros_ws
 $ rosdep install --from-paths src --ignore-src -y -r
 $ catkin build jedyeus
+$ catkin build mechatrobot # Arduinoの演習日に必要
 ```
 
 ### ROS1 bridge セットアップ
@@ -71,7 +73,8 @@ $ catkin build jedyeus
 catkin-toolsのバージョンが0.9.4の場合，上記の問題が発生する可能性がある．バージョン0.9.5にアップグレードすることを推奨する．
 
 ```{code-block} console
-$ sudo apt remove catkin-tools
+$ sudo apt purge catkin-tools
+$ sudo apt purge python3-catkin-tools
 $ sudo apt install python3-catkin-tools --reinstall
 $ catkin --version
 ```
@@ -87,6 +90,6 @@ $ catkin --version
 
 環境構築が完了したら，以下の演習に進む：
 
-- [1日目：双腕移動台車ロボットを用いた認識操作プログラミング](robot-programming-1-2025.md)
-- [2日目：ロボットの全身行動プログラミング](robot-programming-2-2025.md)
-- [3日目：組込みデバイスとの統合](robot-programming-3-2025.md)
+- [1日目：メカトロボットの製作とプログラミング](robot-programming-3-2025.md)
+- [2日目：双腕移動台車ロボットを用いた認識操作プログラミング](robot-programming-1-2025.md)
+- [3日目：ロボットの全身行動プログラミング](robot-programming-2-2025.md)

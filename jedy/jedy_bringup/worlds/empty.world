@@ -366,7 +366,7 @@
         <collision name="collision">
           <geometry>
             <mesh>
-              <uri>checkerboard/checkerboard.dae</uri>
+              <uri>model/checkerboard/checkerboard.dae</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>
@@ -384,7 +384,7 @@
           <transparency>0</transparency>
           <geometry>
             <mesh>
-              <uri>checkerboard/checkerboard_black.stl</uri>
+              <uri>model/checkerboard/checkerboard_black.stl</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>
@@ -399,7 +399,7 @@
           <transparency>0</transparency>
           <geometry>
             <mesh>
-              <uri>checkerboard/checkerboard_white.stl</uri>
+              <uri>model/checkerboard/checkerboard_white.stl</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>

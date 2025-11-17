@@ -1,4 +1,4 @@
-# 3日目 メカトロボットの製作とプログラミング
+# 1日目 メカトロボットの製作とプログラミング
 
 ## 本日の演習内容
 
@@ -34,6 +34,10 @@
 
 </div>
 
+```{important}
+各チェックポイントを達成しながら，進捗報告シートへの記入を進め，全てのチェックポイントの進捗報告を完了せよ．各チェックポイントの結果をスクリーンショット等で保存しておくこと．
+発展課題に関しては必須ではないが，すべてをこなすとかなりのロボットレベルが上がるため，これからロボットをやっていきたいというロボット経験者も未経験者もぜひチャレンジしてほしい．
+```
 
 ## 本演習で作成するメカトロボットの概要
 
@@ -225,7 +229,7 @@ LED回路を例としてブレッドボード上にSeeeduino Nanoを含む電子
 :align: center
 :name: fig:led-circuit-diagram
 
-LED点灯回路図
+LED点滅回路図
 :::
 
 :::{grid-item}
@@ -233,7 +237,7 @@ LED点灯回路図
 :align: center
 :name: fig:led-circuit-with-arduino
 
-ブレッドボード上でのSeeeduino Nanoを用いたLED点灯回路の実物実装例
+ブレッドボード上でのSeeeduino Nanoを用いたLED点滅回路の実物実装例
 :::
 
 ::::
@@ -277,10 +281,10 @@ void loop() {
 
 ### <span style="color:green">チェックポイント: 外部LED点滅回路の作成</span>
 
-```{exercise} 外部LED点滅回路の作成
+```{exercise} 外部LED点滅回路の動作の確認
 :label: ex_external_led
 
-Seeeduino Nanoを用いた外部LED点滅回路を作成しLEDの点滅を確認してみよう．
+Seeeduino Nanoを用いた回路のLEDの点滅を確認してみよう．
 
 LED点滅のサンプルプログラムは，演習ワークスペース[robot-programming/mechatrobot/sketchbook/led_sample/led_sample.ino](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/sketchbook/led_sample/led_sample.ino)にあるので，書き込みに利用しても良い．
 
@@ -373,6 +377,9 @@ void loop() {
 </div>
 
 同じプログラムが[robot-programming/mechatrobot/sketchbook/stepping_motor_sample_28BYJ48/stepping_motor_sample_28BYJ48.ino](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/sketchbook/stepping_motor_sample_28BYJ48/stepping_motor_sample_28BYJ48.ino)にあるので書き込みに利用しても良い．
+
+ビルド＆書き込み時にStepper.hがないというエラーになる場合は，Stepperのライブラリをインストールする．
+インストール方法は[ここ](https://jsk-enshu.github.io/robot-programming/tips/arduino-errors.html#arduino)を参照する．
 
 実物回路の作成にあたってはプログラムで設定した信号出力番号とSeeeduino Nanoのデジタルポートが一致するように配線する．また電源としてドライバ基板とSeeeduino Nanoの5VとGNDをそれぞれ接続する．
 
@@ -825,7 +832,7 @@ tfを表示すると，ロボットモデルのlink, joint等の位置関係が�
 
 ## ロボットモデルの構成
 
-ロボットモデルは[mechatrobot/urdf/robot.urdf](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/urdf/robot.urdf)に定義されている．
+ロボットモデルは[mechatrobot_ros2/urdf/robot.urdf](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/urdf/robot.urdf)に定義されている．
 ロボットモデルは`link`と`joint`の連結で表されており以下に記述の一部を紹介する．
 
 `link`部では`link`名や幾何情報が記述されている．
@@ -926,13 +933,18 @@ PCと通信することでPCでのプログラム処理結果をロボット制�
 以下を実行する[^motor_command_batching].
 
 ```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
 $ roslaunch mechatrobot mechatrobot_driver.launch
+
+$ source ~/ros_ws/devel/setup.bash
 $ roslaunch mechatrobot sample_face_detect.launch
 
 # euslisp sample
+$ source ~/ros_ws/devel/setup.bash
 $ rosrun mechatrobot motor-command-by-face.l
 
 # あるいは python sample
+$ source ~/ros_ws/devel/setup.bash
 $ rosrun mechatrobot motor-command-by-face.py
 ```
 
@@ -959,7 +971,7 @@ $ rosrun mechatrobot motor-command-by-face.py
 上記プログラムを実行して顔認識の画像処理結果を利用してモータ制御してみよう．
 ```
 
-# 本日の演習課題
+# 本日の発展課題
 
 ## 課題0(発展)
 
@@ -1037,15 +1049,6 @@ PC上での`topic`のpub/subによりSeeeduino Nanoを介して接続された�
 rviz上で3Dモデルが回転することが確認できる．
 rvizをスクリーンキャプチャして提出すること．
 
-<div class="screen">
-
-
-1.  [mechatrobot/urdf/robot.urdf](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/urdf/robot.urdf)を見ると`link1`の表示モデルのところで`sample-3d-model.stl`をコメントアウトしている．
-    boxモデルの代わりにこちらをコメントインすると3dモデルを変更することが出来る．
-    urdfを変更したら`mechatrobot_controller.launch.py`と`mechatrobot_display.launch.py`を再起動することに注意．
-
-</div>
-
 ## 課題6(発展)
 
 今回の演習ではステッピングモータと超音波センサ，顔認識を例としたメカトロボットのプログラミングを紹介したがそれ以外の組み合わせでの処理をプログラミングし動作確認してみよう．例えばステッピングモータを配布教材で配っているサーボモータやDCモータに置きかえることや自分でセンサを持っていればそれをSeeeduino Nanoから処理できるようにプログラミングしてみること，画像処理として顔認識以外の処理を試してみることなど．
@@ -1076,7 +1079,7 @@ rvizをスクリーンキャプチャして提出すること．
 
 ## 課題8(発展)
 
-1,2日目のGazebo環境に今回のメカトロボットを表示させ動作シミュレーションしてみよう．
+2,3日目のGazebo環境(ロボットシステムのGazebo環境)に今回のメカトロボットを表示させ動作シミュレーションしてみよう．
 3Dモデルやロボット構成は自由に作ってみるとよい．
 
 ## 課題9(発展)
