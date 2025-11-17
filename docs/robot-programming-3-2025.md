@@ -229,7 +229,7 @@ LED回路を例としてブレッドボード上にSeeeduino Nanoを含む電子
 :align: center
 :name: fig:led-circuit-diagram
 
-LED点灯回路図
+LED点滅回路図
 :::
 
 :::{grid-item}
@@ -237,7 +237,7 @@ LED点灯回路図
 :align: center
 :name: fig:led-circuit-with-arduino
 
-ブレッドボード上でのSeeeduino Nanoを用いたLED点灯回路の実物実装例
+ブレッドボード上でのSeeeduino Nanoを用いたLED点滅回路の実物実装例
 :::
 
 ::::
@@ -281,10 +281,10 @@ void loop() {
 
 ### <span style="color:green">チェックポイント: 外部LED点滅回路の作成</span>
 
-```{exercise} 外部LED点滅回路の作成
+```{exercise} 外部LED点滅回路の動作の確認
 :label: ex_external_led
 
-Seeeduino Nanoを用いた外部LED点滅回路を作成しLEDの点滅を確認してみよう．
+Seeeduino Nanoを用いた回路のLEDの点滅を確認してみよう．
 
 LED点滅のサンプルプログラムは，演習ワークスペース[robot-programming/mechatrobot/sketchbook/led_sample/led_sample.ino](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/sketchbook/led_sample/led_sample.ino)にあるので，書き込みに利用しても良い．
 
