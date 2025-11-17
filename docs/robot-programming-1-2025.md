@@ -753,7 +753,7 @@ ROS 1とROS 2の連携システム構成図．ROS 1のAction Client（EusLispな
 難しければ
 
 ```{code-block} console
-$ roscd jedy_bringup/kadai/
+$ roscd jedy_bringup/exercise/
 $ ls
   checkpoint1-3-1-button.l  checkpoint1-3-2-display.l  checkpoint1-3-3-imu.l  checkpoint1_3_1_button.py  checkpoint1_3_2_display.py  checkpoint1_3_3_imu.py
 ```

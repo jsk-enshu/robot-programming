@@ -245,7 +245,7 @@ irteusgl$ (while t
 プログラムはファイルに保存しておくと以下のように実行できて便利である．
 
 ```{code-block} console
-$ roscd jedy_bringup/kadai/
+$ roscd jedy_bringup/exercise/
 $ roseus checkpoint2-1-go-forward.l
 ```
 
@@ -253,7 +253,7 @@ $ roseus checkpoint2-1-go-forward.l
 また，`IMU`の値を用いるサンプルもある．`IMU`の傾きを読んで傾きを変えると速度指令を送ることをやめるプログラムとなっている．
 
 ```{code-block} console
-$ roscd jedy_bringup/kadai/
+$ roscd jedy_bringup/exercise/
       $ roseus checkpoint2-2-go-forward-imu.l
 ```
 
