@@ -55,6 +55,11 @@
 
 </div>
 
+```{important}
+各チェックポイントを達成しながら，進捗報告シートへの記入を進め，全てのチェックポイントの進捗報告を完了せよ．各チェックポイントの結果をスクリーンショット等で保存しておくこと．
+発展課題に関しては必須ではないが，すべてをこなすとかなりのロボットレベルが上がるため，これからロボットをやっていきたいというロボット経験者も未経験者もぜひチャレンジしてほしい．
+```
+
 ## 環境構築とソフトウェア更新
 
 演習を開始する前に，必ず[環境構築](environment-setup.md)のページを参照して，最新バージョンのソフトウェアを取得すること．
@@ -690,7 +695,7 @@ irteusgl$ (send *jedy* :rarm :inverse-kinematics
 
 なお，実際に`Jedy`の定義されてるファイルは，[jedy/jedyeus/euslisp/jedy.l](https://github.com/jsk-enshu/robot-programming/tree/master/jedy/jedyeus/euslisp/jedy.l)にある．
 
-# 本日の演習課題
+# 本日の発展課題
 
 ## 課題1(発展)
 
