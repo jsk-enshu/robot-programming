@@ -90,6 +90,20 @@ https://github.com/jsk-enshu/robot-programming
 
 コードやwikiの情報があり，wikiには演習のFAQを載せているのでそちらも参考にしてもよい．
 
+### 資料の改善への貢献
+
+本演習資料はGitHubで管理されており誰でも閲覧・貢献できる．
+もし資料に誤字脱字やわかりにくい文章を見つけた場合は以下の方法で改善に貢献できる：
+
+- **[Issue](https://github.com/jsk-enshu/robot-programming/issues)（問題報告）**：誤りや改善提案をGitHubのIssueとして報告できる
+- **[Pull Request](https://github.com/jsk-enshu/robot-programming/pulls)（修正提案）**：直接修正を提案できる
+
+具体的なドキュメント資料は[こちら](https://github.com/jsk-enshu/robot-programming/tree/master/docs)にMarkdown形式で書かれているため修正など行いやすいだろう．
+
+やり方を知りたい人はTAや先生に聞いてみよう．
+GitHubでの貢献方法を知っている人は積極的に修正してほしい．
+**あなたの修正が今後も機械情報工学科の後輩たちのために残っていくだろう．**
+
 ### 便利リンク集
 
 - **演習FAQ**
