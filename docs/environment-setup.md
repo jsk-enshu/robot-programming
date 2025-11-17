@@ -89,6 +89,6 @@ $ catkin --version
 
 環境構築が完了したら，以下の演習に進む：
 
-- [1日目：双腕移動台車ロボットを用いた認識操作プログラミング](robot-programming-1-2025.md)
-- [2日目：ロボットの全身行動プログラミング](robot-programming-2-2025.md)
-- [3日目：組込みデバイスとの統合](robot-programming-3-2025.md)
+- [1日目：メカトロボットの製作とプログラミング](robot-programming-3-2025.md)
+- [2日目：双腕移動台車ロボットを用いた認識操作プログラミング](robot-programming-1-2025.md)
+- [3日目：ロボットの全身行動プログラミング](robot-programming-2-2025.md)
