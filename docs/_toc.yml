@@ -6,9 +6,12 @@ parts:
     chapters:
     - file: environment-setup
       title: 環境構築
-    - file: robot-programming-1-2025
-    - file: robot-programming-2-2025
     - file: robot-programming-3-2025
+      title: 1日目 メカトロボットの製作とプログラミング
+    - file: robot-programming-1-2025
+      title: 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
+    - file: robot-programming-2-2025
+      title: 3日目 ロボットの全身行動プログラミング
   - caption: Tips・付録（共通）
     chapters:
     - file: tips/caps-to-ctrl
@@ -21,8 +24,6 @@ parts:
       title: ターミナルの制御キー
     - file: tips/troubleshooting.md
       title: トラブルシューティング
-  - caption: Tips・付録（1日目）
-    chapters:
     - file: tips/ros-one-installation
       title: ROS-Oインストール
     - file: tips/ros2-jazzy-installation
@@ -37,6 +38,26 @@ parts:
       title: ROS 1コマンド
     - file: tips/ros2-commands
       title: ROS 2コマンド
+  - caption: Tips・付録（1日目）
+    chapters:
+    - file: tips/arduino-ide
+      title: Arduino IDEインストール
+    - file: tips/arduino-builtin-led
+      title: ArduinoのLED_BUILTIN
+    - file: tips/arduino-upload
+      title: Arduinoプログラム書き込み
+    - file: tips/arduino-errors
+      title: Arduino IDEエラー対処
+    - file: tips/bootloader
+      title: ブートローダ書き込み
+    - file: tips/rosserial-troubleshooting
+      title: rosserialトラブルシューティング
+    - file: tips/kondo-servo
+      title: 近藤サーボ（KRS）制御
+    - file: tips/dynamixel
+      title: Dynamixel制御
+  - caption: Tips・付録（2日目）
+    chapters:
     - file: tips/ping
       title: Ping接続確認
     - file: tips/ssh
@@ -65,7 +86,7 @@ parts:
       title: rosemacs利用
     - file: tips/bluetooth
       title: Bluetooth確認
-  - caption: Tips・付録（2日目）
+  - caption: Tips・付録（3日目）
     chapters:
     - file: tips/python-to-euslisp
       title: PythonプログラマのためのEusLisp
@@ -81,21 +102,3 @@ parts:
       title: リアルタイムIK操縦
     - file: tips/usb-cam
       title: usb_camモーションキャプチャ
-  - caption: Tips・付録（3日目）
-    chapters:
-    - file: tips/arduino-ide
-      title: Arduino IDEインストール
-    - file: tips/arduino-builtin-led
-      title: ArduinoのLED_BUILTIN
-    - file: tips/arduino-upload
-      title: Arduinoプログラム書き込み
-    - file: tips/arduino-errors
-      title: Arduino IDEエラー対処
-    - file: tips/bootloader
-      title: ブートローダ書き込み
-    - file: tips/rosserial-troubleshooting
-      title: rosserialトラブルシューティング
-    - file: tips/kondo-servo
-      title: 近藤サーボ（KRS）制御
-    - file: tips/dynamixel
-      title: Dynamixel制御
