@@ -233,6 +233,42 @@ $ gsettings set org.gnome.desktop.input-sources xkb-options "[]"
 ただし，多くのプログラマーはこの設定を気に入って継続して使用している．一度試してみて，快適であればそのまま使い続けることを推奨する．
 ```
 
+### <span style="color:green">チェックポイント: ソフトウェアの更新とインストール</span>
+
+演習を開始する前に，最新のソフトウェアを取得し，必要なパッケージをインストールする必要がある．
+
+```{exercise} ソフトウェアの更新とインストール
+:label: ex_software_update
+
+1.  以下のリンクから`jsk-enshu-ros-jazzy-ros1-bridge`パッケージをダウンロードせよ：
+
+    [jsk-enshu-ros-jazzy-ros1-bridge_0.10.3-0noble_amd64.deb](https://drive.google.com/file/d/1JFbzEoFLY3jRep5ckb-CtvWBfhnJEMAE/view?usp=drive_link)
+
+2.  ダウンロードしたパッケージをインストールせよ（ダウンロードフォルダで実行）：
+    ```{code-block} console
+    $ cd ~/Downloads
+    $ sudo dpkg -i jsk-enshu-ros-jazzy-ros1-bridge_0.10.3-0noble_amd64.deb
+    ```
+
+3.  ROS 2ワークスペースのソースコードを更新せよ：
+    ```{code-block} console
+    $ cd ~/ros2_ws/src/robot-programming
+    $ git pull
+    ```
+    最新のソースコードが取得できることを確認せよ．
+
+4.  ROS 1ワークスペースのソースコードを更新せよ：
+    ```{code-block} console
+    $ cd ~/ros_ws/src/robot-programming
+    $ git pull
+    ```
+    最新のソースコードが取得できることを確認せよ．
+```
+
+```{tip}
+`git pull`を実行した際に「Already up to date」と表示される場合は，すでに最新のコードになっているため問題ない．更新がある場合は，どのファイルが更新されたかが表示される．
+```
+
 ### <span style="color:green">チェックポイント: 物品の準備</span>
 
 ```{exercise} 物品の準備
