@@ -196,6 +196,43 @@ LEDが赤く点滅すれば充電中である．
 
 本演習で小型PCに接続されているケーブルは，USBデバイスケーブルはステレオカメラ`D405`と`Lidar`センサの2つ，サーボ制御基板と接続されている`ZH3`線ケーブル，マイク・スピーカの`Atom Echo`と接続されている4線の`Grove`ケーブルとなる．
 
+### <span style="color:green">チェックポイント: Caps LockをCtrlに変更する</span>
+
+プログラミングやロボット開発の現場では，ターミナルやエディタでCtrlキーを頻繁に使用する．
+標準的なキーボード配置ではCtrlキーが左下隅にあり小指を大きく伸ばす必要があるため，長時間作業すると手首や小指に負担がかかる．
+そこで，Caps LockキーをCtrlキーに変更することで，ホームポジションから指を大きく動かさずにCtrlキーを使用できるようになり，作業効率が大幅に向上する．
+
+```{exercise} Caps LockをCtrlに変更
+:label: ex_caps_to_ctrl
+
+1.  以下のコマンドを実行してCaps LockをCtrlに変更せよ：
+    ```{code-block} console
+    $ gsettings set org.gnome.desktop.input-sources xkb-options "['ctrl:nocaps']"
+    ```
+
+2.  設定が正しく適用されているか確認せよ：
+    ```{code-block} console
+    $ gsettings get org.gnome.desktop.input-sources xkb-options
+    ['ctrl:nocaps']
+    ```
+
+3.  Caps Lockキーを押してCtrlキーとして機能することを確認せよ．環境によっては設定が即座に反映されない場合があるため，**反映されない場合は一度PCを再起動して確認すること**
+
+4.  ターミナルで`Ctrl+R`を押して履歴検索ができることを確認せよ．`Ctrl+R`を押すと`(reverse-i-search):`というプロンプトが表示されるので，過去に実行したコマンドの一部を入力して検索できることを確認せよ．例えば，`cd`と入力すると過去に実行した`cd`コマンドが表示される．見つかったコマンドは`Enter`で実行，`Esc`でキャンセルできる
+
+5.  詳細については[Caps LockをCtrlに変更する](tips/caps-to-ctrl.md)と[ターミナルの制御キー](tips/terminal-control-keys.md)を参照し，ターミナルで頻繁に使用する制御キー（`Ctrl+C`, `Ctrl+Z`, `Ctrl+D`, `Ctrl+A`, `Ctrl+E`など）についても確認しておくこと
+```
+
+```{tip}
+Caps LockをCtrlに変更する設定は，長年プログラマーコミュニティで受け継がれてきた知恵であり，vi，Emacs，シェルなどのUNIXツールでCtrlキーを頻繁に使用するプログラマーにとって非常に有用である．一度この設定に慣れると，元のキーボード配置には戻れなくなるほど快適である．特に，ROSのプログラミングやターミナル操作を長時間行う本演習では，この設定により作業効率が大幅に向上する．
+
+**演習終了後に元の設定に戻したい場合は，**以下のコマンドで設定を解除できる：
+```{code-block} console
+$ gsettings set org.gnome.desktop.input-sources xkb-options "[]"
+```
+ただし，多くのプログラマーはこの設定を気に入って継続して使用している．一度試してみて，快適であればそのまま使い続けることを推奨する．
+```
+
 ### <span style="color:green">チェックポイント: 物品の準備</span>
 
 ```{exercise} 物品の準備
