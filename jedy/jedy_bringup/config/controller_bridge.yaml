@@ -1,0 +1,107 @@
+# Bridge configuration for controller actions
+# This configuration bridges action topics from ROS 1 to ROS 2
+
+topics:
+  # tf topics
+  - name: /tf
+    direction: 1to2
+  - name: /tf_static
+    direction: 1to2
+
+  # odometry
+  - name: /odom
+    direction: 1to2
+
+  # joint_states topic for euslisp robot-interface
+  - name: /joint_states
+    direction: 1to2
+
+  # rarm_controller
+  - name: /rarm_controller/controller_state
+    direction: 1to2
+  - name: /rarm_controller/joint_trajectory
+    direction: 2to1
+  - name: /rarm_controller/follow_joint_trajectory/goal
+    direction: 2to1
+  - name: /rarm_controller/follow_joint_trajectory/cancel
+    direction: 2to1
+  - name: /rarm_controller/follow_joint_trajectory/feedback
+    direction: 1to2
+  - name: /rarm_controller/follow_joint_trajectory/result
+    direction: 1to2
+  - name: /rarm_controller/follow_joint_trajectory/status
+    direction: 1to2
+
+  # larm_controller
+  - name: /larm_controller/controller_state
+    direction: 1to2
+  - name: /rarm_controller/joint_trajectory
+    direction: 2to1
+  - name: /larm_controller/follow_joint_trajectory/goal
+    direction: 2to1
+  - name: /larm_controller/follow_joint_trajectory/cancel
+    direction: 2to1
+  - name: /larm_controller/follow_joint_trajectory/feedback
+    direction: 1to2
+  - name: /larm_controller/follow_joint_trajectory/result
+    direction: 1to2
+  - name: /larm_controller/follow_joint_trajectory/status
+    direction: 1to2
+
+  # head_controller
+  - name: /head_controller/controller_state
+    direction: 1to2
+  - name: /rarm_controller/joint_trajectory
+    direction: 2to1
+  - name: /head_controller/follow_joint_trajectory/goal
+    direction: 2to1
+  - name: /head_controller/follow_joint_trajectory/cancel
+    direction: 2to1
+  - name: /head_controller/follow_joint_trajectory/feedback
+    direction: 1to2
+  - name: /head_controller/follow_joint_trajectory/result
+    direction: 1to2
+  - name: /head_controller/follow_joint_trajectory/status
+    direction: 1to2
+
+  # mecanum_drive_controller
+  - name: /mecanum_drive_controller/reference
+    direction: 2to1
+
+  # joy and sensors
+  - name: /joy
+    direction: 2to1
+  - name: /imu
+    direction: 1to2
+
+  # atom_s3 topics
+  - name: /atom_s3_additional_info
+    direction: 2to1
+  - name: /atom_s3_button_state
+    direction: 2to1
+  - name: /atom_s3_force_mode
+    direction: 2to1
+  - name: /atom_s3_mode
+    direction: 2to1
+  - name: /atom_s3_selected_modes
+    direction: 2to1
+
+  # battery
+  - name: /battery/pisugar/remaining_battery
+    direction: 2to1
+
+services:
+  # Controller manager services (ROS 2 to ROS 1)
+  2to1:
+    - /controller_manager/list_controllers
+    - /controller_manager/list_controller_types
+    - /controller_manager/load_controller
+    - /controller_manager/unload_controller
+    - /controller_manager/switch_controller
+    - /controller_manager/reload_controller_libraries
+
+actions:
+  2to1:
+    - /rarm_controller/follow_joint_trajectory
+    - /larm_controller/follow_joint_trajectory
+    - /head_controller/follow_joint_trajectory
