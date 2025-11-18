@@ -43,8 +43,16 @@ def generate_launch_description():
     if os.path.exists(ros2_setup):
         source_commands.append(f'source {ros2_setup}')
 
+    # Get config file path
+    config_path = os.path.join(os.path.dirname(__file__), '..', 'config', 'controller_bridge.yaml')
+    config_path = os.path.abspath(config_path)
+
+    # Get robot_description publisher script path
+    script_path = os.path.join(os.path.dirname(__file__), '..', 'scripts', 'publish_robot_description.py')
+    script_path = os.path.abspath(script_path)
+
     # Combine source commands with bridge execution
-    bridge_cmd = 'ros2 run ros1_bridge dynamic_bridge --bridge-all-topics'
+    bridge_cmd = f'ros2 run ros1_bridge dynamic_bridge --bridge-all-topics --config {config_path}'
     full_cmd = ' && '.join(source_commands + [bridge_cmd])
 
     ros1_bridge = ExecuteProcess(
@@ -53,6 +61,13 @@ def generate_launch_description():
         output='screen'
     )
 
+    # Launch robot_description publisher
+    robot_description_publisher = ExecuteProcess(
+        cmd=['python3', script_path],
+        output='screen'
+    )
+
     return LaunchDescription([
+        robot_description_publisher,
         ros1_bridge,
     ])
