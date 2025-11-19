@@ -173,7 +173,7 @@ $ gnome-control-center
 
 1. gnome-control-centerのBluetoothウィンドウで，「デバイス」の一覧を確認する
 2. DualShock 3コントローラーのPSボタン（中央のプレステマークのボタン）を長押しして，ペアリングモードにする
-3. PC側でコントローラーが検出されたら，{numref}`fig:ps3-bluetooth-paring`のような確認ダイアログが表示される．「Allow」をクリックして接続を許可する
+3. USBをPCにさしてコントローラーが検出されたら，{numref}`fig:ps3-bluetooth-paring`のような確認ダイアログが表示される．「Allow」をクリックして接続を許可する
 
 :::{figure} ../fig/ps3-bluetooth-paring.jpg
 :align: center
