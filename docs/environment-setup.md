@@ -37,7 +37,7 @@ $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/
 $ rosdep update
 $ cd ~/ros_ws
 $ rosdep install --from-paths src --ignore-src -y -r
-$ catkin build jedyeus
+$ catkin build jedy_ros1_bridge jedyeus
 $ catkin build mechatrobot # Arduinoの演習日に必要
 ```
 
@@ -90,6 +90,6 @@ $ catkin --version
 
 環境構築が完了したら，以下の演習に進む：
 
-- [1日目：メカトロボットの製作とプログラミング](robot-programming-3-2025.md)
-- [2日目：双腕移動台車ロボットを用いた認識操作プログラミング](robot-programming-1-2025.md)
-- [3日目：ロボットの全身行動プログラミング](robot-programming-2-2025.md)
+- {doc}`robot-programming-3-2025`
+- {doc}`robot-programming-1-2025`
+- {doc}`robot-programming-2-2025`

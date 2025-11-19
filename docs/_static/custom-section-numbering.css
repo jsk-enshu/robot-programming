@@ -1,0 +1,8 @@
+/* セクション番号のフォントサイズを確保 */
+h2 .section-number {
+    font-size: inherit !important;
+}
+
+h3 .section-number {
+    font-size: inherit !important;
+}
