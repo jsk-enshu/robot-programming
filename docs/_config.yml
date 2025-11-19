@@ -58,7 +58,7 @@ sphinx:
       override_image_directive: true
     # 番号付けの設定：各章（H1見出し）ごとに番号をリセット
     numfig: true
-    numfig_secnum_depth: 1
+    numfig_secnum_depth: 0
     # sphinx-exerciseの設定：各ファイル（章）ごとにexerciseの番号をリセット
     exercise_scope: "chapter"
     # sphinx-exerciseの設定：exerciseの名称を「チェックポイント」に変更
@@ -74,10 +74,14 @@ sphinx:
     # 画像・動画ディレクトリをビルド出力に直接コピー
     html_extra_path:
       - fig
+    # カスタムCSSファイルを追加
+    html_css_files:
+      - custom-section-numbering.css
     # カスタムJavaScriptファイルを追加
     html_js_files:
       - custom-copybutton.js
       - reset-exercise-counter.js
+      - reset-section-numbers.js
     html_theme_options:
       repository_url: https://github.com/jsk-enshu/robot-programming
       use_repository_button: false
@@ -85,6 +89,7 @@ sphinx:
       use_fullscreen_button: true
       show_toc_level: 4  # サイドバーに第4レベルの見出しまで表示（チェックポイント含む）
       toc_title: "目次"
+      number_sections_depth: 3  # セクション番号を第3レベルまで表示
     # Thebeを無効化してJavaScriptエラーを防ぐ
     thebe_config:
       use_thebe_lite: false

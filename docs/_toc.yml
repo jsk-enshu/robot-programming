@@ -3,22 +3,27 @@ format: jb-book
 root: index
 parts:
   - caption: 事前準備
+    numbered: false
     chapters:
     - file: environment-setup
       title: 環境構築
   - caption: 1日目
+    numbered: true
     chapters:
     - file: robot-programming-3-2025
       title: メカトロボットの製作とプログラミング
   - caption: 2日目
+    numbered: true
     chapters:
     - file: robot-programming-1-2025
       title: 双腕移動台車ロボットを用いた認識操作プログラミング
   - caption: 3日目
+    numbered: true
     chapters:
     - file: robot-programming-2-2025
       title: ロボットの全身行動プログラミング
   - caption: Tips・付録（共通）
+    numbered: false
     chapters:
     - file: tips/caps-to-ctrl
       title: Caps LockをCtrlに変更
@@ -45,6 +50,7 @@ parts:
     - file: tips/ros2-commands
       title: ROS 2コマンド
   - caption: Tips・付録（1日目）
+    numbered: false
     chapters:
     - file: tips/arduino-ide
       title: Arduino IDEインストール
@@ -63,6 +69,7 @@ parts:
     - file: tips/dynamixel
       title: Dynamixel制御
   - caption: Tips・付録（2日目）
+    numbered: false
     chapters:
     - file: tips/ping
       title: Ping接続確認
@@ -93,6 +100,7 @@ parts:
     - file: tips/bluetooth
       title: Bluetooth確認
   - caption: Tips・付録（3日目）
+    numbered: false
     chapters:
     - file: tips/python-to-euslisp
       title: PythonプログラマのためのEusLisp
