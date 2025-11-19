@@ -18,7 +18,7 @@
   <arg name="publish_sensor" default="false" />
   <arg name="publish_battery_voltage" default="false" />
   <arg name="use_rcb4" default="false" doc="Flag to use RCB4 mini board"/>
-  <arg name="device" default="/dev/ttyAMA5" doc="Device path"/>
+  <arg name="device" default="" doc="Device path"/>
   <arg name="model_server_port" default="8123" />
   <arg name="namespace" default="" />
   <arg name="joint_group_description" default="" />
@@ -71,9 +71,6 @@
 	args="velocity_command_joint_state velocity_command_joint_state_from_robot_hardware velocity_command_joint_state_from_joint_state" >
     <param name="initial_topic" value="velocity_command_joint_state_from_robot_hardware" />
   </node>
-
-  <node name="relay_stamped_to_twist" pkg="topic_tools" type="transform" respawn="true"
-	args="/mecanum_drive_controller/reference /ridgeback_control/cmd_vel geometry_msgs/Twist 'm.twist' --import geometry_msgs.msg" />
 
   <!-- Topic relays for controller state and commands -->
   <node name="relay_rarm_controller_state" pkg="topic_tools" type="relay"

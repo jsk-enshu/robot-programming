@@ -14,5 +14,7 @@
     <exec_depend>topic_tools</exec_depend>
     <exec_depend>ridgeback_control</exec_depend>
     <exec_depend>controller_manager</exec_depend>
+    <exec_depend>kxr_rqt_plugin</exec_depend>
+    <exec_depend>realsense2_camera</exec_depend>
 
 </package>

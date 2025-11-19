@@ -3,6 +3,10 @@ repositories:
     type: git
     url: https://github.com/iory/rcb4
     version: main
+  ridgeback:
+    type: git
+    url: https://github.com/ridgeback/ridgeback
+    version: melodic-devel
   robot-programming:
     type: git
     url: https://github.com/jsk-enshu/robot-programming

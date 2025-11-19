@@ -23,7 +23,7 @@
 
 ;; (jedy-init :without-ri t)
 ;; もし実機に指令を送りたい場合には:without-riキーワード引数をnil (false)にする
-(jedy-init :without-ri nil)
+(jedy-init :without-ri t)
 
 (when (boundp '*ri*)
   (send *ri* :servo-on))
@@ -50,7 +50,9 @@
   (let (w goal-endcoords ll ik-result
           (target-arm :rarm)
           lookup-ik-mode
-	  (previous-time (ros::time-now)))
+	  previous-time)
+    (when (boundp '*ri*)
+      (setq previous-time (ros::time-now)))
     ;;もし腕しか使わない場合はlinklistをあらかじめ用意しておく
     ;;目標座標を作成する(デフォルトは手先位置と同じにする)
     (setq goal-endcoords
