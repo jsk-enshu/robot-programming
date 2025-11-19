@@ -21,10 +21,7 @@
 それらのロボット毎に異なるハードウェアに依存する部分をロボットインターフェースよりも下位にまとめることでロボット毎の違いを吸収している．
 これにより同一の上位プログラムから異なるロボットを行動を制御できるようになっている．
 
-さらに付録には順・逆運動学を応用することで
-`Gazebo`シミュレーション上のヒューマノイドロボット`JAXON`に対して
-人間とヒューマノイドロボットをリアルタイムに同期させるアバターのサンプルも用意してある．
-それらのサンプルでは演習用PCの搭載カメラを利用した簡易的なモーションキャプチャの構成を経て`ROS`や2D画像処理技術，アバター技術の基礎に触れることができるので，余裕のある人は必須課題が終わった後や演習後に試してみて欲しい．
+さらに付録には順・逆運動学を応用することで`Gazebo`シミュレーション上のヒューマノイドロボット`JAXON`を動かせるものもあるので余裕のある人は必須課題が終わった後や演習後に試してみて欲しい．
 
 本日の目標は以下である．
 
@@ -67,22 +64,22 @@
 発展課題に関しては必須ではないが，すべてをこなすとかなりのロボットレベルが上がるため，これからロボットをやっていきたいというロボット経験者も未経験者もぜひチャレンジしてほしい．
 ```
 
-## 環境構築とソフトウェア更新
+### 環境構築とソフトウェア更新
 
 演習を開始する前に，必ず[環境構築](environment-setup.md)のページを参照して，最新バージョンのソフトウェアを取得すること．
 
-## ROSコマンドなどのおさらい
+### ROSコマンドなどのおさらい
 
-### ROS 1コマンド
+#### ROS 1コマンド
 
 ```{code-block} console
 $ rostopic list
 # topic一覧がでる
-$ rostopic hz /atom_s3_button_state
+$ rostopic hz /imu
 # 周期がわかる
-$ rostopic type /atom_s3_button_state
+$ rostopic type /imu
 # topicの型が何かわかる
-$ rostopic echo /atom_s3_button_state
+$ rostopic echo /imu
 # topicの内容を表示する
 $ rosnode list
 # rosnode一覧
@@ -92,16 +89,16 @@ $ rqt_graph
 # ノード一覧がグラフとして表示される
 ```
 
-### ROS 2コマンド
+#### ROS 2コマンド
 
 ```{code-block} console
 $ ros2 topic list
 # topic一覧がでる
-$ ros2 topic hz /atom_s3_button_state
+$ ros2 topic hz /imu
 # 周期がわかる
-$ ros2 topic info /atom_s3_button_state
+$ ros2 topic info /imu
 # topicの型とpublisher/subscriber数が分かる
-$ ros2 topic echo /atom_s3_button_state
+$ ros2 topic echo /imu
 # topicの内容を表示する
 $ ros2 node list
 # rosnode一覧
@@ -113,7 +110,7 @@ $ rqt_graph
 
 詳細なコマンドの使い方については[ROS 1コマンド](tips/ros1-commands.md)と[ROS 2コマンド](tips/ros2-commands.md)のTipsページを参照すること．
 
-# `EusLisp`ロボットインターフェース`*ri*`からのセンサ値取得・台車駆動（シミュレーションにも対応）
+## `EusLisp`ロボットインターフェース`*ri*`からのセンサ値取得・台車駆動（シミュレーションにも対応）
 
 `EusLisp`のロボットインターフェースで実際のロボットのセンサ値取得や台車駆動が行えることを確認する．
 
@@ -280,11 +277,11 @@ $ roscd jedy_bringup/exercise/
 ボタンを押されると音をならし前進しもう一回ボタンを押されるとストップする．
 ```
 
-# 双腕移動台車ロボットのハードウェアとセットアップ
+## 双腕移動台車ロボットのハードウェアとセットアップ
 
 本章では双腕移動台車ロボットの全身動作を行っていく．
 
-## ハードウェア構成
+### ハードウェア構成
 
 双腕移動台車ロボットの片腕は8自由度あり
 7自由度がアーム，1自由度がグリッパハンドである．
@@ -305,9 +302,9 @@ Jedyのサーボ順番割付
 `Radxa`の充電基板にとりついている`ZH3`線のコネクタは`/dev/ttyAML1`というデバイスとして認識されている．
 動作電圧は6-12Vであり，2セルのリポバッテリーから8Vを作り出すことで駆動している．
 
-## セットアップ
+### セットアップ
 
-### 接続と電源投入
+#### 接続と電源投入
 
 背面のバックパック部分の白い制御基板(`KondoH7`基板)から出ている黒い3線のケーブルが`Radxa zero`の上面にある充電管理基板の3線とつながっていることを確認しよう(，を参照).
 背面の物理ボタンをONにすると`KondoH7`基板のLEDが青く点滅し，ブザー音が鳴ることを確認しよう．
@@ -320,7 +317,7 @@ Jedyの背面パネル
 USB充電端子，サーボ基板へ8Vを出力する黄色いコネクタの`XT30`端子，`UART`通信のための黒い`ZH3`線ケーブル，バッテリー入力をする黄色い`XT30`端子がある．また`Atom S3`にはロボットのIPアドレスやバッテリー残量が表示されている．
 ```
 
-### IDの確認
+#### IDの確認
 
 `Jedy`の電源を入れ，ロボットPCに`ssh`でログインして，
 以下のコマンドを実行し22個のサーボモータすべてが
@@ -392,10 +389,10 @@ Servo ID 13 (larm_joint6) not found
 Servo ID 15 (larm_gripper_joint) not found
 ```
 
-実行してこのように“not found”と出ているサーボはケーブルが抜けていないかどうかを確認すべきである．
+実行してこのように"not found"と出ているサーボはケーブルが抜けていないかどうかを確認すべきである．
 <span style="color:red">**ロボットにおいて電源周りやケーブルの接触不良は物理的に動くものであるため起こりうる．大事なことは問題が起きたときにどのように対処できるかというデバッグ能力であり，今のうちから技術を身に着けていってほしい．**</span>
 
-# 演習への取り組み方と移動台車ロボットの共有方法
+## 演習への取り組み方と移動台車ロボットの共有方法
 
 ロボットPCをROSのMasterとして班員のPCを複数台使うことでそれぞれ個別に指令値を送ったりセンサ値を表示したりしながらロボットを動かすことができる．
 しかしロボットの動作自体は一人が送っている間は他の人が送ると動作が上書きされてしまうため，みんなで話ながらロボットを動かしていってほしい．
@@ -409,11 +406,11 @@ Servo ID 15 (larm_gripper_joint) not found
 
 複数台のPC接続設定は{doc}`robot-programming-1-2025`に従う．
 
-# アームロボットのソフトウェア（シミュレーションにも対応）
+## アームロボットのソフトウェア（シミュレーションにも対応）
 
 本小節ではアームロボットを動かすためのソフトウェアについて説明する．
 
-## ロボットアームの起動
+### ロボットアームの起動
 
 **本章のコマンドはアームを動かすのでアームが何かにぶつからないように周囲に注意しながら演習を行うこと．**
 
@@ -432,7 +429,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 
 **実機を動かす場合はのセットアップが必要になる．**
 
-## PythonプログラマのためのEusLisp入門
+### PythonプログラマのためのEusLisp入門
 
 本演習では，ロボット制御にEusLispという言語を使用する．多くの学生にとってPythonの方が馴染みがあると思われるため，ここではPythonとの対比を通じてEusLispの書き方を理解できるようにする．
 
@@ -444,7 +441,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 PythonとEusLispの構文対比
 :::
 
-### 基本的な対応関係
+#### 基本的な対応関係
 
 | 概念 | Python | EusLisp | 説明 |
 |------|--------|---------|------|
@@ -455,7 +452,7 @@ PythonとEusLispの構文対比
 | **リスト/配列** | `[0, 0, 0, 0, 0, 0]` | `#f(0 0 0 0 0 0)` | `#f`は浮動小数点数ベクトル |
 | **入れ子の関数** | `jedy.inverse_kinematics(make_coords(pos=[370, 0, 150]))` | `(send *jedy* :inverse-kinematics (make-coords :pos #f(370 0 150)))` | 内側から外側へ評価される |
 
-### 重要なポイント
+#### 重要なポイント
 
 1. **前置記法（Prefix Notation）**
    - Python: `a + b` （演算子が中央）
@@ -476,7 +473,7 @@ PythonとEusLispの構文対比
 
 詳細な説明については，[PythonプログラマのためのEusLisp](tips/python-to-euslisp.md)を参照のこと．
 
-## `EusLisp`のロボットインターフェース`*ri*`からのアームロボットの制御
+### `EusLisp`のロボットインターフェース`*ri*`からのアームロボットの制御
 
 以下のコマンドにより
 `EusLisp`のロボットインターフェースからアームロボットを動かすことができる．
@@ -513,7 +510,7 @@ irteusgl$ (send *ri* :angle-vector (send *jedy* :angle-vector) 4000)
 1.のロボットモデルの姿勢を決定する部分は，
 のように関節角度を直接指定したり[EusLispの逆運動学メソッド](tips/euslisp-ik.md)のように逆運動学を用いてもよい．
 
-## `KRS`サーボのON/OFF
+#### `KRS`サーボのON/OFF
 
 以下のコマンドでサーボのON/OFFが切り替えられる．
 
@@ -570,7 +567,7 @@ irteusgl$ send-all (send *jedy* :joint-list) :name
 興味のある人は， <https://kondo-robot.com/product/03146>
 などの製品情報ページを参照してみてほしい．
 
-## 関節角度の直接指令による動作生成
+#### 関節角度の直接指令による動作生成
 
 <div class="screen">
 
@@ -605,37 +602,33 @@ irteusgl$ (send (send *jedy* :head_joint1) :joint-angle -90)
 
 繰り返し処理を追加すると以下のようにエンターキーを押すまでロボットがうなずき続ける．
 
-<div class="screen">
-
-``` lisp
+```{code-block} lisp
 ;; 頭部のみ個別にservo-on
-      (send *ri* :servo-on :names (list "head_joint0" "head_joint1"))
+(send *ri* :servo-on :names (list "head_joint0" "head_joint1"))
 
-      ;; 頭部の関節名を指定して角度を変える
-      (send *jedy* :head_joint0 :joint-angle 20)
-      (send *jedy* :head_joint1 :joint-angle 50)
+;; 頭部の関節名を指定して角度を変える
+(send *jedy* :head_joint0 :joint-angle 20)
+(send *jedy* :head_joint1 :joint-angle 50)
 
-      (send *irtviewer* :draw-objects)
+(send *irtviewer* :draw-objects)
 
-      ;; 関節指令を実機に反映させる (3000msかけておくる)
-      (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+;; 関節指令を実機に反映させる (3000msかけておくる)
+(send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
 
-      ;; キーが押されるまでうなずき続ける
-      (do-until-key
-        (send *jedy* :head_joint0 :joint-angle 0)
-        (send *jedy* :head_joint1 :joint-angle 90)
-        (send *ri* :angle-vector (send *jedy* :angle-vector) 1000)
-        (send *ri* :wait-interpolation)  ;; 補間がおわるのを待つ
-        (send *jedy* :head_joint0 :joint-angle 0)
-        (send *jedy* :head_joint1 :joint-angle 0)
-        (send *ri* :angle-vector (send *jedy* :angle-vector) 1000)
-        (send *ri* :wait-interpolation)  ;; 補間がおわるのを待つ
-        )
+;; キーが押されるまでうなずき続ける
+(do-until-key
+  (send *jedy* :head_joint0 :joint-angle 0)
+  (send *jedy* :head_joint1 :joint-angle 90)
+  (send *ri* :angle-vector (send *jedy* :angle-vector) 1000)
+  (send *ri* :wait-interpolation)  ;; 補間がおわるのを待つ
+  (send *jedy* :head_joint0 :joint-angle 0)
+  (send *jedy* :head_joint1 :joint-angle 0)
+  (send *ri* :angle-vector (send *jedy* :angle-vector) 1000)
+  (send *ri* :wait-interpolation)  ;; 補間がおわるのを待つ
+)
 ```
 
-</div>
-
-## 逆運動学による動作生成
+#### 逆運動学による動作生成
 
 手先を目標物に伸ばすというように，手先作業空間での目標に基づいてロボットの運動を生成するには，逆運動学(IK)を用いる．
 逆運動学は端的には，「目標位置まで手先を動かすための関節角度はいくらか？」を求める演算である．
@@ -687,7 +680,7 @@ irteusgl$ (send *jedy* :rarm :inverse-kinematics
 
 逆運動学メソッドの詳細な使い方は，を参照のこと．
 
-### <span style="color:green">チェックポイント: アームロボットの制御</span>
+#### <span style="color:green">チェックポイント: アームロボットの制御</span>
 
 ```{exercise} アームロボットの制御
 :label: ex_arm_control
@@ -702,9 +695,9 @@ irteusgl$ (send *jedy* :rarm :inverse-kinematics
 
 なお，実際に`Jedy`の定義されてるファイルは，[jedy/jedyeus/euslisp/jedy.l](https://github.com/jsk-enshu/robot-programming/tree/master/jedy/jedyeus/euslisp/jedy.l)にある．
 
-# 本日の発展課題
+## 本日の発展課題
 
-## 課題1(発展)
+### 課題1(発展)
 
 {doc}`robot-programming-1-2025`でカメラ画像を使って認識を行った．物体の姿勢を推定し，その推定結果からロボット実機の姿勢を決定することは重要である．
 ここでは，カメラのRGB画像からマーカーボックスの位置を推定し，ロボットの逆運動学計算を行いピックアップする方法を紹介するので，希望者はTAか先生から`AprilTag`Boxを貸りて，ぜひ挑戦してみてほしい．
@@ -779,23 +772,23 @@ $ roseus sample-pickup.l
 このような工夫で成功率が大きく変わることを体験してみてほしい．
 
 
-## 課題2.1 (発展)
+### 課題2.1 (発展)
 
 Jedyの`follow joint trajectory`コントローラーを別々に動かすプログラムを書いて`head_controller`のみを動かすプログラム，`rarm_controller`のみを動かすプログラムで分けて実行することでコントローラーごとに独立して操作できることを確認してみよう．
 
-## 課題2.2 (発展)
+### 課題2.2 (発展)
 
 他の班のJedyと協力して片方を動かすと片方のJedyが動くプログラムを作成してみよ．
 
 
-## ヒューマノイドロボットJAXONのシミュレーション（発展課題）
+### ヒューマノイドロボットJAXONのシミュレーション（発展課題）
 
 本章では，Gazeboシミュレーション上でヒューマノイドロボットJAXONを動かす方法を説明する．
 本演習ではROS 2でGazeboシミュレーションを起動し，EusLispから制御する際にはros1_bridgeを用いてROS 1とROS 2を橋渡しする．
 JAXONのGazeboシミュレーションはROS 2パッケージ`cart_humanoid_ros2`で提供されている．
 [JaxonのシミュレーションでリアルタイムIKを動かす](tips/realtime-ik.md)を参照のこと．
 
-## 課題3(発展)
+### 課題3(発展)
 
 `EusLisp`の`robot`インターフェース`*ri*`は双腕移動台車ロボットだけでなくヒューマノイド`JAXON`にも用意されており
 移動台車アームロボットとヒューマノイド`JAXON`は`*ri*`に共通のメソッドを送信することで制御することができる．
@@ -803,11 +796,11 @@ JAXONのGazeboシミュレーションはROS 2パッケージ`cart_humanoid_ros2
 従って本日の演習の`launch`ファイルと`euslisp`のファイルを少し書き換えるだけで移動台車アームロボットと`JAXON`を同じようなプログラムでIKによる制御を行うことができるということである．
 以下の手順でと同様に手先位置で実機またはシミュレーション上のアームロボットの手先をリアルタイムに動かしてみよ．
 
-## 課題4(発展)
+### 課題4(発展)
 
 以下の手順でと同様にカメラで認識した手先位置で実機またはシミュレーション上のアームロボットの手先をリアルタイムに動かしてみよ．
 
-## 課題5(発展)
+### 課題5(発展)
 
 機械情報冬学期演習「デジタルファブリケーション」で自分が設計した部品の立体形状を`STL`ファイルで保存していると思うがその`STL`をGazeboシミュレーション内に出現させよ．
 
@@ -841,16 +834,16 @@ model.config  model.sdf  my_mesh.stl
 
 ※STLの用意や読み込みがどうしても出来ない人はhumanoid_workspace.world内のmy primitive modelに関する部分をコメントインしてプリミティブな幾何形状の組み合わせによる自作モデルを作成しよう
 
-## 課題6(発展)
+### 課題6(発展)
 
 EusLispのrobotインターフェースに実装されている`inverse-kinematics`機能([参考](tips/euslisp-ik.md))を用いて
 任意の物体にアームで触れるプログラムを作成せよ．（※可能であればグリッパを駆使して物体をピックアップできるとなお良い）
 
-## 課題7(発展)
+### 課題7(発展)
 
 二日目の演習でJedyからJaxonを動かす様子をみたと思う．実機のJedyを動かしシミュレーターのJaxonを動かせるようにしてみよ．
 
-## 課題8(発展)
+### 課題8(発展)
 
 これまでの授業や演習で学んだロボットプログラミング技法を組み合わせ，
 自由な発想でロボットのデモプログラムを作成せよ．
