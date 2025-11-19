@@ -1,5 +1,10 @@
-# 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
+# 双腕移動台車ロボットを用いた認識操作プログラミング
 
+```{eval-rst}
+.. raw:: html
+
+   <style>.main-content { counter-reset: exercise 0; }</style>
+```
 
 ## 本日の演習内容
 
@@ -387,11 +392,11 @@ data: 1
 ロボットのデバイスにアクセスを行う方法を紹介する．
 
 本セクションではROS 2のコマンドを使用した確認方法を説明する．
-シミュレーション環境または実機でROS 2プログラムを起動した後に、以下のコマンドでノードやトピックの状態を確認できる．
+シミュレーション環境または実機でROS 2プログラムを起動した後に，以下のコマンドでノードやトピックの状態を確認できる．
 
 ### ROS 2でのnode・topic確認
 
-ROS 2では、以下のコマンドでノードとトピックの一覧を確認できる：
+ROS 2では，以下のコマンドでノードとトピックの一覧を確認できる：
 
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
@@ -401,7 +406,7 @@ $ ros2 node list # ノードの一覧
 $ ros2 topic list # topic一覧
 ```
 
-これにより、どれくらい何のノードが起動されているか，何の`topic`が出力されているか(`advertise`されているか)が確認できる．
+これにより，どれくらい何のノードが起動されているか，何の`topic`が出力されているか(`advertise`されているか)が確認できる．
 
 :::{note}
 **実機とシミュレーションでの違い**
@@ -435,7 +440,7 @@ $ ros2 topic pub --once /atom_s3_additional_info std_msgs/msg/String "data: 'hel
 - `std_msgs/msg/String`はトピックの型(`type`)
 - 最後が中身の値
 
-トピックの型が分からない場合には、以下のコマンドでトピック名から型名を取得することができる：
+トピックの型が分からない場合には，以下のコマンドでトピック名から型名を取得することができる：
 
 ```{code-block} console
 $ ros2 topic info /atom_s3_additional_info
@@ -447,7 +452,7 @@ Subscription count: 0
 :::{tip}
 **ROS 1とROS 2のコマンドの違い**
 
-ROS 1を使う場合（実機でROS 1のノードと直接通信する場合など）は、以下のようにコマンドが異なる：
+ROS 1を使う場合（実機でROS 1のノードと直接通信する場合など）は，以下のようにコマンドが異なる：
 
 | 操作 | ROS 2 | ROS 1 |
 |------|-------|-------|
@@ -470,7 +475,7 @@ $ ros2 topic echo /atom_s3_additional_info
 $ ros2 topic pub --once /atom_s3_additional_info std_msgs/msg/String "data: 'hello'"
 ```
 
-ターミナル1で、ターミナル2から送信されたメッセージが表示されることを確認しよう．
+ターミナル1で，ターミナル2から送信されたメッセージが表示されることを確認しよう．
 
 ここで重要なのは，**あくまでロボットの各種デバイスにアクセスしているROSノードはそれぞれ１つずつでありそれ以外のROSノードは通信(この場合ROSの通信)によって間接的にデバイスにアクセスする**という点である．
 ロボットに知的な振る舞いをさせる行動プログラミングをさせる場合，
@@ -534,11 +539,11 @@ $ ros2 topic pub --once /atom_s3_additional_info std_msgs/msg/String "data: 'hel
 :::{important}
 **シミュレーション実行前のネットワーク設定**
 
-Gazeboシミュレーションを実行する際は、**UTokyo Wifiに接続し直すこと**．
+Gazeboシミュレーションを実行する際は，**UTokyo Wifiに接続し直すこと**．
 
-実機を使用する際にはロボットPCと通信するために `1x-wifi` に接続する必要があったが、シミュレーションは自分のPC上で動作するため、インターネット接続が可能な `UTokyo Wifi` に接続し直して実行すること．
+実機を使用する際にはロボットPCと通信するために `1x-wifi` に接続する必要があったが，シミュレーションは自分のPC上で動作するため，インターネット接続が可能な `UTokyo Wifi` に接続し直して実行すること．
 
-これにより、パッケージのダウンロードやアップデートなどが必要な場合にスムーズに進められる．
+これにより，パッケージのダウンロードやアップデートなどが必要な場合にスムーズに進められる．
 :::
 
 ### jedy_gazebo.launchの起動
@@ -809,11 +814,11 @@ $ ssh jedy@<ロボットPCのIPアドレス>
 
 #### サーボバッテリーの接続と電源ON
 
-まず、サーボ制御基板にバッテリーを接続する必要がある．
-以下の手順でバッテリーを接続し、サーボ制御基板の電源をONにする：
+まず，サーボ制御基板にバッテリーを接続する必要がある．
+以下の手順でバッテリーを接続し，サーボ制御基板の電源をONにする：
 
 1. **バッテリーの接続**：サーボバッテリーの白いVH2ピンコネクタをサーボ制御基板のVH2ピンに接続する
-2. **電源ON**：ロボット背面にあるサーボ制御基板のスイッチを押すと、青いLEDが点灯し、数秒後にブザー音が鳴る
+2. **電源ON**：ロボット背面にあるサーボ制御基板のスイッチを押すと，青いLEDが点灯し，数秒後にブザー音が鳴る
 
 ```{figure} fig/how_to_switch_on_jedy_servo.png
 ---
@@ -825,11 +830,11 @@ name: fig:how_to_switch_on_jedy_servo_remote
 :::{danger}
 **サーボバッテリーの充電に関する重要な注意事項**
 
-サーボバッテリーを充電する際は、**必ず専用のACアダプタとUSBケーブルを使用すること**．
+サーボバッテリーを充電する際は，**必ず専用のACアダプタとUSBケーブルを使用すること**．
 
 <span style="color:red; font-weight:bold;">絶対にPCのUSBポートには接続しないこと！</span>
 
-PCに接続すると、PCやバッテリーが破損する可能性がある．
+PCに接続すると，PCやバッテリーが破損する可能性がある．
 
 ```{figure} fig/how_to_charge_battery.png
 ---
@@ -841,10 +846,10 @@ name: fig:how_to_charge_battery_remote
 
 #### 実機でのROSプログラムの起動
 
-実機を動かすための手順は少し煩雑だが、以下の手順に従って設定を行う．
-**この部分は多くの学生が詰まりやすいポイントなので、手順を丁寧に確認しながら進めること．**
+実機を動かすための手順は少し煩雑だが，以下の手順に従って設定を行う．
+**この部分は多くの学生が詰まりやすいポイントなので，手順を丁寧に確認しながら進めること．**
 
-実機を動かすには、大きく分けて以下の3つのステップが必要である：
+実機を動かすには，大きく分けて以下の3つのステップが必要である：
 
 1. **ロボットPC側での起動**（SSH経由）
 2. **自分のPC側でのROS環境設定**（jedy-wifi接続）
@@ -852,7 +857,7 @@ name: fig:how_to_charge_battery_remote
 
 ##### ステップ1: ロボットPC側での起動
 
-まず、ロボットPCにSSHで接続し、基本プログラムを起動する．
+まず，ロボットPCにSSHで接続し，基本プログラムを起動する．
 
 ```{code-block} console
 $ ssh jedy@<ロボットPCのIPアドレス>
@@ -903,7 +908,7 @@ C言語の`include`やPythonの`import`のように，他の`launch`ファイル
 
 ##### ステップ2: 自分のPC側でのROS環境設定
 
-次に、自分のPCで**jedy-wifiに接続した状態**で、別のターミナルを開いて以下のコマンドを実行する．
+次に，自分のPCで**jedy-wifiに接続した状態**で，別のターミナルを開いて以下のコマンドを実行する．
 
 ```{code-block} console
 # ROS環境のセットアップ
@@ -921,25 +926,25 @@ $ export ROS_DOMAIN_ID=<Your Jedy's ROS_DOMAIN_ID>
 :::{tip}
 **ROS_DOMAIN_IDの設定を簡略化する方法**
 
-演習中は毎回`export ROS_DOMAIN_ID=<ID>`を実行するのが煩雑なので、以下のように`.bashrc`に書いておくと良い：
+演習中は毎回`export ROS_DOMAIN_ID=<ID>`を実行するのが煩雑なので，以下のように`.bashrc`に書いておくと良い：
 
 ```{code-block} bash
 # ~/.bashrcに追加
 export ROS_DOMAIN_ID=<Your Jedy's ROS_DOMAIN_ID>
 ```
 
-`.bashrc`に追加した後は、以下のコマンドで設定を反映させる：
+`.bashrc`に追加した後は，以下のコマンドで設定を反映させる：
 
 ```{code-block} console
 $ source ~/.bashrc
 ```
 
-これにより、新しいターミナルを開くたびに自動的に`ROS_DOMAIN_ID`が設定されるようになる．
+これにより，新しいターミナルを開くたびに自動的に`ROS_DOMAIN_ID`が設定されるようになる．
 :::
 
 ##### ステップ3: ROS 1/ROS 2ブリッジの起動
 
-自分のPCで、ROS 1とROS 2を橋渡しするブリッジプログラムを起動する．
+自分のPCで，ROS 1とROS 2を橋渡しするブリッジプログラムを起動する．
 
 ```{code-block} console
 $ source ~/ros2_ws/install/setup.bash
@@ -947,11 +952,11 @@ $ export ROS_DOMAIN_ID=<Your Jedy's ROS_DOMAIN_ID>  # .bashrcに書いていな�
 $ ros2 launch jedy_bringup ros1_bridge.launch.py
 ```
 
-このブリッジが正常に起動すると、ROS 2のプログラムからROS 1のロボット制御システムと通信できるようになる．
+このブリッジが正常に起動すると，ROS 2のプログラムからROS 1のロボット制御システムと通信できるようになる．
 
 ##### 接続確認: テレオペレーションで動作確認
 
-接続が正しく設定できているか、キーボードテレオペレーションやジョイスティックテレオペレーションで確認してみよう．
+接続が正しく設定できているか，キーボードテレオペレーションやジョイスティックテレオペレーションで確認してみよう．
 別のターミナルを開いて以下のいずれかを実行する：
 
 **キーボードテレオペレーションの場合：**
@@ -970,13 +975,13 @@ $ export ROS_DOMAIN_ID=<Your Jedy's ROS_DOMAIN_ID>  # .bashrcに書いていな�
 $ ros2 launch jedy_bringup joystick_teleop.launch.py
 ```
 
-うまく接続ができていると、キーボード操作やジョイスティック操作でJedyが動くはずである．
-**ロボットが動かない場合は、上記の手順を再度確認すること．**
+うまく接続ができていると，キーボード操作やジョイスティック操作でJedyが動くはずである．
+**ロボットが動かない場合は，上記の手順を再度確認すること．**
 
 :::{warning}
 **EusLispを使用する場合の追加設定**
 
-EusLispプログラムを実機と接続して使用する場合は、EusLispを起動する前に必ず以下のコマンドを実行すること：
+EusLispプログラムを実機と接続して使用する場合は，EusLispを起動する前に必ず以下のコマンドを実行すること：
 
 ```{code-block} console
 $ source /opt/ros/one/setup.bash
@@ -984,14 +989,14 @@ $ rossetip
 $ rossetmaster <ロボットPCのIPアドレス>
 ```
 
-これらの設定を忘れると、EusLispからロボットにアクセスできない．
-EusLispを使う演習では、この設定を毎回確認すること．
+これらの設定を忘れると，EusLispからロボットにアクセスできない．
+EusLispを使う演習では，この設定を毎回確認すること．
 :::
 
 ##### 実機での動作確認: ROS 1でのnode・topic確認
 
-実機のプログラムが正常に起動しているか、ROS 1のコマンドで確認してみよう．
-`jedy_bridge.launch`を起動した後、自分のPCで以下のコマンドを実行する：
+実機のプログラムが正常に起動しているか，ROS 1のコマンドで確認してみよう．
+`jedy_bridge.launch`を起動した後，自分のPCで以下のコマンドを実行する：
 
 ```{code-block} console
 $ source /opt/ros/one/setup.bash
@@ -1001,24 +1006,24 @@ $ rosnode list # ノードの一覧
 $ rostopic list # topic一覧
 ```
 
-これにより、どれくらい何のノードが起動されているか，何の`topic`が出力されているか(`advertise`されているか)が確認できる．
+これにより，どれくらい何のノードが起動されているか，何の`topic`が出力されているか(`advertise`されているか)が確認できる．
 
 :::{note}
 **`rossetip`や`rossetmaster`コマンドが見つからない場合**
 
-もし`rossetip`や`rossetmaster`コマンドが存在しないというエラーが出た場合は、以下のコマンドで必要なパッケージをインストールしてから再度試してみること：
+もし`rossetip`や`rossetmaster`コマンドが存在しないというエラーが出た場合は，以下のコマンドで必要なパッケージをインストールしてから再度試してみること：
 
 ```{code-block} console
 $ sudo apt install ros-one-jsk-topic-tools
 $ source /opt/ros/one/setup.bash
 ```
 
-インストール後、再度`rossetip`と`rossetmaster`コマンドを実行する．
+インストール後，再度`rossetip`と`rossetmaster`コマンドを実行する．
 :::
 
 #### シミュレーションでのROSプログラムの起動
 
-シミュレーションを使用する場合は、以下のコマンドでGazeboシミュレーションを起動する．
+シミュレーションを使用する場合は，以下のコマンドでGazeboシミュレーションを起動する．
 
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
@@ -1423,7 +1428,7 @@ RvizはROS標準の3Dビューアソフトである．
 
 ### 実機でのRViz起動
 
-実機でカメラ画像や点群を確認する場合は、以下の手順でRVizを起動する：
+実機でカメラ画像や点群を確認する場合は，以下の手順でRVizを起動する：
 
 ```{code-block} console
 # RVizを起動
@@ -1433,7 +1438,7 @@ $ export ROS_DOMAIN_ID=<Your Jedy's ROS_DOMAIN_ID>
 $ rviz2
 ```
 
-RVizが起動したら、以下の手順で画像や点群を表示する：
+RVizが起動したら，以下の手順で画像や点群を表示する：
 
 1. **Fixed Frame**の設定：左上の「Fixed Frame」を`base_link`または`camera_color_optical_frame`に設定する
 2. **画像の追加**：左下の「Add」ボタンをクリック → 「By display type」タブで「Image」を選択 → 「OK」
@@ -1443,7 +1448,7 @@ RVizが起動したら、以下の手順で画像や点群を表示する：
 :::{note}
 **compressed画像の再publish**
 
-実機では、カメラから送られてくる画像がcompressed（圧縮）形式のため、`remote_camera.launch.py`で再publishする必要がある．
+実機では，カメラから送られてくる画像がcompressed（圧縮）形式のため，`remote_camera.launch.py`で再publishする必要がある．
 以下のコマンドを別のターミナルで実行すること：
 
 ```{code-block} console
@@ -1456,7 +1461,7 @@ $ ros2 launch jedy_bringup remote_camera.launch.py
 
 ### シミュレーションでのRViz
 
-シミュレーションでは、`jedy_gazebo.launch.py`を起動すると自動的にRVizも起動されるため、明示的に起動する必要はない．
+シミュレーションでは，`jedy_gazebo.launch.py`を起動すると自動的にRVizも起動されるため，明示的に起動する必要はない．
 
 ### Rviz上でのtopicの追加
 
@@ -1500,12 +1505,12 @@ Rvizのtopic追加方法
 
 ### プログラムの起動
 
-checkerboard認識を実行するには、以下のプログラムを起動する必要がある．
-実機とシミュレーションで手順が異なるため、それぞれ説明する．
+checkerboard認識を実行するには，以下のプログラムを起動する必要がある．
+実機とシミュレーションで手順が異なるため，それぞれ説明する．
 
 #### 実機での起動手順
 
-実機では、以下のプログラムを**それぞれ別のターミナル**で起動する：
+実機では，以下のプログラムを**それぞれ別のターミナル**で起動する：
 
 **ターミナル1: ロボットPCでjedy_bridge.launchを起動**（既に起動している場合は不要）
 
@@ -1567,7 +1572,7 @@ $ ros2 launch jedy_bringup checkerboard_detector.launch.py
 
 #### シミュレーションでの起動手順
 
-シミュレーションでは、以下の3つのプログラムを**それぞれ別のターミナル**で起動する：
+シミュレーションでは，以下の3つのプログラムを**それぞれ別のターミナル**で起動する：
 
 **ターミナル1: Gazeboシミュレータを起動**（既に起動している場合は不要）
 
@@ -1587,9 +1592,9 @@ $ ros2 launch jedy_bringup checkerboard_detector.launch.py input_topic:=/camera/
 
 #### checkerboard認識の確認
 
-上記の手順でcheckerboard認識プログラムを起動すると、`CheckerboardDetector`とかかれたビューワが表示される．
-紙に印刷されたCheckerboardパターン [^6] をカメラ前に持っていくと、格子の認識結果が表示される．
-カメラ視界内にチェッカーボードが入ると、格子の認識結果が表示される．
+上記の手順でcheckerboard認識プログラムを起動すると，`CheckerboardDetector`とかかれたビューワが表示される．
+紙に印刷されたCheckerboardパターン [^6] をカメラ前に持っていくと，格子の認識結果が表示される．
+カメラ視界内にチェッカーボードが入ると，格子の認識結果が表示される．
 
 上記`launch.py`の中では
 
@@ -1801,18 +1806,18 @@ $ source /opt/ros/one/setup.bash
 **この設定を忘れるとlaunchファイルが見つからないエラーが発生する．**
 :::
 
-三次元点群処理を実行するには、以下の4つのプログラムを**それぞれ別のターミナル**で起動する必要がある：
+三次元点群処理を実行するには，以下の4つのプログラムを**それぞれ別のターミナル**で起動する必要がある：
 
 1. **Gazeboシミュレータ**
 2. **BoundingBoxArrayのROS 2ブリッジ**（`publish_robot_description.py`）
 3. **ROS 1/ROS 2ブリッジ**（`ros1_bridge`）
 4. **色抽出クラスタリング**（`hsi_color_filter`）
 
-以下、それぞれの起動手順を説明する．
+以下，それぞれの起動手順を説明する．
 
 #### 1. シミュレータの起動（ターミナル1）
 
-まず、Gazeboシミュレータを起動する．
+まず，Gazeboシミュレータを起動する．
 
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
@@ -1822,7 +1827,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 
 #### 2. BoundingBoxArrayのROS 2ブリッジ設定（ターミナル2）
 
-ROS 1の`hsi_color_filter`が出力する`BoundingBoxArray`をROS 2側で利用するため、別のターミナルで`publish_robot_description.py`を起動する必要がある．
+ROS 1の`hsi_color_filter`が出力する`BoundingBoxArray`をROS 2側で利用するため，別のターミナルで`publish_robot_description.py`を起動する必要がある．
 このスクリプトは`BoundingBoxArray`メッセージをROS 2にブリッジするための変換を行う．
 
 ```{code-block} console
@@ -1834,7 +1839,7 @@ $ ros2 run jedy_bringup publish_robot_description.py
 :::{note}
 **publish_robot_description.pyの役割**
 
-`jedy_bringup`パッケージの`publish_robot_description.py`は、ROS 1で出力される`BoundingBoxArray`メッセージをROS 2のトピックとしてブリッジするために必要な設定を行う．このスクリプトを起動することで、ROS 1とROS 2間でBoundingBox情報のやり取りが可能になる．
+`jedy_bringup`パッケージの`publish_robot_description.py`は，ROS 1で出力される`BoundingBoxArray`メッセージをROS 2のトピックとしてブリッジするために必要な設定を行う．このスクリプトを起動することで，ROS 1とROS 2間でBoundingBox情報のやり取りが可能になる．
 :::
 
 #### 3. ROS 2からROS 1へのトピックブリッジ（ターミナル3）
@@ -2231,15 +2236,15 @@ $ ros2 topic pub --once /robocrew/prompt std_msgs/msg/String "{data: 'Turn left 
 :::{tip}
 **シミュレーション速度とLLM応答のタイミング調整**
 
-Gazeboシミュレーションの速度が速い場合、LLM APIの応答タイミングが実際のロボットの動作と合わなくなることがある．
-この場合、`robocrew_image_to_cmd_vel.py`の`speed`パラメータを小さくすることで調整できる．
+Gazeboシミュレーションの速度が速い場合，LLM APIの応答タイミングが実際のロボットの動作と合わなくなることがある．
+この場合，`robocrew_image_to_cmd_vel.py`の`speed`パラメータを小さくすることで調整できる．
 
 `robocrew_image_to_cmd_vel.py`のファイルパス：
 ```
 ~/ros2_ws/src/robot-programming/jedy/jedy_bringup/scripts/robocrew_image_to_cmd_vel.py
 ```
 
-ファイルを開いて、以下のような`speed`パラメータの値を変更する：
+ファイルを開いて，以下のような`speed`パラメータの値を変更する：
 
 ```python
 # デフォルト値（例）
@@ -2251,7 +2256,7 @@ speed = 0.2  # これを小さくする（例: 0.1, 0.05など）
 - LLM APIの応答を待つ時間的余裕が生まれる
 - シミュレーション環境でも安定した動作が期待できる
 
-シミュレーション環境の物理演算速度やマシンスペックに応じて、適切な値に調整すると良い．
+シミュレーション環境の物理演算速度やマシンスペックに応じて，適切な値に調整すると良い．
 :::
 
 # 本日の発展課題

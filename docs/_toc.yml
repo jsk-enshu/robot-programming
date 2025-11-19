@@ -2,16 +2,22 @@
 format: jb-book
 root: index
 parts:
-  - caption: 知能ロボット行動プログラミング演習
+  - caption: 事前準備
     chapters:
     - file: environment-setup
       title: 環境構築
+  - caption: 1日目
+    chapters:
     - file: robot-programming-3-2025
-      title: 1日目 メカトロボットの製作とプログラミング
+      title: メカトロボットの製作とプログラミング
+  - caption: 2日目
+    chapters:
     - file: robot-programming-1-2025
-      title: 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
+      title: 双腕移動台車ロボットを用いた認識操作プログラミング
+  - caption: 3日目
+    chapters:
     - file: robot-programming-2-2025
-      title: 3日目 ロボットの全身行動プログラミング
+      title: ロボットの全身行動プログラミング
   - caption: Tips・付録（共通）
     chapters:
     - file: tips/caps-to-ctrl
