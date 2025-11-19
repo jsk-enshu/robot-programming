@@ -22,7 +22,7 @@ parts:
       title: デバッグ方法
     - file: tips/terminal-control-keys
       title: ターミナルの制御キー
-    - file: tips/troubleshooting.md
+    - file: tips/troubleshooting
       title: トラブルシューティング
     - file: tips/ros-one-installation
       title: ROS-Oインストール

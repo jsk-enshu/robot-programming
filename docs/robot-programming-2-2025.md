@@ -781,112 +781,40 @@ Jedyの`follow joint trajectory`コントローラーを別々に動かすプロ
 他の班のJedyと協力して片方を動かすと片方のJedyが動くプログラムを作成してみよ．
 
 
+## ヒューマノイドロボットJAXONのシミュレーション（発展課題）
+
+本章では，Gazeboシミュレーション上でヒューマノイドロボットJAXONを動かす方法を説明する．
+本演習ではROS 2でGazeboシミュレーションを起動し，EusLispから制御する際にはros1_bridgeを用いてROS 1とROS 2を橋渡しする．
+JAXONのGazeboシミュレーションはROS 2パッケージ`cart_humanoid_ros2`で提供されている．
+[JaxonのシミュレーションでリアルタイムIKを動かす](tips/realtime-ik.md)を参照のこと．
+
 ## 課題3(発展)
-
-に従って`Gazebo`シミュレーション上のヒューマノイドロボット`JAXON`を動かしてみよ．
-
-## 課題4(発展)
 
 `EusLisp`の`robot`インターフェース`*ri*`は双腕移動台車ロボットだけでなくヒューマノイド`JAXON`にも用意されており
 移動台車アームロボットとヒューマノイド`JAXON`は`*ri*`に共通のメソッドを送信することで制御することができる．
-また，手先の目標位置を"ik\_＜ターゲット名＞\_tgt"という`topic`を`ROS`ノード間で通信しそれを目標値としたIKを解いてロボットの姿勢を決定しているためロボット固有の属性（関節の数や関節軸の向き等）にほとんど依存しないシステムの上で動作している．
+また，手先の目標位置を`ik_＜ターゲット名＞_tgt`という`topic`を`ROS`ノード間で通信しそれを目標値としたIKを解いてロボットの姿勢を決定しているためロボット固有の属性（関節の数や関節軸の向き等）にほとんど依存しないシステムの上で動作している．
 従って本日の演習の`launch`ファイルと`euslisp`のファイルを少し書き換えるだけで移動台車アームロボットと`JAXON`を同じようなプログラムでIKによる制御を行うことができるということである．
 以下の手順でと同様に手先位置で実機またはシミュレーション上のアームロボットの手先をリアルタイムに動かしてみよ．
 
-### ヒューマノイドロボット`JAXON`のリアルタイムIK（発展）
+## 課題4(発展)
 
-に従ってシミュレーション上でヒューマノイド`JAXON`を動かしてみよ．
-
-### リアルタイムIKによる移動台車アームロボットの制御（発展）
-
-の前半と同様に"`rostopic pub ...`"コマンドで`publish`された`topic`に対して実機やシミュレーション上のアームロボットの手先位置を動かしてみよ．
-（まずはシミュレーションで動作確認を行ってから実機で実行することをオススメする．）
-
-<div class="screen">
-
-1.  `cart_humanoid`/euslisp/realtime-ik-sample.lの`cart_humanoid`依存の部分を双腕移動台車ロボット用に書き換える必要がある．
-
-2.  双腕移動台車ロボットに合わせて＜ロボット名＞\_interface.lをloadし\*ri\*を作成する必要がある．
-
-3.  `cart_humanoid`/euslisp/realtime-ik-sample.lの"ik\_＜ターゲット名＞\_tgt"のtopicのようなIKを解く目標位置を与えるtopicをsubscribeする必要がある．
-
-4.  双腕移動台車ロボットのロボットモデル\*jedy\*の`:inverse-kinematics`メソッドでIKを解き，ロボットインターフェース\*ri\*に関節角度指令を送る必要がある．
-
-5.  双腕移動台車ロボットのアームに適した逆運動学の手先目標位置はロボット座標系で下記に示した付近にある．
-
-    <div class="screen">
-
-    ``` console
-    $ `rostopic` pub /ik_arm_tgt geometry_msgs/PoseStamped "header:
-      seq: 0
-      stamp:
-        secs: 0
-        nsecs: 0
-      frame_id: ''
-    pose:
-      position:
-        x: 0.35
-        y: 0.0
-        z: 0.25
-      orientation:
-        x: 0.0
-        y: 0.0
-        z: 0.0
-        w: 1.0"
-    ```
-
-    </div>
-
-</div>
+以下の手順でと同様にカメラで認識した手先位置で実機またはシミュレーション上のアームロボットの手先をリアルタイムに動かしてみよ．
 
 ## 課題5(発展)
 
-以下の手順でと同様にカメラで認識した手先位置で実機またはシミュレーション上のアームロボットの手先をリアルタイムに動かしてみよ．
-（のリアルタイムIKを用いるので先に課題2に取り組むことをを勧めする．）
-
-### ヒューマノイドロボットJAXONの簡易人体モーションキャプチャ（発展）
-
-に従ってミュレーション上で簡易人体モーションキャプチャによりヒューマノイドロボットJAXONを動かしてみよ．
-
-### 簡易人体モーションキャプチャの色抽出フィルタのパラメータチューニング
-
-のsample_head_arm_skin_detect.launchは肌の色や背景，照明環境に依存するため
-自分の環境でより良く動作するようにパラメータチューニングし動作確認せよ．
-
-### 簡易人体モーションキャプチャによる移動台車アームロボットの制御（発展）
-
-と同様にカメラで認識した手先位置で実機またはシミュレーション上のアームロボットの手先をリアルタイムに動かしてみよ．
-
-<div class="screen">
-
-1.  のヒントでは逆運動学の目標手先位置をik_arm_tgtというトピック名でsubscribeするようにした．従って`cart_humanoid`のsample_head_arm_skin_detect.launchで起動しているskin_ellipse_area_to_ik_tgt.pyノードがカメラで認識した手先または顔の位置をik_arm_tgtという名前でpublishするようにできればよい．
-
-2.  `roslaunch` dxl_armed_turtlebot
-    sample_head_arm_skin_detect.launchすると左手の検出位置がik_arm_tgtというtopicでpublishされる．
-
-3.  rvizを正しく表示するにはrviz左部DisplaysでGlobal OptionsのFixed
-    Frameを`base_footprint`にする必要がある．（rvizが正しく表示されていない状態でもアームロボットをモーションキャプチャにより動かすことはできる．）
-
-</div>
-
-## 課題6(発展)
-
-機械情報冬学期演習「デジタルファブリケーション」で自分が設計した部品の立体形状を`STL`ファイルで保存していると思うが
-その`STL`をGazeboシミュレーション内に出現させよ．
+機械情報冬学期演習「デジタルファブリケーション」で自分が設計した部品の立体形状を`STL`ファイルで保存していると思うがその`STL`をGazeboシミュレーション内に出現させよ．
 
 :::{figure} fig/my_model.jpg
 :align: center
 :name: fig:sample_avatar
 
-課題2参考
+JaxonのgazeboにSTLファイルを表示させている例
 :::
 
-`cart_humanoid`_gazebo.launchで起動するGazeboのworldファイルはrobot-programming/`cart_humanoid`/worlds/humanoid_workspace.worldであり
-その中の以下の部分をコメントインし
+`cart_humanoid_ros2`パッケージの`cart_humanoid_gazebo.launch.py`で起動するGazeboのworldファイルは[robot-programming/cart_humanoid_ros2/worlds/humanoid_workspace.world](https://github.com/jsk-enshu/robot-programming/blob/master/cart_humanoid_ros2/worlds/humanoid_workspace.world)でありその中の以下の部分をコメントインし
 
-<div class="screen">
 
-``` bash
+```{console-block} xml
 <!-- my_model -->
   <model name="my_model" >
     <pose>1.0 -0.4 1 0 0 0</pose>
@@ -896,53 +824,26 @@ Jedyの`follow joint trajectory`コントローラーを別々に動かすプロ
   </model>
 ```
 
-</div>
-
-以下のmy_mesh.stlを置き換え，model.sdf内のscaleなどを調整すると良い．
+以下の`my_mesh.stl`を置き換え，`model.sdf`内のscaleなどを調整すると良い．
 
 ```{code-block} console
-$ roscd cart_humanoid/worlds/model/my_model/
+$ cd ~/ros2_ws/src/robot-programming/cart_humanoid_ros2/worlds/model/my_model/
 $ ls
 model.config  model.sdf  my_mesh.stl
 ```
 
-※`STL`の用意や，読み込みがどうしても出来ない人はhumanoid_workspace.world内の「my
-primitive model」に関する部分をコメントインして
-プリミティブな幾何形状の組み合わせによる自作モデルを作成しよう
+※STLの用意や読み込みがどうしても出来ない人はhumanoid_workspace.world内のmy primitive modelに関する部分をコメントインしてプリミティブな幾何形状の組み合わせによる自作モデルを作成しよう
+
+## 課題6(発展)
+
+EusLispのrobotインターフェースに実装されている`inverse-kinematics`機能([参考](tips/euslisp-ik.md))を用いて
+任意の物体にアームで触れるプログラムを作成せよ．（※可能であればグリッパを駆使して物体をピックアップできるとなお良い）
 
 ## 課題7(発展)
 
-EusLispのrobotインターフェースに実装されているinverse-kinematics機能(参考)を用いて
-任意の物体にアームで触れるプログラムを作成せよ．
-（※可能であればグリッパを駆使して物体をピックアップできるとなお良い）  
+二日目の演習でJedyからJaxonを動かす様子をみたと思う．実機のJedyを動かしシミュレーターのJaxonを動かせるようにしてみよ．
 
 ## 課題8(発展)
-
-人体姿勢の検出ブログラムを，肌色検出だけでなく，その他の画像処理手法を併用して性能向上させよ．
-ROSにはそのために利用できるツールが多く存在するのでいろいろ検索してみると良い．  
-<http://wiki.ros.org/opencv_apps>
-
-## 課題9(発展)
-
-`cart_humanoid`の脚部の操縦に挑戦せよ．  
-以下のようにオプションをつけると空中に固定されたベースリンクがXY平面内(地面に平行)のみ自由に動けるようになる．
-
-```{code-block} console
-$ roslaunch cart_humanoid cart_humanoid_gazebo.launch fix_base_link:=false
-```
-
-`realtime-ik-sample.l`を用いて直接足先位置を操縦するでもよし
-`cart_humanoid-interface.l`内に実装されている以下の簡易的な歩行機能を周期的に呼ぶのでも良い．
-
-<div class="screen">
-
-``` lisp
-irteusgl$ send *ri* :send-cmd-vel-raw 0.1 0 0
-```
-
-</div>
-
-## 課題10(発展)
 
 これまでの授業や演習で学んだロボットプログラミング技法を組み合わせ，
 自由な発想でロボットのデモプログラムを作成せよ．
