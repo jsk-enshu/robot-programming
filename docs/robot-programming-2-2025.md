@@ -63,7 +63,55 @@
 
 ### 環境構築とソフトウェア更新
 
-演習を開始する前に，必ず[環境構築](environment-setup.md)のページを参照して，最新バージョンのソフトウェアを取得すること．
+```{important}
+**初めて環境構築を行う場合**は，[環境構築](environment-setup.md)のページを参照して，ワークスペースの初期セットアップを行うこと．
+
+**演習開始時に既に環境構築済みの場合**は，以下の更新手順を実行して最新バージョンのソフトウェアを取得すること．
+```
+
+#### 演習開始時のソフトウェア更新手順
+
+演習を開始する前に，必ず最新バージョンのソフトウェアを取得すること．
+vcsファイル（`.repos.one`や`.repos.jazzy`）が更新されている場合や，既存のリポジトリに変更がある場合は，以下の手順で更新する．
+
+**ROS 2 ワークスペースの更新**
+
+```{code-block} console
+$ cd ~/ros2_ws/src
+$ source /opt/ros/jazzy/setup.bash
+# 最新のvcsファイルを取得して新しいリポジトリをインポート
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy -O- | vcs import
+# 既存のリポジトリを最新版に更新
+$ vcs pull
+$ cd ~/ros2_ws/
+# 依存関係を更新
+$ rosdep update
+$ rosdep install --from-paths src --ignore-src -y -r
+# パッケージをビルド
+$ colcon build --symlink-install --packages-select jedy_bringup jedy_description
+```
+
+**ROS 1 ワークスペースの更新**
+
+```{code-block} console
+$ cd ~/ros_ws/src
+$ source /opt/ros/one/setup.bash
+# 最新のvcsファイルを取得して新しいリポジトリをインポート
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.one -O- | vcs import
+# 既存のリポジトリを最新版に更新
+$ vcs pull
+$ cd ~/ros_ws
+# 依存関係を更新
+$ rosdep update
+$ rosdep install --from-paths src --ignore-src -y -r
+# パッケージをビルド
+$ catkin build jedy_ros1_bridge jedyeus
+```
+
+```{tip}
+`vcs pull`コマンドは，ワークスペース内の全てのGitリポジトリに対して`git pull`を実行する．
+新しいリポジトリが追加された場合は`vcs import`で取得され，既存のリポジトリは`vcs pull`で更新される．
+```
 
 ### ROSコマンドなどのおさらい
 
@@ -107,162 +155,6 @@ $ rqt_graph
 
 詳細なコマンドの使い方については[ROS 1コマンド](tips/ros1-commands.md)と[ROS 2コマンド](tips/ros2-commands.md)のTipsページを参照すること．
 
-## `EusLisp`ロボットインターフェース`*ri*`からのセンサ値取得・台車駆動（シミュレーションにも対応）
-
-`EusLisp`のロボットインターフェースで実際のロボットのセンサ値取得や台車駆動が行えることを確認する．
-
-`EusLisp`の起動は通常のターミナルで直接実行するよりも， `emacs`で`M-x shell`とタイプし起動したターミナルで行うことをお勧めする．
-一度打ち込んだコマンドは，`M-p`で履歴を遡ることができるので，同じコマンド打つ手間が減る．EusLisp (`roseus`)のより効率的な作業方法を知りたい場合は[roseusでの効率的な作業方法](tips/roseus-workflow.md)が参考になる．
-
-ロボットPCに`ssh`でログインして，
-
-```{code-block} console
-$ source ~/ros_ws/devel/setup.bash
-$ ros2 launch jedy_bringup jedy_bringup.launch.py
-
-# シミュレーションでは以下
-$ source /opt/ros/jazzy/setup.bash
-$ source ~/ros2_ws/install/setup.bash
-$ ros2 launch jedy_bringup jedy_gazebo.launch.py
-```
-
-を立ち上げ，ロボットPCや遠隔PCの別ターミナルで以下を実行する．
-
-<div class="screen">
-
-```{code-block} console
-$ rossetip
-$ rossetmaster <ロボットPCのIPアドレス>
-$ roscd jedyeus/euslisp
-$ roseus jedy-interface.l
-```
-
-```{code-block} lisp
-irteusgl$ (jedy-init) ;; *jedy*と*ri*を作成する
-
-;; （実機のみ）Atom s3のボタンの値を読んで表示する
-irteusgl$ (ros::rate 10) ;; ループの周期を10Hzに設定する
-irteusgl$ (do-until-key ;; Enterキーが押されるまでループする
-            (send *ri* :spin-once) ;; subscribeしているトピックの更新が行われる．
-            (ros::ros-info (format nil "atom s3 button state ~A" (send *ri* :state :atom-s3-button)))
-            ;; 実行中にAtom S3のボタンをクリックすと値がクリック数に応じて変わる．
-            (ros::sleep)) ;; ros::rateで設定した周期になるようにsleepする
-;; 【ポイント】
-;; - `do-until-key`によるループの生成
-;; - ros::rateとros:sleepによる周期の制御
-
-;; 台車を移動させる
-irteusgl$ (send *ri* :send-cmd-vel-raw 10 0 0) ;; 大きすぎる数字を入れないように注意!
-irteusgl$ (send *ri* :send-cmd-vel-raw 0. 0 -10)
-          ;; 引数は，[前後方向速度] [左右方向速度] [旋回速度]
-          ;; 前方に0.0[mm/s]，旋回10.0[deg/s]の速度で少し走って停止する
-          ;; Jedyはロボットの正面がx+, なので初めて動かすときは注意．
-          ;; y方向にはまだ未対応なので，引数を与えても無視される．
-
-;; センサの値を取得する
-irteusgl$ (ros::rate 1)
-irteusgl$ (`do-until-key`
-            (send *ri* `:spin-once`)  ;; subscribeしているトピックの更新が行われる．
-            (ros::ros-info (format nil "roll pitch yaw ~A"
-            (send *ri* :state :roll-pitch-yaw)))  ;; IMUから得られたロボットの姿勢が変わる．ロボットを動かしてみよう．
-            (ros::sleep))
-irteusgl$ (send *ri* :publish-atom-s3-string "hello enshu") ;; 文字が表示される
-```
-
-</div>
-
-`(jedy-init)`は双腕移動台車ロボットの初期化関数である．
-`(jedy-init)`を実行すると`*jedy*`という大域変数にロボットモデルのインスタンスがセットされ，
-`EusLisp`の3Dビューア(``irtviewer``)に表示される [^1]. [IRTビューワの操作方法](tips/irtviewer.md)を参照のこと．
-同時に`*ri*`という大域変数に実ロボットインターフェースのインスタンスがセットされる．
-
-単体のサーボモータやセンサ等の簡単な操作対象の場合は簡単な`Topic`の`pub`/`sub`のみで操作してもシステムは複雑になりにくい．
-一方，ロボットは多くの関節・アクチュエータを持つ上に，
-カメラやボタンなどに限らず手先・足先の６軸力センサやロボット全身の傾きを計測するセンサなど多くのセンサを搭載しており
-それらのセンサや関節をリアルタイムに同期しながら制御する必要があるため
-`Topic`の`pub`/`sub`のみでは全体システムが複雑になってしまう．
-そこでそれらのセンサや関節との通信機能を一つにまとめた**ロボット操作用インターフェース`*ri*`**を用いることで
-`(send *ri* :＜メソッド名＞)`のようにシンプルな統一的な表現でロボット全体を操作できるようになる．
-
-上記の`:atom-s3-button`は`Atom S3`のボタンのクリック値を`EusLisp`で取得するものでありクリックしながら実行することで値が変わることを確認しよう．
-また，`:send-cmd-vel-raw`は台車を駆動する速度指令を与えるメソッドである．
-さらに`:publish-atom-s3-string`では背面の`Atom S3`に文字を表示する指令を`publish`している．
-
-ロボットインターフェース`*ri*`の内部では{doc}`robot-programming-1-2025`で扱ったプログラムと同じように`topic`の`subscribe`/`publish`を行っている．
-別ターミナルで
-
-```{code-block} console
-$ rostopic echo /atom_s3_additional_info
-```
-
-をしながら， `(send *ri* :publish-atom-s3-string "hello robot-programming enshu")` を呼んでみよう．
-明示的に`topic`の`subscribe`/`publish`を書かずともロボットのセンサ・アクチュエータにアクセスできる点がロボットインターフェースの利点のひとつである．
-
-他にも，
-
-```{code-block} lisp
-irteusgl$ (send *ri* :state :roll-pitch-yaw)    ;; IMUセンサの値からロボットの姿勢を取得する
-irteusgl$ (send *ri* :state :potentio-vector)   ;; 実機のサーボの角度を取得する
-irteusgl$ (send *ri* :go-velocity x y theta)    ;; 速度指令で動かす．単位は x,y:[mm/s], theta:[deg/s]
-```
-
-などのセンサ取得や指令値送信ができる．
-実ロボットのインターフェースプログラムは，[jedy/jedyeus/euslisp/jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l)を参照してみよう．
-
-`EusLisp`の条件分岐や繰り返しを用いてセンサ情報に基づいてロボットが行動するプログラムを書いてみよう．
-
-```{code-block} console
-$ roscd jedyeus/euslisp
-$ roseus jedy-interface.l
-```
-
-```{code-block} lisp
-irteusgl$ (jedy-init) ;; *jedy*,*ri*を作成する
-;; シミュレーションでは(jedy-init :simulation t)により*jedy*と*ri*を作成する
-irteusgl$ (ros::rate 10)
-irteusgl$ (while t
-            (send *ri* :send-cmd-vel-raw 10 0 0)
-            (setq button-state (send *ri* :state :atom-s3-button))
-            (ros::ros-info (format nil "button state ~A" button-state))
-            (when (not (= button-state 0))
-              (send *ri* :send-cmd-vel-raw 0 0 0)
-              (return-from nil nil))
-            (send *ri* `:spin-once`)
-            (ros::sleep))
-```
-
-これは，`Atom S3`のボタンがクリックされるまで前進指令を繰り返し送り続けるプログラムである．
-プログラムはファイルに保存しておくと以下のように実行できて便利である．
-
-```{code-block} console
-$ roscd jedy_bringup/exercise/
-$ roseus checkpoint2-1-go-forward.l
-```
-
-で同様の動作が実行される．
-また，`IMU`の値を用いるサンプルもある．`IMU`の傾きを読んで傾きを変えると速度指令を送ることをやめるプログラムとなっている．
-
-```{code-block} console
-$ roscd jedy_bringup/exercise/
-$ roseus checkpoint2-2-go-forward-imu.l
-```
-
-これを参考にして次の課題に取り組もう．
-
-### <span style="color:green">チェックポイント: センサとロボットインターフェースを使った反応行動</span>
-
-```{exercise} センサとロボットインターフェースを使った反応行動
-:label: ex_sensor_ri
-
-`EusLisp`の関数やメソッドおよび実ロボットインターフェース`*ri*`などを駆使してロボットの反応行動を行うプログラムを書いてみよう．
-使うセンサは何でもよく(ボタン，`IMU`，エンコーダー値，．..etc)，反応行動も何でもよい
-(表示される文字の切り替え，前進後退切り替わる，`IMU`の値に応じてぶつかると前進が停止する．..etc)
-がセンサ値・反応行動はそれぞれ２つ以上を組み合わせること．
-
-**例：**
-ボタンを押されると音をならし前進しもう一回ボタンを押されるとストップする．
-```
-
 ## 双腕移動台車ロボットのハードウェアとセットアップ
 
 本章では双腕移動台車ロボットの全身動作を行っていく．
@@ -290,19 +182,63 @@ Jedyのサーボ順番割付
 
 ### セットアップ
 
-#### 接続と電源投入
+#### USBシリアルアダプタの準備
 
-背面のバックパック部分の白い制御基板(`KondoH7`基板)から出ている黒い3線のケーブルが`Radxa zero`の上面にある充電管理基板の3線とつながっていることを確認しよう(，を参照).
-背面の物理ボタンをONにすると`KondoH7`基板のLEDが青く点滅し，ブザー音が鳴ることを確認しよう．
+本演習ではUSBシリアルアダプタ（FTDI）を使用してPCとJedyを接続する．
+USBシリアルアダプタを使用する前に，以下のコマンドでudevルールの設定とユーザー権限を追加する必要がある．
 
-```{figure} fig/jedy_backs.png
----
-name: fig:turtlebot_back2
----
-Jedyの背面パネル
-USB充電端子，サーボ基板へ8Vを出力する黄色いコネクタの`XT30`端子，`UART`通信のための黒い`ZH3`線ケーブル，バッテリー入力をする黄色い`XT30`端子がある．また`Atom S3`にはロボットのIPアドレスやバッテリー残量が表示されている．
+```{code-block} console
+$ curl -fsSL https://raw.githubusercontent.com/iory/rcb4/main/rcb4/assets/system/99-rcb4-udev.rules | sudo tee /etc/udev/rules.d/99-rcb4-udev.rules
+$ sudo udevadm control --reload-rules
+$ sudo udevadm trigger
+$ sudo usermod -a -G dialout $USER
+$ sudo usermod -a -G plugdev $USER
 ```
 
+```{important}
+グループへの追加後は，設定を反映させるために**PCを再起動**するか，一度ログアウトして再ログインする必要がある．
+```
+
+#### 接続と電源投入
+
+本演習では安定化電源とUSBシリアルアダプタ（FTDI）を用いてJedyのセットアップを行う．以下の手順に従って接続を行うこと．
+
+:::{danger}
+**安定化電源の取り扱いに関する重要な注意事項**
+
+<span style="color:red; font-weight:bold;">電源スイッチが白いボタンになっており，ACアダプタに電源が供給されていてここが緑色になっていると電源ONとなる．設定するときは必ず電源OFFにすること！</span>
+
+<span style="color:red; font-weight:bold;">安定化電源がONになっているときにつまみは決して回さないこと！</span>
+
+つまみを回すとサーボ制御基板やサーボが破損する可能性がある．また嫌なにおいが立ち込めるため細心の注意を払ってほしい．
+:::
+
+```{figure} fig/jedy-hardware-setup.png
+---
+name: fig:jedy-hardware-setup
+---
+Jedyのハードウェアセットアップ手順
+```
+
+##### セットアップ手順
+
+1. **安定化電源の設定**：安定化電源を電圧7.4V，最大電流10Aに設定する（電源をOFFにした状態で設定すること）
+
+2. **安定化電源のVH2ピンをJedyに接続**：安定化電源のVH2ピンコネクタをJedyのサーボ制御基板に接続する
+
+3. **安定化電源の電源をON**：安定化電源の電源をONにして，白いボタンが緑色に点灯することを確認する
+
+4. **FTDIのUSBシリアルアダプタの3線を接続**：写真のようにFTDIのUSBシリアルアダプタの3線（GND，TX，RX）を接続する
+
+5. **USBシリアルアダプタの線をJedyに接続**：USBシリアルアダプタのケーブルをJedyのサーボ制御基板に接続する
+
+6. **USBシリアルアダプタをPCに接続**：USBシリアルアダプタをPCに接続してセットアップ完了
+
+:::{note}
+実機をバッテリーで動かしたい場合には，{doc}`tips/robot-operation`を参照して，バッテリーを充電し接続すること．
+:::
+
+(sec-id-check)=
 #### IDの確認
 
 `Jedy`のサーボ電源を入れ自分のPCにJedyと接続したUSBシリアルを繋いで以下のコマンドを実行し22個のサーボモータすべてが
@@ -310,86 +246,300 @@ USB充電端子，サーボ基板へ8Vを出力する黄色いコネクタの`XT
 **なお，これはデバイスにアクセスするプログラムなので，`jedy_bridge.launch`などを立ち上げていると実行できないことに注意する．**
 
 ```{code-block} console
-$ rosrun jedy_bringup scan_ids.py
-  Skipping reset for non-USB serial port: /dev/ttyAML1 cannot be reset via USB reset.
-  Could not find USB device information for port /dev/ttyAML1
-  Opened /dev/ttyAML1 at 1000000 baud
-  Servo ID 0 (`rarm_joint0`) found
-  Servo ID 1 (`larm_joint0`) found
-  Servo ID 2 (rarm_joint1) found
-  Servo ID 3 (larm_joint1) found
-  Servo ID 4 (rarm_joint2) found
-  Servo ID 5 (larm_joint2) found
-  Servo ID 6 (rarm_joint3) found
-  Servo ID 7 (larm_joint3) found
-  Servo ID 8 (rarm_joint4) found
-  Servo ID 9 (larm_joint4) found
-  Servo ID 10 (rarm_joint5) found
-  Servo ID 11 (larm_joint5) found
-  Servo ID 12 (rarm_joint6) found
-  Servo ID 13 (larm_joint6) found
-  Servo ID 14 (rarm_gripper_joint) found
-  Servo ID 15 (larm_gripper_joint) found
-  Servo ID 20 (front_right_wheel_joint) found
-  Servo ID 21 (front_left_wheel_joint) found
-  Servo ID 22 (rear_right_wheel_joint) found
-  Servo ID 23 (rear_left_wheel_joint) found
-  Servo ID 32 (`head_joint0`) found
-  Servo ID 34 (`head_joint1`) found
-```
-
-実行して“found”とでない場合は，ケーブルがささっていないことや，ID書き込みエラーやモータの故障が疑われるのでTAを呼んで`KRS`サーボの交換やIDの再書き込みを一緒に行おう．
-サーボIDの書き込みには{doc}`robot-programming-3-2025`の発展課題にあった[Ubuntuでics-managerを使用する方法](tips/kondo-servo.html#ubuntuics-manager)を見ながらやってみよう．
-
-
-```{code-block} console
-$ rosrun jedy_bringup scan_ids.py
-Skipping reset for non-USB serial port: /dev/ttyAML1 cannot be reset via USB reset.
-Could not find USB device information for port /dev/ttyAML1
-Opened /dev/ttyAML1 at 1000000 baud
+$ rosrun kxr_controller scan_servo_ids.py $(rospack find jedy_ros1_bridge)/config/jedy_servo_config.yaml
+Waiting servo control board connection ...
+Attempt 1: Opened /dev/ttyUSB1 at 1000000 baud
+ACK confirmed on attempt 1
 Servo ID 0 (rarm_joint0) found
 Servo ID 1 (larm_joint0) found
 Servo ID 2 (rarm_joint1) found
 Servo ID 3 (larm_joint1) found
 Servo ID 4 (rarm_joint2) found
+Servo ID 5 (larm_joint2) found
 Servo ID 6 (rarm_joint3) found
+Servo ID 7 (larm_joint3) found
 Servo ID 8 (rarm_joint4) found
+Servo ID 9 (larm_joint4) found
 Servo ID 10 (rarm_joint5) found
+Servo ID 11 (larm_joint5) found
 Servo ID 12 (rarm_joint6) found
+Servo ID 13 (larm_joint6) found
 Servo ID 14 (rarm_gripper_joint) found
+Servo ID 15 (larm_gripper_joint) found
 Servo ID 20 (front_right_wheel_joint) found
 Servo ID 21 (front_left_wheel_joint) found
 Servo ID 22 (rear_right_wheel_joint) found
 Servo ID 23 (rear_left_wheel_joint) found
-Servo ID 32 (`head_joint0`) found
-Servo ID 34 (`head_joint1`) found
+Servo ID 32 (head_joint0) found
+Servo ID 34 (head_joint1) found
 
-
-Servo IDs and joint names not found:
-Servo ID 5 (larm_joint2) not found
-Servo ID 7 (larm_joint3) not found
-Servo ID 9 (larm_joint4) not found
-Servo ID 11 (larm_joint5) not found
-Servo ID 13 (larm_joint6) not found
-Servo ID 15 (larm_gripper_joint) not found
+All servo IDs in the configuration were found.
 ```
 
-実行してこのように"not found"と出ているサーボはケーブルが抜けていないかどうかを確認すべきである．
+実行して`found`とでない場合は，ケーブルがささっていないことや，ID書き込みエラーやモータの故障が疑われるのでTAを呼んで`KRS`サーボの交換やIDの再書き込みを一緒に行おう．
+サーボIDの書き込みには{doc}`robot-programming-3-2025`の発展課題にあった[Ubuntuでics-managerを使用する方法](tips/kondo-servo.html#ubuntuics-manager)を見ながらやってみよう．
+
+```{code-block} console
+$ rosrun kxr_controller scan_servo_ids.py $(rospack find jedy_ros1_bridge)/config/jedy_servo_config.yaml
+Waiting servo control board connection ...
+Attempt 1: Opened /dev/ttyUSB1 at 1000000 baud
+ACK confirmed on attempt 1
+Servo ID 0 (rarm_joint0) found
+Servo ID 1 (larm_joint0) found
+Servo ID 3 (larm_joint1) found
+Servo ID 5 (larm_joint2) found
+Servo ID 7 (larm_joint3) found
+Servo ID 9 (larm_joint4) found
+Servo ID 11 (larm_joint5) found
+Servo ID 13 (larm_joint6) found
+Servo ID 15 (larm_gripper_joint) found
+Servo ID 20 (front_right_wheel_joint) found
+Servo ID 21 (front_left_wheel_joint) found
+Servo ID 22 (rear_right_wheel_joint) found
+Servo ID 23 (rear_left_wheel_joint) found
+Servo ID 32 (head_joint0) found
+Servo ID 34 (head_joint1) found
+
+Servo IDs and joint names not found:<br>
+Servo ID 2 (rarm_joint1) not found<br>
+Servo ID 4 (rarm_joint2) not found<br>
+Servo ID 6 (rarm_joint3) not found<br>
+Servo ID 8 (rarm_joint4) not found<br>
+Servo ID 10 (rarm_joint5) not found<br>
+Servo ID 12 (rarm_joint6) not found<br>
+Servo ID 14 (rarm_gripper_joint) not found
+```
+
+実行してこのように`not found`と出ているサーボはケーブルが抜けていないかどうかを確認すべきである．一度サーボ電源用のスイッチを切り（青いLEDが消灯するのを確認！）サーボが断線していないかなどを確認する．原因がわかったら再度サーボ電源をオンしよう．
 <span style="color:red">**ロボットにおいて電源周りやケーブルの接触不良は物理的に動くものであるため起こりうる．大事なことは問題が起きたときにどのように対処できるかというデバッグ能力であり，今のうちから技術を身に着けていってほしい．**</span>
+
+### <span style="color:green">チェックポイント: サーボモータのIDの確認</span>
+
+```{exercise} サーボモータのIDの確認
+:label: ex_servo_id_check
+
+[IDの確認](sec-id-check)にしたがってサーボモータのIDを確認せよ．全てのサーボモータが正しく認識されていることを確認すること．
+```
 
 ## 演習への取り組み方と移動台車ロボットの共有方法
 
 ロボットPCをROSのMasterとして班員のPCを複数台使うことでそれぞれ個別に指令値を送ったりセンサ値を表示したりしながらロボットを動かすことができる．
 しかしロボットの動作自体は一人が送っている間は他の人が送ると動作が上書きされてしまうため，みんなで話ながらロボットを動かしていってほしい．
 
-また，これ以降は実機とシミュレーション（Gazebo）の両方に対応している．
-班員で相談して以下のいずれかの方法で取り組むとよい．
+アドバンスドな話題だがネットワーク越しに複数台のPCから１台のロボットを動かすこともできる．接続設定の詳細については{doc}`tips/multi-pc`を参照すること．
 
-1.  班員全員で演習に取り組みながらチェックポイントごとにロボットの動作指令を送る人を交代する．演習課題は全員で取り組む．（全員がセットアップをする必要がある．）
+また，これ以降は実機とシミュレーション（Gazebo）の両方に対応している．班員で相談して以下のいずれかの方法で取り組むとよい．
+
+1.  班員全員で演習に取り組みながらチェックポイントごとにロボットの動作指令を送る人を交代する．チェックポイントは全員で取り組む．（全員がセットアップをする必要がある．）
 
 2.  各々がシミュレーションで試してから交代で実機を利用する．演習課題は個人で取り組む．（1人が実機でトラブルと全員が取り組めなくなる．）
 
-複数台のPC接続設定は{doc}`robot-programming-1-2025`に従う．
+## `EusLisp`ロボットインターフェース`*ri*`からのセンサ値取得・台車駆動（シミュレーションにも対応）
+
+`EusLisp`のロボットインターフェースで実際のロボットのセンサ値取得や台車駆動が行えることを確認する．
+
+`EusLisp`の起動は通常のターミナルで直接実行するよりも， `emacs`で`M-x shell`とタイプし起動したターミナルで行うことをお勧めする．
+一度打ち込んだコマンドは，`M-p`で履歴を遡ることができるので，同じコマンド打つ手間が減る．EusLisp (`roseus`)のより効率的な作業方法を知りたい場合は[roseusでの効率的な作業方法](tips/roseus-workflow.md)が参考になる．
+
+### ロボットの起動方法
+
+#### 実機
+```{code-block} console
+# USBシリアルアダプタを接続しJedyのサーボ電源が入っていることを確認して下記を実行
+$ source ~/ros_ws/devel/setup.bash
+$ roslaunch jedy_ros1_bridge jedy_bridge.launch
+```
+
+を起動すると`/dev/ttyUSBx`デバイスファイルにアクセスする`ROS`ノードが起動する．**実機を動かす場合はのセットアップが必要になる．**
+
+#### シミュレーション
+
+シミュレーションでは3つのターミナルを使用する．
+
+**ターミナル1: ROS 1側でroscoreの起動**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ roscore
+```
+
+**ターミナル2: ROS 2側でGazeboシミュレーションの起動**
+
+```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py
+```
+
+```{note}
+`ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST`を設定することで，ROS 2のDDS検出範囲をローカルホストに制限し，ネットワーク上の他のROS 2ノードとの干渉を防ぐ．
+```
+
+**ターミナル3: ROS 1とROS 2のブリッジ**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ rosparam set /use_sim_time true
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2/bridge/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+```
+
+#### 実機・シミュレーション両方
+実機もしくはGazeboが立ち上がったら下記を実行する．
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ roscd jedyeus/euslisp
+$ roseus jedy-interface.l
+```
+
+```{code-block} lisp
+irteusgl$ (jedy-init) ;; *jedy*と*ri*を作成する
+
+;; （シミュレーションのみ）Virtual Atom s3のボタンの値を読んで表示する
+irteusgl$ (ros::rate 10) ;; ループの周期を10Hzに設定する
+irteusgl$ (do-until-key ;; Enterキーが押されるまでループする
+            (send *ri* :spin-once) ;; subscribeしているトピックの更新が行われる．
+            (ros::ros-info (format nil "atom s3 button state ~A" (send *ri* :state :atom-s3-button)))
+            ;; 実行中にAtom S3のボタンをクリックすと値がクリック数に応じて変わる．
+            (ros::sleep)) ;; ros::rateで設定した周期になるようにsleepする
+
+;; （実機のみ）首の関節のエンコーダ値を読んで表示する
+irteusgl$ (ros::rate 10) ;; ループの周期を10Hzに設定する
+irteusgl$ (do-until-key ;; Enterキーが押されるまでループする
+            (send *ri* :spin-once) ;; subscribeしているトピックの更新が行われる．
+            (send *jedy* :angle-vector (send *ri* :state :potentio-vector))
+            (ros::ros-info (format nil "Current head pitch joint angle ~A [deg]" (send *jedy* :head_joint1 :joint-angle)))
+            (ros::sleep)) ;; ros::rateで設定した周期になるようにsleepする
+;; 【ポイント】
+;; - `do-until-key`によるループの生成
+;; - ros::rateとros:sleepによる周期の制御
+
+;; 台車を移動させる
+irteusgl$ (send *ri* :go-velocity 10 0 0) ;; 大きすぎる数字を入れないように注意!
+irteusgl$ (send *ri* :go-velocity 0. 0 -10)
+;; 引数は，[前後方向速度] [左右方向速度] [旋回速度]
+;; 前方に0.0[mm/s]，旋回10.0[deg/s]の速度で少し走って停止する
+;; Jedyはロボットの正面がx+, なので初めて動かすときは注意．
+;; シミュレーションではy方向に指令を送ると動きが変になる．
+
+;; センサの値を取得する
+irteusgl$ (ros::rate 1)
+irteusgl$ (do-until-key
+            (send *ri* :spin-once)  ;; subscribeしているトピックの更新が行われる．
+            (ros::ros-info (format nil "roll pitch yaw ~A"
+            (send *ri* :state :roll-pitch-yaw)))  ;; IMUから得られたロボットの姿勢が変わる．ロボットを動かしてみよう．
+            (ros::sleep))
+```
+
+`(jedy-init)`は双腕移動台車ロボットの初期化関数である．`(jedy-init)`を実行すると`*jedy*`という大域変数にロボットモデルのインスタンスがセットされ，`EusLisp`の3Dビューア(``irtviewer``)に表示される [^1]. [IRTビューワの操作方法](tips/irtviewer.md)を参照のこと．同時に`*ri*`という大域変数に実ロボットインターフェースのインスタンスがセットされる．
+
+単体のサーボモータやセンサ等の簡単な操作対象の場合は簡単な`Topic`の`pub`/`sub`のみで操作してもシステムは複雑になりにくい．一方，ロボットは多くの関節・アクチュエータを持つ上に，カメラやボタンなどに限らず手先・足先の６軸力センサやロボット全身の傾きを計測するセンサなど多くのセンサを搭載しておりそれらのセンサや関節をリアルタイムに同期しながら制御する必要があるため`Topic`の`pub`/`sub`のみでは全体システムが複雑になってしまう．そこでそれらのセンサや関節との通信機能を一つにまとめた**ロボット操作用インターフェース`*ri*`**を用いることで`(send *ri* :＜メソッド名＞)`のようにシンプルな統一的な表現でロボット全体を操作できるようになる．
+
+上記の`:atom-s3-button`は`Atom S3`のボタンのクリック値を`EusLisp`で取得するものでありクリックしながら実行することで値が変わることを確認しよう．
+また，`:go-velocity`は台車を駆動する速度指令を与えるメソッドである．
+
+ロボットインターフェース`*ri*`の内部では{doc}`robot-programming-1-2025`で扱ったプログラムと同じように`topic`の`subscribe`/`publish`を行っている．
+
+別ターミナルで
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ rostopic echo /mecanum_drive_controller/reference
+```
+
+をしながら， `(send *ri* :go-velocity 10 0 0)` を呼んでみよう．明示的に`topic`の`subscribe`/`publish`を書かずともロボットのセンサ・アクチュエータにアクセスできる点がロボットインターフェースの利点のひとつである．
+
+他にも，
+
+```{code-block} lisp
+irteusgl$ (send *ri* :state :roll-pitch-yaw)    ;; IMUセンサの値からロボットの姿勢を取得する
+irteusgl$ (send *ri* :state :potentio-vector)   ;; 実機のサーボの角度を取得する
+irteusgl$ (send *ri* :go-velocity x y theta)    ;; 速度指令で動かす．単位は x,y:[mm/s], theta:[deg/s]
+```
+
+などのセンサ取得や指令値送信ができる．実ロボットのインターフェースプログラムは，[jedy/jedyeus/euslisp/jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l)を参照してみよう．
+
+`EusLisp`の条件分岐や繰り返しを用いてセンサ情報に基づいてロボットが行動するプログラムを書いてみよう．
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ roscd jedyeus/euslisp
+$ roseus jedy-interface.l
+```
+
+実機かシミュレーションでそれぞれ次のコードを実行してみよう．
+
+#### 実機用
+
+```{code-block} lisp
+irteusgl$ (jedy-init) ;; *jedy*,*ri*を作成する
+irteusgl$ (ros::rate 10)
+irteusgl$ (send *jedy* :angle-vector (send *ri* :state :potentio-vector))
+irteusgl$ (setq pitch-joint (format nil "current head pitch angle ~A" (send *jedy* :head_joint1 :joint-angle)))
+irteusgl$ (while t
+            (send *ri* :go-velocity 10 0 0)
+            (send *jedy* :angle-vector (send *ri* :state :potentio-vector))
+            (ros::ros-info (format nil "current head pitch angle ~A" (send *jedy* :head_joint1 :joint-angle)))
+            (when (> (abs (- pitch-joint (send *jedy* :head_joint1 :joint-angle))) 30)
+              (send *ri* :go-velocity 0 0 0)
+              (return-from nil nil))
+            (send *ri* :spin-once)
+            (ros::sleep))
+```
+
+これは初期の首のピッチ軸の関節から30度以上動くと台車が止まるプログラムである．
+
+#### シミュレーション用
+```{code-block} lisp
+irteusgl$ (jedy-init) ;; *jedy*,*ri*を作成する
+irteusgl$ (ros::rate 10)
+irteusgl$ (while t
+            (send *ri* :go-velocity 10 0 0)
+            (setq button-state (send *ri* :state :atom-s3-button))
+            (ros::ros-info (format nil "button state ~A" button-state))
+            (when (not (= button-state 0))
+              (send *ri* :send-cmd-vel-raw 0 0 0)
+              (return-from nil nil))
+            (send *ri* :spin-once)
+            (ros::sleep))
+```
+
+これは，`Virtual Atom S3`のボタンがクリックされるまで前進指令を繰り返し送り続けるプログラムである．プログラムはファイルに保存しておくと以下のように実行できて便利である．
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ roscd jedyeus/exercise/
+$ roseus checkpoint2-1-go-forward.l
+```
+
+で同様の動作が実行される．
+
+#### 実機・シミュレーション両方
+
+また，`IMU`の値を用いるサンプルもある．`IMU`の傾きを読んで傾きを変えると速度指令を送ることをやめるプログラムとなっている．
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ roscd jedyeus/exercise/
+$ roseus checkpoint2-2-go-forward-imu.l
+```
+
+これを参考にして次のチェックポイントに取り組もう．
+
+### <span style="color:green">チェックポイント: センサとロボットインターフェースを使った反応行動</span>
+
+```{exercise} センサとロボットインターフェースを使った反応行動
+:label: ex_sensor_ri
+
+`EusLisp`の関数やメソッドおよび実ロボットインターフェース`*ri*`などを駆使してロボットの反応行動を行うプログラムを書いてみよう．使うセンサは何でもよく(ボタン，`IMU`，エンコーダー値，．..etc)，反応行動も何でもよい(前進後退切り替わる，`IMU`の値に応じてぶつかると前進が停止する．..etc)がセンサ値・反応行動はそれぞれ２つ以上を組み合わせること．
+
+**例：**
+ボタンを押されると前進しもう一回ボタンを押されるとストップする．首の`yaw`軸 (`head_joint0`)を右に動かすと右に進み左に動かすと左に進むプログラム．
+```
 
 ## アームロボットのソフトウェア（シミュレーションにも対応）
 
@@ -399,20 +549,52 @@ Servo ID 15 (larm_gripper_joint) not found
 
 **本章のコマンドはアームを動かすのでアームが何かにぶつからないように周囲に注意しながら演習を行うこと．**
 
-ロボットPCにsshでログインして
+#### 実機
 
 ```{code-block} console
+# USBシリアルアダプタを接続しJedyのサーボ電源が入っていることを確認して下記を実行．すでに行っていて起動している場合はしなくてよい．
 $ source ~/ros_ws/devel/setup.bash
-$ ros2 launch jedy_bringup jedy_bringup.launch.py
+$ roslaunch jedy_ros1_bridge jedy_bridge.launch
+```
 
-# シミュレーションでは以下．
+を起動すると`/dev/ttyUSBx`デバイスファイルにアクセスする`ROS`ノードが起動する．**実機を動かす場合はのセットアップが必要になる．**
+
+#### シミュレーション
+
+シミュレーションでは3つのターミナルを使用する．上ですでにGazebo環境を立ち上げている場合はしなくてよい．
+
+**ターミナル1: ROS 1側でroscoreの起動**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ roscore
+```
+
+**ターミナル2: ROS 2側でGazeboシミュレーションの起動**
+
+```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 ```
 
-を起動すると`/dev/ttyAML1`デバイスファイルにアクセスする`ROS`ノードが起動する．
+```{note}
+`ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST`を設定することで，ROS 2のDDS検出範囲をローカルホストに制限し，ネットワーク上の他のROS 2ノードとの干渉を防ぐ．
+```
 
-**実機を動かす場合はのセットアップが必要になる．**
+**ターミナル3: ROS 1とROS 2のブリッジ**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ rosparam set /use_sim_time true
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2/bridge/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+```
+
+ros1_bridgeが正常に起動すると，ROS 1のtopicとROS 2のtopicが自動的に変換されるようになる．
 
 ### PythonプログラマのためのEusLisp入門
 
@@ -463,22 +645,19 @@ PythonとEusLispの構文対比
 以下のコマンドにより
 `EusLisp`のロボットインターフェースからアームロボットを動かすことができる．
 
-<div class="screen">
-
 ```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
 $ roscd jedyeus/euslisp
 $ roseus jedy-interface.l
 ```
 
-``` lisp
+```{code-block} lisp
 irteusgl$ (jedy-init) ;; ロボットの実機インターフェース*ri*とロボットモデル*jedy*を生成．
 irteusgl$ (send *jedy* :reset-pose) ;; 関節角度を:reset-poseにセット
 irteusgl$ (send *irtviewer* :draw-objects) ;; 描画を更新
-irteusgl$ (send *ri* :angle-vector (send *jedy* :angle-vector) 4000)
+irteusgl$ (send *ri* :angle-vector (send *jedy* :angle-vector) 4000) ;; ここではまだサーボonになっていないため実機は動かない
           ;; 第一引数は目標関節角度 [deg]，第二引数は補間時間 [ms],4秒で目標到達角度になる．
 ```
-
-</div>
 
 `(jedy-init)` 関数は`*jedy*`変数と`*ri*`を生成する． `*jedy*`は，
 `EusLisp`のビューワ(`irtviewer`)上に描画されたロボットモデルを表す．
@@ -492,16 +671,17 @@ irteusgl$ (send *ri* :angle-vector (send *jedy* :angle-vector) 4000)
 
 3.  `(send *ri* :angle-vector (send *jedy* :angle-vector))`でこれを実機へと送る．
 
-1.のロボットモデルの姿勢を決定する部分は，
-のように関節角度を直接指定したり[EusLispの逆運動学メソッド](tips/euslisp-ik.md)のように逆運動学を用いてもよい．
+1.のロボットモデルの姿勢を決定する部分は，のように関節角度を直接指定したり[EusLispの逆運動学メソッド](tips/euslisp-ik.md)のように逆運動学を用いてもよい．
 
+(sec-krs-servo-onoff)=
 #### `KRS`サーボのON/OFF
+
+##### EusLispからのサーボON/OFF
 
 以下のコマンドでサーボのON/OFFが切り替えられる．
 
-<div class="screen">
-
 ```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
 $ roscd jedyeus/euslisp
 $ roseus jedy-interface.l
 ```
@@ -511,35 +691,47 @@ irteusgl$ (jedy-init) ;; アーム＋台車ロボットの*ri*と*jedy*を生成
 irteusgl$ (send *ri* :servo-on) ;; 全軸サーボがONになる
 irteusgl$ (send *ri* :servo-off) ;; 全軸サーボがOFFになる．
 ;; 関節名を指定してONにする
-irteusgl$ (send *ri* :servo-on :names (list "head_joint0" "head_joint1") ;; 頭のみサーボがONになる．
+irteusgl$ (send *ri* :servo-on :names (list "head_joint0" "head_joint1")) ;; 頭のみサーボがONになる．
 ;; 使用できる関節名は以下のように確認できる．
-irteusgl$ send-all (send *jedy* :joint-list) :name
-("rarm_joint0"
-"rarm_joint1"
-"rarm_joint2"
-"rarm_joint3"
-"rarm_joint4"
-"rarm_joint5"
-"rarm_joint6"
-"rarm_gripper_joint"
-"larm_joint0"
-"larm_joint1"
-"larm_joint2"
-"larm_joint3"
-"larm_joint4"
-"larm_joint5"
-"larm_joint6"
-"larm_gripper_joint"
-"head_joint0"
-"head_joint1")
+irteusgl$ (send-all (send *jedy* :joint-list) :name)
+("rarm_joint0" "rarm_joint1" "rarm_joint2" "rarm_joint3" "rarm_joint4" "rarm_joint5" "rarm_joint6" "rarm_gripper_joint" "larm_joint0" "larm_joint1" "larm_joint2" "larm_joint3" "larm_joint4" "larm_joint5" "larm_joint6" "larm_gripper_joint" "head_joint0" "head_joint1")
 ;; 頭部の関節名を指定して角度を変える
-(send *jedy* :head_joint0 :joint-angle 20)
-(send *jedy* :head_joint1 :joint-angle 50)
+irteusgl$ (send *jedy* :head_joint0 :joint-angle 20)
+irteusgl$ (send *jedy* :head_joint1 :joint-angle 50)
 ;; 関節指令を実機に反映させる (3000msかけておくる)
-(send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
+irteusgl$ (send *ri* :angle-vector (send *jedy* :angle-vector) 3000)
 ```
 
-</div>
+##### rqtプラグインを使ったサーボON/OFF（実機のみ）
+
+```{important}
+この方法は**実機のみ**で使用可能である．シミュレーション環境では使用できない．
+```
+
+実機の`jedy_bridge.launch`が起動している状態で，以下のコマンドを実行すると，GUIからサーボのON/OFFや台車・関節の制御が行える：
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ roslaunch jedy_ros1_bridge rqt.launch
+```
+
+:::{figure} fig/servo-on-rqt-plugin.png
+:align: center
+:name: fig:servo-on-rqt-plugin
+:width: 100%
+
+rqtプラグインによるロボット制御画面
+:::
+
+起動すると以下の3つのパネルが表示される：
+
+- **左側**: 台車の速度指令を送るパネル
+- **真ん中**: 関節の位置指令を送るパネル
+- **右側**: サーボのON/OFFを切り替えるパネル
+
+右側のパネルで各関節のON/OFFボタンをクリックすることで，個別にサーボのON/OFFを切り替えることができる．
+また，`All Servo ON`ボタンで全軸を一度にONにしたり，`All Servo OFF`ボタンで全軸を一度にOFFにすることもできる．
+この方法を使うことで，コマンドラインからプログラムを書かずに直感的にロボットを操作できるので，ぜひ試してみよう．
 
 特に`KRS`サーボモータは，緑，青，赤サーボの３種類があるが，
 赤サーボのみモータに過負荷や過電流がかかったり高温になったとき，サーボがきれ．これは，内部の基板で電流値や温度値を監視し制御器へのエラーフラグを立ててサーボを落とすような処理が組み込まれている．
@@ -548,13 +740,10 @@ irteusgl$ send-all (send *jedy* :joint-list) :name
 `(send *ri* :servo-off)`メソッドでサーボをきってほしい．
 サーボが焼ききれた場合にはサーボパーツの交換をしたもらうこととなるため，時間がかかるということを念頭に置いてほしい．
 
-他にも関節ゲインを変更するなど細かい設定や センサ値取得も可能である．
-興味のある人は， <https://kondo-robot.com/product/03146>
-などの製品情報ページを参照してみてほしい．
+他にも関節ゲインを変更するなど細かい設定や センサ値取得も可能である．興味のある人は， [近藤サーボの製品ページ](https://kondo-robot.com/product/03146)を参照してみてほしい．
 
+(sec-direct-joint-angle)=
 #### 関節角度の直接指令による動作生成
-
-<div class="screen">
 
 ```{code-block} lisp
 irteusgl$ (send *jedy* :angle-vector #f(90.0 -4.0 -30.0 -100.0 -3.0 -88.0 -1.0 0.0 -90.0 4.0 30.0 -100.0 3.0 -88.0 1.0 -1.0 0.0 0.0))
@@ -565,12 +754,8 @@ irteusgl$ (send *jedy* :angle-vector
  (float-vector (- 90.0 10) -4.0 -30.0 -100.0 -3.0 -88.0 -1.0 0.0 -90.0 4.0 30.0 -100.0 3.0 -88.0 1.0 -1.0 0.0 0.0))
 ```
 
-</div>
-
 関節軸数が多くなるとこのような指定の方法は難しくなってくるので，軸を指定して角度を設定する方法もある．
 関節角度の直接指定など．
-
-<div class="screen">
 
 ```{code-block} lisp
 # jointのリストの取得
@@ -582,8 +767,6 @@ irteusgl$ (send *jedy* :head_joint1)
 # ある関節軸を動かす(順運動学)
 irteusgl$ (send (send *jedy* :head_joint1) :joint-angle -90)
 ```
-
-</div>
 
 繰り返し処理を追加すると以下のようにエンターキーを押すまでロボットがうなずき続ける．
 
@@ -613,12 +796,11 @@ irteusgl$ (send (send *jedy* :head_joint1) :joint-angle -90)
 )
 ```
 
+(sec-inverse-kinematics)=
 #### 逆運動学による動作生成
 
 手先を目標物に伸ばすというように，手先作業空間での目標に基づいてロボットの運動を生成するには，逆運動学(IK)を用いる．
 逆運動学は端的には，「目標位置まで手先を動かすための関節角度はいくらか？」を求める演算である．
-
-<div class="screen">
 
 ```{code-block} console
 $ source ~/ros_ws/devel/setup.bash
@@ -629,21 +811,11 @@ $ roseus
 irteusgl$ (load "package://jedyeus/euslisp/keyboard-ik-sample.l")
 ```
 
-</div>
+を実行してみてほしい．ビューワのウィンドウがアクティブなときにキーボード入力をするとアームロボットの腕が動いていると思う．これは，逆運動学を解くことにより手先の指令値に応じて各関節角度を計算しビューワで描画しながら実機へ指令しているサンプルである．
 
-を実行してみてほしい．
-ビューワのウィンドウがアクティブなときにキーボード入力をするとアームロボットの腕が動いていると思う．
-これは，逆運動学を解くことにより
-手先の指令値に応じて各関節角度を計算し
-ビューワで描画しながら実機へ指令しているサンプルである．
+このサンプルの中ではキーボード入力に応じて以下の逆運動学メソッドを呼び出しロボットモデルの関節角度を計算している．
 
-このサンプルの中では
-キーボード入力に応じて以下の逆運動学メソッドを呼び出し
-ロボットモデルの関節角度を計算している．
-
-また実機もしくは`gazebo`上のロボットに姿勢を送りたい場合には
-`keyboard-ik-sample.l`のプログラム中の `(jedy-init :without-ri t)`
-となっている部分を`(jedy-init :without-ri nil)`とすると実機もしくは`gazebo`上のロボットに姿勢が反映される．
+また実機もしくは`gazebo`上のロボットに姿勢を送りたい場合には`keyboard-ik-sample.l`のプログラム中の `(jedy-init :without-ri t)`となっている部分を`(jedy-init :without-ri nil)`とすると実機もしくは`gazebo`上のロボットに姿勢が反映される．
 
 :::{figure} fig/keyboard_ik_sample.jpg
 :align: center
@@ -652,30 +824,23 @@ irteusgl$ (load "package://jedyeus/euslisp/keyboard-ik-sample.l")
 keyboard-ikによるロボットの姿勢の反映
 :::
 
-<div class="screen">
-
-``` lisp
+```{code-block} lisp
 irteusgl$ (send *jedy* :reset-pose) ;; 初期姿勢によってはIKが解けないことがある
 irteusgl$ (send *jedy* :rarm :inverse-kinematics
             (make-coords :pos (float-vector 120 -90 -30) :rpy (list (deg2rad 30) (deg2rad 0) (deg2rad 0)))
             :debug-view :no-message)
 ```
 
-</div>
-
-逆運動学メソッドの詳細な使い方は，を参照のこと．
+逆運動学メソッドの詳細な使い方は[EusLispの逆運動学メソッド](tips/euslisp-ik.md)，を参照のこと．
 
 #### <span style="color:green">チェックポイント: アームロボットの制御</span>
 
 ```{exercise} アームロボットの制御
 :label: ex_arm_control
 
-1.  にしたがってサーボモータのIDを確認せよ．
+1.  [`KRS`サーボのON/OFF](sec-krs-servo-onoff)および[関節角度の直接指令による動作生成](sec-direct-joint-angle)にしたがって頭部以外のモータを動かしてみよ．また，`irtviewer`のロボットモデルと実際のロボットの姿勢が一致していることを確認せよ[^2]．操作方法は[IRTビューワ(irtviewer)の操作方法](tips/irtviewer.md)が役に立つ．
 
-2.  にしたがって頭部以外のモータを動かしてみよ．また，`irtviewer`のロボットモデルと実際のロボットの姿勢が一致していることを確認せよ
-    [^2].
-
-3.  にしたがって逆運動学でロボットの姿勢を生成し実機に送ってみよ．
+2.  [逆運動学による動作生成](sec-inverse-kinematics)にしたがって逆運動学でロボットの姿勢を生成し実機に送ってみよ．
 ```
 
 なお，実際に`Jedy`の定義されてるファイルは，[jedy/jedyeus/euslisp/jedy.l](https://github.com/jsk-enshu/robot-programming/tree/master/jedy/jedyeus/euslisp/jedy.l)にある．
@@ -691,27 +856,90 @@ irteusgl$ (send *jedy* :rarm :inverse-kinematics
 
 今回使用するマーカーは[AprilTag](https://april.eecs.umich.edu/software/apriltag)と呼ばれるものである．比較的小さいマーカーでも認識しやすい．
 
-{doc}`robot-programming-1-2025`を参考にしながら，以下のプログラムを起動する．カメラの起動はデバイスにアクセスするプログラムとなるのでロボットPCで行う．
+#### Intel RealSense D405のセットアップ
+
+本課題ではIntel RealSense Depth Camera D405を使用する．D405は近距離（7cm〜50cm）での深度測定に優れたステレオビジョン方式の深度カメラである．詳細は[Intel RealSense D405のセットアップと活用](tips/realsense-d405.md)を参照のこと．
+
+**librealsense2のインストール**
+
+まず，Intel公式のAPTリポジトリからlibrealsense2をインストールする：
 
 ```{code-block} console
-$ ssh jedy@<ロボットPCのIPアドレス>
-      $ ros2 launch jedy_bringup jedy_bringup.launch.py  # すでに立ち上げている場合は立ち上げない．
-      # 次に別のターミナルで
-      $ ssh jedy@<ロボットPCのIPアドレス>
-      $ `roslaunch` `jedy_bringup` d405.launch
+# GPGキー用のディレクトリを作成
+$ sudo mkdir -p /etc/apt/keyrings
+
+# Intel RealSenseのGPGキーをダウンロード
+$ curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null
+
+# APTリポジトリを追加
+$ echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" | sudo tee /etc/apt/sources.list.d/librealsense.list
+
+# パッケージリストを更新
+$ sudo apt-get update
+
+# librealsense2をインストール
+$ sudo apt-get install librealsense2-utils librealsense2-dev
 ```
 
-次にロボットPCで`AprilTag`を認識するプログラムを立ち上げる．このプログラムはロボットPC内部で立ち上がるため，通信帯域が狭くても認識したタグの位置情報だけをネットワーク越しに送るため，
-演習室環境でも十分に実行できると思われる．
+**ROS 1用RealSenseパッケージのセットアップ**
+
+次に，ROS 1用のRealSenseパッケージをビルドする：
 
 ```{code-block} console
-$ ssh jedy@<ロボットPCのIPアドレス>
-      $ `roslaunch` `jedy_bringup` apriltag_detection.launch
+# ROS 1環境をセットアップ
+$ source /opt/ros/one/setup.bash
+
+# ROS 1ワークスペースに移動
+$ cd ~/ros_ws/src
+
+# RealSense ROS 1パッケージをクローン（ros1-legacyブランチ）
+$ git clone -b ros1-legacy https://github.com/IntelRealSense/realsense-ros
+
+# 依存パッケージをインストール
+$ cd ~/ros_ws
+$ rosdep install --from-paths src --ignore-src -y -r
+
+# realsense2_cameraパッケージをビルド
+$ catkin build realsense2_camera
 ```
 
-プログラムが無事に起動するとマーカー認識が立ち上がるので，Rvizもしくはrqt_image_viewなどで自分のPCからロボットPCへ`rossetmaster`して
-/camera/color/tag_detections_image/compressedというトピックを可視化してみると良い．
-この状態でApriltagBoxを移してみると認識した位置にマーカーのIDが表示される．
+#### カメラの接続と起動
+
+**D405カメラをUSB 3.0ケーブルでPCに接続する．**
+
+```{important}
+USB 3.0ポート（青色のポート）に接続すること．USB 2.0では十分な帯域が確保できず，画像転送が遅くなる可能性がある．
+```
+
+**カメラノードの起動**
+
+以下のコマンドでカメラノードを起動する：
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ roslaunch jedy_ros1_bridge d405.launch
+```
+
+**AprilTag認識ノードの起動**
+
+別のターミナルで以下のコマンドを実行し，AprilTag認識ノードを起動する：
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ roslaunch jedy_ros1_bridge apriltag_detection.launch
+```
+
+**認識結果の確認**
+
+さらに別のターミナルで以下のコマンドを実行し，認識結果を可視化する：
+
+```{code-block} console
+$ source ~/ros_ws/devel/setup.bash
+$ rqt_image_view
+```
+
+`rqt_image_view`が起動したら，トピックのドロップダウンメニューから`tag_detection`という名前のついたトピック（例：`/camera/color/tag_detections_image/compressed`）を選択する．
+この状態でAprilTagBoxをカメラに映すと，認識した位置にマーカーのIDが表示される．
 
 :::{figure} fig/recognition_apriltag.jpg
 :align: center
@@ -720,15 +948,18 @@ $ ssh jedy@<ロボットPCのIPアドレス>
 `AprilTag`の認識結果
 :::
 
-また`/camera/color/tag_detections`というトピック名で認識位置の姿勢情報が出ているのでこれを`rostopic echo --noarr`などで確認してみると良い．
-この状態で下記を実行すると`AprilTag`を認識した位置に対して逆運動学が解けた場合は腕を伸ばす様子が`irtviewer`に表示される．
+#### EusLispサンプルプログラムの実行
+
+認識が正常に動作していることを確認したら，EusLispのサンプルプログラムを実行してみよう．
+このプログラムは`AprilTag`を認識した位置に対して逆運動学を解き，ロボットアームを伸ばすものである．
 
 ```{code-block} console
-$ rossetip
-$ rossetmaster <ロボットPC>
+$ source ~/ros_ws/devel/setup.bash
 $ roscd jedyeus/euslisp
 $ roseus sample-pickup.l
 ```
+
+逆運動学が解けた場合，腕を伸ばす様子が`irtviewer`に表示される．
 
 ::::{grid} 2
 :gutter: 2

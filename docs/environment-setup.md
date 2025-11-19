@@ -37,7 +37,7 @@ $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/
 $ rosdep update
 $ cd ~/ros_ws
 $ rosdep install --from-paths src --ignore-src -y -r
-$ catkin build jedyeus
+$ catkin build jedy_ros1_bridge jedyeus
 $ catkin build mechatrobot # Arduinoの演習日に必要
 ```
 
