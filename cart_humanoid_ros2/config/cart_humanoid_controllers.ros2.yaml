@@ -1,0 +1,101 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    fullbody_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    l_gripper_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    r_gripper_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+fullbody_controller:
+  ros__parameters:
+    joints:
+      - LLEG_JOINT0
+      - LLEG_JOINT1
+      - LLEG_JOINT2
+      - LLEG_JOINT3
+      - LLEG_JOINT4
+      - LLEG_JOINT5
+      - RLEG_JOINT0
+      - RLEG_JOINT1
+      - RLEG_JOINT2
+      - RLEG_JOINT3
+      - RLEG_JOINT4
+      - RLEG_JOINT5
+      - LARM_JOINT0
+      - LARM_JOINT1
+      - LARM_JOINT2
+      - LARM_JOINT3
+      - LARM_JOINT4
+      - LARM_JOINT5
+      - LARM_JOINT6
+      - LARM_JOINT7
+      - RARM_JOINT0
+      - RARM_JOINT1
+      - RARM_JOINT2
+      - RARM_JOINT3
+      - RARM_JOINT4
+      - RARM_JOINT5
+      - RARM_JOINT6
+      - RARM_JOINT7
+      - CHEST_JOINT0
+      - CHEST_JOINT1
+      - CHEST_JOINT2
+      - HEAD_JOINT0
+      - HEAD_JOINT1
+
+    command_interfaces:
+      - position
+
+    state_interfaces:
+      - position
+      - velocity
+
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+l_gripper_controller:
+  ros__parameters:
+    joints:
+      - L_finger1_joint
+
+    command_interfaces:
+      - position
+
+    state_interfaces:
+      - position
+      - velocity
+
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
+
+r_gripper_controller:
+  ros__parameters:
+    joints:
+      - R_finger1_joint
+
+    command_interfaces:
+      - position
+
+    state_interfaces:
+      - position
+      - velocity
+
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.01
+      goal_time: 0.0
