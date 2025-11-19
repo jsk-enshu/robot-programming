@@ -98,7 +98,7 @@
             (setq ik-result (send *jedy* :rarm :inverse-kinematics
                                   target-coords
                                   :rotation-axis :x ;; x軸（グリッパーの前方向）への回転を許してikを解く
-                                  :revert-if-fail t
+                                  :revert-if-fail nil
                                   :warnp nil
                                   :stop 200))
             (when ik-result

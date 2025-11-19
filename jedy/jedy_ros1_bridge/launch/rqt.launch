@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!-- Launch RQt with perspective file -->
+  <node name="rqt_gui" pkg="rqt_gui" type="rqt_gui"
+        args="--perspective-file $(find jedy_ros1_bridge)/launch/enshu.perspective" />
+</launch>

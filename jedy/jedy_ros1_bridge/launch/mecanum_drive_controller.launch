@@ -12,6 +12,9 @@
   <node name="relay_cmd_vel" pkg="topic_tools" type="relay"
         args="cmd_vel ridgeback_control/cmd_vel" />
 
+  <node name="relay_cmd_vel_for_simulator" pkg="topic_tools" type="relay"
+        args="mecanum_drive_controller/reference ridgeback_control/cmd_vel" />
+
   <node name="relay_odom" pkg="topic_tools" type="relay"
         args="ridgeback_control/odom odom" />
 
