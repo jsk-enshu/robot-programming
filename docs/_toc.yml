@@ -71,6 +71,8 @@ parts:
   - caption: Tips・付録（2日目）
     numbered: false
     chapters:
+    - file: tips/robot-operation
+      title: 実機の使用方法
     - file: tips/ping
       title: Ping接続確認
     - file: tips/ssh

@@ -38,11 +38,8 @@
   `:state`
   センサ情報を取得する
 
-  `:send-cmd-vel-raw`
+  `:go-velocity`
   目標の移動速度を送る
-
-  `:go-pos`
-  目標の到達位置指令を送る
 
   `:angle-vector`
   目標の関節角度指令を送る
@@ -115,7 +112,7 @@ $ rqt_graph
 `EusLisp`のロボットインターフェースで実際のロボットのセンサ値取得や台車駆動が行えることを確認する．
 
 `EusLisp`の起動は通常のターミナルで直接実行するよりも， `emacs`で`M-x shell`とタイプし起動したターミナルで行うことをお勧めする．
-一度打ち込んだコマンドは，`M-p`で履歴を遡ることができるので，同じコマンド打つ手間が減る．
+一度打ち込んだコマンドは，`M-p`で履歴を遡ることができるので，同じコマンド打つ手間が減る．EusLisp (`roseus`)のより効率的な作業方法を知りたい場合は[roseusでの効率的な作業方法](tips/roseus-workflow.md)が参考になる．
 
 ロボットPCに`ssh`でログインして，
 
@@ -176,7 +173,7 @@ irteusgl$ (send *ri* :publish-atom-s3-string "hello enshu") ;; 文字が表示�
 
 `(jedy-init)`は双腕移動台車ロボットの初期化関数である．
 `(jedy-init)`を実行すると`*jedy*`という大域変数にロボットモデルのインスタンスがセットされ，
-`EusLisp`の3Dビューア(``irtviewer``)に表示される [^1].
+`EusLisp`の3Dビューア(``irtviewer``)に表示される [^1]. [IRTビューワの操作方法](tips/irtviewer.md)を参照のこと．
 同時に`*ri*`という大域変数に実ロボットインターフェースのインスタンスがセットされる．
 
 単体のサーボモータやセンサ等の簡単な操作対象の場合は簡単な`Topic`の`pub`/`sub`のみで操作してもシステムは複雑になりにくい．
@@ -203,25 +200,16 @@ $ rostopic echo /atom_s3_additional_info
 
 他にも，
 
-<div class="screen">
-
 ```{code-block} lisp
-irteusgl$ (send *ri* :state :atom-s3-button)     ;; 背面Atom S3ボタン（実機のみ）
-irteusgl$ (send *ri* :state :roll-pitch-yaw)      ;; IMUセンサの値からロボットの姿勢を取得する
+irteusgl$ (send *ri* :state :roll-pitch-yaw)    ;; IMUセンサの値からロボットの姿勢を取得する
 irteusgl$ (send *ri* :state :potentio-vector)   ;; 実機のサーボの角度を取得する
-irteusgl$ (send *ri* :send-cmd-vel-raw x y theta) ;; 速度指令で動かす．
-                                                        ;; x,y:[mm/s], theta:[deg/s]
+irteusgl$ (send *ri* :go-velocity x y theta)    ;; 速度指令で動かす．単位は x,y:[mm/s], theta:[deg/s]
 ```
 
-</div>
-
 などのセンサ取得や指令値送信ができる．
-実ロボットのインターフェースプログラムは，
-``jedy_bringup`/euslisp/jedy-interface.l` を参照してみよう．
+実ロボットのインターフェースプログラムは，[jedy/jedyeus/euslisp/jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l)を参照してみよう．
 
 `EusLisp`の条件分岐や繰り返しを用いてセンサ情報に基づいてロボットが行動するプログラムを書いてみよう．
-
-<div class="screen">
 
 ```{code-block} console
 $ roscd jedyeus/euslisp
@@ -243,8 +231,6 @@ irteusgl$ (while t
             (ros::sleep))
 ```
 
-</div>
-
 これは，`Atom S3`のボタンがクリックされるまで前進指令を繰り返し送り続けるプログラムである．
 プログラムはファイルに保存しておくと以下のように実行できて便利である．
 
@@ -258,7 +244,7 @@ $ roseus checkpoint2-1-go-forward.l
 
 ```{code-block} console
 $ roscd jedy_bringup/exercise/
-      $ roseus checkpoint2-2-go-forward-imu.l
+$ roseus checkpoint2-2-go-forward-imu.l
 ```
 
 これを参考にして次の課題に取り組もう．
@@ -319,10 +305,9 @@ USB充電端子，サーボ基板へ8Vを出力する黄色いコネクタの`XT
 
 #### IDの確認
 
-`Jedy`の電源を入れ，ロボットPCに`ssh`でログインして，
-以下のコマンドを実行し22個のサーボモータすべてが
+`Jedy`のサーボ電源を入れ自分のPCにJedyと接続したUSBシリアルを繋いで以下のコマンドを実行し22個のサーボモータすべてが
 緑色に"found"となっていることを確認する．
-**なお，これはデバイスにアクセスするプログラムなので，`jedy_bringup.launch.py`などを立ち上げていると実行できないことに注意する．**
+**なお，これはデバイスにアクセスするプログラムなので，`jedy_bridge.launch`などを立ち上げていると実行できないことに注意する．**
 
 ```{code-block} console
 $ rosrun jedy_bringup scan_ids.py
@@ -353,9 +338,9 @@ $ rosrun jedy_bringup scan_ids.py
   Servo ID 34 (`head_joint1`) found
 ```
 
-実行して“found”とでない場合は，
-ケーブルがささっていないことや，ID書き込みエラーやモータの故障が疑われるので，
-TAを呼んで `KRS`サーボの交換やIDの再書き込みを行ってもらう．
+実行して“found”とでない場合は，ケーブルがささっていないことや，ID書き込みエラーやモータの故障が疑われるのでTAを呼んで`KRS`サーボの交換やIDの再書き込みを一緒に行おう．
+サーボIDの書き込みには{doc}`robot-programming-3-2025`の発展課題にあった[Ubuntuでics-managerを使用する方法](tips/kondo-servo.html#ubuntuics-manager)を見ながらやってみよう．
+
 
 ```{code-block} console
 $ rosrun jedy_bringup scan_ids.py
