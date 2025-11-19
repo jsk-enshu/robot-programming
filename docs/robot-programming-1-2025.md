@@ -1,5 +1,10 @@
-# 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
+# 双腕移動台車ロボットを用いた認識操作プログラミング
 
+```{eval-rst}
+.. raw:: html
+
+   <style>.main-content { counter-reset: exercise 0; }</style>
+```
 
 ## 本日の演習内容
 

@@ -3,6 +3,7 @@ title: 知能ロボット行動プログラミング演習 2025
 author: Iori Yanokura
 logo: "fig/logo_with_text.png"
 number_figures: true
+number_sections: true
 exclude_patterns:
   - .venv/**
   - .git/**
@@ -55,6 +56,11 @@ sphinx:
       default_group: default
       show_caption: true
       override_image_directive: true
+    # 番号付けの設定：各章（H1見出し）ごとに番号をリセット
+    numfig: true
+    numfig_secnum_depth: 1
+    # sphinx-exerciseの設定：各ファイル（章）ごとにexerciseの番号をリセット
+    exercise_scope: "chapter"
     # sphinx-exerciseの設定：exerciseの名称を「チェックポイント」に変更
     numfig_format:
       exercise: "チェックポイント %s"
@@ -71,6 +77,7 @@ sphinx:
     # カスタムJavaScriptファイルを追加
     html_js_files:
       - custom-copybutton.js
+      - reset-exercise-counter.js
     html_theme_options:
       repository_url: https://github.com/jsk-enshu/robot-programming
       use_repository_button: false

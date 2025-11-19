@@ -1,4 +1,10 @@
-# 3日目 ロボットの全身行動プログラミング
+# ロボットの全身行動プログラミング
+
+```{eval-rst}
+.. raw:: html
+
+   <style>.main-content { counter-reset: exercise 0; }</style>
+```
 
 ## 本日の演習内容
 
