@@ -993,12 +993,10 @@ $ roseus sample-pickup.l
 
 Jedyの`follow joint trajectory`コントローラーを別々に動かすプログラムを書いて`head_controller`のみを動かすプログラム，`rarm_controller`のみを動かすプログラムで分けて実行することでコントローラーごとに独立して操作できることを確認してみよう．
 
-#### コントローラーの仕組み
-
 EusLispのロボットインターフェースでは，複数のコントローラーを独立して制御する仕組みが実装されている．
 [jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l)と[robot-interface.l](https://github.com/jsk-ros-pkg/jsk_pr2eus/blob/master/pr2eus/robot-interface.l)を参考にして，その仕組みを理解しよう．
 
-##### コントローラーの定義
+#### コントローラーの定義
 
 各コントローラーは以下のようにメソッドとして定義されている（[jedy-interface.l 128-163行目](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l#L128-L163)）：
 
@@ -1035,7 +1033,7 @@ EusLispのロボットインターフェースでは，複数のコントロー�
                             "rarm_joint6" "rarm_gripper_joint")))))
 ```
 
-##### コントローラーテーブルへの登録
+#### コントローラーテーブルへの登録
 
 初期化時に，各コントローラーが`controller-table`というハッシュテーブルに登録される（[jedy-interface.l 54-64行目](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l#L54-L64)）：
 
@@ -1052,7 +1050,7 @@ EusLispのロボットインターフェースでは，複数のコントロー�
     (setf (gethash type controller-table) (list action))))
 ```
 
-##### `:angle-vector`メソッドのシグネチャ
+#### `:angle-vector`メソッドのシグネチャ
 
 [robot-interface.l 430-445行目](https://github.com/jsk-ros-pkg/jsk_pr2eus/blob/master/pr2eus/robot-interface.l#L430-L445)を見ると，`:angle-vector`メソッドは以下のシグネチャを持つ：
 
@@ -1070,9 +1068,7 @@ EusLispのロボットインターフェースでは，複数のコントロー�
 
 **重要**: `ctype`（controller type）は第3引数の**位置引数**であり，キーワード引数ではない点に注意する．
 
-#### 実装例
-
-##### 頭部のみを動かす例
+#### 頭部のみを動かす例
 
 ```lisp
 ;; jedy-interfaceの起動
@@ -1091,7 +1087,7 @@ EusLispのロボットインターフェースでは，複数のコントロー�
 (send *ri* :wait-interpolation)
 ```
 
-##### 右腕のみを動かす例
+#### 右腕のみを動かす例
 
 ```lisp
 ;; 右腕のサーボをON
@@ -1108,7 +1104,7 @@ EusLispのロボットインターフェースでは，複数のコントロー�
 (send *ri* :wait-interpolation)
 ```
 
-##### 複数のコントローラーを同時に独立して動かす例
+#### 複数のコントローラーを同時に独立して動かす例
 
 ```lisp
 ;; 頭部と右腕を同時に動かす（それぞれ独立したコントローラー）
