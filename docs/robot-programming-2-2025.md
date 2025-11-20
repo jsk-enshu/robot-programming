@@ -387,6 +387,10 @@ $ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 $ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ```
 
+```{tip}
+シミュレーション中にロボットが倒れてしまった場合は，[ロボットが倒れた場合の復帰方法](tips/gazebo-sim.md#gazebo-robot-reset)を参照して姿勢をリセットできる．
+```
+
 #### 実機・シミュレーション両方
 実機もしくはGazeboが立ち上がったら下記を実行する．
 
@@ -593,6 +597,10 @@ $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2/bridge/install/setup.bash
 $ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 $ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+```
+
+```{tip}
+シミュレーション中にロボットが倒れてしまった場合は，[ロボットが倒れた場合の復帰方法](tips/gazebo-sim.md#gazebo-robot-reset)を参照して姿勢をリセットできる．
 ```
 
 ros1_bridgeが正常に起動すると，ROS 1のtopicとROS 2のtopicが自動的に変換されるようになる．
