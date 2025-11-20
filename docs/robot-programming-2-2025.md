@@ -992,6 +992,159 @@ $ roseus sample-pickup.l
 
 Jedyの`follow joint trajectory`コントローラーを別々に動かすプログラムを書いて`head_controller`のみを動かすプログラム，`rarm_controller`のみを動かすプログラムで分けて実行することでコントローラーごとに独立して操作できることを確認してみよう．
 
+#### コントローラーの仕組み
+
+EusLispのロボットインターフェースでは，複数のコントローラーを独立して制御する仕組みが実装されている．
+[jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l)と[robot-interface.l](https://github.com/jsk-ros-pkg/jsk_pr2eus/blob/master/pr2eus/robot-interface.l)を参考にして，その仕組みを理解しよう．
+
+##### コントローラーの定義
+
+各コントローラーは以下のようにメソッドとして定義されている（[jedy-interface.l 128-163行目](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l#L128-L163)）：
+
+```lisp
+(:head-controller
+ ()
+ (list
+  (list
+   (cons :controller-action "head_controller/follow_joint_trajectory")
+   (cons :controller-state "head_controller/state")
+   (cons :action-type control_msgs::FollowJointTrajectoryAction)
+   (cons :joint-names (list "head_joint0" "head_joint1")))))
+
+(:larm-controller
+ ()
+ (list
+  (list
+   (cons :controller-action "larm_controller/follow_joint_trajectory")
+   (cons :controller-state "larm_controller/state")
+   (cons :action-type control_msgs::FollowJointTrajectoryAction)
+   (cons :joint-names (list "larm_joint0" "larm_joint1" "larm_joint2"
+                            "larm_joint3" "larm_joint4" "larm_joint5"
+                            "larm_joint6" "larm_gripper_joint")))))
+
+(:rarm-controller
+ ()
+ (list
+  (list
+   (cons :controller-action "rarm_controller/follow_joint_trajectory")
+   (cons :controller-state "rarm_controller/state")
+   (cons :action-type control_msgs::FollowJointTrajectoryAction)
+   (cons :joint-names (list "rarm_joint0" "rarm_joint1" "rarm_joint2"
+                            "rarm_joint3" "rarm_joint4" "rarm_joint5"
+                            "rarm_joint6" "rarm_gripper_joint")))))
+```
+
+##### コントローラーテーブルへの登録
+
+初期化時に，各コントローラーが`controller-table`というハッシュテーブルに登録される（[jedy-interface.l 54-64行目](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l#L54-L64)）：
+
+```lisp
+(dolist (l (list
+             (cons :larm-controller "larm_controller/follow_joint_trajectory")
+             (cons :rarm-controller "rarm_controller/follow_joint_trajectory")
+             (cons :head-controller "head_controller/follow_joint_trajectory")))
+  (let ((type (car l))
+        (name (cdr l))
+        action)
+    (setq action (find-if #'(lambda (ac) (string= name (send ac :name)))
+                          controller-actions))
+    (setf (gethash type controller-table) (list action))))
+```
+
+##### `:angle-vector`メソッドのシグネチャ
+
+[robot-interface.l 430-445行目](https://github.com/jsk-ros-pkg/jsk_pr2eus/blob/master/pr2eus/robot-interface.l#L430-L445)を見ると，`:angle-vector`メソッドは以下のシグネチャを持つ：
+
+```lisp
+(:angle-vector
+ (av &optional (tm nil) (ctype controller-type) (start-time 0)
+     &key (scale 1) (min-time 1.0) ...)
+ "Send joint angle to robot
+- av : joint angle vector [deg]
+- tm : time to goal in [msec]
+- ctype : controller method name
+- start-time : time to start moving
+...")
+```
+
+**重要**: `ctype`（controller type）は第3引数の**位置引数**であり，キーワード引数ではない点に注意する．
+
+#### 実装例
+
+##### 頭部のみを動かす例
+
+```lisp
+;; jedy-interfaceの起動
+(jedy-init)
+
+;; 頭部のサーボをON
+(send *ri* :servo-on :names (list "head_joint0" "head_joint1"))
+
+;; 頭部の角度を設定
+(send *jedy* :head_joint0 :joint-angle 30)
+(send *jedy* :head_joint1 :joint-angle 45)
+
+;; 頭部コントローラーのみを使って動作指令を送る
+;; 引数: (angle-vector 補間時間[ms] controller-type)
+(send *ri* :angle-vector (send *jedy* :angle-vector) 2000 :head-controller)
+(send *ri* :wait-interpolation)
+```
+
+##### 右腕のみを動かす例
+
+```lisp
+;; 右腕のサーボをON
+(send *ri* :servo-on :names (list "rarm_joint0" "rarm_joint1" "rarm_joint2"
+                                   "rarm_joint3" "rarm_joint4" "rarm_joint5"
+                                   "rarm_joint6" "rarm_gripper_joint"))
+
+;; 右腕の姿勢を設定（逆運動学を使用）
+(send *jedy* :rarm :inverse-kinematics
+      (make-coords :pos #f(300 -200 100)))
+
+;; 右腕コントローラーのみを使って動作指令を送る
+(send *ri* :angle-vector (send *jedy* :angle-vector) 3000 :rarm-controller)
+(send *ri* :wait-interpolation)
+```
+
+##### 複数のコントローラーを同時に独立して動かす例
+
+```lisp
+;; 頭部と右腕を同時に動かす（それぞれ独立したコントローラー）
+(send *jedy* :head_joint1 :joint-angle 60)
+(send *jedy* :rarm :inverse-kinematics
+      (make-coords :pos #f(350 -150 120)))
+
+;; 頭部コントローラーに指令を送る（補間時間: 2000ms）
+(send *ri* :angle-vector (send *jedy* :angle-vector) 2000 :head-controller)
+
+;; 右腕コントローラーに指令を送る（補間時間: 3000ms, 頭部とは独立して動く）
+(send *ri* :angle-vector (send *jedy* :angle-vector) 3000 :rarm-controller)
+
+;; 両方の動作が終わるまで待つ
+(send *ri* :wait-interpolation :head-controller)
+(send *ri* :wait-interpolation :rarm-controller)
+```
+
+#### 重要なポイント
+
+1. **controller typeは第3引数の位置引数**として渡す（キーワード引数ではない）
+   ```lisp
+   ;; 正しい
+   (send *ri* :angle-vector av 2000 :head-controller)
+
+   ;; 間違い（これは動かない）
+   (send *ri* :angle-vector av 2000 :controller-type :head-controller)
+   ```
+
+2. **各コントローラーは独立**しているため，異なる補間時間で同時に動作させることができる
+
+3. **デフォルト**（`:default-controller`）では全てのコントローラーが使用される
+
+4. **`controller-table`**というハッシュテーブルで管理されているため，拡張が容易である
+
+この仕組みにより，ロボットの異なる部位を独立して制御でき，より複雑な動作パターンを実現できる．
+
 ### 課題2.2 (発展)
 
 他の班のJedyと協力して片方を動かすと片方のJedyが動くプログラムを作成してみよ．
