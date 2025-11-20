@@ -277,7 +277,7 @@ All servo IDs in the configuration were found.
 ```
 
 実行して`found`とでない場合は，ケーブルがささっていないことや，ID書き込みエラーやモータの故障が疑われるのでTAを呼んで`KRS`サーボの交換やIDの再書き込みを一緒に行おう．
-サーボIDの書き込みには{doc}`robot-programming-3-2025`の発展課題にあった[Ubuntuでics-managerを使用する方法](tips/kondo-servo.html#ubuntuics-manager)を見ながらやってみよう．
+サーボIDの書き込みには{doc}`robot-programming-3-2025`の発展課題にあった[Ubuntuでics-managerを使用する方法](tips/kondo-servo.md#ubuntu-ics-manager)を見ながらやってみよう．
 
 ```{code-block} console
 $ rosrun kxr_controller scan_servo_ids.py $(rospack find jedy_ros1_bridge)/config/jedy_servo_config.yaml
