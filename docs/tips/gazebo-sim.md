@@ -9,6 +9,7 @@ $ source ~/ros2_ws/install/setup.bash
 $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 ```
 
+(gazebo-robot-reset)=
 ## ロボットが倒れた場合の復帰方法
 
 Gazeboシミュレーション中に，ロボットが倒れてしまうことがある．特にjedyロボットのような小型ヒューマノイドロボットでは，関節の動作や外力によって転倒することがある．
@@ -23,6 +24,7 @@ Gazeboシミュレーション中に倒れてしまったjedyロボット
 このような場合，Gazeboの`gz service`コマンドを使用してロボットの姿勢をリセットすることができる．以下のコマンドを実行すると，ロボットを指定した位置・姿勢に復帰させることができる．
 
 ```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
 $ gz service -s /world/default/set_pose --reqtype gz.msgs.Pose --reptype gz.msgs.Boolean --req "
 name: 'jedy',
 position: {x: 0, y: 0, z: 0.2},
