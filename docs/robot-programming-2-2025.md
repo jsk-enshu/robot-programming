@@ -479,7 +479,8 @@ $ roseus jedy-interface.l
 irteusgl$ (jedy-init) ;; *jedy*,*ri*を作成する
 irteusgl$ (ros::rate 10)
 irteusgl$ (send *jedy* :angle-vector (send *ri* :state :potentio-vector))
-irteusgl$ (setq pitch-joint (format nil "current head pitch angle ~A" (send *jedy* :head_joint1 :joint-angle)))
+irteusgl$ (setq pitch-joint (send *jedy* :head_joint1 :joint-angle))
+irteusgl$ (ros::ros-info (format nil "current head pitch angle ~A" pitch-joint))
 irteusgl$ (while t
             (send *ri* :go-velocity 10 0 0)
             (send *jedy* :angle-vector (send *ri* :state :potentio-vector))
