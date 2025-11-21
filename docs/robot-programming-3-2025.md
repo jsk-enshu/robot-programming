@@ -243,16 +243,7 @@ LED点滅回路図
 
 ::::
 
-#### <span style="color:green">チェックポイント: ブレッドボード上でのLED点滅回路の製作</span>
-
-```{exercise} ブレッドボード上でのLED点滅回路の製作
-:label: ex_breadboard_led
-
-LED点滅回路をブレッドボード上に製作しLEDの点滅を確認してみよう．
-配線を間違えて短絡（ショート）させないように注意すること．
-```
-
-#### ステップ3: 外部LEDを使った回路製作のプログラム
+#### ステップ3: 外部LEDを使った点滅プログラム
 
 **実際の電子回路製作では外部部品を制御することが重要である**.
 基板上のLEDだけでなく外部のLED，モータ，センサなどを制御できるようになることがメカトロニクスの基礎となる．
@@ -280,18 +271,25 @@ void loop() {
 
 </div>
 
-#### <span style="color:green">チェックポイント: 外部LED点滅回路の作成</span>
+#### <span style="color:green">チェックポイント: ブレッドボード上での外部LED点滅回路の製作と動作確認</span>
 
-```{exercise} 外部LED点滅回路の動作の確認
+```{exercise} ブレッドボード上での外部LED点滅回路の製作と動作確認
 :label: ex_external_led
 
-Seeeduino Nanoを用いた回路のLEDの点滅を確認してみよう．
+ブレッドボード上に外部LED点滅回路を製作し，プログラムを書き込んでLEDの点滅を確認してみよう．
 
-LED点滅のサンプルプログラムは，演習ワークスペース[robot-programming/mechatrobot/sketchbook/led_sample/led_sample.ino](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/sketchbook/led_sample/led_sample.ino)にあるので，書き込みに利用しても良い．
+**手順：**
 
-プログラムでは，デジタル信号出力にD2ピンを使用しているため，
-実物回路も前のチェックポイント（LED点灯回路）のものから適切に修正する必要がある．
-具体的にはLEDのアノード（長い方）側に接続されている抵抗をSeeeduino NanoのD2ピンに接続する．
+1. **回路の製作**：上図の回路図と配線例を参考にブレッドボード上にLED回路を製作する．
+   - LEDのアノード（長い方）側に抵抗を接続
+   - 抵抗の反対側をSeeeduino NanoのD2ピンに接続
+   - LEDのカソード（短い方）をGNDに接続
+   - 配線を間違えて短絡（ショート）させないように注意すること
+
+2. **プログラムの書き込み**：上記のLED点滅プログラムをSeeeduino Nanoに書き込む．
+   - LED点滅のサンプルプログラムは[robot-programming/mechatrobot/sketchbook/led_sample/led_sample.ino](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/sketchbook/led_sample/led_sample.ino)にある
+
+3. **動作確認**：Seeeduino Nanoを用いた回路のLEDが1秒ごとに点滅することを確認する．
 
 <span style="color:red">**外部LEDを制御できることは今後のモータやセンサ制御の基礎となるため必ず実施すること**</span>.
 ```
@@ -763,15 +761,26 @@ $ source ~/ros2/bridge/install/setup.bash
 $ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ```
 
+```{note}
+ros1_bridgeの起動時に`unknown pair`というメッセージが表示される場合があるが，これは無視して問題ない．
+これはROS 1とROS 2のメッセージ型の対応関係が自動検出されている過程で表示される情報メッセージである．
+```
+
 **ターミナル3: rosserial（Seeeduino Nanoとの通信）**
 
 ```{code-block} console
 $ source ~/ros_ws/devel/setup.bash
-$ roslaunch mechatrobot mechatrobot_driver.launch
-# could not open port /dev/ttyUSB0などと表示される場合は
-# Seeeduino NanoのUSBケーブルを抜いたり差したりした状態の/dev/ttyUSB???のデバイスファイル名の存在を比較し
-# Seeeduino Nanoのデバイスファイル名を調べてport:=/dev/ttyUSB???
-# のようにroslaunchのオプション引数で適切なデバイスファイル名を指定する．
+$ roslaunch mechatrobot mechatrobot_driver.launch port:=/dev/ttyUSB0
+```
+
+```{note}
+`could not open port /dev/ttyUSB0`などのエラーが表示される場合は，Seeeduino Nanoのデバイスファイル名を確認する必要がある．
+以下の手順でデバイスファイル名を確認し，`port`パラメータで適切なデバイスファイル名を指定する：
+
+1. Seeeduino NanoのUSBケーブルを抜いた状態で`ls /dev/ttyUSB*`を実行
+2. USBケーブルを差した状態で再度`ls /dev/ttyUSB*`を実行
+3. 新たに表示されたデバイスファイル名（例：`/dev/ttyUSB1`）を確認
+4. `roslaunch mechatrobot mechatrobot_driver.launch port:=/dev/ttyUSB1`のように指定する
 ```
 
 **ターミナル4: ros2_control（モータ制御）**
@@ -931,20 +940,34 @@ rvizで測距センサを可視化している様子
 PCと通信することでPCでのプログラム処理結果をロボット制御に反映させることが出来る．
 ここではPC側で顔認識の画像処理を行い認識結果に基づいてモータ制御を行う方法を説明する．
 
-以下を実行する[^motor_command_batching].
+以下の3つのプログラムをそれぞれ別のターミナルで実行する[^motor_command_batching]．
+
+**ターミナル1: rosserial（Seeeduino Nanoとの通信）**
 
 ```{code-block} console
 $ source ~/ros_ws/devel/setup.bash
 $ roslaunch mechatrobot mechatrobot_driver.launch
+```
 
+**ターミナル2: 顔認識ノード**
+
+```{code-block} console
 $ source ~/ros_ws/devel/setup.bash
 $ roslaunch mechatrobot sample_face_detect.launch
+```
 
-# euslisp sample
+**ターミナル3: モータ制御ノード（EusLispまたはPython）**
+
+EusLispを使う場合：
+
+```{code-block} console
 $ source ~/ros_ws/devel/setup.bash
 $ rosrun mechatrobot motor-command-by-face.l
+```
 
-# あるいは python sample
+あるいはPythonを使う場合：
+
+```{code-block} console
 $ source ~/ros_ws/devel/setup.bash
 $ rosrun mechatrobot motor-command-by-face.py
 ```
