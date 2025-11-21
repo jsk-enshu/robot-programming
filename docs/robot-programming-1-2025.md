@@ -202,7 +202,7 @@ LEDが赤く点滅すれば充電中である．
 
 本演習で小型PCに接続されているケーブルは，USBデバイスケーブルはステレオカメラ`D405`と`Lidar`センサの2つ，サーボ制御基板と接続されている`ZH3`線ケーブル，マイク・スピーカの`Atom Echo`と接続されている4線の`Grove`ケーブルとなる．
 
-### <span style="color:green">チェックポイント: Caps LockをCtrlに変更する</span>
+### <span style="color:green">チェックポイント2.3: Caps LockをCtrlに変更する</span>
 
 プログラミングやロボット開発の現場では，ターミナルやエディタでCtrlキーを頻繁に使用する．
 標準的なキーボード配置ではCtrlキーが左下隅にあり小指を大きく伸ばす必要があるため，長時間作業すると手首や小指に負担がかかる．
@@ -237,39 +237,45 @@ Caps LockをCtrlに変更する設定は，長年プログラマーコミュニ�
 $ gsettings set org.gnome.desktop.input-sources xkb-options "[]"
 ```
 ただし，多くのプログラマーはこの設定を気に入って継続して使用している．一度試してみて，快適であればそのまま使い続けることを推奨する．
-```
 
-### <span style="color:green">チェックポイント: ソフトウェアの更新とインストール</span>
+### <span style="color:green">チェックポイント2.4: ソフトウェアの更新</span>
 
 演習を開始する前に，最新のソフトウェアを取得し，必要なパッケージをインストールする必要がある．
 
-```{exercise} ソフトウェアの更新とインストール
+```{exercise} ソフトウェアの更新
 :label: ex_software_update
+
+演習を開始する前に，以下の手順で最新のソフトウェアを取得し，必要なパッケージをインストールせよ．
 
 1.  以下のリンクから`jsk-enshu-ros-jazzy-ros1-bridge`パッケージをダウンロードせよ：
 
     [jsk-enshu-ros-jazzy-ros1-bridge_0.10.3-0noble_amd64.deb](https://drive.google.com/file/d/1JFbzEoFLY3jRep5ckb-CtvWBfhnJEMAE/view?usp=drive_link)
 
 2.  ダウンロードしたパッケージをインストールせよ（ダウンロードフォルダで実行）：
+
     ```{code-block} console
     $ cd ~/Downloads
     $ sudo dpkg -i jsk-enshu-ros-jazzy-ros1-bridge_0.10.3-0noble_amd64.deb
     ```
 
 3.  ROS 2ワークスペースのソースコードを更新せよ：
+
     ```{code-block} console
     $ cd ~/ros2_ws/src/robot-programming
     $ git pull
     $ cd ~/ros2_ws
     $ colcon build --symlink-install --packages-up-to jedy_bringup
     ```
+
     最新のソースコードが取得できることを確認せよ．
 
 4.  ROS 1ワークスペースのソースコードを更新せよ：
+
     ```{code-block} console
     $ cd ~/ros_ws/src/robot-programming
     $ git pull
     ```
+
     最新のソースコードが取得できることを確認せよ．
 ```
 
@@ -277,13 +283,14 @@ $ gsettings set org.gnome.desktop.input-sources xkb-options "[]"
 `git pull`を実行した際に「Already up to date」と表示される場合は，すでに最新のコードになっているため問題ない．更新がある場合は，どのファイルが更新されたかが表示される．
 ```
 
-### <span style="color:green">チェックポイント: 物品の準備</span>
+### <span style="color:green">チェックポイント2.5: 物品の準備</span>
 
 ```{exercise} 物品の準備
 :label: ex_item_prep
 
 1.  `USB-PD`につないだマグネットコネクターで`Jedy`のRasberrypiのバッテリーを充電しLEDが点灯することを確認せよ
-3.  **必須ではないがロボット操作が面白くなるので試すことを推奨：** ジョイスティックコントローラをUSBケーブルで自分のノートPCに接続しLEDが点滅することを確認せよ．[ジョイスティックコントローラによる操縦](tips/joystick.md)も参照すること
+
+2.  **必須ではないがロボット操作が面白くなるので試すことを推奨：** ジョイスティックコントローラをUSBケーブルで自分のノートPCに接続しLEDが点滅することを確認せよ．[ジョイスティックコントローラによる操縦](tips/joystick.md)も参照すること
 ```
 
 ## 双腕移動台車ロボット Jedy の起動方法
@@ -374,7 +381,7 @@ data: 1
 ---
 ```
 
-### <span style="color:green">チェックポイント: 実機との通信設定</span>
+### <span style="color:green">チェックポイント2.6: 実機との通信設定</span>
 
 ```{exercise} 実機との通信設定
 :label: ex_robot_communication
@@ -490,7 +497,7 @@ $ ros2 topic pub --once /atom_s3_additional_info std_msgs/msg/String "data: 'hel
 次の課題に取り組んでみよう．`topic`の型の確認方法について
 課題の前に必ず付録を参照すること．
 
-### <span style="color:green">チェックポイント: topicを使ったセンサ値の確認</span>
+### <span style="color:green">チェックポイント2.7: topicを使ったセンサ値の確認</span>
 
 ```{exercise} topicを使ったセンサ値の確認
 :label: ex_topic_sensor
@@ -809,11 +816,16 @@ $ ssh jedy@<ロボットPCのIPアドレス>
 
 `SSH`接続の詳細（接続後の操作方法，切断方法，便利なオプションなど）については{doc}`tips/ssh`を参照されたい．
 
-### ロボットの起動プログラム
+### ロボットの起動方法
 
-それではロボットのサーボ通信プログラムを起動してみよう．
+本節ではロボットを起動する方法を説明する．実機を使う場合とシミュレーションを使う場合で手順が異なるため，それぞれ説明する．
 
-#### サーボバッテリーの接続と電源ON
+#### 実機
+
+実機を動かすための手順は少し煩雑だが，以下の手順に従って設定を行う．
+**この部分は多くの学生が詰まりやすいポイントなので，手順を丁寧に確認しながら進めること．**
+
+##### サーボバッテリーの接続と電源ON
 
 まず，サーボ制御基板にバッテリーを接続する必要がある．
 以下の手順でバッテリーを接続し，サーボ制御基板の電源をONにする：
@@ -849,10 +861,7 @@ name: fig:how_to_charge_battery_remote
 実機の使用方法（充電方法の詳細，バッテリー残量の確認，トラブルシューティング，安全上の注意事項など）については{doc}`tips/robot-operation`を参照されたい．
 :::
 
-#### 実機でのROSプログラムの起動
-
-実機を動かすための手順は少し煩雑だが，以下の手順に従って設定を行う．
-**この部分は多くの学生が詰まりやすいポイントなので，手順を丁寧に確認しながら進めること．**
+##### 実機起動の3つのステップ
 
 実機を動かすには，大きく分けて以下の3つのステップが必要である：
 
@@ -1026,25 +1035,73 @@ $ source /opt/ros/one/setup.bash
 インストール後，再度`rossetip`と`rossetmaster`コマンドを実行する．
 :::
 
-#### シミュレーションでのROSプログラムの起動
+#### シミュレーション
 
-シミュレーションを使用する場合は，以下のコマンドでGazeboシミュレーションを起動する．
+シミュレーションを使用する場合は，SSHやネットワーク設定が不要なため実機よりもシンプルに起動できる．
+ただし，**EusLispから操作する場合は3つのターミナルを使用する必要がある**点に注意すること．
+
+##### EusLispを使わない場合（ROS 2のみ）
+
+ROS 2のプログラムのみを使用する場合は，1つのターミナルでGazeboシミュレーションを起動するだけでよい．
 
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
 $ ros2 launch jedy_bringup jedy_gazebo.launch.py
+```
 
-# 別のターミナルでEusLispを使う場合はuse_sim_timeを設定
+##### EusLispを使う場合（ROS 1とROS 2のブリッジが必要）
+
+EusLispから操作する場合は，ROS 1とROS 2のブリッジを経由する必要があるため，**3つのターミナル**を使用する：
+
+**ターミナル1: ROS 1側でroscoreの起動**
+
+```{code-block} console
 $ source /opt/ros/one/setup.bash
-$ rosparam set /use_sim_time true
+$ roscore
+```
+
+**ターミナル2: ROS 2側でGazeboシミュレーションの起動**
+
+```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py
 ```
 
 :::{note}
-Gazeboシミュレーション中にロボットが倒れてしまった場合は，{doc}`tips/gazebo-sim` の「ロボットが倒れた場合の復帰方法」を参照すること．
+`ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST`を設定することで，ROS 2のDDS検出範囲をローカルホストに制限し，ネットワーク上の他のROS 2ノードとの干渉を防ぐ．
 :::
 
-以降の説明では実機の場合の手順を示すが，シミュレーションでも同様に動作する．
+**ターミナル3: ROS 1とROS 2のブリッジ**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ rosparam set /use_sim_time true
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+```
+
+:::{tip}
+シミュレーション中にロボットが倒れてしまった場合は，{doc}`tips/gazebo-sim` の「ロボットが倒れた場合の復帰方法」を参照すること．
+:::
+
+:::{note}
+**実機との違い**
+
+シミュレーションでは以下の点が実機と異なる：
+- SSHでロボットPCに接続する必要がない
+- ROS_DOMAIN_IDの設定が不要（デフォルト値が使用される）
+- すべてのプログラムを自分のPC上で実行できる
+:::
+
+#### 実機・シミュレーション両方
+
+以降の演習では，実機とシミュレーションのどちらでも同様のコマンドでロボットを操作できる．
+ただし，実機の場合は適切なネットワーク設定（ROS_DOMAIN_IDなど）が必要である点に注意すること．
 
 ### Python / EusLispからの利用
 
@@ -1052,7 +1109,7 @@ Gazeboシミュレーション中にロボットが倒れてしまった場合�
 これらのプログラミング言語から`Jedy`の`topic`を`subscribe`, `publish`する次の課題に取り組んでみよう． 詳細なコードは`ROS wiki`のサンプルページ [^4]が参考になる．
 課題の前に必ず付録を参照すること．
 
-### <span style="color:green">チェックポイント: PythonまたはEusLispからのtopic操作</span>
+### <span style="color:green">チェックポイント2.8: PythonまたはEusLispからのtopic操作</span>
 
 ```{exercise} PythonまたはEusLispからのtopic操作
 :label: ex_python_euslisp
@@ -1069,9 +1126,13 @@ Gazeboシミュレーション中にロボットが倒れてしまった場合�
 難しければ
 
 ```{code-block} console
-$ roscd jedy_bringup/exercise/
+$ cd ~/ros_ws/src/robot-programming/jedy/jedy_bringup/exercise/
+# または
+$ cd ~/ros2_ws/src/robot-programming/jedy/jedy_bringup/exercise/
 $ ls
-  checkpoint1-3-1-button.l  checkpoint1-3-2-display.l  checkpoint1-3-3-imu.l  checkpoint1_3_1_button.py  checkpoint1_3_2_display.py  checkpoint1_3_3_imu.py
+  checkpoint1-button.l  checkpoint1-display.l  checkpoint1-imu.l
+  checkpoint1_button_ros1.py  checkpoint1_display_ros1.py  checkpoint1_imu_ros1.py
+  checkpoint1_button_ros2.py  checkpoint1_display_ros2.py  checkpoint1_imu_ros2.py
 ```
 
 に，ボタンのセンサ値の`topic`を`subscribe`し表示するプログラムや，
@@ -1089,14 +1150,18 @@ $ emacs -nw -f shell
 また，`python`プログラムを立ち上げるときは
 
 ```{code-block} console
-$ python -i -- checkpoint1_3_2_display.py
+$ python3 checkpoint1_display_ros2.py
+# またはインタラクティブモードで
+$ python3 -i checkpoint1_display_ros2.py
 ```
 
 などとするとプログラムが終了時にインタラクティブシェルに入ることができるので便利である．`ipython3`をインストールしている人は同様に以下のようにしてできる．
 
 ```{code-block} console
-$ ipython3 -i -- checkpoint1_3_2_display.py
+$ ipython3 -i checkpoint1_display_ros2.py
 ```
+
+**注意：** ROS 1を使用する場合は`checkpoint1_display_ros1.py`を，ROS 2を使用する場合は`checkpoint1_display_ros2.py`を使用すること．
 
 ### topicのデータ内容の確認について
 
@@ -1302,7 +1367,7 @@ $ ros2 topic echo /mecanum_drive_controller/reference
 
 を見ると指令速度が`topic`として送られていることが確認できる．
 
-### <span style="color:green">チェックポイント: ロボットの遠隔操縦</span>
+### <span style="color:green">チェックポイント2.9: ロボットの遠隔操縦</span>
 
 ```{exercise} ロボットの遠隔操縦
 :label: ex_teleop
@@ -1331,28 +1396,83 @@ $ ros2 topic echo /mecanum_drive_controller/reference
 
 ### 画像・深度データ取得プログラムの起動
 
-実際にカメラ画像を取得してみよう．`Jedy`に`ssh`して
+実際にカメラ画像を取得する方法を説明する．実機とシミュレーションで手順が異なる．
+
+#### 実機
+
+実機では，ロボットPCでカメラノードを起動する必要がある．
+
+**ターミナル1: ロボットPCでjedy_bridge.launchを起動**（既に起動している場合は不要）
 
 ```{code-block} console
 $ ssh jedy@<ロボットPCのIPアドレス>
-$ roslaunch jedy_ros1_bridge jedy_bridge.launch  # すでに立ち上げている場合は立ち上げない．
-# 次に別のターミナルで
+$ roslaunch jedy_ros1_bridge jedy_bridge.launch
+```
+
+**ターミナル2: ロボットPCでd405カメラを起動**
+
+```{code-block} console
 $ ssh jedy@<ロボットPCのIPアドレス>
 $ source ~/ros2_ws/install/setup.bash
 $ ros2 launch jedy_bringup rs_launch.py
+```
 
-# シミュレーションの場合は以下のみ（sshは不要．d405のlaunchもjedy_gazebo.launch.pyに含まれる．）
+:::{important}
+**USBの接続確認**
+
+カメラノードを起動する前に，**D405のUSBがJedyのUSBポートに接続されているかを確認する**こと．
+:::
+
+#### シミュレーション
+
+シミュレーションでは，カメラはGazeboシミュレーションに含まれているため，追加のカメラノード起動は不要である．
+
+##### EusLispを使わない場合（ROS 2のみ）
+
+```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
 $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 ```
 
-を立ち上げる．
+##### EusLispを使う場合
 
-この際の注意として
-**`D405`のUSBが`Jedy`のUSBポートに接続されているかを確認する**.
+EusLispから操作する場合は，[ロボットの起動方法のシミュレーション](#シミュレーション)セクションで説明した3つのターミナルでシミュレーションを起動する必要がある．
 
-`ros2 topic list`をすると`/camera`以下に`topic`が大量にできているのが分かる．
+**ターミナル1: ROS 1側でroscoreの起動**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ roscore
+```
+
+**ターミナル2: ROS 2側でGazeboシミュレーションの起動**
+
+```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py
+```
+
+**ターミナル3: ROS 1とROS 2のブリッジ**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ rosparam set /use_sim_time true
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+```
+
+:::{note}
+シミュレーションでは`d405のlaunch`が`jedy_gazebo.launch.py`に含まれているため，別途カメラノードを起動する必要はない．
+:::
+
+#### 実機・シミュレーション両方
+
+どちらの環境でも，`ros2 topic list`をすると`/camera`以下に`topic`が大量にできているのが分かる．
 
 ```{code-block} console
 $ ros2 topic list | grep camera
@@ -1382,15 +1502,24 @@ $ ros2 topic list | grep camera
 
 このうち，`rgb`は画像データであり`depth`は深度情報のデータである．
 `aligned`とついているのはデプス画像は一般的には別センサで実装されることが多く，RGBのカメラ画像と位置を合わせたという意味で`aligned`という名前がついている．
-また，ロボットPCと`ROS_DOMAIN_ID`をあわせてして`remote_camera.launch.py`を立ち上げる．
+
+次に，`remote_camera.launch.py`を立ち上げる．**実機とシミュレーションで起動方法が異なる**ため注意すること．
+
+**実機の場合：**
 
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
-# シミュレーションでは
-$ ros2 launch jedy_bringup remote_camera.launch.py use_sim_time:=true
-# 実機では
+$ export ROS_DOMAIN_ID=<Your Jedy's ROS_DOMAIN_ID>
 $ ros2 launch jedy_bringup remote_camera.launch.py
+```
+
+**シミュレーションの場合：**
+
+```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ ros2 launch jedy_bringup remote_camera.launch.py use_sim_time:=true
 ```
 
 もう一度`ros2 topic list`をすると以下のようなトピックが増えている．
@@ -1415,9 +1544,14 @@ $ source ~/ros2_ws/install/setup.bash
 $ ros2 run rqt_image_view rqt_image_view
 ```
 
-左上のトピックを選択して`/camera/color/image_rect_raw/compressed`を選択すると画像が表示できる．
-ここで`compressed`とは圧縮されている画像のことで今回のようなネットワーク越しにロボットを動かす場合に通信の帯域を食わないために必須である．
-(`Gazebo`では圧縮画像ではなく`/camera/color/image_rect_raw`を使うのでよい．)
+左上のトピックを選択して画像を表示する．**実機とシミュレーションで選択するトピックが異なる**：
+
+- **実機の場合**: `/camera/color/image_rect_raw/compressed` を選択
+- **シミュレーションの場合**: `/camera/color/image_rect_raw` を選択
+
+:::{note}
+実機では`compressed`（圧縮）画像を使用する．これはネットワーク越しにロボットを動かす場合に通信の帯域を節約するために必須である．シミュレーションではローカルで動作するため圧縮していない画像を使用できる．
+:::
 
 :::{figure} fig/sample_rqt_image_view.jpg
 :align: center
@@ -1431,7 +1565,7 @@ rqt_image_viewで画像を表示している例．画像は今回諸君が使用
 RvizはROS標準の3Dビューアソフトである．
 デフォルト設定状態のRVizは，単に`rviz2`と入力するだけで起動できるが`jedy_gazebo.launch.py`の内部では設定済みの`.rviz`ファイルを読み込んで起動するようにしている．
 
-### 実機でのRViz起動
+#### 実機
 
 実機でカメラ画像や点群を確認する場合は，以下の手順でRVizを起動する：
 
@@ -1464,11 +1598,15 @@ $ ros2 launch jedy_bringup remote_camera.launch.py
 ```
 :::
 
-### シミュレーションでのRViz
+#### シミュレーション
 
 シミュレーションでは，`jedy_gazebo.launch.py`を起動すると自動的にRVizも起動されるため，明示的に起動する必要はない．
 
-### Rviz上でのtopicの追加
+:::{note}
+シミュレーションでは設定済みの`.rviz`ファイルが自動的に読み込まれるため，カメラ画像や点群が既に表示されている場合がある．
+:::
+
+#### Rviz上でのtopicの追加
 
 RvizではGUIインターフェースにより表示するデータを追加や削除をすることができる．
 そのためには，表示したいtopicの (1)型の選択，及び(2)名前の選択を行う．
@@ -1510,10 +1648,9 @@ Rvizのtopic追加方法
 
 ### プログラムの起動
 
-checkerboard認識を実行するには，以下のプログラムを起動する必要がある．
-実機とシミュレーションで手順が異なるため，それぞれ説明する．
+checkerboard認識を実行する方法を説明する．実機とシミュレーションで手順が異なる．
 
-#### 実機での起動手順
+#### 実機
 
 実機では，以下のプログラムを**それぞれ別のターミナル**で起動する：
 
@@ -1575,9 +1712,13 @@ $ export ROS_DOMAIN_ID=<Your Jedy's ROS_DOMAIN_ID>
 $ ros2 launch jedy_bringup checkerboard_detector.launch.py
 ```
 
-#### シミュレーションでの起動手順
+#### シミュレーション
 
-シミュレーションでは，以下の3つのプログラムを**それぞれ別のターミナル**で起動する：
+シミュレーションでは，ROS 2のみを使う場合とEusLispを使う場合で手順が異なる．
+
+##### EusLispを使わない場合（ROS 2のみ）
+
+以下の**2つのターミナル**で起動する：
 
 **ターミナル1: Gazeboシミュレータを起動**（既に起動している場合は不要）
 
@@ -1595,7 +1736,46 @@ $ source ~/ros2_ws/install/setup.bash
 $ ros2 launch jedy_bringup checkerboard_detector.launch.py input_topic:=/camera/color/image_rect_raw camera_info_topic:=/camera/color/camera_info use_sim_time:=true
 ```
 
-#### checkerboard認識の確認
+##### EusLispを使う場合
+
+EusLispから認識結果を利用する場合は，以下の**4つのターミナル**で起動する：
+
+**ターミナル1: ROS 1側でroscoreの起動**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ roscore
+```
+
+**ターミナル2: ROS 2側でGazeboシミュレーションの起動**（既に起動している場合は不要）
+
+```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py
+```
+
+**ターミナル3: ROS 1とROS 2のブリッジ**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ rosparam set /use_sim_time true
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+```
+
+**ターミナル4: checkerboard_detector.launch.pyを起動**
+
+```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ ros2 launch jedy_bringup checkerboard_detector.launch.py input_topic:=/camera/color/image_rect_raw camera_info_topic:=/camera/color/camera_info use_sim_time:=true
+```
+
+#### 実機・シミュレーション両方
 
 上記の手順でcheckerboard認識プログラムを起動すると，`CheckerboardDetector`とかかれたビューワが表示される．
 紙に印刷されたCheckerboardパターン [^6] をカメラ前に持っていくと，格子の認識結果が表示される．
@@ -1694,7 +1874,7 @@ def generate_launch_description():
 checkerboard盤面の3次元位置姿勢は2次元画像から計算することができる．
 格子パターンの右上緑線・赤線の部分の位置姿勢がROSのtopicとして取得できる．
 
-### <span style="color:green">チェックポイント: checkerboardの認識</span>
+### <span style="color:green">チェックポイント2.10: checkerboardの認識</span>
 
 ```{exercise} checkerboardの認識
 :label: ex_checkerboard
@@ -1992,7 +2172,7 @@ rqt_reconfigureによるhsi_filterノードのパラメータ変更
 `hsi_filter`の他，`euclidean_clustering`も`rqt_reconfigure`でパラメータ設定可能である．
 `rqt_reconfigure`上で`euclidean_clustering`をたどると`min_size`(クラスタの最小点数)などが設定できる．
 
-### <span style="color:green">チェックポイント: 色抽出とクラスタリング</span>
+### <span style="color:green">チェックポイント2.11: 色抽出とクラスタリング</span>
 
 ```{exercise} 色抽出とクラスタリング
 :label: ex_color_cluster
@@ -2093,7 +2273,7 @@ $ source .venv/bin/activate
 仮想環境内で必要なPythonパッケージをインストールする．
 
 ```{code-block} console
-$ pip install langchain langchain-google-genai python-dotenv numpy opencv-python
+$ pip install langchain langchain-google-genai python-dotenv 'numpy<2' 'opencv-python<4.10'
 ```
 
 #### API KEYの設定
@@ -2116,26 +2296,51 @@ GOOGLE_API_KEY=your-api-key-here
 
 ### プログラムの起動
 
-#### ロボット側の準備
+LLMロボット操縦プログラムを使用するには，まずロボットを起動する必要がある．実機とシミュレーションで起動方法が異なる．
 
-実機またはシミュレーションでロボットを起動する．
+#### 実機
 
-**実機の場合：**
 ```{code-block} console
 $ ssh jedy@<ロボットPCのIPアドレス>
 $ roslaunch jedy_ros1_bridge jedy_bridge.launch
 ```
 
-**シミュレーションの場合：**
+#### シミュレーション
+
+シミュレーションでは，**3つのターミナル**を使用してシステムを起動する：
+
+**ターミナル1: ROS 1側でroscoreの起動**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ roscore
+```
+
+**ターミナル2: ROS 2側でGazeboシミュレーションの起動**
+
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
 $ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 ```
 
-:::{note}
-Gazeboシミュレーション中にロボットが倒れてしまった場合は，{doc}`tips/gazebo-sim` の「ロボットが倒れた場合の復帰方法」を参照すること．
+**ターミナル3: ROS 1とROS 2のブリッジ**
+
+```{code-block} console
+$ source /opt/ros/one/setup.bash
+$ rosparam set /use_sim_time true
+$ source /opt/ros/jazzy/setup.bash
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+$ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
+```
+
+:::{tip}
+シミュレーション中にロボットが倒れてしまった場合は，{doc}`tips/gazebo-sim` の「ロボットが倒れた場合の復帰方法」を参照すること．
 :::
+
+#### 実機・シミュレーション両方
 
 #### LLMロボット操縦プログラムの起動
 
