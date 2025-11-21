@@ -122,5 +122,5 @@ sphinx:
       - - index
         - "lecture.tex"
         - "知能ロボット行動プログラミング演習"
-        - "Iori Yanokura"
+        - "JSK Robotics Laboratory"
         - "manual"
