@@ -3,6 +3,22 @@ robot-programming [![Build Status](https://app.travis-ci.com/jsk-enshu/robot-pro
 
 This is exercise for robot-programming.
 
+詳細なマニュアルとインターフェースの説明は、以下のドキュメントをご覧ください：
+
+- **オンラインマニュアル**: [http://jsk-enshu.github.io/robot-programming/](http://jsk-enshu.github.io/robot-programming/)
+
+### ドキュメントのビルド
+
+```bash
+# HTMLをビルド
+cd docs
+./build_html.py
+
+# PDFをビルド (要 LuaLaTeX)
+cd docs
+./build_pdf.py
+```
+
 # ROS2 Jazzy (Recommended)
 
 ## ⚠️ **重要: ネットワーク設定**
