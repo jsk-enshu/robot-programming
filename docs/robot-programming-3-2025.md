@@ -790,6 +790,30 @@ $ source ~/ros2_ws/install/setup.bash
 $ ros2 launch mechatrobot_ros2 mechatrobot_controller.launch.py
 ```
 
+```{note}
+ros2_control起動時に以下のようなエラーが表示される場合がある：
+
+\`\`\`
+[ros2_control_node-1] /opt/ros/jazzy/lib/controller_manager/ros2_control_node: symbol lookup error: /opt/ros/jazzy/lib/libcontroller_manager.so: undefined symbol: _ZNK18hardware_interface15ResourceManager21get_hard_joint_limitsB5cxx11Ev
+\`\`\`
+
+このエラーは古いバージョンのcontroller_managerを使用している可能性がある．以下の手順で解決できる：
+
+1. システムパッケージを最新に更新：
+   \`\`\`bash
+   sudo apt update && sudo apt dist-upgrade
+   \`\`\`
+
+2. ROS 2ワークスペースを再ビルド：
+   \`\`\`bash
+   cd ~/ros2_ws
+   rm -rf build install log
+   colcon build --symlink-install
+   \`\`\`
+
+3. 環境変数を再読み込みしてもう一度起動する
+```
+
 **ターミナル5: rvizとGUI（可視化）**
 
 ```{code-block} console
