@@ -2,6 +2,10 @@
 
 JEDY is a dual-arm mobile manipulator robot for ROS2 robot programming exercises.
 
+詳細なマニュアルとインターフェースの説明は、以下のドキュメントをご覧ください：
+
+- **オンラインマニュアル**: [http://jsk-enshu.github.io/robot-programming/](http://jsk-enshu.github.io/robot-programming/)
+
 ## ⚠️ **重要: ネットワーク設定**
 
 **<span style="color:red">演習中や同一ネットワークで複数人が ROS2 を起動すると、通信が相互に干渉してしまいます。</span>**

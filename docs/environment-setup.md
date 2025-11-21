@@ -21,7 +21,7 @@ $ source /opt/ros/jazzy/setup.bash
 $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy -O- | vcs import
 $ rosdep update
 $ cd ~/ros2_ws/
-$ rosdep install --from-paths src --ignore-src -y -r
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy
 $ colcon build --symlink-install --packages-select jedy_bringup jedy_description
 $ colcon build --symlink-install --packages-up-to mechatrobot_ros2 # Arduinoの演習日に必要
 ```
@@ -36,7 +36,7 @@ $ source /opt/ros/one/setup.bash
 $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.one -O- | vcs import
 $ rosdep update
 $ cd ~/ros_ws
-$ rosdep install --from-paths src --ignore-src -y -r
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro one
 $ catkin build jedy_ros1_bridge jedyeus
 $ catkin build mechatrobot # Arduinoの演習日に必要
 ```
