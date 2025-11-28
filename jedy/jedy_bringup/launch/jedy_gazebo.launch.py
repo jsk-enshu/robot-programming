@@ -297,7 +297,6 @@ def generate_launch_description():
     return LaunchDescription([
         SetEnvironmentVariable(name='GZ_SIM_RESOURCE_PATH', value=gz_resource_path),
         SetEnvironmentVariable(name='GZ_FILE_PATH', value=model_path),
-        SetEnvironmentVariable(name='DISPLAY', value=':1'),
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         gazebo,
         clock_bridge,
