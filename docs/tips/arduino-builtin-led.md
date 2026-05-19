@@ -10,6 +10,7 @@
 
 | ボード名 | LED_BUILTINのピン番号 | 備考 |
 |:---------|:---------------------:|:-----|
+| Arduino UNO R4 WiFi | 13 | D13に接続（Renesas RA4M1）．加えて12×8のLEDマトリクスも搭載 |
 | Arduino Nano | 13 | D13に接続 |
 | Seeeduino Nano | 13 | D13に接続（Arduino Nano完全互換） |
 | Arduino Uno | 13 | D13に接続 |
@@ -36,6 +37,22 @@ Arduino Nano（ATmega328P）の場合，以下のGitHubリポジトリで定義�
 ```c
 #define LED_BUILTIN 13
 ```
+
+### Arduino UNO R4 WiFi（Renesas RA4M1）のボード定義
+
+Arduino UNO R4 WiFi の場合，AVRではなくRenesasのコアで定義されている：
+
+**リポジトリ**: [arduino/ArduinoCore-renesas](https://github.com/arduino/ArduinoCore-renesas)
+
+[ArduinoCore-renesas/variants/UNOWIFIR4/pins_arduino.h](https://github.com/arduino/ArduinoCore-renesas/blob/main/variants/UNOWIFIR4/pins_arduino.h)
+
+**該当コード**:
+```c
+#define PIN_LED     (13u)
+#define LED_BUILTIN PIN_LED
+```
+
+UNO R4 WiFi でも `LED_BUILTIN` はD13に接続されているため，Arduino Nano等と同じソースコードがそのまま使える．加えて UNO R4 WiFi には**12×8 LEDマトリクス**も基板に内蔵されており，`Arduino_LED_Matrix`ライブラリで制御できる（マトリクスの使い方は{doc}`../micon-programming` 演習課題2を参照）．
 
 ### Seeeduino AVRのボード定義
 
@@ -177,4 +194,5 @@ void loop() {
 
 - [Arduino公式リファレンス - LED_BUILTIN](https://www.arduino.cc/reference/en/language/variables/constants/ledbuiltin/)
 - [Arduino Core AVR - pins_arduino.h](https://github.com/arduino/ArduinoCore-avr/blob/master/variants/standard/pins_arduino.h)
+- [Arduino Core Renesas - UNOWIFIR4 pins_arduino.h](https://github.com/arduino/ArduinoCore-renesas/blob/main/variants/UNOWIFIR4/pins_arduino.h)
 - [Seeed Studio - Seeeduino Nano](https://wiki.seeedstudio.com/Seeeduino-Nano/)

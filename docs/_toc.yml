@@ -2,9 +2,27 @@
 format: jb-book
 root: index
 parts:
-  - caption: 事前準備
+  - caption: 夏学期演習
     numbered: false
     chapters:
+    - file: micon-programming
+      title: マイコンプログラミング演習
+  - caption: Tips・付録（マイコンプログラミング演習）
+    numbered: false
+    chapters:
+    - file: tips/arduino-ide
+      title: Arduino IDEインストール
+    - file: tips/arduino-device-detection
+      title: Arduinoが認識されないときの確認方法
+    - file: tips/arduino-serial-monitor
+      title: Arduino IDEのシリアルモニタ
+    - file: tips/arduino-builtin-led
+      title: ArduinoのLED_BUILTIN
+  - caption: 冬学期演習 事前準備
+    numbered: false
+    chapters:
+    - file: winter-overview
+      title: 知能ロボット行動プログラミング演習について
     - file: environment-setup
       title: 環境構築
   - caption: 1日目
@@ -52,12 +70,8 @@ parts:
   - caption: Tips・付録（1日目）
     numbered: false
     chapters:
-    - file: tips/arduino-ide
-      title: Arduino IDEインストール
-    - file: tips/arduino-builtin-led
-      title: ArduinoのLED_BUILTIN
     - file: tips/arduino-upload
-      title: Arduinoプログラム書き込み
+      title: Arduinoプログラム書き込み（Seeeduino Nano）
     - file: tips/arduino-errors
       title: Arduino IDEエラー対処
     - file: tips/bootloader
