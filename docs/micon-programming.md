@@ -1090,6 +1090,24 @@ name: fig:tb6643kq-outline
 TB6643KQ の外形図とピン配置．**型番が印字された面から見て**左端が1番ピン (IN1)，右端が7番ピン (VM) になる
 ```
 
+```{note}
+**「HSIP7-P-2.54A」の読み方**
+
+データシートの型番に出てくる **HSIP7-P-2.54A** はICのパッケージ形状を表す型番で，次のように分解できる：
+
+| 記号 | 意味 |
+|------|------|
+| **HSIP** | **H**eat-sink **S**ingle **I**n-line **P**ackage（背面に放熱タブが付いた，ピンが一列に並んだパッケージ） |
+| **7** | ピン数（7本） |
+| **P** | Plastic（樹脂モールド） |
+| **2.54** | ピンピッチ 2.54 mm（= 0.1インチ．ブレッドボードや一般的なユニバーサル基板の穴間隔と同じ） |
+| **A** | 細かいバリエーション・改訂 |
+
+見た目はTO-220にピンが増えたような板状のICで，足が1列に並び背面に金属の放熱タブが付いている．**ピンピッチが2.54 mm なのでそのままブレッドボードに挿して使える**．背面の金属タブはGNDではなくICチップ裏面に繋がっているため，ヒートシンクを付けるときは絶縁シートを挟むかGNDに落とす必要がある（後述の放熱tip参照）．
+
+ステッピングモータで使った ULN2003 は16ピン DIP（2列）パッケージだったのに対し，TB6643KQ はこのように1列で，ブレッドボードへの挿し方が異なることに注意．
+```
+
 ```{warning}
 **ピン番号の数え方を取り違えないこと**
 
@@ -1222,9 +1240,9 @@ Arduino の GND，TB6643KQ の 4番ピン GND，モータ外部電源の (−) �
 ```
 
 ```{important}
-**バイパスコンデンサ（パスコン）を必ず入れる**
+**バイパスコンデンサ（パスコン）について**
 
-TB6643KQの**7番ピン (VM) のすぐ近くに**，以下を**並列で**GNDに接続する：
+本演習ではコンデンサを用意していないため，今回は省略して構わない．**ただし実際に製品や装置に組み込む際は必ず入れること**．TB6643KQの**7番ピン (VM) のすぐ近くに**，以下を**並列で**GNDに接続するのがメーカ推奨：
 
 - **セラミックコンデンサ 0.1 µF**（高周波ノイズの除去）
 - **電解コンデンサ 100 µF 以上**（VM電圧の2倍以上の耐圧．12V電源なら25V耐圧以上を推奨）
@@ -1238,13 +1256,33 @@ TB6643KQの**7番ピン (VM) のすぐ近くに**，以下を**並列で**GNDに
 平均1 A を超えるような連続駆動を行う場合は，TB6643KQの背面金属タブにヒートシンクをネジ留めする．データシートに「**IC裏面の金属部分は ICチップ裏面と電気的に接続されている**」とあるため，ヒートシンクは**絶縁シートを挟むか，GNDに落とす**こと（他の電位に接触させない）．
 ```
 
+**ブレッドボード上での実装例**
+
+実際にブレッドボード上で配線した例を {numref}`fig:tb6643kq-wiring-detail` と {numref}`fig:tb6643kq-wiring-full` に示す．TB6643KQ をブレッドボードに挿し，モータ用外部電源（単3電池×8本=12V のボックス）を VM と GND に接続し，OUT1/OUT2 を DCモータに繋いでいる．
+
+```{figure} fig/micon-programming/dc-motor-tb6643kq-wiring-detail.webp
+---
+width: 500px
+name: fig:tb6643kq-wiring-detail
+---
+TB6643KQ とモータ・電池ボックスの配線（近接ショット）．赤・黒の太い線が VM (+12V) と GND，黄・橙の細い線が Arduino からの IN1/IN2 信号線
+```
+
+```{figure} fig/micon-programming/dc-motor-tb6643kq-wiring-full.webp
+---
+width: 500px
+name: fig:tb6643kq-wiring-full
+---
+Arduino UNO R4 WiFi も含めた全体構成．Arduino の GND と電池ボックスの GND が同じノードに繋がっている（共通GND）ことを確認すること
+```
+
 #### (3) コードで動かす
 
 回路ができたらArduinoから制御する．まずは `analogWrite` を使った最も基本的な例から始めて，より細かい制御が必要な場合は `FspTimer` を使った自作PWMに進む．
 
 **a. `analogWrite` を使った基本制御**
 
-IN2をLOW固定，IN1にPWMを入れて正転方向にデューティー比を変えながら回す例．上の入出力ファンクション表（⑥）に従ってショートブレーキ・ストップも切り替える：
+IN1, IN2 の両方を `analogWrite` で制御し，正転・ショートブレーキ・逆転・ストップを順に切り替える例．`analogWrite(pin, 0)` は常時LOW（デューティー比0%），`analogWrite(pin, 255)` は常時HIGH（デューティー比100%）に相当するため，両ピンを統一して`analogWrite`で扱える：
 
 ```cpp
 #define IN1_PIN 9   // TB6643KQ IN1 (PWM対応ピン)
@@ -1260,27 +1298,40 @@ void loop() {
     // 正転 (IN1=PWM, IN2=LOW) : デューティー比 50%
     Serial.println("Forward (duty 50%)");
     analogWrite(IN1_PIN, 128);
-    digitalWrite(IN2_PIN, LOW);
+    analogWrite(IN2_PIN, 0);
     delay(2000);
 
     // ショートブレーキ (IN1=HIGH, IN2=HIGH) : 急停止
     Serial.println("Short brake");
-    digitalWrite(IN1_PIN, HIGH);
-    digitalWrite(IN2_PIN, HIGH);
+    analogWrite(IN1_PIN, 255);
+    analogWrite(IN2_PIN, 255);
     delay(500);
 
     // 逆転 (IN1=LOW, IN2=PWM) : デューティー比 50%
     Serial.println("Reverse (duty 50%)");
-    digitalWrite(IN1_PIN, LOW);
+    analogWrite(IN1_PIN, 0);
     analogWrite(IN2_PIN, 128);
     delay(2000);
 
     // ストップ (IN1=LOW, IN2=LOW) : Hi-Z で惰性回転
     Serial.println("Stop (Hi-Z)");
-    digitalWrite(IN1_PIN, LOW);
-    digitalWrite(IN2_PIN, LOW);
+    analogWrite(IN1_PIN, 0);
+    analogWrite(IN2_PIN, 0);
     delay(500);
 }
+```
+
+```{warning}
+**Arduino UNO R4 WiFi で `analogWrite` と `digitalWrite` を混在させない**
+
+Arduino UNO R4 WiFi (Renesas RA4M1) では，一度 `analogWrite` を呼んだピンはGPT (汎用PWMタイマ) に接続される．その後に同じピンへ `digitalWrite(pin, LOW)` を呼んでもタイマからピンが切り離されないことがあり，**PWMが鳴り続けて意図したHIGH/LOWにならない**．
+
+例えば「正転 (IN2=`digitalWrite` LOW) → 逆転 (IN2=`analogWrite`) → ストップ (IN2=`digitalWrite` LOW)」のように切り替えると，2周目以降は IN2 にPWMが残ったままになり「ずっと同じ方向に回り続ける」現象が起きる．
+
+回避策は2つ：
+
+1. **`analogWrite` だけで統一する**（上記サンプルコードの方式）：`analogWrite(pin, 0)` をLOW，`analogWrite(pin, 255)` をHIGHとして使う
+2. **`digitalWrite` を呼ぶ前に `pinMode(pin, OUTPUT)` を再度呼ぶ**：これによりピンをGPIOモードに戻してからLOW/HIGHを書く
 ```
 
 ```{tip}
@@ -1300,6 +1351,14 @@ Arduino UNO R4 WiFiに内蔵されている `FspTimer` を使ってタイマー�
 `FspTimer` はArduino UNO R4 WiFiのコアライブラリに含まれているため，追加インストールは不要．
 従来のArduino UNO R3で使われていた `MsTimer2` はAVR専用であり，Arduino UNO R4 WiFi（Renesas RA4M1）では使用できない．
 割り込み処理の中でグローバル変数を使う場合は `volatile` 修飾子をつけて宣言すること．
+```
+
+```{warning}
+**PWM周波数はモータがガクガクしない程度に高くする**
+
+タイマー周波数を低くすると（例えば1kHzタイマーで100ステップ＝PWM 10Hz）モータが「カクカク」「ガクガク」と振動する．これは電流のオン／オフ周期が長すぎて回転速度が安定しないため．DCモータでは少なくとも **1kHz以上のPWM周波数** が目安で，可聴域を避けたい場合は20kHz以上にする．TB6643KQの仕様上限は100kHz．
+
+下のサンプルではタイマー周波数を100kHzに設定し，100ステップで1周期＝**PWM 1kHz** としている．
 ```
 
 ```cpp
@@ -1335,10 +1394,11 @@ void setup() {
     duty = 0;
     pwm_count = 0;
 
-    // 1msec (1000Hz) 毎に pwm_cycle を呼ぶタイマーを設定
+    // 10usec (100kHz) 毎に pwm_cycle を呼ぶタイマーを設定
+    // 100ステップで1周期なので PWM周波数 = 100kHz / 100 = 1kHz
     uint8_t timer_type = GPT_TIMER;
     int8_t timer_ch = FspTimer::get_available_timer(timer_type);
-    pwm_timer.begin(TIMER_MODE_PERIODIC, timer_type, timer_ch, 1000.0, 0.0, pwm_cycle);
+    pwm_timer.begin(TIMER_MODE_PERIODIC, timer_type, timer_ch, 100000.0, 0.0, pwm_cycle);
     pwm_timer.setup_overflow_irq();
     pwm_timer.open();
     pwm_timer.start();
@@ -1391,7 +1451,7 @@ L293Dを用いたDCモータ駆動回路の例（参考）
 :label: ex_dc_motor_tb6643kq
 
 1. TB6643KQのデータシート（[PDF](https://akizukidenshi.com/goodsaffix/TB6643KQ_datasheet_ja_20110621.pdf)）の **特長・端子説明・絶対最大定格・動作範囲・入出力ファンクション表** に目を通せ
-2. ArduinoのD9 → IN1，D10 → IN2，OUT1/OUT2 → DCモータ，VM → 外部電源 (+)，GND → Arduino GND および 外部電源 (−)，として配線せよ．**VM-GND間にパスコン（0.1 µF + 100 µF）を入れる**ことを忘れないこと
+2. ArduinoのD9 → IN1，D10 → IN2，OUT1/OUT2 → DCモータ，VM → 外部電源 (+)，GND → Arduino GND および 外部電源 (−)，として配線せよ．**本演習ではパスコンは省略してよいが，実際に製品や装置として組み込む際は VM-GND間にパスコン（0.1 µF + 100 µF）を入れる**ことを忘れないこと
 3. `analogWrite` 版のサンプルスケッチを書き込み，正転 → 急停止 → 逆転 → 惰性停止のサイクルが動作することを確認せよ
 4. `analogWrite` の値を変えてデューティー比と回転速度の関係を観察せよ
 5. 余裕があれば `FspTimer` 版も試し，タイマー割り込みによるPWM自作の動作を確認せよ
