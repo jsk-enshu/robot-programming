@@ -8,6 +8,28 @@ name: fig:arduino-r4-wifi
 Arduino UNO R4 WiFi
 ```
 
+````{only} html
+```{admonition} 担当教員・TA
+:class: note
+
+**担当**
+- 中川聡 助教 (nakagawa@welbe.imi.i.u-tokyo.ac.jp)
+- 矢野倉伊織 助教 (yanokura@jsk.imi.i.u-tokyo.ac.jp)
+- 諸山稔員 技術専門職員
+- 山口真奈美 技術専門職員
+
+**二瓶研究室 M2**
+- 植田歴
+- 家門慶人
+- 長塚一真
+- 長谷川恭平
+
+**M1**
+- 佐藤颯真
+- 正光紘大
+```
+````
+
 ## 1. 本演習について
 
 ### 1.1 本演習の進め方
