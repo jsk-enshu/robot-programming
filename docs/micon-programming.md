@@ -8,6 +8,28 @@ name: fig:arduino-r4-wifi
 Arduino UNO R4 WiFi
 ```
 
+````{only} html
+```{admonition} 担当教員・TA
+:class: note
+
+**担当**
+- 中川聡 助教 (nakagawa@welbe.imi.i.u-tokyo.ac.jp)
+- 矢野倉伊織 助教 (yanokura@jsk.imi.i.u-tokyo.ac.jp)
+- 諸山稔員 技術専門職員
+- 山口真奈美 技術専門職員
+
+**二瓶研究室 M2**
+- 植田歴
+- 家門慶人
+- 長塚一真
+- 長谷川恭平
+
+**M1**
+- 佐藤颯真
+- 正光紘大
+```
+````
+
 ## 1. 本演習について
 
 ### 1.1 本演習の進め方
@@ -33,6 +55,12 @@ Arduino UNO R4 WiFi
 ### 2.1 マイコンボードArduino UNO R4 WiFi
 
 本演習で用いる**Arduino UNO R4 WiFi**は，32ビットマイコンとESP32-S3 Wi-Fiモジュール（ESP32-S3-MINI-1-N8）を搭載した最新のUNOボードである．Renesas社のRA4M1シリーズマイコン（R7FA4M1AB3CFM#AA0）を搭載し，48MHz Arm Cortex-M4マイクロプロセッサをベースとしている．
+
+```{admonition} 機材提供について
+:class: note
+
+本演習で使用する「Arduino UNO R4 WiFi」は，ルネサス エレクトロニクス株式会社よりご寄付いただいたものです．
+```
 
 ```{figure} fig/micon-programming/arduino-uno-r4-wifi-block-diagram.jpg
 ---
