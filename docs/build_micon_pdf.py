@@ -18,17 +18,18 @@ MICON_TIPS = [
     ("tips/arduino-builtin-led", "ArduinoのLED_BUILTIN"),
 ]
 
-# マイコン演習サブセット用の_toc.yml（rootをmicon-programmingにする）
+# 一時的なrootページ（ビルド時に作成・削除する）。micon-programmingをrootにすると
+# sphinx-jupyterbook-latexが見出しを降格してTOCに出ないため、薄いrootを挟んで
+# micon-programmingを「章」として扱わせる
+MICON_INDEX = "_micon_index"
+
+# マイコン演習サブセット用の_toc.yml（root=薄いindex、本編＋Tipsをフラットな章にする）
 MICON_TOC = (
     "format: jb-book\n"
-    "root: micon-programming\n"
-    "parts:\n"
-    "  - caption: Tips・付録（マイコンプログラミング演習）\n"
-    "    numbered: false\n"
-    "    chapters:\n"
-    + "".join(
-        f"    - file: {f}\n      title: {t}\n" for f, t in MICON_TIPS
-    )
+    f"root: {MICON_INDEX}\n"
+    "chapters:\n"
+    "  - file: micon-programming\n"
+    + "".join(f"  - file: {f}\n" for f, _ in MICON_TIPS)
 )
 
 # タイトル文言と担当者名簿はmicon-programming.mdを正本として抽出する（情報の重複を避ける）。
@@ -94,6 +95,21 @@ def build_pdf_author(md_text: str) -> str:
     return r"\begin{tabular}{@{}l@{}} " + body + r" \end{tabular}"
 
 
+def patch_latex_disable_numbering(latex_file: Path) -> None:
+    r"""章・節の自動採番を無効化する（secnumdepth=-1）
+
+    micon-programming本文は見出しに手書きの番号（## 1. ...）を持つため、
+    章にすると自動採番と二重になる。採番を切ってHTML（numbered:false）と表示を揃える
+    """
+    content = latex_file.read_text(encoding="utf-8")
+    content = content.replace(
+        r"\begin{document}",
+        "\\begin{document}\n\\setcounter{secnumdepth}{-1}",
+        1,
+    )
+    latex_file.write_text(content, encoding="utf-8")
+
+
 def patch_config_for_micon(
     config_text: str, pdf_title: str, pdf_author: str
 ) -> str:
@@ -107,10 +123,10 @@ def patch_config_for_micon(
     Returns:
         str: マイコン演習サブセット用に書き換えた内容
     """
-    # latex_documentsの開始ドキュメントをindexからmicon-programmingに変更
+    # latex_documentsの開始ドキュメントをindexから薄いrootページに変更
     patched = config_text.replace(
         '      - - index\n        - "lecture.tex"',
-        '      - - micon-programming\n        - "lecture.tex"',
+        f'      - - {MICON_INDEX}\n        - "lecture.tex"',
     )
     # PDFカバーの\titleは_config.yml先頭のtitle:から設定されるため、ここを差し替える。
     # シングルクォートでLaTeXの\\（改行）をそのまま保持する
@@ -149,6 +165,15 @@ def main() -> None:
     pdf_title = build_pdf_title(source_md_text)
     pdf_author = build_pdf_author(source_md_text)
 
+    # 薄いrootページの内容（TOCの前に出る短い前書き）
+    index_path = project_root / f"{MICON_INDEX}.md"
+    plain_title = f"{YEAR}年度 {extract_title(source_md_text)}"
+    micon_index_content = (
+        "# 本資料について\n\n"
+        f"本資料は「{plain_title}」の演習資料である．"
+        "演習課題に続き，付録としてArduino IDEの使い方などのTipsを収録している．\n"
+    )
+
     backup_files: list[Path] = []
 
     try:
@@ -162,13 +187,14 @@ def main() -> None:
         target_files.extend(project_root / f"{f}.md" for f, _ in MICON_TIPS)
         backup_files = replace_full_width_period(target_files)
 
-        # ステップ3: マイコン演習サブセット用の_toc.yml / _config.ymlに差し替え
-        print("Step 3: Switching to micon-only _toc.yml and _config.yml...")
+        # ステップ3: マイコン演習サブセット用の_toc.yml / _config.yml / rootページに差し替え
+        print("Step 3: Switching to micon-only _toc.yml / _config.yml / root...")
         toc_path.write_text(MICON_TOC, encoding="utf-8")
         config_path.write_text(
             patch_config_for_micon(original_config, pdf_title, pdf_author),
             encoding="utf-8",
         )
+        index_path.write_text(micon_index_content, encoding="utf-8")
 
         # ステップ4: LaTeXファイルを生成
         print("Step 4: Generating LaTeX files...")
@@ -177,21 +203,23 @@ def main() -> None:
             check=True,
         )
 
-        # ステップ5: _toc.yml / _config.yml を元に戻す
+        # ステップ5: _toc.yml / _config.yml を元に戻し、一時rootページを削除
         print("Step 5: Restoring original _toc.yml and _config.yml...")
         toc_path.write_text(original_toc, encoding="utf-8")
         config_path.write_text(original_config, encoding="utf-8")
+        index_path.unlink(missing_ok=True)
 
         # ステップ6: 元のMarkdownファイルに戻す
         print("Step 6: Restoring original Markdown files...")
         restore_files(backup_files)
         backup_files = []
 
-        # ステップ7: lecture.texをパッチ
+        # ステップ7: lecture.texをパッチ（LuaLaTeX対応＋自動採番の無効化）
         print("Step 7: Patching lecture.tex for LuaLaTeX...")
         latex_dir = project_root / "_build" / "latex"
         lecture_tex = latex_dir / "lecture.tex"
         patch_latex_for_lualatex(lecture_tex)
+        patch_latex_disable_numbering(lecture_tex)
 
         # ステップ8-10: LuaLaTeXでコンパイル（3回）
         compile_with_lualatex(latex_dir, passes=3)
@@ -222,9 +250,10 @@ def main() -> None:
         print(f"Unexpected error: {e}", file=sys.stderr)
         sys.exit(1)
     finally:
-        # 例外が発生しても_toc.yml / _config.yml / Markdownを必ず元に戻す
+        # 例外が発生しても_toc.yml / _config.yml / Markdown / 一時rootを必ず元に戻す
         toc_path.write_text(original_toc, encoding="utf-8")
         config_path.write_text(original_config, encoding="utf-8")
+        index_path.unlink(missing_ok=True)
         if backup_files:
             print("Restoring original Markdown files...")
             restore_files(backup_files)
