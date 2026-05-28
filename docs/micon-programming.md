@@ -56,6 +56,12 @@ Arduino UNO R4 WiFi
 
 本演習で用いる**Arduino UNO R4 WiFi**は，32ビットマイコンとESP32-S3 Wi-Fiモジュール（ESP32-S3-MINI-1-N8）を搭載した最新のUNOボードである．Renesas社のRA4M1シリーズマイコン（R7FA4M1AB3CFM#AA0）を搭載し，48MHz Arm Cortex-M4マイクロプロセッサをベースとしている．
 
+```{admonition} 機材提供について
+:class: note
+
+本演習で使用する「Arduino UNO R4 WiFi」は，ルネサス エレクトロニクス株式会社よりご寄付いただいたものです．
+```
+
 ```{figure} fig/micon-programming/arduino-uno-r4-wifi-block-diagram.jpg
 ---
 width: 600px
