@@ -1,0 +1,7 @@
+<launch>
+  <node name="soundplay_node"    pkg="sound_play" type="soundplay_node.py"/>
+  <include file="$(find roseus_tutorials)/launch/aques-talk.launch"/>
+  <node name="play_initial_voice" pkg="roseus"
+	type="roseus" args="$(find pr2eus)/speak.l &quot;(progn (ros::roseus \&quot;play_initial_voice\&quot;) (while (/= 0 (unix:system \&quot;rosnode list | grep soundplay_node_jp\&quot;)) (unix:sleep 2)) (unix:sleep 4) (speak-jp \&quot;サウンドデバ&apos;イス,設定確認しま&apos;した．\&quot;) (exit))&quot;"
+	output="screen"/>
+</launch>
