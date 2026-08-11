@@ -1,0 +1,13 @@
+<launch>
+    <group ns="camera/rgb">
+        <node pkg="nodelet" type="nodelet" name="cloudify"
+            args="load depth_image_proc/point_cloud_xyz
+                standalone_nodelet">
+            <remap from="imager_rect" to="depth"/>
+        </node>
+    </group>
+    <node pkg="jsk_pcl_ros" type="pointcloud_screenpoint"
+        name="pointcloud_screenpoint" >
+        <remap from="~points" to="/camera/depth/points" />
+    </node>
+</launch>
