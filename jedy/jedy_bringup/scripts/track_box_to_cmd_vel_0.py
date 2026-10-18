@@ -9,7 +9,7 @@ from geometry_msgs.msg import TwistStamped
 class TrackBoxToCmdVel(Node):
     def __init__(self):
         super().__init__('track_box_to_cmd_vel_0')
-        self.publisher_ = self.create_publisher(TwistStamped, '/diff_drive_controller/cmd_vel', 10)
+        self.publisher_ = self.create_publisher(TwistStamped, '/mecanum_drive_controller/reference', 10)
         self.subscription = self.create_subscription(
             RotatedRectStamped, '/camshift/track_box', self.listener_callback, 10)
 

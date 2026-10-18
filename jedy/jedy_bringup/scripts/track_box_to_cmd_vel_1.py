@@ -15,7 +15,7 @@ class TrackBoxToCmdVel(Node):
             '/camshift/track_box',
             self.listener_callback,
             10)
-        self.publisher_ = self.create_publisher(TwistStamped, '/diff_drive_controller/cmd_vel', 10)
+        self.publisher_ = self.create_publisher(TwistStamped, '/mecanum_drive_controller/reference', 10)
         self.timer = self.create_timer(0.1, self.timer_callback)  # 10Hzのタイマー
 
     def listener_callback(self, msg):
