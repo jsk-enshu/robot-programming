@@ -13,8 +13,6 @@ class HeadController(Node):
     def __init__(self):
         super().__init__('head_controller')
         self.publisher_ = self.create_publisher(JointTrajectory, '/head_controller/joint_trajectory', 10)
-        # Publisherが接続を確立するのを少し待つ
-        time.sleep(1)
 
     def send_joint_position(self):
         joint_trajectory = JointTrajectory()
@@ -37,6 +35,11 @@ class HeadController(Node):
 def main(args=None):
     rclpy.init(args=args)
     node = HeadController()
+    # Publisherが接続を確立するのを少し待つ
+    while rclpy.ok() and node.publisher_.get_subscription_count() == 0:
+        node.get_logger().info('Waiting subscriber...')
+        rclpy.spin_once(node, timeout_sec=0.1)
+
     node.send_joint_position()
     node.destroy_node()
     rclpy.shutdown()
