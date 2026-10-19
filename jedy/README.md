@@ -86,23 +86,23 @@ ros2 launch jedy_bringup jedy_gazebo.launch.py
 This will start:
 - Gazebo Harmonic simulator
 - RViz2 visualization
-- All robot controllers (diff_drive, head, arms)
+- All robot controllers (mecanum_drive, head, arms)
 - Camera and LiDAR bridges
 - Point cloud generation from RGB-D
 
 ### Control the robot
 
-#### Move the base (differential drive)
+#### Move the base (mecanum drive)
 
 ```bash
 # Using ros2 topic pub
-ros2 topic pub /diff_drive_controller/cmd_vel geometry_msgs/msg/TwistStamped \
+ros2 topic pub /mecanum_drive_controller/reference geometry_msgs/msg/TwistStamped \
   "{twist: {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}}" \
   --rate 10
 
 # Or using teleop_twist_keyboard (optional, not included in rosdep)
 # Install with: sudo apt install ros-jazzy-teleop-twist-keyboard
-ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -r /cmd_vel:=/diff_drive_controller/cmd_vel
+ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -r /cmd_vel:=/mecanum_drive_controller/reference -p stamped:=true
 ```
 
 #### Control the arms
@@ -137,13 +137,14 @@ ros2 topic pub /head_controller/joint_trajectory \
 ros2 topic list
 
 # Important topics:
-# /diff_drive_controller/cmd_vel         - Base velocity commands (TwistStamped)
+# /mecanum_drive_controller/reference    - Base velocity commands (TwistStamped)
 # /camera/rgb/image_raw                  - RGB camera image
 # /camera/depth/image_raw                - Depth image
 # /camera/depth/points                   - Point cloud (XYZRGB)
 # /scan                                  - 2D LiDAR scan
 # /joint_states                          - All joint states
-# /odom                                  - Odometry from differential drive
+# /mecanum_drive_controller/odometry     - Wheel odometry from mecanum drive
+# /odom                                  - Odometry fused by EKF (wheel odometry + IMU)
 # /rarm_controller/joint_trajectory      - Right arm control
 # /larm_controller/joint_trajectory      - Left arm control
 # /head_controller/joint_trajectory      - Head control
@@ -165,11 +166,10 @@ ros2 control list_hardware_interfaces
 
 Controller configuration is in `jedy_bringup/config/jedy_controllers.ros2.yaml`:
 
-- **diff_drive_controller**: Controls 4 wheels for differential drive
-  - Left wheels: `front_left_wheel_joint`, `rear_left_wheel_joint`
-  - Right wheels: `front_right_wheel_joint`, `rear_right_wheel_joint`
-  - Wheel separation: 0.101 m
+- **mecanum_drive_controller**: Controls 4 mecanum wheels
+  - Wheels: `front_left_wheel_joint`, `front_right_wheel_joint`, `rear_left_wheel_joint`, `rear_right_wheel_joint`
   - Wheel radius: 0.030083 m
+  - Velocity command: `/mecanum_drive_controller/reference` (TwistStamped, `reference_timeout: 0.5` s)
 
 - **head_controller**: Joint trajectory controller for 2-DOF head
 - **rarm_controller**: Joint trajectory controller for 7-DOF right arm
@@ -205,7 +205,7 @@ To save your own configuration:
 
 Wait for gz_ros2_control plugin to initialize. Controllers are spawned with delays:
 - joint_state_broadcaster: 5s
-- diff_drive_controller: 7s
+- mecanum_drive_controller: 7s
 - head_controller: 9s
 - rarm_controller: 11s
 - larm_controller: 13s
@@ -232,7 +232,7 @@ ros2 run tf2_tools view_frames
 
 - **Simulation**: Gazebo Harmonic
 - **Control**: ros2_control with gz_ros2_control plugin
-- **Differential Drive**: diff_drive_controller (supports multiple wheels per side)
+- **Base**: mecanum_drive_controller
 - **Arm Control**: joint_trajectory_controller
 - **Sensors**: RGB-D camera via ros_gz_bridge, 2D LiDAR via ros_gz_bridge
 
