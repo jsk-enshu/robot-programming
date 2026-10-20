@@ -26,6 +26,8 @@ class TrackBoxToCmdVel(Node):
 
     def timer_callback(self):
         cmd_vel = TwistStamped()
+        # Gazeboでは `--ros-args -p use_sim_time:=true` を付けて実行する．
+        # 付けないと認識結果のstamp(シミュレーション時刻)と現在時刻が比較できず，台車が動かない．
         cmd_vel.header.stamp = self.get_clock().now().to_msg()
         # ROS 2では get_clock() を使って現在の時間を取得
         now = self.get_clock().now()

@@ -16,6 +16,9 @@ class TrackBoxToCmdVel(Node):
     def listener_callback(self, msg):
         self.get_logger().info(f'Subscribing: {msg.rect.center}')
         cmd_vel = TwistStamped()
+        # mecanum_drive_controllerはheader.stampを使って指令のタイムアウトを判定する．
+        # Gazeboでは `--ros-args -p use_sim_time:=true` を付けて実行しないと，
+        # 指令が途絶えても台車が止まらない．
         cmd_vel.header.stamp = self.get_clock().now().to_msg()
         # 認識結果の領域の中心のx座標が320より小さければ（画像の左），右回転する
         if msg.rect.center.x < 320:

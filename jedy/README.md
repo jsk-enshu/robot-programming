@@ -130,6 +130,18 @@ ros2 topic pub /head_controller/joint_trajectory \
   --once
 ```
 
+#### Run the sample scripts in simulation
+
+The sample scripts in `jedy_bringup/scripts` set `header.stamp` from the node clock.
+In Gazebo the controllers run on simulation time, so pass `use_sim_time:=true`:
+
+```bash
+ros2 run jedy_bringup send_joint_position.py --ros-args -p use_sim_time:=true
+ros2 run jedy_bringup track_box_to_cmd_vel_1.py --ros-args -p use_sim_time:=true
+```
+
+Without it, `send_joint_position.py` never starts the head trajectory, `track_box_to_cmd_vel_0.py` leaves the base moving after the commands stop (`reference_timeout` is not applied), and `track_box_to_cmd_vel_1.py` treats every detection as stale and does not move the base.
+
 ### Available topics
 
 ```bash

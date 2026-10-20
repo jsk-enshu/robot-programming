@@ -35,6 +35,9 @@ class HeadController(Node):
 
     def send_joint_position(self):
         joint_trajectory = JointTrajectory()
+        # header.stampは軌道の開始時刻として使われる．
+        # Gazeboではコントローラがシミュレーション時刻で動くので，
+        # `--ros-args -p use_sim_time:=true` を付けて実行しないと軌道が開始されない．
         joint_trajectory.header.stamp = self.get_clock().now().to_msg()
         joint_trajectory.joint_names = ['head_joint0', 'head_joint1']
 
