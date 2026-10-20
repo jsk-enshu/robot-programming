@@ -51,8 +51,8 @@ class HeadController(Node):
 
         # ros1_bridge経由の場合，ROS 2側のsubscriberが見えた時点ではROS 1側の接続が
         # まだ確立しておらず最初のメッセージが落ちることがある．
-        # header.stampが同じ軌道はコントローラ側で同一の軌道として扱われるので，
-        # 同じメッセージをしばらく再送しても動作は変わらない．
+        # header.stampを固定しているので，再送しても軌道の開始時刻は変わらない．
+        # コントローラは受信のたびに現在の状態から補間し直すが，動作はほぼ同じになる．
         resend_duration = self.get_parameter('resend_duration').value
         resend_period = self.get_parameter('resend_period').value
         self.get_logger().info('Publishing joint trajectory...')
