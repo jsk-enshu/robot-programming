@@ -35,7 +35,7 @@ topics:
   # larm_controller
   - name: /larm_controller/controller_state
     direction: 1to2
-  - name: /rarm_controller/joint_trajectory
+  - name: /larm_controller/joint_trajectory
     direction: 2to1
   - name: /larm_controller/follow_joint_trajectory/goal
     direction: 2to1
@@ -51,7 +51,7 @@ topics:
   # head_controller
   - name: /head_controller/controller_state
     direction: 1to2
-  - name: /rarm_controller/joint_trajectory
+  - name: /head_controller/joint_trajectory
     direction: 2to1
   - name: /head_controller/follow_joint_trajectory/goal
     direction: 2to1

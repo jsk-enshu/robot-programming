@@ -9,13 +9,16 @@ from geometry_msgs.msg import TwistStamped
 class TrackBoxToCmdVel(Node):
     def __init__(self):
         super().__init__('track_box_to_cmd_vel_0')
-        self.publisher_ = self.create_publisher(TwistStamped, '/diff_drive_controller/cmd_vel', 10)
+        self.publisher_ = self.create_publisher(TwistStamped, '/mecanum_drive_controller/reference', 10)
         self.subscription = self.create_subscription(
             RotatedRectStamped, '/camshift/track_box', self.listener_callback, 10)
 
     def listener_callback(self, msg):
         self.get_logger().info(f'Subscribing: {msg.rect.center}')
         cmd_vel = TwistStamped()
+        # mecanum_drive_controllerはheader.stampを使って指令のタイムアウトを判定する．
+        # Gazeboでは `--ros-args -p use_sim_time:=true` を付けて実行しないと，
+        # 指令が途絶えても台車が止まらない．
         cmd_vel.header.stamp = self.get_clock().now().to_msg()
         # 認識結果の領域の中心のx座標が320より小さければ（画像の左），右回転する
         if msg.rect.center.x < 320:
