@@ -39,3 +39,6 @@
     local-name: turtlebot_msgs
     uri: https://github.com/turtlebot/turtlebot_msgs.git
     version: 2.2.1
+- git:
+    local-name: joy
+    uri: https://github.com/ros-drivers/joystick_drivers.git
