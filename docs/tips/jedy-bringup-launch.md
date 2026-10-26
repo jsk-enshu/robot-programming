@@ -22,8 +22,8 @@ jedy_bringup.launch.pyを見てみると，
 
       kxr_controller.launch
       ->サーボ基板との通信，ロボットの身体情報定義ファイルを読み込み，他のノードが使えるようにするノード群の立ち上げ
-      diff_drive_controller.launch
-      ->台車を動かし，情報取得のためのコントローラー立ち上げ
+      mecanum_drive_controller_spawner (ridgeback_control)
+      ->メカナムホイールの台車を動かし，情報取得のためのコントローラー立ち上げ
       mpu6886_imu_publisher.launch
       -> Imuをpublishするノードの立ち上げ
 
