@@ -501,6 +501,30 @@ $ ros2 run jedy_vision approach_tag --id 2 --size 0.064 --tilt 10 --standoff 0.3
 (Gazebo の真値で，止まった位置の誤差は 7 mm)
 :::
 
+### 人を見つける (体・顔・手)
+
+Gazebo では `person:=true` で人のモデルを置ける (`person_x`, `person_y` で場所 [m])．
+`detect_people` は頭のカメラの画像 1 枚から，人の枠 (YOLO) と距離，体の骨格 (MediaPipe Pose，33 点)，
+顔の枠と 478 点のメッシュ，手の 21 点を見つけて，描いた画像を保存する．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py person:=true person_x:=1.6 person_y:=0.0
+$ ros2 run jedy_vision detect_people --pose --face --hands --tilt -25 --save people.png
+```
+
+頭のカメラは床から 0.4 m ほどなので，立っている人の顔を見るには首を上に向ける (`--tilt -25`: 負が上)．
+顔は画像の中では小さい (1.5〜2.5 m で 30 px ほど) ので，骨格から頭のまわりを切り出して拡大してから探している．
+プログラムからは `jedy_vision` の `PersonDetector`, `PoseEstimator`, `FaceEstimator`, `HandEstimator` を使う
+(使い方は `jedy/jedy_vision/scripts/detect_people.py`)．
+
+:::{figure} fig/jedy-gazebo-person-face-hands.png
+:align: center
+:name: fig:jedy-gazebo-person-face-hands
+
+`detect_people --pose --face --hands --tilt -25` の結果 (Gazebo，1.6 m 先の人)．
+青: 人の枠と距離，緑: 骨格，黄: 顔の枠とメッシュ，赤: 手 (体の横にある手は見つからないこともある)
+:::
+
 ### <span style="color:green">チェックポイント: カメラ</span>
 
 ```{exercise} カメラを使った反応行動
