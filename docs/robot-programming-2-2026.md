@@ -67,7 +67,7 @@
 プログラムは自分のディレクトリ (例: `~/enshu/`) に置き，次で実行する．
 
 ```{code-block} console
-$ ros2 run jedy_skrobot python ~/enshu/my_robot.py
+$ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_robot.py
 ```
 
 ロボット (Gazebo / 実機) に加えて，使う道具のノードを別のターミナルで起動しておく．

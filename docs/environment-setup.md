@@ -20,12 +20,17 @@ $ cd ~/ros2_ws/src
 $ source /opt/ros/jazzy/setup.bash
 $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
 $ touch robot-programming/jedy/COLCON_IGNORE   # 2025 年度版の jedy パッケージは同名なのでビルドしない
+$ echo "yaml file://$HOME/ros2_ws/src/jedy/rosdep.yaml" | sudo tee /etc/ros/rosdep/sources.list.d/50-jedy.list
 $ rosdep update
 $ cd ~/ros2_ws/
-$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip"
 $ colcon build --symlink-install
 $ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc   # ROS 2 の通信を自分の PC の中だけにする
 ```
+
+- `50-jedy.list` は，ROS の rosdep の一覧に無い依存 (発話の吹き出しの日本語フォント `fonts-noto-cjk`) の定義を rosdep に教える (1 回だけ)．
+- `--skip-keys` の 2 つは，本演習で使わないパッケージ (`mechatrobot_ros2`，`jsk_data`) の依存で，rosdep では入らない．
+  付けないと `rosdep install` が最後に `ERROR` を出すが，演習には影響しない．
 
 ```{important}
 **初回のビルドは時間がかかるので，演習の前に済ませておくこと．**
@@ -52,8 +57,9 @@ $ source ~/ros2_ws/install/setup.bash
 $ cd ~/ros2_ws/src
 $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
 $ vcs pull
+$ rosdep update
 $ cd ~/ros2_ws/
-$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip"
 $ colcon build --symlink-install
 ```
 

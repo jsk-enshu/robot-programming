@@ -62,6 +62,14 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
 
 `box:=true` でカメラの演習に使う赤い箱をロボットの左前に置く．
 `gui:=false` で画面なし，`render_sensors:=false` で GPU の無い PC 向け (カメラなし)．
+ロボットは演習室 (13BC) の机の手前に置かれる (`world:=empty` で何も無い床)．
+
+:::{figure} fig/jedy-gazebo-room13bc.png
+:align: center
+:name: fig:jedy-gazebo-room13bc
+
+Gazebo の演習室の Jedy と赤い箱 (`box:=true`)
+:::
 
 ### 実機 (RCB-4mini)
 
@@ -116,10 +124,10 @@ for _ in range(30):
     time.sleep(0.1)
 ```
 
-ファイルに書いたプログラムは次で実行する (ふつうの `python3` では scikit-robot が見つからない)．
+ファイルに書いたプログラムは，jedy_skrobot の仮想環境の python で実行する (ふつうの `python3` では scikit-robot が見つからない)．
 
 ```{code-block} console
-$ ros2 run jedy_skrobot python ~/enshu/my_program.py
+$ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_program.py
 ```
 
 ロボットインターフェースの内部では topic の publish / subscribe や service・action の呼び出しをしている．
@@ -261,6 +269,13 @@ K, D = ri.camera_info()        # カメラ行列 3x3 と歪み係数
 print(depth[240, 320])         # 画像の真ん中までの距離 [m]
 ```
 
+:::{figure} fig/jedy-gazebo-head-camera-box.png
+:align: center
+:name: fig:jedy-gazebo-head-camera-box
+
+Gazebo で起動した直後の頭のカメラの画像 (左に赤い箱)
+:::
+
 画像は numpy の配列なので，matplotlib で表示したり，OpenCV や自分の Python のプログラムにそのまま渡したりできる．
 
 ```{code-block} python
@@ -282,7 +297,7 @@ plt.show()            # ウィンドウを閉じると次へ進む
 ```{code-block} console
 $ mkdir -p ~/enshu
 $ cp ~/ros2_ws/src/jedy/jedy_skrobot/scripts/enshu/show_camera.py ~/enshu/my_camera.py
-$ ros2 run jedy_skrobot python ~/enshu/my_camera.py
+$ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_camera.py
 ```
 
 色で物を切り出すのは OpenCV でできる．
