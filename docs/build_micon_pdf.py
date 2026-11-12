@@ -131,7 +131,7 @@ def patch_config_for_micon(
     # PDFカバーの\titleは_config.yml先頭のtitle:から設定されるため、ここを差し替える。
     # シングルクォートでLaTeXの\\（改行）をそのまま保持する
     patched = patched.replace(
-        "title: 知能ロボット行動プログラミング演習 2025",
+        "title: 知能ロボット行動プログラミング演習 2026",
         f"title: '{pdf_title}'",
     )
     # \author（latex_documentsの著者欄）を所属＋担当者リストに差し替える。

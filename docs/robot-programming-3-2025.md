@@ -1,5 +1,9 @@
-(day-mechatronics)=
+(day-mechatronics-2025)=
 # メカトロボットの製作とプログラミング
+
+:::{note}
+このページは**2025年度**の演習資料（アーカイブ）である．最新年度の資料は{doc}`robot-programming-3-2026`を参照すること．
+:::
 
 ## 本日の演習内容
 
@@ -42,11 +46,11 @@
 
 ### 本演習で作成するメカトロボットの概要
 
-本演習では，ステッピングモータ，超音波センサ，Seeeduino Nano，ROSを組み合わせたメカトロボットを作成する．{numref}`Fig. %s <fig:mechatrobot-overview>` に本日作成するメカトロボットを示す．
+本演習では，ステッピングモータ，超音波センサ，Seeeduino Nano，ROSを組み合わせたメカトロボットを作成する．{numref}`Fig. %s <fig:mechatrobot-overview-2025>` に本日作成するメカトロボットを示す．
 
 :::{figure} fig/mechatrobot.jpg
 :align: center
-:name: fig:mechatrobot-overview
+:name: fig:mechatrobot-overview-2025
 
 本演習で取り組むメカトロボットの配線例
 :::
@@ -67,7 +71,7 @@ Arduinoにはデジタル/アナログのIOが複数ポート用意されてお�
 
 :::{figure} fig/seeeduino-Nano.jpg
 :align: center
-:name: fig:seeeduino-nano
+:name: fig:seeeduino-nano-2025
 
 Seeeduino Nano
 :::
@@ -78,7 +82,7 @@ Seeeduino Nano
 :::{grid-item}
 :::{figure} fig/seeeduino-Nano-overview.jpg
 :align: center
-:name: fig:seeeduino-nano-overview
+:name: fig:seeeduino-nano-overview-2025
 
 Seeeduino Nanoの外観
 :::
@@ -86,7 +90,7 @@ Seeeduino Nanoの外観
 :::{grid-item}
 :::{figure} fig/arduinonano-pinout.jpg
 :align: center
-:name: fig:seeeduino-nano-pinout
+:name: fig:seeeduino-nano-pinout-2025
 
 Seeeduino Nanoのピン配置（Arduino Nano互換）
 :::
@@ -208,7 +212,7 @@ void loop() {
 #### <span style="color:green">チェックポイント: 基板上のLEDでの書き込み確認</span>
 
 ```{exercise} 基板上のLEDでの書き込み確認
-:label: ex_builtin_led
+:label: ex_builtin_led-2025
 
 上記のプログラムをSeeeduino Nanoに書き込み基板上のLEDが点滅することを確認しよう．
 
@@ -228,7 +232,7 @@ LED回路を例としてブレッドボード上にSeeeduino Nanoを含む電子
 :::{grid-item}
 :::{figure} fig/led-circuit-diagram.jpg
 :align: center
-:name: fig:led-circuit-diagram
+:name: fig:led-circuit-diagram-2025
 
 LED点滅回路図
 :::
@@ -236,7 +240,7 @@ LED点滅回路図
 :::{grid-item}
 :::{figure} fig/led-circuit-with-arduino.jpg
 :align: center
-:name: fig:led-circuit-with-arduino
+:name: fig:led-circuit-with-arduino-2025
 
 ブレッドボード上でのSeeeduino Nanoを用いたLED点滅回路の実物実装例
 :::
@@ -274,7 +278,7 @@ void loop() {
 #### <span style="color:green">チェックポイント: ブレッドボード上での外部LED点滅回路の製作と動作確認</span>
 
 ```{exercise} ブレッドボード上での外部LED点滅回路の製作と動作確認
-:label: ex_external_led
+:label: ex_external_led-2025
 
 ブレッドボード上に外部LED点滅回路を製作し，プログラムを書き込んでLEDの点滅を確認してみよう．
 
@@ -386,7 +390,7 @@ void loop() {
 
 :::{figure} fig/stepping-motor-driver-connection.jpg
 :align: center
-:name: fig:stepping-motor-driver-connection
+:name: fig:stepping-motor-driver-connection-2025
 
 ステッピングモータの配線図
 :::
@@ -395,7 +399,7 @@ void loop() {
 
 :::{figure} fig/stepping-motor-circuit-with-arduino.jpg
 :align: center
-:name: fig:stepping-motor-circuit-with-arduino
+:name: fig:stepping-motor-circuit-with-arduino-2025
 
 ステッピングモータ駆動回路の配線例
 :::
@@ -403,7 +407,7 @@ void loop() {
 #### <span style="color:green">チェックポイント: ステッピングモータの動作確認</span>
 
 ```{exercise} ステッピングモータの動作確認
-:label: ex_stepper_motor
+:label: ex_stepper_motor-2025
 
 実際にプログラムを書き込みステッピングモータの動作を確認してみよう．
 ```
@@ -445,7 +449,7 @@ void loop() {
 
 :::{figure} fig/ultrasonic-sensor-signal.jpg
 :align: center
-:name: fig:ultrasonic-sensor-signal
+:name: fig:ultrasonic-sensor-signal-2025
 
 超音波センサとの信号の送受信の仕方
 :::
@@ -516,7 +520,7 @@ void loop() {
 :::{grid-item}
 :::{figure} fig/ultrasonic-sensor.jpg
 :align: center
-:name: fig:ultrasonic-sensor
+:name: fig:ultrasonic-sensor-2025
 
 超音波センサ
 :::
@@ -524,7 +528,7 @@ void loop() {
 :::{grid-item}
 :::{figure} fig/ultrasonic-sensor-circuit-with-arduino.jpg
 :align: center
-:name: fig:ultrasonic-sensor-circuit
+:name: fig:ultrasonic-sensor-circuit-2025
 
 超音波センサ回路の配線例
 :::
@@ -539,7 +543,7 @@ void loop() {
 :::{grid-item}
 :::{figure} fig/arduino-range-sensor-serial-print.png
 :align: center
-:name: fig:arduino-range-sensor-serial-print
+:name: fig:arduino-range-sensor-serial-print-2025
 
 シリアルモニタでの超音波センサ出力例．距離データと判定結果がテキストで表示される．
 :::
@@ -547,7 +551,7 @@ void loop() {
 :::{grid-item}
 :::{figure} fig/arduino-range-sensor-serial-plotter.png
 :align: center
-:name: fig:arduino-range-sensor-serial-plotter
+:name: fig:arduino-range-sensor-serial-plotter-2025
 
 シリアルプロッタでの超音波センサ出力例．距離データがリアルタイムでグラフ表示される．
 :::
@@ -579,11 +583,11 @@ $ rosrun rosserial_arduino make_libraries.py ./
 ### 本演習で作成するメカトロボット
 
 本演習ではステッピングモータ，超音波センサ，Seeeduino Nano，ROSを組み合わせたメカトロボットに触れる．
-{numref}`図． %s <fig:mechatrobot-middle>` は本演習で作成するメカトロボットの配線例である．
+{numref}`図． %s <fig:mechatrobot-middle-2025>` は本演習で作成するメカトロボットの配線例である．
 
 :::{figure} fig/mechatrobot.jpg
 :align: center
-:name: fig:mechatrobot-middle
+:name: fig:mechatrobot-middle-2025
 
 本演習で取り組むメカトロボットの配線例
 :::
@@ -707,7 +711,7 @@ data: False
 #### <span style="color:green">チェックポイント: rosserialを使ったLED点滅プログラム</span>
 
 ```{exercise} rosserialを使ったLED点滅プログラム
-:label: ex_rosserial_led
+:label: ex_rosserial_led-2025
 
 rosserialを使ったLEDの点滅プログラムを実行してみよう．
 
@@ -736,7 +740,7 @@ rosserialの動作確認ができたら次はメカトロボットを制御す�
 
 :::{figure} fig/mechatrobot-system.png
 :align: center
-:name: fig:mechatrobot-system
+:name: fig:mechatrobot-system-2025
 
 メカトロボットのシステム構成図．ROS 1側でrosserialを介してSeeeduino Nanoと通信しROS 2側でros2_controlによるモータ制御とrviz2による可視化を行う．ros1_bridgeがROS 1とROS 2のtopicを相互に変換する．
 :::
@@ -849,7 +853,7 @@ $ ros2 launch mechatrobot_ros2 mechatrobot_display.launch.py
 :::{grid-item}
 :::{figure} fig/mechatrobot-rviz.jpg
 :align: center
-:name: fig:mechatrobot-rviz
+:name: fig:mechatrobot-rviz-2025
 
 メカトロボットのrvizでの表示
 :::
@@ -857,7 +861,7 @@ $ ros2 launch mechatrobot_ros2 mechatrobot_display.launch.py
 :::{grid-item}
 :::{figure} fig/mechatrobot-rviz-with-tf.jpg
 :align: center
-:name: fig:mechatrobot-rviz-with-tf
+:name: fig:mechatrobot-rviz-with-tf-2025
 
 tfを表示すると，ロボットモデルのlink, joint等の位置関係が可視化されわかりやすい場合もある．
 :::
@@ -918,7 +922,7 @@ GUI中で`/controller_manager`と`positioin_trajectory_controller`を選択し�
 :::{grid-item}
 :::{figure} fig/mechatrobot-rqt-off.jpg
 :align: center
-:name: fig:rqt_joint_trajectory_controller-off
+:name: fig:rqt_joint_trajectory_controller-off-2025
 
 rqt_joint_trajectory_controller (OFFの状態)
 :::
@@ -926,7 +930,7 @@ rqt_joint_trajectory_controller (OFFの状態)
 :::{grid-item}
 :::{figure} fig/mechatrobot-rqt-on.jpg
 :align: center
-:name: fig:rqt_joint_trajectory_controller-on
+:name: fig:rqt_joint_trajectory_controller-on-2025
 
 rqt_joint_trajectory_controller (ONの状態)
 :::
@@ -940,7 +944,7 @@ rqt_joint_trajectory_controller (ONの状態)
 
 :::{figure} fig/range-sensor-rviz.png
 :align: center
-:name: fig:range-sensor-visualized
+:name: fig:range-sensor-visualized-2025
 
 rvizで測距センサを可視化している様子
 :::
@@ -948,7 +952,7 @@ rvizで測距センサを可視化している様子
 #### <span style="color:green">チェックポイント: メカトロボットの動作確認</span>
 
 ```{exercise} メカトロボットの動作確認
-:label: ex_mechatrobot
+:label: ex_mechatrobot-2025
 
 メカトロボットの動作確認を行ってみよう．
 
@@ -998,7 +1002,7 @@ $ rosrun mechatrobot motor-command-by-face.py
 
 - [sample_face_detect.launch](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/launch/sample_face_detect.launch)
   PCのインカメラの画像に対して顔認識を行うサンプルプログラム．
-  {numref}`Fig. %s <fig:face-detection>` は認識結果の一例である．
+  {numref}`Fig. %s <fig:face-detection-2025>` は認識結果の一例である．
 
 - [motor-command-by-face.l](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot/euslisp/motor-command-by-face.l), [motor-command-by-face.py](https://github.com/jsk-enshu/robot-programming/tree/master/mechatrobot/scripts/motor-command-by-face.py)
   顔認識結果を受け， 顔の位置が画面の左であればモータに左回転指令，
@@ -1006,7 +1010,7 @@ $ rosrun mechatrobot motor-command-by-face.py
 
 :::{figure} fig/face-detection.jpg
 :align: center
-:name: fig:face-detection
+:name: fig:face-detection-2025
 
 顔認識結果
 :::
@@ -1014,7 +1018,7 @@ $ rosrun mechatrobot motor-command-by-face.py
 #### <span style="color:green">チェックポイント: 顔認識を利用したモータ制御</span>
 
 ```{exercise} 顔認識を利用したモータ制御
-:label: ex_face_motor
+:label: ex_face_motor-2025
 
 上記プログラムを実行して顔認識の画像処理結果を利用してモータ制御してみよう．
 ```

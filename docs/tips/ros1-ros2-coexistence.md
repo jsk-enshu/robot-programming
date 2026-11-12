@@ -86,7 +86,7 @@ ROS 1で安定動作している部分はそのまま使用し新しい機能や
 
 ### メカトロボット
 
-{doc}`../robot-programming-3-2025`で扱うメカトロボットは以下のような混在システムの例である：
+{doc}`../robot-programming-3-2026`で扱うメカトロボットは以下のような混在システムの例である：
 
 **ROS 1側：**
 - **rosserial**を使用したArduino（Seeeduino Nano）との通信

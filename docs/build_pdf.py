@@ -114,7 +114,7 @@ def main() -> None:
         # ステップ9: PDFをプロジェクトルートにコピー
         print("Step 9: Copying PDF to project root...")
         src_pdf = latex_dir / "lecture.pdf"
-        dst_pdf = project_root / "知能ロボット行動プログラミング演習2025.pdf"
+        dst_pdf = project_root / "知能ロボット行動プログラミング演習2026.pdf"
 
         if src_pdf.exists():
             shutil.copy2(src_pdf, dst_pdf)
