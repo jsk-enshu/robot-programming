@@ -765,7 +765,7 @@ void loop() {
 }
 ```
 
-Arduinoには**[Stepper](https://github.com/arduino-libraries/Stepper/blob/master/src/Stepper.h)**ライブラリが用意されているので，これを用いることもできる：
+Arduinoには[**Stepper**](https://github.com/arduino-libraries/Stepper/blob/master/src/Stepper.h)ライブラリが用意されているので，これを用いることもできる：
 
 ```cpp
 #include <Stepper.h>
