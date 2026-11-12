@@ -5,86 +5,83 @@
 
 ## 前提条件
 
-本演習は岡田先生のロボットシステムの講義で扱った`Euslisp`や`ROS`の環境が正しく構築されていることを前提として進める．
+2026 年度の演習は **ROS 2 (Jazzy) と Python** だけを使う (ROS 1・EusLisp・ros1_bridge は使わない)．
+Ubuntu 24.04 に ROS 2 Jazzy が入っていることを前提とする．入っていなければ {doc}`tips/ros2-jazzy-installation` を見よ．
 
 ## 初回環境構築
 
-下記の環境構築方法に従ってワークスペースを作成または更新する．
-
-### ROS 2 セットアップ
-
 ```{code-block} console
 $ sudo apt update
+$ sudo apt install python3-vcstool python3-rosdep ros-jazzy-realsense2-camera
+$ curl -LsSf https://astral.sh/uv/install.sh | sh   # Python の仮想環境を作る uv (1 回だけ)
+$ source $HOME/.local/bin/env
 $ mkdir -p ~/ros2_ws/src
 $ cd ~/ros2_ws/src
 $ source /opt/ros/jazzy/setup.bash
-$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy -O- | vcs import
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
+$ touch robot-programming/jedy/COLCON_IGNORE   # 2025 年度版の jedy パッケージは同名なのでビルドしない
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy
-$ colcon build --symlink-install --packages-select jedy_bringup jedy_description
-$ colcon build --symlink-install --packages-up-to mechatrobot_ros2 # Arduinoの演習日に必要
+$ colcon build --symlink-install
+$ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc   # ROS 2 の通信を自分の PC の中だけにする
 ```
 
-### ROS 1 セットアップ
+```{important}
+**初回のビルドは時間がかかるので，演習の前に済ませておくこと．**
+Python のパッケージ (scikit-robot，カメラの認識に使う torch・YOLOE・MediaPipe など) を uv で仮想環境に入れ，
+音声合成のエンジン (約 1.3 GB) と認識のモデルをダウンロードする．
+カメラの認識の `jedy_vision` だけで 15 分ほどかかった (ノート PC，ダウンロード済みのものを除く)．
+```
+
+ビルドしたら，どのターミナルでも最初に次を実行する (`~/.bashrc` に書いておくとよい)．
+
 ```{code-block} console
-$ sudo apt update
-$ sudo apt install python3-vcstool python3-catkin-tools
-$ mkdir -p ~/ros_ws/src
-$ cd ~/ros_ws/src
-$ source /opt/ros/one/setup.bash
-$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.one -O- | vcs import
-$ rosdep update
-$ cd ~/ros_ws
-$ rosdep install --from-paths src --ignore-src -y -r --rosdistro one
-$ catkin build jedy_ros1_bridge jedyeus
-$ catkin build mechatrobot # Arduinoの演習日に必要
+$ source ~/ros2_ws/install/setup.bash
 ```
 
-### ROS1 bridge セットアップ
+`ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` は，ROS 2 の通信を自分の PC の中だけに閉じる設定である．
+ロボット (実機) は自分の PC に USB でつなぎ，ノードはすべて自分の PC の中で動くので，
+同じネットワークにいる他の人のロボットやシミュレータとトピックが混ざらない．
 
-[ros1_bridge](tips/ros1-bridge.md)を参考にしてros1 bridgeをインストールする．
+## 演習開始時のソフトウェア更新
 
+演習の日には，最新のソフトウェアを取得してビルドし直す．
+
+```{code-block} console
+$ cd ~/ros2_ws/src
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
+$ vcs pull
+$ cd ~/ros2_ws/
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy
+$ colcon build --symlink-install
+```
 
 ## トラブルシューティング
 
-環境構築時に問題が発生した場合は，以下の点を確認する．
+### `colcon build` が「`uv` not found on PATH」で失敗する
 
-### catkin build jedyeusがエラーになる
+uv が入っていないか，PATH に無い．上の手順の `curl -LsSf https://astral.sh/uv/install.sh | sh` と
+`source $HOME/.local/bin/env` を実行してから，もう一度 `colcon build` する．
 
-`catkin build jedyeus`を実行した際に以下のエラーが表示される場合がある．
-
-```{code-block} console
-[build] Error: Given package 'jedyeus' is not in the workspace and pattern does not match any package
-```
-
-**原因：** `COLCON_IGNORE`ファイルが存在するため，catkin buildがパッケージをスキップしている．
-
-**解決方法：**
+### `Duplicate package names not supported` で止まる
 
 ```{code-block} console
-$ rm ~/ros_ws/src/robot-programming/jedy/jedyeus/COLCON_IGNORE
-$ cd ~/ros_ws
-$ catkin build jedyeus
+ERROR:colcon:colcon build: Duplicate package names not supported:
+- jedy_bringup:
+  - src/jedy/jedy_bringup
+  - src/robot-programming/jedy/jedy_bringup
 ```
 
-### catkin-toolsのバージョンが古い
-
-catkin-toolsのバージョンが0.9.4の場合，上記の問題が発生する可能性がある．バージョン0.9.5にアップグレードすることを推奨する．
+`robot-programming/jedy/COLCON_IGNORE` を作り忘れている (2025 年度版の jedy パッケージと 2026 年度版の jedy パッケージは同じ名前である)．
 
 ```{code-block} console
-$ sudo apt purge catkin-tools
-$ sudo apt purge python3-catkin-tools
-$ sudo apt install python3-catkin-tools --reinstall
-$ catkin --version
+$ touch ~/ros2_ws/src/robot-programming/jedy/COLCON_IGNORE
 ```
-
-`catkin_tools 0.9.5`と表示されれば成功である．
 
 ### より詳細なトラブルシューティング
 
-その他の問題や詳細な解決手順については，[環境構築トラブルシューティング](tips/troubleshooting.md)を参照する．
-
+その他の問題については，[環境構築トラブルシューティング](tips/troubleshooting.md)を参照する．
 
 ## 次のステップ
 

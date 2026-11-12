@@ -1,0 +1,46 @@
+# 2026 年版 Jedy 演習 (scikit-robot + ROS 2 Jazzy のみ) で使うリポジトリ。
+#   vcs import src < src/robot-programming/.repos.jazzy-skrobot
+# jedy (iory/jedy) の jedy_bringup / jedy_description は robot-programming/jedy の同名パッケージと衝突するので、
+# このワークスペースでは robot-programming/jedy を COLCON_IGNORE してビルドしないこと(docs/environment-setup.md)。
+repositories:
+  robot-programming:
+    type: git
+    url: https://github.com/jsk-enshu/robot-programming.git
+    version: master
+  jedy:
+    type: git
+    url: https://github.com/iory/jedy.git
+    version: skrobot-ros2-2026
+  actuo:
+    type: git
+    url: https://github.com/iory/actuo.git
+    version: main
+  ament_uv_virtualenv:
+    type: git
+    url: https://github.com/iory/ament_uv_virtualenv.git
+    version: main
+  # 音声: VOICEVOX での発話 (voicevox) と音声認識 (ros_speech_recognition)。
+  # どちらも jsk_ros1_ros2_compat (jsk_common) と speech_recognition_msgs
+  # (jsk_common_msgs) を使う。
+  # ros_speech_recognition の launch に energy_threshold / dynamic_energy_threshold
+  # の引数を足したもの (https://github.com/jsk-ros-pkg/jsk_3rdparty/pull/587)。
+  # 取り込まれたら jsk-ros-pkg/jsk_3rdparty の master に戻す。
+  jsk_3rdparty:
+    type: git
+    url: https://github.com/iory/jsk_3rdparty.git
+    version: speech-recognition-energy-threshold-args
+  jsk_common:
+    type: git
+    url: https://github.com/jsk-ros-pkg/jsk_common.git
+    version: master
+  jsk_common_msgs:
+    type: git
+    url: https://github.com/jsk-ros-pkg/jsk_common_msgs.git
+    version: master
+  # sound_play: 2 回目以降の action のゴールが返らなくなるデッドロックの修正入り
+  # (https://github.com/ros-drivers/audio_common/pull/290)。取り込まれたら
+  # ros-drivers/audio_common の ros2 に戻す。
+  audio_common:
+    type: git
+    url: https://github.com/iory/audio_common.git
+    version: fix-sound-play-idle-deadlock

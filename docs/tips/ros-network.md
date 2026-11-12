@@ -63,48 +63,25 @@ ROS 2では`ROS_DOMAIN_ID`環境変数を使用して，異なるドメイン間
 - **設定可能範囲**：0〜101（または0〜232，DDS実装による）
 - **用途**：複数のロボットシステムやユーザーが同一ネットワーク上で独立して動作する場合に使用
 
-#### 実機のROS_DOMAIN_IDの確認
+#### 実機と通信するとき
 
-本演習で使用する`Jedy`ロボットには，あらかじめ固有の`ROS_DOMAIN_ID`が設定されている．このIDは**ロボット背面の`Atom S3`ディスプレイに表示**されている．
+2026 年版の演習では，ロボット(実機)は自分の PC に USB でつなぎ，ROS 2 のノードはすべて自分の PC の中で動く．
+そのため上の `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` だけでよく，`ROS_DOMAIN_ID` を設定する必要はない
+(通信が PC の外に出ないので，他の人のロボットやシミュレータと混ざらない)．
 
-実機と通信するには，自分のPCでも同じ`ROS_DOMAIN_ID`を設定する必要がある．
-
-#### ROS_DOMAIN_IDの設定方法
-
-**一時的な設定（現在のターミナルのみ）:**
-
-```{code-block} console
-$ export ROS_DOMAIN_ID=<Atom S3に表示されているID>
-```
-
-例えば，`Atom S3`に`42`と表示されている場合：
+ロボットと PC が**ネットワーク越しに** ROS 2 で通信する構成(ロボットに別の PC が載っている場合など)では，
+`LOCALHOST` では相手が見えない．その場合は `ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET` にし，ロボット側と PC 側で
+同じ `ROS_DOMAIN_ID` を設定する:
 
 ```{code-block} console
-$ export ROS_DOMAIN_ID=42
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=SUBNET
+$ export ROS_DOMAIN_ID=42      # ロボット側と同じ値
+$ echo $ROS_DOMAIN_ID          # 確認
 ```
 
-**bashrcに追加して永続化する場合:**
+同じネットワークで複数のロボットを使うときは，ロボットごとに違う `ROS_DOMAIN_ID` にする．
 
-```{code-block} console
-$ echo 'export ROS_DOMAIN_ID=42' >> ~/.bashrc
-$ source ~/.bashrc
-```
-
-#### 設定の確認
-
-環境変数が正しく設定されているか確認する：
-
-```{code-block} console
-$ echo $ROS_DOMAIN_ID
-```
-
-`Atom S3`に表示されているIDと同じ値が表示されれば設定完了である．
-
-#### 注意事項
-
-- **演習開始時の確認**：演習を開始する際は，必ず`Atom S3`でIDを確認し，自分のPCに設定すること
-- **ロボット切り替え時**：別の`Jedy`ロボットを使用する場合は，新しいロボットの`ROS_DOMAIN_ID`を再設定する必要がある
-- **ROS_AUTOMATIC_DISCOVERY_RANGEとの併用**：`ROS_DOMAIN_ID`を設定しても，`ROS_AUTOMATIC_DISCOVERY_RANGE`の設定は維持すること．演習環境では`ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST`と`ROS_DOMAIN_ID`の両方を設定する
+2025 年度版の資料 ({doc}`/robot-programming-1-2025`) では，ロボット背面の `Atom S3` に表示された `ROS_DOMAIN_ID` を PC 側にも設定していた．
 
 #### トラブルシューティング
 

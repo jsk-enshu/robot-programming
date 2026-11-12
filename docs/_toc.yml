@@ -46,6 +46,8 @@ parts:
     - file: winter-overview-2025
       title: 2025年度 冬学期演習
       sections:
+      - file: environment-setup-2025
+        title: 環境構築
       - file: robot-programming-3-2025
         title: 1日目 メカトロボットの製作とプログラミング
       - file: robot-programming-1-2025
@@ -79,6 +81,8 @@ parts:
       title: ROS 1コマンド
     - file: tips/ros2-commands
       title: ROS 2コマンド
+    - file: tips/euslisp-to-skrobot
+      title: EusLispとscikit-robotの対応
   - caption: Tips・付録（1日目）
     numbered: false
     chapters:

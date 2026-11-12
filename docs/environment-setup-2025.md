@@ -1,0 +1,97 @@
+# 環境構築（2025年度）
+
+2025 年度の資料 (EusLisp・ROS 1・ros1_bridge を使う) のための環境構築である．2026 年度の演習は {doc}`environment-setup` を見ること．
+
+本演習を開始する前に，必要なソフトウェア環境を構築する必要がある．
+本ページでは，初回のワークスペース構築方法と，演習開始時のソフトウェア更新方法について説明する．
+
+## 前提条件
+
+本演習は岡田先生のロボットシステムの講義で扱った`Euslisp`や`ROS`の環境が正しく構築されていることを前提として進める．
+
+## 初回環境構築
+
+下記の環境構築方法に従ってワークスペースを作成または更新する．
+
+### ROS 2 セットアップ
+
+```{code-block} console
+$ sudo apt update
+$ mkdir -p ~/ros2_ws/src
+$ cd ~/ros2_ws/src
+$ source /opt/ros/jazzy/setup.bash
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy -O- | vcs import
+$ rosdep update
+$ cd ~/ros2_ws/
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy
+$ colcon build --symlink-install --packages-select jedy_bringup jedy_description
+$ colcon build --symlink-install --packages-up-to mechatrobot_ros2 # Arduinoの演習日に必要
+```
+
+### ROS 1 セットアップ
+```{code-block} console
+$ sudo apt update
+$ sudo apt install python3-vcstool python3-catkin-tools
+$ mkdir -p ~/ros_ws/src
+$ cd ~/ros_ws/src
+$ source /opt/ros/one/setup.bash
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.one -O- | vcs import
+$ rosdep update
+$ cd ~/ros_ws
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro one
+$ catkin build jedy_ros1_bridge jedyeus
+$ catkin build mechatrobot # Arduinoの演習日に必要
+```
+
+### ROS1 bridge セットアップ
+
+[ros1_bridge](tips/ros1-bridge.md)を参考にしてros1 bridgeをインストールする．
+
+
+## トラブルシューティング
+
+環境構築時に問題が発生した場合は，以下の点を確認する．
+
+### catkin build jedyeusがエラーになる
+
+`catkin build jedyeus`を実行した際に以下のエラーが表示される場合がある．
+
+```{code-block} console
+[build] Error: Given package 'jedyeus' is not in the workspace and pattern does not match any package
+```
+
+**原因：** `COLCON_IGNORE`ファイルが存在するため，catkin buildがパッケージをスキップしている．
+
+**解決方法：**
+
+```{code-block} console
+$ rm ~/ros_ws/src/robot-programming/jedy/jedyeus/COLCON_IGNORE
+$ cd ~/ros_ws
+$ catkin build jedyeus
+```
+
+### catkin-toolsのバージョンが古い
+
+catkin-toolsのバージョンが0.9.4の場合，上記の問題が発生する可能性がある．バージョン0.9.5にアップグレードすることを推奨する．
+
+```{code-block} console
+$ sudo apt purge catkin-tools
+$ sudo apt purge python3-catkin-tools
+$ sudo apt install python3-catkin-tools --reinstall
+$ catkin --version
+```
+
+`catkin_tools 0.9.5`と表示されれば成功である．
+
+### より詳細なトラブルシューティング
+
+その他の問題や詳細な解決手順については，[環境構築トラブルシューティング](tips/troubleshooting.md)を参照する．
+
+
+## 次のステップ
+
+環境構築が完了したら，以下の演習に進む：
+
+- {doc}`robot-programming-3-2025`
+- {doc}`robot-programming-1-2025`
+- {doc}`robot-programming-2-2025`
