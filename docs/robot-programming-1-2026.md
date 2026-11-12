@@ -239,6 +239,16 @@ print([j.name for j in robot.joint_list])           # 使える関節名
 関節に負荷がかかる姿勢を長く続けるとサーボが焼ける．危ないときは背面のスイッチでサーボの電源を切るか `ri.servo_off()` を呼ぶこと．
 ```
 
+RViz の **Servo パネル**でも，関節ごとに ON/OFF できる (ALL ON / ALL OFF もある)．実機の launch は RViz を開き，
+Gazebo は `rviz:=true` を付けると開く．「away from command」は送った姿勢と今の姿勢の差で，ON にしたとき腕がどれだけ動くかの目安になる．
+
+:::{figure} fig/jedy-rviz-servo-panel.png
+:align: center
+:name: fig:jedy-rviz-servo-panel
+
+RViz (`ros2 launch jedy_bringup jedy_gazebo.launch.py rviz:=true`)．左が Servo パネルと Diagnostics パネル
+:::
+
 ケーブルが抜けかけている，電源が入っていないなどで応答しないサーボがあると，RViz でその関節が赤く点滅し，
 `connect()` の時点で「応答していないサーボがあります」というエラーが出る (`ri.missing_servos()` で `{関節名: 理由}` が得られる)．
 プログラムの誤りではないので，コードを直す前にケーブルと電源を確認しよう (抜き差しは TA を呼んでから)．
@@ -426,8 +436,27 @@ print(ri.janken())     # 'グー' 'チョキ' 'パー' か None
 hand = ri.wait_until_janken(timeout=10.0)          # じゃんけんの手が出るまで待つ
 ```
 
-`d.box` は `ri.image()` の画像の座標なので，枠の中心が画像の左右どちらにあるかで首や台車を回したり，
-`ri.depth_image()` で枠の中の距離を測ったりできる．
+`d.box` は `ri.image()` の画像の座標なので，枠の中心が画像の左右どちらにあるかで首や台車を回したりできる．
+
+**物の 3D の位置**も分かる．認識のノードが距離画像から枠の中の距離を測り，`d.position` (カメラの座標系) に入れている．
+`ri.detection_position(d)` でロボットの座標系 (base_link: 前が x，左が y，上が z) の位置 [m] になる．
+
+```{code-block} python
+for d in ri.what_do_you_see(['赤いもの']):
+    p = ri.detection_position(d)        # [x, y, z] (m)．距離が測れなかったときは None
+    print(d.label, d.score, p)
+```
+
+距離が測れるのはカメラの測れる範囲だけである (実機の D405 は 0.07〜0.5 m．遠い物は `None` になる)．
+首を動かした後に聞くと，その時の首の角度で計算するので，聞いてから首を動かすこと．
+
+:::{figure} fig/jedy-gazebo-detection-red-object.png
+:align: center
+:name: fig:jedy-gazebo-detection-red-object
+
+Gazebo (`box:=true`) で `ri.what_do_you_see(['赤いもの'])` を呼んだときの `/object_detection/image`．
+枠の上に「単語 確からしさ 距離」．このとき `ri.detection_position(d)` は [1.125, 0.475, 0.135] (箱の手前の面は [1.125, 0.5, 0.134])
+:::
 
 使える日本語の単語は `jedy_vision` の `config/vocabulary.yaml` にある (英語に直して検出器に渡している)．
 **表に無い日本語の単語はエラーになる**ので，表に足して `colcon build` し直すか，英語で指定する (英語はそのまま使える)．
@@ -443,9 +472,34 @@ hand = ri.wait_until_janken(timeout=10.0)          # じゃんけんの手が出
 - ジェスチャは同じ形が数枚続いて初めて答える (手を動かしている途中の形を拾わないため)．手を止めて 0.5 秒ほど見せる．
 - 物体を探すのは 1 回 0.6 秒ほど，単語を変えた最初の 1 回は 1 秒ほど (Gazebo と同じノート PC の CPU で計測)．
 - 枠を描いた画像が `/object_detection/image` に出るので，`rqt_image_view` で見られる．
+  3D の位置は RViz の「detections (3D)」に緑の球と名前で出る (`/object_detection/markers`)．
 - ロボットの代わりに **PC の Web カメラ**で試すこともできる:
   `ros2 run usb_cam usb_cam_node_exe` で `/image_raw` に画像を出し，`ros2 launch jedy_vision recognition.launch.py image_topic:=/image_raw`．
 ```
+
+### AprilTag で位置を知る・近づく
+
+AprilTag は白黒の正方形のマーカで，番号 (id) と，カメラからの位置・向きが 1 枚の画像から分かる．
+Gazebo では `tags:=true` で，64 mm のタグ (36h11，id 0〜9) を貼った柱を 10 本，ロボットのまわり 1.2〜1.7 m に置く
+(各タグはロボットの方を向いている．`demo:=true` とは一緒に使わない)．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py tags:=true
+$ ros2 run jedy_vision tag_pose --size 0.064 --tilt 10            # 見えているタグの位置 (base_link) を表示し，RViz にも出す
+$ ros2 run jedy_vision approach_tag --id 2 --size 0.064 --tilt 10 --standoff 0.3   # タグ 2 の正面 0.3 m まで走る
+```
+
+`--size` はタグの黒い正方形の一辺 [m]，`--tilt` は首を下に向ける角度 [deg]．
+`approach_tag` はタグが見えない間はその場で回って探し，見つけたら `ri.go_velocity()` でタグの正面へ走って止まる．
+中身は `jedy/jedy_vision/scripts/approach_tag.py` (と `tag_pose.py`) にあるので，コピーして自分のプログラムに使える．
+
+:::{figure} fig/jedy-gazebo-approach-tag.gif
+:align: center
+:name: fig:jedy-gazebo-approach-tag
+
+`approach_tag --id 2` (Gazebo，実時間．右上は頭のカメラ)．左を向いてタグ 2 を見つけ，正面 0.3 m で止まる
+(Gazebo の真値で，止まった位置の誤差は 7 mm)
+:::
 
 ### <span style="color:green">チェックポイント: カメラ</span>
 
