@@ -14,6 +14,24 @@
 - **ロボットモデル `robot`**: リンクの長さや関節角度をもとに幾何計算 (順運動学・逆運動学) をする．モデルの関節を動かしても実機は動かない．
 - **ロボットインターフェース `ri`**: 実機 (またはシミュレータ) との窓口．姿勢を送る・センサを読む・台車を動かす・認識を聞く・しゃべる．
 
+`robot` はすぐに変わり，机があっても突き抜ける．`ri` に送った動きは時間がかかり，重力や接触で指令どおりにならないこともある．
+だから「`robot` で計画し，`ri` で動かし，`ri` で確かめる」を繰り返す．
+
+:::{figure} fig/jedy-robot-vs-ri.png
+:align: center
+:name: fig:jedy-robot-vs-ri
+
+半透明の青が `robot` (逆運動学で右手を赤い点へ上げた姿勢)，不透明なのが実機・シミュレータ (`ri`)．
+`robot` を変えただけでは，まだ `ri.angle_vector(robot.angle_vector(), 時間)` を送っていないので動かない
+:::
+
+```{tip}
+**ブラウザだけで試せる**: [scikit-robot-web](https://iory.github.io/scikit-robot-web/?lang=ja) では，Python で書いた `robot` と `ri` のプログラムが
+ブラウザの中で動き，シミュレータ (MuJoCo) の Jedy を操作できる (何もインストールしなくてよい)．
+3D の画面では半透明の青いロボットが `robot`，不透明なロボットが `ri` の動かす Jedy である．
+サンプル「robot vs ri」では，机の中に手を入れる計画を立てると，`robot` は机を突き抜け，`ri` の Jedy は机の上で止まる．
+```
+
 **同じ Python プログラムが Gazebo (シミュレータ) と実機のどちらでもそのまま動く．** どれが動くかは起動した launch だけで決まり，プログラムは何も変えない．
 まずシミュレータで作り，できたら実機で動かすとよい．
 
@@ -133,6 +151,27 @@ $ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_
 ロボットインターフェースの内部では topic の publish / subscribe や service・action の呼び出しをしている．
 `ri` のメソッドがどの topic を使うかは `jedy_skrobot/interface.py` の先頭に表がある．
 
+### モデルを画面で見る (PyrenderViewer)
+
+`robot` (モデル) の姿勢は scikit-robot のビューワで見られる．`ri` に送る前に，計画した姿勢を確かめるのに使う．
+メッシュ (見た目の形) を読むために `connect(load_meshes=True)` とする (無いとビューワに何も表示されない)．
+
+```{code-block} python
+from jedy_skrobot import connect
+from skrobot.viewers import PyrenderViewer
+import numpy as np
+
+robot, ri = connect(load_meshes=True)
+viewer = PyrenderViewer()   # ウィンドウが開く (マウスで回転・拡大できる)
+viewer.add(robot)
+viewer.show()
+
+robot.angle_vector(ri.angle_vector())   # モデルを今のロボットの姿勢に
+viewer.redraw()                         # モデルを変えたら redraw() で描き直す
+```
+
+`viewer.redraw()` を呼ばないと画面は変わらない．`viewer.save_image('pose.png')` で今の画面を保存できる．
+
 ## 台車を動かす
 
 ```{code-block} python
@@ -143,6 +182,13 @@ ri.go_velocity(0.0, 0.0, 1.0, duration=2.0)   # 2 秒その場で旋回
 ```
 
 `duration` を省くと 1 回だけ指令を送る．台車は 0.5 秒指令が来ないと自動で止まるので，ループの中で毎回呼ぶ．Jedy の正面は x+ である．
+
+:::{figure} fig/jedy-gazebo-base-square.gif
+:align: center
+:name: fig:jedy-gazebo-base-square
+
+Gazebo で `ri.tuck_arms()` のあと，前・左・後ろ・右に 0.12 m/s で 2.5 秒ずつ走り，その場で旋回する (実時間)
+:::
 
 ```{warning}
 実機の台車には動ける速さの範囲がある．前後・左右は 0.078〜0.156 m/s，その場旋回は 0.83〜1.66 rad/s 程度．
@@ -219,6 +265,20 @@ for _ in range(3):
 print(np.rad2deg(robot.angle_vector() - ri.angle_vector()))   # 送った姿勢と実際の姿勢の差 [deg]
 ```
 
+:::{figure} fig/jedy-fk-head.png
+:align: center
+:name: fig:jedy-fk-head
+
+左: `robot.reset_pose()`．右: さらに `head_joint0` を 20 度，`head_joint1` を 30 度にしたモデル (PyrenderViewer で `viewer.redraw()` すると同じ絵になる)
+:::
+
+:::{figure} fig/jedy-gazebo-nod.gif
+:align: center
+:name: fig:jedy-gazebo-nod
+
+上のプログラムを Gazebo で動かしたところ: 首を回して傾け，うなずきを 3 回 (実時間)
+:::
+
 ### 手先の位置で動かす (逆運動学)
 
 手先を目標の位置へ動かすための関節角度を求めるのが逆運動学 (IK) である．
@@ -232,8 +292,23 @@ ri.angle_vector(robot.angle_vector(), 3.0)
 ri.wait_interpolation()
 ```
 
+:::{figure} fig/jedy-ik-rarm.png
+:align: center
+:name: fig:jedy-ik-rarm
+
+右から見たモデル．赤い点が目標 (今の右手の 3 cm 前・3 cm 上)．左: IK の前 (`reset_pose`)，右: `inverse_kinematics` の後 (手先が目標に着く)
+:::
+
+:::{figure} fig/jedy-gazebo-ik-rarm.gif
+:align: center
+:name: fig:jedy-gazebo-ik-rarm
+
+Gazebo で右から見たところ: IK の解を 3 秒で送り，`reset_pose` に戻す (2 回，実時間)
+:::
+
 `ros2 run jedy_skrobot sample_ik` は同じことをして，実際に手先がどこに着いたかを表示する．
 IK が解けないときは `inverse_kinematics` が `False` を返し，モデルの関節は動かない．
+`ri.angle_vector()` で送る前に PyrenderViewer で解の姿勢を見ておくと，思わぬ姿勢 (腕が体に当たる，床に向かう) に気づける．
 
 ### 頭と腕を別々に動かす
 
