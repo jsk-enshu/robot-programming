@@ -33,6 +33,11 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r docs/requirements.txt
+          pip install cmarkgfm
+
+      - name: Lint Markdown
+        run: |
+          python md_lint.py check --format=github docs
 
       - name: Build Jupyter Book
         run: |

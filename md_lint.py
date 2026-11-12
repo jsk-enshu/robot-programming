@@ -38,6 +38,7 @@ class Issue:
     message: str
     fixable: bool = False
     col: int = 0
+    warning: bool = False
 
 
 @dataclass
@@ -254,6 +255,7 @@ def check_indented_prose(lines: Sequence[str], blocks: Sequence[Block]) -> List[
                     i + 1,
                     "INDENT-CODE",
                     "4スペース字下げされた日本語がコードブロック扱いになっています。",
+                    warning=True,
                 )
             )
     return issues
@@ -358,6 +360,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     files = collect_files(args.paths)
 
     total = 0
+    warnings = 0
     for path in files:
         text = path.read_text(encoding="utf-8")
         if args.mode == "fix":
@@ -367,27 +370,34 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 print("fixed {} ({} 箇所)".format(path, n))
             remaining = [i for i in analyse(new) if not i.fixable]
             for issue in remaining:
-                print("  要手動 {}:{}{}: [{}] {}".format(
+                print("  {} {}:{}{}: [{}] {}".format(
+                    "警告" if issue.warning else "要手動",
                     path, issue.line,
                     ":{}".format(issue.col) if issue.col else "",
                     issue.code, issue.message))
-            total += len(remaining)
+            total += sum(1 for i in remaining if not i.warning)
         else:
             for issue in analyse(text):
                 if args.format == "github":
-                    print("::error file={},line={},col={}::[{}] {}".format(
+                    print("::{} file={},line={},col={}::[{}] {}".format(
+                        "warning" if issue.warning else "error",
                         path, issue.line, issue.col or 1, issue.code, issue.message))
                 else:
                     where = "{}:{}".format(path, issue.line)
                     if issue.col:
                         where += ":{}".format(issue.col)
-                    print("{}: [{}] {}{}".format(
+                    print("{}: [{}] {}{}{}".format(
                         where, issue.code, issue.message,
-                        " (自動修正可)" if issue.fixable else ""))
-                total += 1
+                        " (自動修正可)" if issue.fixable else "",
+                        " (警告)" if issue.warning else ""))
+                if issue.warning:
+                    warnings += 1
+                else:
+                    total += 1
 
     if args.mode == "check":
-        print("\n{} ファイル中 {} 件".format(len(files), total), file=sys.stderr)
+        print("\n{} ファイル中 エラー {} 件 / 警告 {} 件".format(len(files), total, warnings),
+              file=sys.stderr)
     return 1 if total else 0
 
 
