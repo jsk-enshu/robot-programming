@@ -233,6 +233,14 @@ print([j.name for j in robot.joint_list])           # 使える関節名
 `servo_on()` はまず今の姿勢を送ってから ON にするので，ON にした瞬間に腕が飛ぶことはない．
 サーボを OFF にした関節は脱力し，重力で垂れる．OFF の間も関節角度は読めるので，手で動かした角度も `ri.angle_vector()` で分かる．
 
+:::{figure} fig/jedy-gazebo-servo-off.gif
+:align: center
+:name: fig:jedy-gazebo-servo-off
+
+Gazebo で両腕を `ri.servo_off(joints=...)` すると前腕が垂れ，`ri.servo_on(joints=...)` で垂れた姿勢のまま固まり，
+`reset_pose` を送ると戻る (実時間)
+:::
+
 ```{important}
 実機は**サーボ OFF で起動する** (シミュレータは ON で起動する)．同じプログラムを両方で動かせるよう，
 プログラムの最初で `ri.servo_on()` を呼んでおくとよい．
