@@ -1,5 +1,9 @@
-(day-whole-body)=
+(day-whole-body-2025)=
 # ロボットの全身行動プログラミング
+
+:::{note}
+このページは**2025年度**の演習資料（アーカイブ）である．最新年度の資料は{doc}`robot-programming-2-2026`を参照すること．
+:::
 
 ```{eval-rst}
 .. raw:: html
@@ -167,7 +171,7 @@ $ rqt_graph
 
 ```{figure} fig/servo-numbering.png
 ---
-name: fig:arm-servo-numbering
+name: fig:arm-servo-numbering-2025
 ---
 Jedyのサーボ順番割付
 ```
@@ -215,7 +219,7 @@ $ sudo usermod -a -G plugdev $USER
 
 ```{figure} fig/jedy-hardware-setup.png
 ---
-name: fig:jedy-hardware-setup
+name: fig:jedy-hardware-setup-2025
 ---
 Jedyのハードウェアセットアップ手順
 ```
@@ -238,7 +242,7 @@ Jedyのハードウェアセットアップ手順
 実機をバッテリーで動かしたい場合には，{doc}`tips/robot-operation`を参照して，バッテリーを充電し接続すること．
 :::
 
-(sec-id-check)=
+(sec-id-check-2025)=
 #### IDの確認
 
 `Jedy`のサーボ電源を入れ自分のPCにJedyと接続したUSBシリアルを繋いで以下のコマンドを実行し22個のサーボモータすべてが
@@ -316,7 +320,7 @@ Servo ID 14 (rarm_gripper_joint) not found
 ### <span style="color:green">チェックポイント: サーボモータのIDの確認</span>
 
 ```{exercise} サーボモータのIDの確認
-:label: ex_servo_id_check
+:label: ex_servo_id_check-2025
 
 [IDの確認](sec-id-check)にしたがってサーボモータのIDを確認せよ．全てのサーボモータが正しく認識されていることを確認すること．
 ```
@@ -441,7 +445,7 @@ irteusgl$ (do-until-key
 
 `(jedy-init)`は双腕移動台車ロボットの初期化関数である．`(jedy-init)`を実行すると`*jedy*`という大域変数にロボットモデルのインスタンスがセットされ，`EusLisp`の3Dビューア(``irtviewer``)に表示される [^1]. [IRTビューワの操作方法](tips/irtviewer.md)を参照のこと．同時に`*ri*`という大域変数に実ロボットインターフェースのインスタンスがセットされる．
 
-単体のサーボモータやセンサ等の簡単な操作対象の場合は簡単な`Topic`の`pub`/`sub`のみで操作してもシステムは複雑になりにくい．一方，ロボットは多くの関節・アクチュエータを持つ上に，カメラやボタンなどに限らず手先・足先の６軸力センサやロボット全身の傾きを計測するセンサなど多くのセンサを搭載しておりそれらのセンサや関節をリアルタイムに同期しながら制御する必要があるため`Topic`の`pub`/`sub`のみでは全体システムが複雑になってしまう．そこでそれらのセンサや関節との通信機能を一つにまとめた**ロボット操作用インターフェース`*ri*`**を用いることで`(send *ri* :＜メソッド名＞)`のようにシンプルな統一的な表現でロボット全体を操作できるようになる．
+単体のサーボモータやセンサ等の簡単な操作対象の場合は簡単な`Topic`の`pub`/`sub`のみで操作してもシステムは複雑になりにくい．一方，ロボットは多くの関節・アクチュエータを持つ上に，カメラやボタンなどに限らず手先・足先の６軸力センサやロボット全身の傾きを計測するセンサなど多くのセンサを搭載しておりそれらのセンサや関節をリアルタイムに同期しながら制御する必要があるため`Topic`の`pub`/`sub`のみでは全体システムが複雑になってしまう．そこでそれらのセンサや関節との通信機能を一つにまとめた**ロボット操作用インターフェース**`*ri*`を用いることで`(send *ri* :＜メソッド名＞)`のようにシンプルな統一的な表現でロボット全体を操作できるようになる．
 
 上記の`:atom-s3-button`は`Atom S3`のボタンのクリック値を`EusLisp`で取得するものでありクリックしながら実行することで値が変わることを確認しよう．
 また，`:go-velocity`は台車を駆動する速度指令を与えるメソッドである．
@@ -538,7 +542,7 @@ $ roseus checkpoint2-2-go-forward-imu.l
 ### <span style="color:green">チェックポイント: センサとロボットインターフェースを使った反応行動</span>
 
 ```{exercise} センサとロボットインターフェースを使った反応行動
-:label: ex_sensor_ri
+:label: ex_sensor_ri-2025
 
 `EusLisp`の関数やメソッドおよび実ロボットインターフェース`*ri*`などを駆使してロボットの反応行動を行うプログラムを書いてみよう．使うセンサは何でもよく(ボタン，`IMU`，エンコーダー値，．..etc)，反応行動も何でもよい(前進後退切り替わる，`IMU`の値に応じてぶつかると前進が停止する．..etc)がセンサ値・反応行動はそれぞれ２つ以上を組み合わせること．
 
@@ -612,7 +616,7 @@ ros1_bridgeが正常に起動すると，ROS 1のtopicとROS 2のtopicが自動�
 :::{figure} fig/euslisp-and-python.png
 :align: center
 :width: 700px
-:name: fig:euslisp-python-comparison
+:name: fig:euslisp-python-comparison-2025
 
 PythonとEusLispの構文対比
 :::
@@ -682,7 +686,7 @@ irteusgl$ (send *ri* :angle-vector (send *jedy* :angle-vector) 4000) ;; ここ�
 
 1.のロボットモデルの姿勢を決定する部分は，のように関節角度を直接指定したり[EusLispの逆運動学メソッド](tips/euslisp-ik.md)のように逆運動学を用いてもよい．
 
-(sec-krs-servo-onoff)=
+(sec-krs-servo-onoff-2025)=
 #### `KRS`サーボのON/OFF
 
 ##### EusLispからのサーボON/OFF
@@ -726,7 +730,7 @@ $ roslaunch jedy_ros1_bridge rqt.launch
 
 :::{figure} fig/servo-on-rqt-plugin.png
 :align: center
-:name: fig:servo-on-rqt-plugin
+:name: fig:servo-on-rqt-plugin-2025
 :width: 100%
 
 rqtプラグインによるロボット制御画面
@@ -751,7 +755,7 @@ rqtプラグインによるロボット制御画面
 
 他にも関節ゲインを変更するなど細かい設定や センサ値取得も可能である．興味のある人は， [近藤サーボの製品ページ](https://kondo-robot.com/product/03146)を参照してみてほしい．
 
-(sec-direct-joint-angle)=
+(sec-direct-joint-angle-2025)=
 #### 関節角度の直接指令による動作生成
 
 ```{code-block} lisp
@@ -805,7 +809,7 @@ irteusgl$ (send (send *jedy* :head_joint1) :joint-angle -90)
 )
 ```
 
-(sec-inverse-kinematics)=
+(sec-inverse-kinematics-2025)=
 #### 逆運動学による動作生成
 
 手先を目標物に伸ばすというように，手先作業空間での目標に基づいてロボットの運動を生成するには，逆運動学(IK)を用いる．
@@ -828,7 +832,7 @@ irteusgl$ (load "package://jedyeus/euslisp/keyboard-ik-sample.l")
 
 :::{figure} fig/keyboard_ik_sample.jpg
 :align: center
-:name: fig:keyboard_ik_sample
+:name: fig:keyboard_ik_sample-2025
 
 keyboard-ikによるロボットの姿勢の反映
 :::
@@ -845,7 +849,7 @@ irteusgl$ (send *jedy* :rarm :inverse-kinematics
 #### <span style="color:green">チェックポイント: アームロボットの制御</span>
 
 ```{exercise} アームロボットの制御
-:label: ex_arm_control
+:label: ex_arm_control-2025
 
 1.  [`KRS`サーボのON/OFF](sec-krs-servo-onoff)および[関節角度の直接指令による動作生成](sec-direct-joint-angle)にしたがって頭部以外のモータを動かしてみよ．また，`irtviewer`のロボットモデルと実際のロボットの姿勢が一致していることを確認せよ[^2]．操作方法は[IRTビューワ(irtviewer)の操作方法](tips/irtviewer.md)が役に立つ．
 
@@ -952,7 +956,7 @@ $ rqt_image_view
 
 :::{figure} fig/recognition_apriltag.jpg
 :align: center
-:name: fig:recognition_apriltag
+:name: fig:recognition_apriltag-2025
 
 `AprilTag`の認識結果
 :::
@@ -976,7 +980,7 @@ $ roseus sample-pickup.l
 :::{grid-item}
 :::{figure} fig/recognition_apriltag_with_ik.jpg
 :align: center
-:name: fig:recognition-apriltag-with-ik
+:name: fig:recognition-apriltag-with-ik-2025
 
 認識した位置にモデル上で手を伸ばしている様子
 :::
@@ -984,7 +988,7 @@ $ roseus sample-pickup.l
 :::{grid-item}
 :::{figure} fig/recognition_apriltag_with_ik_readl_robot.jpg
 :align: center
-:name: fig:recognition-apriltag-with-ik-real-robot
+:name: fig:recognition-apriltag-with-ik-real-robot-2025
 
 実機で手を伸ばしている様子
 :::
@@ -1146,7 +1150,7 @@ EusLispのロボットインターフェースでは，複数のコントロー�
 
 3. **デフォルト**（`:default-controller`）では全てのコントローラーが使用される
 
-4. **`controller-table`**というハッシュテーブルで管理されているため，拡張が容易である
+4. **`controller-table`というハッシュテーブル**で管理されているため，拡張が容易である
 
 この仕組みにより，ロボットの異なる部位を独立して制御でき，より複雑な動作パターンを実現できる．
 
@@ -1180,7 +1184,7 @@ JAXONのGazeboシミュレーションはROS 2パッケージ`cart_humanoid_ros2
 
 :::{figure} fig/my_model.jpg
 :align: center
-:name: fig:sample_avatar
+:name: fig:sample_avatar-2025
 
 JaxonのgazeboにSTLファイルを表示させている例
 :::

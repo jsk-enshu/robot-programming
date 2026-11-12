@@ -18,7 +18,7 @@ parts:
       title: Arduino IDEのシリアルモニタ
     - file: tips/arduino-builtin-led
       title: ArduinoのLED_BUILTIN
-  - caption: 冬学期演習 事前準備
+  - caption: 冬学期演習（2026年度） 事前準備
     numbered: false
     chapters:
     - file: winter-overview
@@ -28,18 +28,30 @@ parts:
   - caption: 1日目
     numbered: true
     chapters:
-    - file: robot-programming-3-2025
-      title: メカトロボットの製作とプログラミング
+    - file: robot-programming-1-2026
+      title: 双腕移動台車ロボットを用いた認識操作プログラミング
   - caption: 2日目
     numbered: true
     chapters:
-    - file: robot-programming-1-2025
-      title: 双腕移動台車ロボットを用いた認識操作プログラミング
+    - file: robot-programming-2-2026
+      title: ロボットの全身行動プログラミング
   - caption: 3日目
     numbered: true
     chapters:
-    - file: robot-programming-2-2025
-      title: ロボットの全身行動プログラミング
+    - file: robot-programming-3-2026
+      title: メカトロボットの製作とプログラミング
+  - caption: 過去年度の資料
+    numbered: true
+    chapters:
+    - file: winter-overview-2025
+      title: 2025年度 冬学期演習
+      sections:
+      - file: robot-programming-3-2025
+        title: 1日目 メカトロボットの製作とプログラミング
+      - file: robot-programming-1-2025
+        title: 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
+      - file: robot-programming-2-2025
+        title: 3日目 ロボットの全身行動プログラミング
   - caption: Tips・付録（共通）
     numbered: false
     chapters:

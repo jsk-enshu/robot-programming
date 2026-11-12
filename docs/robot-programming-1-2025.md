@@ -1,5 +1,9 @@
-(day-recognition-manipulation)=
+(day-recognition-manipulation-2025)=
 # 双腕移動台車ロボットを用いた認識操作プログラミング
+
+:::{note}
+このページは**2025年度**の演習資料（アーカイブ）である．最新年度の資料は{doc}`robot-programming-1-2026`を参照すること．
+:::
 
 ```{eval-rst}
 .. raw:: html
@@ -126,14 +130,14 @@ $ rqt_graph
 
 ```{figure} fig/jedy.png
 ---
-name: fig:jedy
+name: fig:jedy-2025
 ---
 双腕移動台車ロボットの外観
 ```
 
 ```{figure} fig/system-configuration-all.png
 ---
-name: fig:system-configuration-all
+name: fig:system-configuration-all-2025
 ---
 双腕移動台車ロボットシステム構成
 センサ・アクチュエータデバイスとソフトウェアモジュール群
@@ -164,7 +168,7 @@ name: fig:system-configuration-all
 #### ソフトウェアシステム
 
 ロボットの制御には`ROS`（Robot Operating System）を使用しセンサ・アクチュエータデバイスを効率的に管理する．
-{numref}`図．%s <fig:system-configuration-all>`に示すように，各デバイスはROSノードとして扱われ，
+{numref}`図．%s <fig:system-configuration-all-2025>`に示すように，各デバイスはROSノードとして扱われ，
 `topic`通信（破線）やデバイスへの直接アクセス（実線）によって制御が行われる．制御用のPC（遠隔PC）からの指令を受け，リアルタイムでロボットの挙動を操作できる．
 赤はアクチュエータ，青がセンサ，緑がロボットが知的に振る舞うためのソフトウェアのプロセス単位である．
 演習で登場するプロセス群は以降の演習で詳細にプログラムの起動方法や
@@ -186,7 +190,7 @@ name: fig:system-configuration-all
 
 ```{figure} fig/how_to_charge.png
 ---
-name: fig:ps3joy_battery_chargning
+name: fig:ps3joy_battery_chargning-2025
 ---
 充電方法
 ```
@@ -209,7 +213,7 @@ LEDが赤く点滅すれば充電中である．
 そこで，Caps LockキーをCtrlキーに変更することで，ホームポジションから指を大きく動かさずにCtrlキーを使用できるようになり，作業効率が大幅に向上する．
 
 ```{exercise} Caps LockをCtrlに変更
-:label: ex_caps_to_ctrl
+:label: ex_caps_to_ctrl-2025
 
 1.  以下のコマンドを実行してCaps LockをCtrlに変更せよ：
     ```{code-block} console
@@ -243,7 +247,7 @@ $ gsettings set org.gnome.desktop.input-sources xkb-options "[]"
 演習を開始する前に，最新のソフトウェアを取得し，必要なパッケージをインストールする必要がある．
 
 ```{exercise} ソフトウェアの更新
-:label: ex_software_update
+:label: ex_software_update-2025
 
 演習を開始する前に，以下の手順で最新のソフトウェアを取得し，必要なパッケージをインストールせよ．
 
@@ -286,7 +290,7 @@ $ gsettings set org.gnome.desktop.input-sources xkb-options "[]"
 ### <span style="color:green">チェックポイント2.5: 物品の準備</span>
 
 ```{exercise} 物品の準備
-:label: ex_item_prep
+:label: ex_item_prep-2025
 
 1.  `USB-PD`につないだマグネットコネクターで`Jedy`のRasberrypiのバッテリーを充電しLEDが点灯することを確認せよ
 
@@ -317,7 +321,7 @@ ROSの通信設定を行うことで異なるPC間で起動した`ros`ノード�
 
 :::{figure} fig/atoms3-ip-and-ros-domain-id.jpg
 :align: center
-:name: fig:atoms3-ip-and-ros-domain-id
+:name: fig:atoms3-ip-and-ros-domain-id-2025
 :width: 400px
 
 Atom S3ディスプレイに表示されるIPアドレスとROS_DOMAIN_ID
@@ -384,7 +388,7 @@ data: 1
 ### <span style="color:green">チェックポイント2.6: 実機との通信設定</span>
 
 ```{exercise} 実機との通信設定
-:label: ex_robot_communication
+:label: ex_robot_communication-2025
 
 1.  `Jedy`の背面の`Atom S3`ディスプレイで`ROS_DOMAIN_ID`を確認せよ
 2.  確認した`ROS_DOMAIN_ID`を自分のPCで設定せよ（`export ROS_DOMAIN_ID=<確認したID>`）
@@ -500,7 +504,7 @@ $ ros2 topic pub --once /atom_s3_additional_info std_msgs/msg/String "data: 'hel
 ### <span style="color:green">チェックポイント2.7: topicを使ったセンサ値の確認</span>
 
 ```{exercise} topicを使ったセンサ値の確認
-:label: ex_topic_sensor
+:label: ex_topic_sensor-2025
 
 1.  `topic echo`コマンドを使い，
     `Jedy`に何か働きかけるとその値が変わることを確認せよ． 例えば
@@ -574,7 +578,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 
 :::{figure} fig/virtual-atom-s3.jpg
 :align: center
-:name: fig:virtual-atom-s3
+:name: fig:virtual-atom-s3-2025
 :width: 500px
 
 Virtual Atom S3 Deviceの初期画面．`/atom_s3_additional_info`トピックからのメッセージを待機している状態．
@@ -606,7 +610,7 @@ $ ros2 topic pub --once /atom_s3_additional_info std_msgs/msg/String "data: 'Hel
 
 :::{figure} fig/virtual-atom-s3-hello-jedy.jpg
 :align: center
-:name: fig:virtual-atom-s3-hello-jedy
+:name: fig:virtual-atom-s3-hello-jedy-2025
 :width: 500px
 
 `/atom_s3_additional_info`トピックにメッセージを送信した結果．画面に「Hello Jedy」と表示されている．
@@ -736,7 +740,7 @@ $ ros2 action list
 
 :::{figure} fig/follow-joint-trajectory-ros1-bridge.png
 :align: center
-:name: fig:follow-joint-trajectory-ros1-bridge
+:name: fig:follow-joint-trajectory-ros1-bridge-2025
 
 ROS 1とROS 2の連携システム構成図．ROS 1のAction Client（EusLispなど）がros1_bridgeを介してROS 2のシミュレータ（GazeboやIsaac Simなど）やros2_controlと通信する．FollowJointTrajectoryActionのGoalとFeedback/Resultがros1_bridgeで変換される．
 :::
@@ -745,7 +749,7 @@ ROS 1とROS 2の連携システム構成図．ROS 1のAction Client（EusLispな
 
 ロボットPCと班員のPCを複数台使うことでそれぞれ個別に指令値を送ったりセンサ値を表示したりしながらロボットを動かすことができる．
 しかしロボットの動作自体は一人が送っている間は他の人が送ると動作が上書きされてしまうため，みんなで話ながらロボットを動かしていってほしい．
-**また，ロボットシステムの講義で学んだように`Jedy`は`rarm_controller`, `larm_controller`, `head_controller`という複数のコントローラーを持っているため別々のコントローラーを使って動かすことでその部位だけを動かすことができる．`**班のメンバーでそれぞれ右手だけ動かすや頭だけ動かすプログラムを同時に動かしてみることにも挑戦してみてほしい．
+**また，ロボットシステムの講義で学んだように`Jedy`は`rarm_controller`, `larm_controller`, `head_controller`という複数のコントローラーを持っているため別々のコントローラーを使って動かすことでその部位だけを動かすことができる**．班のメンバーでそれぞれ右手だけ動かすや頭だけ動かすプログラムを同時に動かしてみることにも挑戦してみてほしい．
 
 また，これ以降は実機とシミュレーション（`Gazebo`）の両方に対応している．
 班員で相談して以下のいずれかの方法で取り組むとよい．
@@ -835,7 +839,7 @@ $ ssh jedy@<ロボットPCのIPアドレス>
 
 ```{figure} fig/how_to_switch_on_jedy_servo.png
 ---
-name: fig:how_to_switch_on_jedy_servo_remote
+name: fig:how_to_switch_on_jedy_servo_remote-2025
 ---
 サーボ制御基板の電源ON方法
 ```
@@ -851,7 +855,7 @@ PCに接続すると，PCやバッテリーが破損する可能性がある．
 
 ```{figure} fig/how_to_charge_battery.png
 ---
-name: fig:how_to_charge_battery_remote
+name: fig:how_to_charge_battery_remote-2025
 ---
 サーボバッテリーの正しい充電方法（専用ACアダプタを使用）
 ```
@@ -901,7 +905,7 @@ log file: /home/jedy/.ros/log/56596c99-c427-11f0-9615-88a29e2b767a/relay_stamped
 
 </div>
 
-この状態でサーボ制御基板の電源を入れ少し待つと青いLEDがついてビープ音が鳴る．上記の表示がやみ，以下のように**RCB4 ROS Bridge initialization completed.**という表示が出れば接続できている．
+この状態でサーボ制御基板の電源を入れ少し待つと青いLEDがついてビープ音が鳴る．上記の表示がやみ，以下のように`RCB4 ROS Bridge initialization completed.`という表示が出れば接続できている．
 
 <div class="screen">
 
@@ -1112,7 +1116,7 @@ $ ros2 run ros1_bridge dynamic_bridge --bridge-all-topics
 ### <span style="color:green">チェックポイント2.8: PythonまたはEusLispからのtopic操作</span>
 
 ```{exercise} PythonまたはEusLispからのtopic操作
-:label: ex_python_euslisp
+:label: ex_python_euslisp-2025
 
 1.  ボタンのセンサ値の`topic`を`subscribe`し表示する`Python`もしくは`EusLisp`のプログラムを作成せよ
 
@@ -1299,14 +1303,14 @@ $ rqt --perspective-file enshu.perspective
 とすると`rqt`を利用した操縦GUIが起動する．
 `rqt`から台車の速度指令を送り実機が動くことを確認しよう．
 **ロボットが机から落ちたりしないようにを床において試すこと!**
-{numref}`図．%s <fig:rqt_window>`に`rqt`のウィンドウを示す．ウィンドウ左部の`Robot Steering`にて台車の速度指令を送る．
+{numref}`図．%s <fig:rqt_window-2025>`に`rqt`のウィンドウを示す．ウィンドウ左部の`Robot Steering`にて台車の速度指令を送る．
 上下のバーと左右のバーでそれぞれ前後方向と回転方向の指令を送る．
 
 :::{figure} fig/rqt_window.jpg
 :align: center
-:name: fig:rqt_window
+:name: fig:rqt_window-2025
 
-rqtのウィンドウ．**`Stamped`にチェックをするのを忘れないように．**これは`timestamp`が付与されている速度指令が送られる．
+rqtのウィンドウ．**`Stamped`にチェックをするのを忘れないように**．これは`timestamp`が付与されている速度指令が送られる．
 :::
 
 別のターミナルで
@@ -1354,7 +1358,7 @@ $ ros2 launch jedy_bringup keyboard_teleop.launch.py
 
 :::{figure} fig/keyboard-teleop.jpg
 :align: center
-:name: fig:keyboard-teleop
+:name: fig:keyboard-teleop-2025
 
 キーボードから速度指令を送っている様子
 :::
@@ -1370,7 +1374,7 @@ $ ros2 topic echo /mecanum_drive_controller/reference
 ### <span style="color:green">チェックポイント2.9: ロボットの遠隔操縦</span>
 
 ```{exercise} ロボットの遠隔操縦
-:label: ex_teleop
+:label: ex_teleop-2025
 
 1.  `keyboard_teleop`と`rqt`の両方でロボットを操縦している様子を見せよ．
 
@@ -1555,7 +1559,7 @@ $ ros2 run rqt_image_view rqt_image_view
 
 :::{figure} fig/sample_rqt_image_view.jpg
 :align: center
-:name: fig:sample_rqt_image_view
+:name: fig:sample_rqt_image_view-2025
 
 rqt_image_viewで画像を表示している例．画像は今回諸君が使用しているJedyを研究室の学生(2024年度)が組み立てている様子である．
 :::
@@ -1610,19 +1614,19 @@ $ ros2 launch jedy_bringup remote_camera.launch.py
 
 RvizではGUIインターフェースにより表示するデータを追加や削除をすることができる．
 そのためには，表示したいtopicの (1)型の選択，及び(2)名前の選択を行う．
-{numref}`図．%s <fig:add_rviz_topic>`の約左半分はDisplays欄と呼ばれるものでありその中に
+{numref}`図．%s <fig:add_rviz_topic-2025>`の約左半分はDisplays欄と呼ばれるものでありその中に
 topicの型が並びそれぞれチェックボックスがついている．
 例えば`Image`の行のチェックボックスにチェックをいれ，
 左の三角をクリックしてプルダウンメニューを開くと
 さらに色々と項目がでてくる．
 そのうち，topicとかいてある欄もプルダウンメニューになっており
 プルダウンメニューには今advertiseされているtopic名の一覧が表示される
-({numref}`図．%s <fig:add_rviz_topic>`の3). 例えば`/remote/color/image_rect_raw`を選ぶと画像が表示される．
+({numref}`図．%s <fig:add_rviz_topic-2025>`の3). 例えば`/remote/color/image_rect_raw`を選ぶと画像が表示される．
 
-Display欄の下側にAdd, Remove, Renameというボタンがついており ({numref}`図．%s <fig:add_rviz_topic>`の1)，
+Display欄の下側にAdd, Remove, Renameというボタンがついており ({numref}`図．%s <fig:add_rviz_topic-2025>`の1)，
 Addで新たに型・topicを追加することができる．
 Addボタンを押すとウィンドウがたちあがり
-ここから型・topic名を選択して新たに表示したいものを追加できる ({numref}`図．%s <fig:add_rviz_topic>`の2).
+ここから型・topic名を選択して新たに表示したいものを追加できる ({numref}`図．%s <fig:add_rviz_topic-2025>`の2).
 例えばAddボタンで起動するウィンドウからPointCloud2を選択すると
 Display欄の下の方に，PointCloud2が追加される．
 後は先ほど同様の手順で表示するtopicを選択する．
@@ -1631,7 +1635,7 @@ Display欄の下の方に，PointCloud2が追加される．
 
 :::{figure} fig/add_rviz_topic.jpg
 :align: center
-:name: fig:add_rviz_topic
+:name: fig:add_rviz_topic-2025
 
 Rvizのtopic追加方法
 :::
@@ -1877,7 +1881,7 @@ checkerboard盤面の3次元位置姿勢は2次元画像から計算すること
 ### <span style="color:green">チェックポイント2.10: checkerboardの認識</span>
 
 ```{exercise} checkerboardの認識
-:label: ex_checkerboard
+:label: ex_checkerboard-2025
 
 Jedyを操縦しカメラ視界内にcheckerboardを入れ，正しく認識させよ．
 シミュレーションの場合はのいずれかの方法で台車を動かすとよい．
@@ -1897,7 +1901,7 @@ $ roseus display-checkerboard.l
 
 :::{figure} fig/checkerboard-detection.jpg
 :align: center
-:name: fig:checkerboard-detector-on-gazebo
+:name: fig:checkerboard-detector-on-gazebo-2025
 
 EusLispによるCheckerboard表示
 :::
@@ -1912,7 +1916,7 @@ EusLispで3Dモデルを表示するirtviewerは，マウス操作で視点を�
 :::{figure} fig/jedy-on-irtviewer.jpg
 :align: center
 :width: 400px
-:name: fig:jedy-on-irtviewer
+:name: fig:jedy-on-irtviewer-2025
 
 IRTビューワに表示されたJEDYロボットの3Dモデル
 :::
@@ -2075,11 +2079,11 @@ Optional Arguments:
 ここで行っている処理は，点群を色に応じてフィルタリングしてユークリッド距離でクラスタリングし
 抽出結果のBoundingBox (外接する直方体)のtopicを出すというものである．
 `hsi_color_filter.launch`をみるとROSノードとその間で通信されるtopicについて調べることができる．
-代表的なtopicの流れは{numref}`図．%s <fig:rqt-graph-hsi-color>`である
+代表的なtopicの流れは{numref}`図．%s <fig:rqt-graph-hsi-color-2025>`である
 
 :::{figure} fig/rqt-graph-hsi-color.png
 :align: center
-:name: fig:rqt-graph-hsi-color
+:name: fig:rqt-graph-hsi-color-2025
 
 rqt_graphによるhsi_filterノード
 :::
@@ -2126,7 +2130,7 @@ RVizを起動し（既に別で起動していればそれを利用して良い�
 :::{grid-item}
 :::{figure} fig/rviz_before_red_filters.jpg
 :align: center
-:name: fig:rviz-before-red-filters
+:name: fig:rviz-before-red-filters-2025
 
 赤色抽出前
 :::
@@ -2134,7 +2138,7 @@ RVizを起動し（既に別で起動していればそれを利用して良い�
 :::{grid-item}
 :::{figure} fig/rviz_after_red_filters.jpg
 :align: center
-:name: fig:rviz-after-red-filteres
+:name: fig:rviz-after-red-filteres-2025
 
 赤色抽出後
 :::
@@ -2162,7 +2166,7 @@ GUIの左側に，reconfigureに対応したROSノードの候補が表示され
 
 :::{figure} fig/rqt_reconfigure_hsi_filter-all.jpg
 :align: center
-:name: fig:dynamic_reconfigure_red_filters
+:name: fig:dynamic_reconfigure_red_filters-2025
 
 rqt_reconfigureによるhsi_filterノードのパラメータ変更
 :::
@@ -2175,7 +2179,7 @@ rqt_reconfigureによるhsi_filterノードのパラメータ変更
 ### <span style="color:green">チェックポイント2.11: 色抽出とクラスタリング</span>
 
 ```{exercise} 色抽出とクラスタリング
-:label: ex_color_cluster
+:label: ex_color_cluster-2025
 
 色抽出プログラムhsi_color_filter.launchを起動し
 rqt_reconfigureを利用して色抽出パラメータを調節し
@@ -2189,14 +2193,14 @@ rqt_reconfigureを利用して色抽出パラメータを調節し
 
 :::{figure} fig/hsi_before.jpg
 :align: center
-:name: fig:hsi_before
+:name: fig:hsi_before-2025
 
 rqt_reconfigureによるhsi_filterノードのパラメータ変更前
 :::
 
 :::{figure} fig/hsi_after.jpg
 :align: center
-:name: fig:hsi_after
+:name: fig:hsi_after-2025
 
 rqt_reconfigureによるhsi_filterノードのパラメータ変更後
 :::
@@ -2398,7 +2402,7 @@ RVizの左下にある「Add」ボタンをクリックし，「By display type�
 
 :::{figure} fig/rviz-TextOverlay.png
 :align: center
-:name: fig:rviz-textoverlay-plugin
+:name: fig:rviz-textoverlay-plugin-2025
 
 RVizでTextOverlayプラグインを追加
 :::
@@ -2411,7 +2415,7 @@ RVizでTextOverlayプラグインを追加
 
 :::{figure} fig/rviz-visualize-robocrew-status.png
 :align: center
-:name: fig:rviz-robocrew-status
+:name: fig:rviz-robocrew-status-2025
 
 RVizでRoboCrewのステータス表示
 :::

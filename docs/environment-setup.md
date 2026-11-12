@@ -90,6 +90,6 @@ $ catkin --version
 
 環境構築が完了したら，以下の演習に進む：
 
-- {doc}`robot-programming-3-2025`
-- {doc}`robot-programming-1-2025`
-- {doc}`robot-programming-2-2025`
+- {doc}`robot-programming-1-2026`
+- {doc}`robot-programming-2-2026`
+- {doc}`robot-programming-3-2026`
