@@ -72,6 +72,20 @@ $ colcon build --symlink-install
 uv が入っていないか，PATH に無い．上の手順の `curl -LsSf https://astral.sh/uv/install.sh | sh` と
 `source $HOME/.local/bin/env` を実行してから，もう一度 `colcon build` する．
 
+### `apt upgrade` の後のビルドが `No rule to make target '/opt/ros/jazzy/lib/...'` で止まる
+
+```{code-block} console
+gmake[2]: *** No rule to make target '/opt/ros/jazzy/lib/libfastcdr.so.2.2.5', needed by '...'.  Stop.
+```
+
+前のビルドが覚えている ROS 2 のライブラリが，`apt upgrade` で新しい版に置き換わった．ビルドの途中結果を消して，ビルドし直す．
+
+```{code-block} console
+$ cd ~/ros2_ws/
+$ rm -rf build install log
+$ colcon build --symlink-install
+```
+
 ### より詳細なトラブルシューティング
 
 その他の問題については，[環境構築トラブルシューティング](tips/troubleshooting.md)を参照する．
