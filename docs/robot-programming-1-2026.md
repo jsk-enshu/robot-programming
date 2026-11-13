@@ -247,14 +247,41 @@ Gazebo で `ri.tuck_arms()` のあと，前・左・後ろ・右に 0.12 m/s で
 $ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true
 ```
 
-`stamped:=true` を忘れると時刻なしの `Twist` が送られ，台車は受け取らない．実機では PS4 のジョイスティックでも操縦できる．
+`stamped:=true` を忘れると時刻なしの `Twist` が送られ，台車は受け取らない．
+起動した端末にキーを打つ (端末を選んでおく)．キーを押すたびに 1 回指令が送られ，台車は 0.5 秒指令が来ないと止まるので，動かし続けるにはキーを押し続ける．
+
+| キー | 動き |
+| --- | --- |
+| `i` / `,` | 前進 / 後退 |
+| `j` / `l` | その場で左 / 右に旋回 |
+| `u` `o` `m` `.` | 曲がりながら前進・後退 |
+| `J` / `L` (Shift) | 左 / 右へ横に動く (メカナムホイール) |
+| `k` | 止まる |
+| `z` / `q` | 速さ (前後・左右と旋回の両方) を 1 割下げる / 上げる |
+| `x` / `w` | 前後・左右の速さだけを 1 割下げる / 上げる |
+| Ctrl-C | 終了 |
+
+速さの既定は前後・左右 0.5 m/s，旋回 1.0 rad/s で，前後・左右は実機の上限 (0.156 m/s 程度) を超える．
+`z` を押すたびに速さが 1 割ずつ下がる (今の速さは画面の `currently: speed ... turn ...` に出る)．
+ただし `z` は旋回も遅くし，実機は 0.83 rad/s 程度より遅い旋回では止まるので，`z` を 2 回以上押すと旋回しなくなる．
+前後・左右だけを下げるなら `x` を使うか，最初から `-p speed:=0.12` を付けて起動する．
+`ros2 launch jedy_bringup keyboard_teleop.launch.py` は同じものを新しい端末の窓で開く．実機では PS4 のジョイスティックでも操縦できる．
+
+:::{figure} fig/jedy-ki-teleop.gif
+:align: center
+:name: fig:jedy-ki-teleop
+
+学科 PC の Gazebo で `teleop_twist_keyboard` を動かしたところ．`x` を 3 回押して前後・左右の速さを 0.36 m/s に下げ，
+`i` で前進，`J` / `L` で左右へ横に，`j` / `l` でその場旋回 (左: Gazebo，右: 端末．一番下は押したキーで，録画のために足した表示．2 倍速)
+:::
 
 ### <span style="color:green">チェックポイント: 台車</span>
 
 ```{exercise} 台車を動かす
 :label: ex_base_2026
 
-`ri.go_velocity()` で，1 辺 30 cm 程度の四角形を描くように台車を動かしてみよう (前・左・後ろ・右，または前進と 90 度旋回の繰り返し)．
+1. `ri.go_velocity()` で，1 辺 30 cm 程度の四角形を描くように台車を動かしてみよう (前・左・後ろ・右，または前進と 90 度旋回の繰り返し)．
+2. `teleop_twist_keyboard` で，`z` や `x` で速さを下げてから，`i` (前進)・`J` / `L` (横)・`j` / `l` (旋回) で同じ四角形を描いてみよう．
 ```
 
 ## 腕と首を動かす
@@ -373,6 +400,35 @@ Gazebo で右から見たところ: IK の解を 3 秒で送り，`reset_pose` �
 IK が解けないときは `inverse_kinematics` が `False` を返し，モデルの関節は動かない．
 `ri.angle_vector()` で送る前に PyrenderViewer で解の姿勢を見ておくと，思わぬ姿勢 (腕が体に当たる，床に向かう) に気づける．
 
+### キーボードで手先を動かす
+
+```{code-block} console
+$ ros2 run jedy_skrobot keyboard_ik
+```
+
+キーを押すたびに目標 (ビューワの赤い球) を 2 cm 動かし，逆運動学で手先を目標へ合わせ，解けたときだけその姿勢を 1 秒でロボットへ送る．
+キーは起動した端末に打つ (ビューワの窓ではない)．`--model-only` を付けるとロボットにつながず，ビューワのモデルだけが動く．
+
+| キー | 動き |
+| --- | --- |
+| `f` / `b` | 前 / 後ろ (x) |
+| `h` / `l` | 左 / 右 (y) |
+| `k` / `j` | 上 / 下 (z) |
+| `s` | 動かす腕を切り替える (右腕 ↔ 左腕) |
+| `e` | 頭が目標を見るモードに切り替える (もう一度 `e` で腕に戻る) |
+| `r` | 初期姿勢 (`reset_pose`) に戻る |
+| `q` | 終了 |
+
+IK が解けないキーを押すと `IK failed` と出て，目標もロボットも動かない (別の向きのキーを押す)．
+
+:::{figure} fig/jedy-ki-keyboard-ik.gif
+:align: center
+:name: fig:jedy-ki-keyboard-ik
+
+学科 PC の Gazebo で `keyboard_ik` を動かしたところ．`f` `k` で右手を前・上へ，`s` で左手に切り替えて同じく動かし，`r` で初期姿勢に戻す
+(左: Gazebo，右上: PyrenderViewer (赤い球が目標)，右下: 端末．一番下は押したキーで，録画のために足した表示．2 倍速)
+:::
+
 ### 頭と腕を別々に動かす
 
 Jedy の関節は 5 つのコントローラ (`head_controller`, `right_arm_controller`, `left_arm_controller`,
@@ -394,6 +450,7 @@ ri.wait_interpolation('right_arm_controller')   # 4 秒後
 
 1. 関節角度を指定して，首と両腕を動かしてみよう．`ri.angle_vector()` で読んだ姿勢と送った姿勢が一致していることを確かめよ．
 2. 逆運動学で右手を目標の位置へ動かしてみよう．
+3. `ros2 run jedy_skrobot keyboard_ik` で右手を前・上へ動かし，`s` で左手に切り替えて動かし，`r` で初期姿勢に戻してみよう．
 ```
 
 ## カメラで見る

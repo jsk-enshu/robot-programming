@@ -24,6 +24,7 @@ ament_uv_install_python_scripts(
     scripts/enshu/sample_reset_pose.py
     scripts/enshu/sample_joint.py
     scripts/enshu/sample_ik.py
+    scripts/enshu/keyboard_ik.py
     scripts/enshu/sample_servo.py
     scripts/enshu/sample_controllers.py
     scripts/enshu/checkerboard_pose.py
