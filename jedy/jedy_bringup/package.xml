@@ -85,6 +85,10 @@
   <exec_depend>nav_msgs</exec_depend>
   <!-- jedy_joy.launch.py: the gamepad driver -->
   <exec_depend>joy_linux</exec_depend>
+  <!-- keyboard_teleop.launch.py and day 1's `ros2 run teleop_twist_keyboard`:
+       otherwise only ros-jazzy-desktop brings it, which rosdep does not
+       guarantee. -->
+  <exec_depend>teleop_twist_keyboard</exec_depend>
 
   <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>python3-pytest</test_depend>
