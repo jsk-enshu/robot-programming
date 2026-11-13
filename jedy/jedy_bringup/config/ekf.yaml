@@ -1,0 +1,99 @@
+### ekf config file ###
+ekf_filter_node:
+  ros__parameters:
+    # The frequency, in Hz, at which the filter will output a position estimate.
+    frequency: 30.0
+
+    # The period, in seconds, after which we consider a sensor to have timed out.
+    sensor_timeout: 0.1
+
+    # ekf_localization_node and ukf_localization_node both use a 3D omnidirectional motion model.
+    # If this parameter is set to true, no 3D information will be used in your state estimate.
+    two_d_mode: true
+
+    # Whether to publish the transform from the world_frame to the base_link_frame.
+    publish_tf: true
+
+    # Debug settings - set to true to see detailed output
+    print_diagnostics: true
+
+    # Smooth Lagged Data - improves accuracy for delayed sensor data
+    smooth_lagged_data: true
+
+    # REP-105 (http://www.ros.org/reps/rep-0105.html) specifies four principal coordinate frames:
+    # map, odom, base_link, and base_footprint. The filter uses this to define the transform it broadcasts.
+    # Using base_link as the standard robot frame (x-axis points forward)
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: odom
+
+    # Odometry data from mecanum_drive_controller
+    # Use position (x, y), yaw, and velocities (vx, vy, vyaw)
+    # Yaw must be included because odom positions are in odom frame
+    odom0: /mecanum_drive_controller/odometry
+    odom0_config: [true,  true,  false,   # x, y, z position
+                   false, false, true,    # roll, pitch, yaw orientation (yaw ENABLED)
+                   true,  true,  false,   # vx, vy, vz velocity
+                   false, false, true,    # vroll, vpitch, vyaw (vyaw ENABLED)
+                   false, false, false]   # ax, ay, az acceleration
+    odom0_queue_size: 10
+    odom0_differential: false
+    odom0_relative: false
+    # Reject measurements with large covariance to filter out noise
+    odom0_pose_rejection_threshold: 5.0
+    odom0_twist_rejection_threshold: 1.0
+
+    # IMU data
+    # Use angular velocity only - IMU helps correct rotation drift
+    # Use differential mode to complement odometry yaw (not replace it)
+    imu0: /imu
+    imu0_config: [false, false, false,    # x, y, z position
+                  false, false, false,    # roll, pitch, yaw orientation (yaw DISABLED)
+                  false, false, false,    # vx, vy, vz velocity
+                  false, false, true,     # vroll, vpitch, vyaw (vyaw enabled for corrections)
+                  false, false, false]    # ax, ay, az acceleration (disabled)
+    imu0_queue_size: 10
+    imu0_differential: true   # Use IMU as differential correction to odom
+    imu0_relative: true       # Use relative changes from IMU
+    imu0_remove_gravitational_acceleration: true
+    # Reject measurements with large covariance
+    imu0_pose_rejection_threshold: 5.0
+    imu0_twist_rejection_threshold: 1.0
+    imu0_linear_acceleration_rejection_threshold: 1.0
+
+    # Process noise covariance matrix
+    # Lower values = trust sensor data more, reduce drift when stationary
+    # Yaw (index 5) is reduced to trust IMU orientation more
+    process_noise_covariance: [0.05, 0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.05,   0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.06,   0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.03,   0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.03,   0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.01,   0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.001,   0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.001,   0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.005,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.001,  0.0,    0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.001,  0.0,    0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0005, 0.0,    0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.001,  0.0,    0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.001,  0.0,
+                               0.0,  0.0,    0.0,    0.0,    0.0,    0.0,    0.0,     0.0,     0.0,    0.0,    0.0,    0.0,    0.0,    0.0,    0.001]
+
+    # Initial state covariance matrix
+    initial_estimate_covariance: [1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,  0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9, 0.0,
+                                  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  1e-9]
