@@ -340,6 +340,18 @@ def generate_launch_description():
                 # threshold). Widening both would have bought quiet by removing
                 # the alarm worth having.
                 "--diag-loop-spike-error-ratio", "4.0",
+                # The read-latency lines, from this board at 50 Hz rather
+                # than the 0.5 / 0.9 defaults. One cycle reads the 22 servo
+                # records in five 126-byte requests, and that takes what it
+                # takes: read latency p95 15.2-17.5 ms (median 16.2) over 117
+                # one-second windows, and never past 18 ms in a one-hour run
+                # with the head moving (2026-11-14). At the default 0.5 the
+                # panel was yellow for every one of the 3567 seconds of that
+                # hour while the loop held its 20.0 ms. 0.95 (19 ms) still
+                # trips before a read eats the whole period; 1.0 (20 ms) is
+                # the point where it does.
+                "--diag-latency-warn-ratio", "0.95",
+                "--diag-latency-error-ratio", "1.0",
                 "--ros",
             ] + link_args,
         )
