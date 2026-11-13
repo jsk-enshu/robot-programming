@@ -37,9 +37,25 @@
 | 案内ロボット: 人が来たらあいさつし，「いいね」をされたらお辞儀する | 認識・声・首 | `ri.wait_until_sees('人')`, `ri.gesture`, `ri.say` |
 | 人について行くロボット | カメラ・台車・首 | `ri.what_do_you_see(['人'])`, `ri.go_velocity` |
 
-`jedy_vision` には，人を追う・人のまねをする・AprilTag の付いた立方体を持つ，などのデモがある．
-`ros2 run jedy_vision demos` で一覧が出る．作りたいものに近いデモの中身を読むとよい
-(`jedy/jedy_vision/scripts/`)．
+### すでにあるデモ
+
+1 日目に扱わなかったことも，動くデモがすでにある．作りたいものに近いデモを動かして，中身を読むとよい．
+`ros2 run jedy_vision demos` で一覧と起動方法が出る (中身は `jedy/jedy_vision/scripts/` と `jedy/jedy_skrobot/scripts/enshu/`)．
+Gazebo では `jedy_gazebo.launch.py demo:=true person:=true camera:=d405` がこれらのデモの舞台になる．
+
+| したいこと | 起動するもの | 中身 (1 日目に出てこない話題) |
+| --- | --- | --- |
+| 物を探して近づき，指さす | `ros2 run jedy_vision find_object cup` | 見回して探す，床との交点で距離を推定する |
+| 手で物に触る | `ros2 run jedy_vision touch_tag` | カメラ座標からロボット座標へ，逆運動学，手前で一度止まる経由点 |
+| 物をつかんで持ち上げる | `ros2 run jedy_vision grasp_tag` (先に `approach_tag --standoff 0.17`) | 複数のタグから物の姿勢を求める，姿勢付きの逆運動学，つかめたかの確認 |
+| 首で人を追う | `ros2 run jedy_vision look_at_person` | 首のコントローラだけに指令を送る |
+| 人について行く | `ros2 run jedy_vision follow_person` | 見え方で台車を動かすフィードバック |
+| 人の腕のまねをする | `ros2 run jedy_vision mimic_arms` | 姿勢推定の結果から逆運動学で腕の姿勢を作る |
+| 手を挙げた人に手を振り返す | `ros2 run jedy_vision wave_back` | 姿勢から合図を判定し，動作を作る |
+| 声でデモを切り替える | `ros2 run jedy_vision voice_demo` | 音声認識の結果で行動を選ぶ |
+| 色の付いた物の 3 次元の位置 | `ros2 run jedy_skrobot color_clusters` | 色で画素を選び，深度画像で 3 次元に戻す |
+| チェッカーボードの位置と向き | `ros2 run jedy_skrobot checkerboard_pose` | 既知の模様から姿勢を求める (PnP) |
+| 傾いたら止まる | `ros2 run jedy_skrobot checkpoint_go_forward_imu` | IMU (Gazebo のみ．実機の RCB-4mini には無い) |
 
 ## 計画を書く
 
