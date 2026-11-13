@@ -21,7 +21,6 @@
   <exec_depend>room13bc_description</exec_depend>
   <exec_depend>jedy_odometry</exec_depend>
   <exec_depend>jedy_teleop</exec_depend>
-  <exec_depend>jedy_safety</exec_depend>
   <!-- programming it: robot, ri = connect() -->
   <exec_depend>jedy_skrobot</exec_depend>
   <!-- the camera: recognition nodes and demos -->

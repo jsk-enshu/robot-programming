@@ -5,8 +5,7 @@ find_package(ament_cmake REQUIRED)
 
 # A plain importable package, not a virtualenv of its own: whatever interpreter
 # consumes it is the one already running the rest of the stack, and a venv here
-# would install it somewhere that interpreter cannot see. Same reasoning as
-# jedy_safety.
+# would install it somewhere that interpreter cannot see.
 install(
   DIRECTORY jedy_odometry
   DESTINATION share/${PROJECT_NAME}

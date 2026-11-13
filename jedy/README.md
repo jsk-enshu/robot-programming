@@ -45,8 +45,7 @@ packages under `ros/`), depended on and never modified from here.
 | --- | --- |
 | `jedy_description` | URDF, meshes and the servo map. No code, no ros2_control. |
 | `jedy_bringup` | The `<ros2_control>` xacro, controller + Kondo bus configs, launch files, RViz layout. Depends on actuo. |
-| `jedy_sim` | Gazebo plugins (servo OFF, mimic joints), the simulated servo switch and motor sounds, and a fake servicer for exercising the pipeline. |
-| `jedy_safety` | Self-collision filter, plugged into actuo's real servicer. |
+| `jedy_sim` | Gazebo plugins (servo OFF, mimic joints), the simulated servo switch and motor sounds. |
 | `jedy_odometry` | Wheel odometry. An ESTIMATE, which is why it is not in actuo. |
 | `jedy_teleop` | PS4 pad: the base, the head, torque on and off, go-home. |
 | `jedy_skrobot` | `connect()` → `robot, ri`: the scikit-robot model and robot interface the exercises program against. |
@@ -161,9 +160,7 @@ Everything, from nothing running, is the `Starting it` section above. The pieces
 underneath, for when one of them needs to be run on its own:
 
 ```bash
-# The servicer. Talks to the board; owns torque. Add
-#   --command-filter jedy_safety.collision_filter:build
-# for the self-collision gate.
+# The servicer. Talks to the board; owns torque.
 ros2 run actuo_ros actuo_bus_node --real \
     --config "$(ros2 pkg prefix jedy_bringup)/share/jedy_bringup/config/jedy_fullbody_rcb4.yaml" \
     --shm-name jedy_fullbody --rate 100 --timeout 90
