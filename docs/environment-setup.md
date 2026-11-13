@@ -23,20 +23,22 @@ $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
-$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision voicevox ros_speech_recognition
+$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
 ```
 
 - `sudo apt upgrade` を省くと，入っている ROS 2 が古いままになる．`rosdep install` は足りないパッケージを入れるだけで，入っているものは新しくしない．
   古い ROS 2 Jazzy では `speech_recognition_msgs` のビルドが `Unknown CMake command "rosidl_auto_generate_interfaces"` で止まる．
-- `--packages-up-to` の後に並べた，演習に使うパッケージ (ロボットとシミュレータ，`robot, ri`，カメラの認識，音声合成と音声認識) とそれが使うものだけをビルドする．
+- `--packages-up-to` の後に並べた，演習に使うパッケージ (ロボットとシミュレータ，`robot, ri`，カメラの認識，音声認識) とそれが使うものだけをビルドする．
   ワークスペースには演習で使わないパッケージ (jsk_3rdparty の他のパッケージ，メカトロボットなど) も入っているが，それらはビルドしない．
+- 音声合成 (VOICEVOX) は，エンジン (約 1.3 GB) のダウンロードに時間がかかるので，ここではビルドしない．
+  ロボットに声でしゃべらせるときに，{doc}`robot-programming-1-2026` の「声でしゃべる・聞く」の手順でビルドする．
 - `--skip-keys` の 3 つは，本演習で使わないパッケージ (`mechatrobot_ros2`，`jsk_data`) の依存で，rosdep では入らない．
   付けないと `rosdep install` が最後に `ERROR` を出すが，演習には影響しない．
 
 ```{important}
 **初回のビルドは時間がかかるので，演習の前に済ませておくこと．**
 Python のパッケージ (scikit-robot，カメラの認識に使う torch・YOLOE・MediaPipe など) を uv で仮想環境に入れ，
-音声合成のエンジン (約 1.3 GB) と認識のモデルをダウンロードする．
+認識のモデルをダウンロードする．
 カメラの認識の `jedy_vision` だけで 15 分ほどかかった (ノート PC，ダウンロード済みのものを除く)．
 ```
 
@@ -87,7 +89,7 @@ $ vcs pull
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
-$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision voicevox ros_speech_recognition
+$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
 ```
 
 ## トラブルシューティング
@@ -108,8 +110,10 @@ gmake[2]: *** No rule to make target '/opt/ros/jazzy/lib/libfastcdr.so.2.2.5', n
 ```{code-block} console
 $ cd ~/ros2_ws/
 $ rm -rf build install log
-$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision voicevox ros_speech_recognition
+$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
 ```
+
+VOICEVOX をビルドしてあった人は，`install` を消すと VOICEVOX も消えるので，使うときにもう一度ビルドする ({doc}`robot-programming-1-2026` の「声でしゃべる・聞く」)．
 
 ### より詳細なトラブルシューティング
 
