@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>jedy_enshu</name>
+  <version>0.0.1</version>
+  <description>
+    Everything the 2026 Jedy exercise uses, and nothing else:
+    colcon build --packages-up-to jedy_enshu builds only these and what
+    they need, not the rest of jsk_3rdparty / jsk_common or the other
+    robots in robot-programming.
+  </description>
+  <maintainer email="ab.ioryz@gmail.com">Iori Yanokura</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- the robot, real and in Gazebo -->
+  <exec_depend>jedy_bringup</exec_depend>
+  <exec_depend>jedy_description</exec_depend>
+  <exec_depend>jedy_sim</exec_depend>
+  <exec_depend>room13bc_description</exec_depend>
+  <exec_depend>jedy_odometry</exec_depend>
+  <exec_depend>jedy_teleop</exec_depend>
+  <exec_depend>jedy_safety</exec_depend>
+  <!-- programming it: robot, ri = connect() -->
+  <exec_depend>jedy_skrobot</exec_depend>
+  <!-- the camera: recognition nodes and demos -->
+  <exec_depend>jedy_vision</exec_depend>
+  <exec_depend>jedy_vision_msgs</exec_depend>
+  <!-- the voice: ri.say (VOICEVOX), ri.listen (speech recognition), and
+       the offline speech demo -->
+  <exec_depend>voicevox</exec_depend>
+  <exec_depend>ros_speech_recognition</exec_depend>
+  <exec_depend>jedy_speech</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

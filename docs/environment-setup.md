@@ -24,12 +24,14 @@ $ echo "yaml file://$HOME/ros2_ws/src/robot-programming/jedy/rosdep.yaml" | sudo
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
-$ colcon build --symlink-install
+$ colcon build --symlink-install --packages-up-to jedy_enshu
 $ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc   # ROS 2 の通信を自分の PC の中だけにする
 ```
 
 - `sudo apt upgrade` を省くと，入っている ROS 2 が古いままになる．`rosdep install` は足りないパッケージを入れるだけで，入っているものは新しくしない．
   古い ROS 2 Jazzy では `speech_recognition_msgs` のビルドが `Unknown CMake command "rosidl_auto_generate_interfaces"` で止まる．
+- `--packages-up-to jedy_enshu` で，演習に使うパッケージ (`jedy/jedy_enshu/package.xml` に並べてある) とそれが使うものだけをビルドする．
+  ワークスペースには演習で使わないパッケージ (jsk_3rdparty の他のパッケージ，メカトロボットなど) も入っているが，それらはビルドしない．
 - `50-jedy.list` は，ROS の rosdep の一覧に無い依存 (発話の吹き出しの日本語フォント `fonts-noto-cjk`) の定義を rosdep に教える (1 回だけ)．
 - `--skip-keys` の 3 つは，本演習で使わないパッケージ (`mechatrobot_ros2`，`jsk_data`) の依存で，rosdep では入らない．
   付けないと `rosdep install` が最後に `ERROR` を出すが，演習には影響しない．
@@ -62,7 +64,7 @@ $ vcs pull
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
-$ colcon build --symlink-install
+$ colcon build --symlink-install --packages-up-to jedy_enshu
 ```
 
 ## トラブルシューティング
@@ -83,7 +85,7 @@ gmake[2]: *** No rule to make target '/opt/ros/jazzy/lib/libfastcdr.so.2.2.5', n
 ```{code-block} console
 $ cd ~/ros2_ws/
 $ rm -rf build install log
-$ colcon build --symlink-install
+$ colcon build --symlink-install --packages-up-to jedy_enshu
 ```
 
 ### より詳細なトラブルシューティング
