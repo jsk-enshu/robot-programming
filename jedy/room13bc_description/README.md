@@ -8,6 +8,11 @@ Ubuntu 24.04 ＋ ROS 2 Jazzy ＋ Gazebo Harmonic で使っている。`jedy_brin
 
 ## 中身
 
+`urdf/` と `meshes/` はこのディレクトリには無い．ビルド時に
+[scikit-robot-models](https://github.com/iory/scikit-robot-models) の `room13bc_description.tar.gz` を
+ダウンロードし（SHA256 で確認），インストール先の `share/room13bc_description/` に置く．
+scikit-robot（`skrobot.data.room13bc_urdfpath()`）や scikit-robot-web と同じものを使う．
+
 | | |
 | --- | --- |
 | `urdf/room13bc_scene.urdf` | 部屋＋机 48 台。机の天板は 1 台ずつ `desk_XX_n_hinge`（revolute、0 で平ら、−1.5708 で跳ね上げ） |
