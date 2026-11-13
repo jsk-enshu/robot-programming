@@ -53,6 +53,7 @@ Gazebo では `jedy_gazebo.launch.py demo:=true person:=true camera:=d405` が�
 | 人の腕のまねをする | `ros2 run jedy_vision mimic_arms` | 姿勢推定の結果から逆運動学で腕の姿勢を作る |
 | 手を挙げた人に手を振り返す | `ros2 run jedy_vision wave_back` | 姿勢から合図を判定し，動作を作る |
 | 声でデモを切り替える | `ros2 run jedy_vision voice_demo` | 音声認識の結果で行動を選ぶ |
+| 言葉で言った目標へ走る | `ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて` | カメラの画像を VLM に送って次の一手を決める ({ref}`day-recognition-manipulation` の「VLM に聞いて動く」) |
 | 色の付いた物の 3 次元の位置 | `ros2 run jedy_skrobot color_clusters` | 色で画素を選び，深度画像で 3 次元に戻す |
 | チェッカーボードの位置と向き | `ros2 run jedy_skrobot checkerboard_pose` | 既知の模様から姿勢を求める (PnP) |
 | 傾いたら止まる | `ros2 run jedy_skrobot checkpoint_go_forward_imu` | IMU (Gazebo のみ．実機の RCB-4mini には無い) |

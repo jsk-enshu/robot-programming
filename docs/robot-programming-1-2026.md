@@ -656,6 +656,80 @@ $ ros2 run jedy_vision detect_people --pose --face --hands --tilt -25 --save peo
 学科 PC で上の `detect_people` を実行したところ．中央が保存した `people.png` (2 倍速)
 :::
 
+### VLM に聞いて動く (言葉で目標を言う)
+
+2025 年度の「LLM を使用したロボットの自律操縦」の 2026 年度版である．
+カメラの画像と「赤い箱に近づいて」のような言葉の目標を **VLM** (画像の分かる大規模言語モデル．ここでは Google の Gemini) に送り，
+「前へ」「左へ回る」などの次の一手を答えてもらって，台車をその分だけ動かす．これを目標に着くまでくり返す．
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-vlm-nav-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 学科 PC の Gazebo (`box:=true`) で `ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて` を実行したところ (2 倍速)．
+左が Gazebo，右上が頭のカメラの画像，右下が端末．VLM (`vlm-er`) は左に 1 回回ってから前に 5 回進み，
+箱まで 0.31 m で `done` と答えて止まった (7 回の問い合わせで合計 $0.0172)．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
+$ ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて
+```
+
+1 回の手順は次のとおり．
+
+1. 台車を止め，止まってから撮った画像と距離画像を取る (`ri.image()`, `ri.depth_image()`)．
+2. 画像と目標と直前の数手を VLM に送り，`{"action": "left", "point": [520, 310], "reason": "赤い箱が左にあるので左に回る"}` の形で答えてもらう．
+   `action` は `forward` / `back` (前後に約 0.18 m)，`left` / `right` (その場で約 23 度回る)，
+   `strafe_left` / `strafe_right` (横に約 0.18 m)，`stop` (動かない)，`done` (目標に着いた) のどれか．
+   `point` は画像の中の目標の位置 ([縦, 横]，0〜1000)．
+3. `point` の所の距離を距離画像で測り，次の問い合わせで「直前の数手」と一緒に VLM に伝える．
+4. 答えの動きを `ri.go_velocity(..., duration=...)` で 1 回分だけして止まる．
+
+頭のカメラは床から 0.4 m ほどと低いので，物は近くに見えやすい．
+VLM は 1 m 先の箱でも「着いた」と答えたので，`done` は測った距離が `--near` (既定 0.45 m) 以下のときだけ受け付け，
+そうでなければ「まだ遠い」と表示して続ける (実機の D405 は 0.5 m より遠いと測れないので，近づくまで `done` にならない)．
+
+答えを待っている間はロボットは動かない．`done` か，`--max-steps` 回 (既定 30) か，Ctrl-C で終わり，どの場合も台車を止める．
+端末には 1 手ごとに `[何回目/最大] 動き 理由 (目標までの距離, 答えまでの秒数, その回の金額, 合計の金額)` が出る．
+`--save 保存先` で，VLM に送った画像を 1 手ずつ保存する．
+`--dry-run left,forward,done` は VLM に聞かず，書いた順に動く (キー無し・0 円で動きと表示を確かめる)．
+
+速さは実機の台車が動ける範囲の中にしてある (前後・左右 0.12 m/s，旋回 1.0 rad/s．範囲外を指定するとエラー)．
+1 回で動く量は `--step` (前後・左右の秒数) と `--turn-step` (旋回の秒数) で変えられる．
+`--model vlm-gemini` で普通の Gemini になる (既定の `vlm-er` はロボット向けの Gemini Robotics-ER)．
+`--say` を付けると理由を `ri.say()` でしゃべる (VOICEVOX を起動しておく)．
+
+目標は起動したあとでトピックからも送れる (2025 年度の `/robocrew/prompt` と同じ使い方)．
+目標を付けずに起動すると，`/vlm_nav/prompt` に目標が来るのを待つ．動いている途中で新しい目標を送ると，そちらに切り替わる．
+
+```{code-block} console
+$ ros2 run jedy_skrobot vlm_navigate
+$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '赤い箱に近づいて'}"
+$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '左を向いて机を探して'}"
+$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: 'Approach the red box'}"
+```
+
+今の状態は `/vlm_nav/status` (`std_msgs/String`) に出る (`ros2 topic echo /vlm_nav/status`)．
+RViz では，左下の Add から `rviz_2d_overlay_plugins` の `TextOverlay` を足し，Topic を `/vlm_nav/overlay` にすると左上に出る
+(`rviz_2d_overlay_msgs` が入っているときだけ出す)．
+
+**キーは AI TA と同じものを使う．** {doc}`tips/ai-ta` の `ta login` で受け取ったキー (`~/.config/ai-ta/env`) をそのまま読むので，
+API キーを取ったり `.env` を書いたりする必要はない．プログラムから使う VLM は `ta login` で**同意したキーだけ**で使える．
+「ta login で同意したキーだけで使えます」と断られたら，`ta login` をやり直して同意するか選ぶ．
+
+```{important}
+- **送った画像と目標は記録され，演習の教員・TA が見る．** 人の顔や個人の物が写らないように向けること．
+- 1 人あたり **1 秒に 1 回**まで，**1 日 $2** まで (VLM の分．AI TA の分とは別)，1 回に画像 2 枚まで．
+  1 回の金額は `vlm_navigate` の端末に出る．`ta usage` で今日の利用額が分かる．
+- 速すぎて断られたら (HTTP 429)，台車を止めて数秒待ってからやり直す．予算を使い切った，キーが使えない，などで断られたら，
+  台車を止めてサーバーの言葉をそのまま表示して終わる．
+```
+
+AI の答えは間違えることがあり，同じ画像でも毎回同じ答えとは限らない．実機で使うときは，1 回に動く量を小さくし，
+ぶつかりそうなときに止める人がそばにいること．中身は `jedy/jedy_skrobot/scripts/enshu/vlm_navigate.py` と
+`jedy/jedy_skrobot/jedy_skrobot/vlm.py` にある．
+
 ### <span style="color:green">チェックポイント: カメラ</span>
 
 ```{exercise} カメラを使った反応行動
