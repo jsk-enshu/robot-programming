@@ -479,7 +479,7 @@ Gazebo (`box:=true`) で `ri.what_do_you_see(['赤いもの'])` を呼んだと�
 - 認識のノードが起動していないと，`ri.what_do_you_see()` などは「認識のノードを起動してください」というエラーになる (何も見えない，とはならない)．
 - ジェスチャは同じ形が数枚続いて初めて答える (手を動かしている途中の形を拾わないため)．手を止めて 0.5 秒ほど見せる．
 - 物体を探すのは 1 回 0.6 秒ほど，単語を変えた最初の 1 回は 1 秒ほど (Gazebo と同じノート PC の CPU で計測)．
-- 枠を描いた画像が `/object_detection/image` に出るので，`rqt_image_view` で見られる．
+- 枠を描いた画像が `/object_detection/image` に出る．`rviz:=true` で開く RViz では右側の「detections (image)」に映る (`rqt_image_view` でも見られる)．
   3D の位置は RViz の「detections (3D)」に緑の球と名前で出る (`/object_detection/markers`)．
 - ロボットの代わりに **PC の Web カメラ**で試すこともできる:
   `ros2 run usb_cam usb_cam_node_exe` で `/image_raw` に画像を出し，`ros2 launch jedy_vision recognition.launch.py image_topic:=/image_raw`．
