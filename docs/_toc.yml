@@ -41,7 +41,7 @@ parts:
     - file: robot-programming-3-2026
       title: メカトロボットの製作とプログラミング
   - caption: 過去年度の資料
-    numbered: true
+    numbered: false
     chapters:
     - file: winter-overview-2025
       title: 2025年度 冬学期演習
