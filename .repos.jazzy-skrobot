@@ -17,13 +17,10 @@ repositories:
   # 音声: VOICEVOX での発話 (voicevox) と音声認識 (ros_speech_recognition)。
   # どちらも jsk_ros1_ros2_compat (jsk_common) と speech_recognition_msgs
   # (jsk_common_msgs) を使う。
-  # ros_speech_recognition の launch に energy_threshold / dynamic_energy_threshold
-  # の引数を足したもの (https://github.com/jsk-ros-pkg/jsk_3rdparty/pull/587)。
-  # 取り込まれたら jsk-ros-pkg/jsk_3rdparty の master に戻す。
   jsk_3rdparty:
     type: git
-    url: https://github.com/iory/jsk_3rdparty.git
-    version: speech-recognition-energy-threshold-args
+    url: https://github.com/jsk-ros-pkg/jsk_3rdparty.git
+    version: master
   jsk_common:
     type: git
     url: https://github.com/jsk-ros-pkg/jsk_common.git
