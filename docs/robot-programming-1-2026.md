@@ -267,6 +267,14 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=tr
 前後・左右だけを下げるなら `x` を使うか，最初から `-p speed:=0.12` を付けて起動する．
 `ros2 launch jedy_bringup keyboard_teleop.launch.py` は同じものを新しい端末の窓で開く．実機では PS4 のジョイスティックでも操縦できる．
 
+:::{figure} fig/jedy-ki-teleop.gif
+:align: center
+:name: fig:jedy-ki-teleop
+
+学科 PC の Gazebo で `teleop_twist_keyboard` を動かしたところ．`x` を 3 回押して前後・左右の速さを 0.36 m/s に下げ，
+`i` で前進，`J` / `L` で左右へ横に，`j` / `l` でその場旋回 (左: Gazebo，右: 端末．一番下は押したキーで，録画のために足した表示．2 倍速)
+:::
+
 ### <span style="color:green">チェックポイント: 台車</span>
 
 ```{exercise} 台車を動かす
@@ -412,6 +420,14 @@ $ ros2 run jedy_skrobot keyboard_ik
 | `q` | 終了 |
 
 IK が解けないキーを押すと `IK failed` と出て，目標もロボットも動かない (別の向きのキーを押す)．
+
+:::{figure} fig/jedy-ki-keyboard-ik.gif
+:align: center
+:name: fig:jedy-ki-keyboard-ik
+
+学科 PC の Gazebo で `keyboard_ik` を動かしたところ．`f` `k` で右手を前・上へ，`s` で左手に切り替えて同じく動かし，`r` で初期姿勢に戻す
+(左: Gazebo，右上: PyrenderViewer (赤い球が目標)，右下: 端末．一番下は押したキーで，録画のために足した表示．2 倍速)
+:::
 
 ### 頭と腕を別々に動かす
 
