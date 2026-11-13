@@ -12,6 +12,7 @@ Ubuntu 24.04 に ROS 2 Jazzy が入っていることを前提とする．入っ
 
 ```{code-block} console
 $ sudo apt update
+$ sudo apt upgrade   # 入っている ROS 2 を新しくする (古いとビルドが止まる)
 $ sudo apt install python3-vcstool python3-rosdep ros-jazzy-realsense2-camera
 $ curl -LsSf https://astral.sh/uv/install.sh | sh   # Python の仮想環境を作る uv (1 回だけ)
 $ source $HOME/.local/bin/env
@@ -27,6 +28,8 @@ $ colcon build --symlink-install
 $ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc   # ROS 2 の通信を自分の PC の中だけにする
 ```
 
+- `sudo apt upgrade` を省くと，入っている ROS 2 が古いままになる．`rosdep install` は足りないパッケージを入れるだけで，入っているものは新しくしない．
+  古い ROS 2 Jazzy では `speech_recognition_msgs` のビルドが `Unknown CMake command "rosidl_auto_generate_interfaces"` で止まる．
 - `50-jedy.list` は，ROS の rosdep の一覧に無い依存 (発話の吹き出しの日本語フォント `fonts-noto-cjk`) の定義を rosdep に教える (1 回だけ)．
 - `--skip-keys` の 3 つは，本演習で使わないパッケージ (`mechatrobot_ros2`，`jsk_data`) の依存で，rosdep では入らない．
   付けないと `rosdep install` が最後に `ERROR` を出すが，演習には影響しない．
