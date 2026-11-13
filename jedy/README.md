@@ -35,13 +35,17 @@ packages under `ros/`), depended on and never modified from here.
 ## Starting it
 
 ```
-ros2 launch jedy_bringup jedy_four_dof_all.launch.py
+ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4
+ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4 camera:=true  # + head D405
 ```
 
-That is the whole thing from nothing running: the bus servicer, ros2_control
-with its five controllers, RViz with the servo and diagnostics panels, the
-wheel odometry and the PS4 teleop. Turn pieces off with `rviz:=false`,
-`joy:=false`, `wheels:=false`.
+That is the whole thing from nothing running, in the `/jedy_fullbody`
+namespace: it waits for the board's serial port, then starts the bus servicer
+(`jedy_fullbody_rcb4.yaml`; the default `board:=h7` uses
+`jedy_fullbody_kondo.yaml`), ros2_control with `jedy_fullbody_controllers.yaml`,
+RViz with the servo and diagnostics panels, the wheel odometry and the PS4
+teleop. Turn pieces off with `rviz:=false`, `joy:=false`, `wheels:=false`.
+`camera:=true` adds the head RealSense D405 (`/camera/color`, `/camera/depth`).
 
 The order is not guessable, which is why it is a launch and not three
 terminals. The servicer and ros2_control hand each other a shared-memory
@@ -67,8 +71,8 @@ stick already asks for the servos' top speed and `deadband.py` caps there --
 past that one wheel saturates while the others keep theirs, which does not slow
 the base down, it aims it somewhere else. A fast button for the base could only
 work by making the plain stick slower first, which is a worse default than no
-fast button. So the base stays at 0.21 m/s unmodified and 0.11 m/s on R1, and
-L2 takes the head from 1.0 to 2.0 rad/s. The head's ceiling is `--head-lead`
+fast button. So the base stays at its top speed unmodified (0.156 m/s on the
+RCB-4mini, 0.173 on the ARM-H7) and R1 scales it by 0.55, and L2 takes the head from 1.0 to 2.0 rad/s. The head's ceiling is `--head-lead`
 rather than the hardware: the target may not run more than 0.20 rad ahead of
 the measured angle, which at 20 Hz puts the limit at 4.0 rad/s. The node checks
 that pair at startup and says so rather than letting a held D-pad crawl.
@@ -139,14 +143,15 @@ underneath, for when one of them needs to be run on its own:
 #   --command-filter jedy_safety.collision_filter:build
 # for the self-collision gate.
 ros2 run actuo_ros actuo_bus_node --real \
-    --config "$(ros2 pkg prefix jedy_bringup)/share/jedy_bringup/config/jedy_four_dof_kondo.yaml" \
-    --shm-name jedy_four_dof --rate 100 --timeout 90
+    --config "$(ros2 pkg prefix jedy_bringup)/share/jedy_bringup/config/jedy_fullbody_rcb4.yaml" \
+    --shm-name jedy_fullbody --rate 100 --timeout 90
 
 # Controllers, RViz with the servo + /diagnostics panels, wheel odometry.
-ros2 launch jedy_bringup jedy_four_dof.launch.py wheels:=true rviz:=true
+ros2 launch jedy_bringup jedy_fullbody.launch.py wheels:=true rviz:=true
 
-# The pad, separately -- it is something you plug in, not part of the robot.
-ros2 launch jedy_teleop jedy_joy.launch.py
+# The pad, separately (jedy_fullbody_all.launch.py joy:=false). Its wheel-speed
+# defaults are the ARM-H7's; on the RCB-4mini pass what the all-in-one launch does:
+ros2 launch jedy_teleop jedy_joy.launch.py min_wheel_rad_s:=3.09 max_wheel_rad_s:=6.19
 
 # Torque, without a pad or a panel. It starts OFF for every joint that HAS a
 # pose; the wheels come up driven, because a continuous-rotation servo has no
@@ -163,15 +168,18 @@ ros2 run jedy_bringup jedy_stop
 ros2 run jedy_bringup jedy_stop --servicer   # torque goes with it
 ```
 
-One trajectory controller per limb, the same split the ROS 1 stack used, all
-three active at once. Moving the head does not disturb an arm mid-motion, which
-a single nine-joint controller cannot offer -- a JTC holds exactly one
-trajectory.
+One trajectory controller per limb, and one per gripper, all five active at
+once (they claim disjoint joints). Moving the head does not disturb an arm
+mid-motion, and a gripper can close while its arm is mid-reach, which a single
+whole-body controller cannot offer -- a JTC holds exactly one trajectory. With
+`wheels:=true` the sixth is `mecanum_drive_controller` (below).
 
 ```
-/jedy_four_dof/head_controller/follow_joint_trajectory
-/jedy_four_dof/right_arm_controller/follow_joint_trajectory
-/jedy_four_dof/left_arm_controller/follow_joint_trajectory
+/jedy_fullbody/head_controller/follow_joint_trajectory
+/jedy_fullbody/right_arm_controller/follow_joint_trajectory
+/jedy_fullbody/left_arm_controller/follow_joint_trajectory
+/jedy_fullbody/right_gripper_controller/follow_joint_trajectory
+/jedy_fullbody/left_gripper_controller/follow_joint_trajectory
 ```
 
 Logic only, no board and no servicer: `backend:=mock`.
@@ -193,38 +201,39 @@ CAD's 25.25 mm wheel radius. A twist below that gets a
 stopped wheel and a logged refusal rather than a crawl, and the pad's stick is
 mapped onto that range rather than onto 0..max so its first 40 % is not dead.
 
-**Which servo is at which corner is not what the joint origins say.**
-`dummy_joint_rleg` carries `rpy="pi 0 0"`, so `mechanum_base_link` is rolled 180
-degrees against `base_link` and every wheel's y flips: `mechanum_joint1` is the
-FRONT RIGHT wheel. Verified on the robot by hand-turning each wheel.
+**Which servo is at which corner was derived from the URDF**, not read off the
+names, and here the names agree: `front_right_wheel_joint` is the front right
+wheel, and so on (table in `jedy_fullbody_controllers.yaml`). The wheel
+`direction:` signs are ported from the legacy servo map and are NOT yet verified
+on hardware: hand-turn each wheel and watch the model before driving.
 
 **There is no odometry from the controller.** These servos report no speed, so
 the wheels' velocity state interface is NaN and `mecanum_drive_controller`
 correctly skips its integration; `enable_odom_tf` is false so nothing reaches
 TF. `jedy_odometry` publishes an estimate instead, on
-`/jedy_four_dof/jedy_wheel_odometry/odometry`, with `~/scale_spread` beside it
+`/jedy_fullbody/jedy_wheel_odometry/odometry`, with `~/scale_spread` beside it
 saying how much to trust it. Its covariance is left at zero deliberately: the
 dominant error is mecanum roller slip, nothing in that node can see it, and a
 plausible covariance is what would make a filter believe the pose.
 
 ## Poses
 
-`jedy_bringup/config/jedy_four_dof_poses.yaml` holds named whole-body poses and
+`jedy_bringup/config/jedy_fullbody_poses.yaml` holds named whole-body poses and
 which controller commands which joint. The grouping is written out rather than
 inferred from joint-name prefixes: a trajectory naming joints a controller does
 not own is rejected outright, so a wrong guess there is not a partial move, it
 is no move at all.
 
-`home` is all zeros and that was CHECKED -- run through `jedy_safety`'s
-collision filter, the same one the servicer uses, it comes back collision-free.
+`home` is all zeros and that was CHECKED -- run through actuo.safety's
+`SelfCollisionMonitor` against this robot's URDF, it comes back with no
+colliding link pairs beyond those already touching at the reference pose.
 Anything added there deserves the same before a robot is asked to drive to it
 over five seconds.
 
 ## A joint parked outside its limit
 
 This happens: the arm droops, or the configured envelope is tighter than the
-hardware. `rarm_module1_joint1` has been found at +13.7 degrees against a
-configured maximum of +4.98.
+hardware.
 
 It used to be a deadlock. The joint could not be commanded to hold where it was
 -- correctly -- so torque could not be enabled, so it could not be driven back,
@@ -233,12 +242,11 @@ joint, its commands are held at the nearest edge of the envelope so it can only
 travel INWARD, and both the enable and the servicer say so:
 
 ```
-rarm_module1_joint1 is +0.2386 rad OUTSIDE its envelope [-1.5700, +0.0870]
-and will move 0.1516 rad back to +0.0870 as soon as torque is applied
+<joint> is <angle> rad OUTSIDE its envelope [<lower>, <upper>]
+and will move <distance> rad back to <edge> as soon as torque is applied
 ```
 
-So the recovery is: torque on, then the home pose. Measured: +13.7 -> +6.8 on
-enable, then every joint within 2.1 degrees of zero after the home move.
+So the recovery is: torque on, then the home pose.
 
 If a joint keeps stopping short of its edge, that is the envelope disagreeing
 with the hardware rather than a fault -- re-measure it with `actuo-teach-limits`
@@ -246,12 +254,9 @@ rather than widening the number by hand.
 
 ## State of the hardware
 
-In short: the arms and head run; the
-left arm's 4th joint (servo id 7) and both hands (14/15) are in the servo map
-but were not on the bus when it was imported, so they are present in
-`jedy_four_dof_kondo.yaml` as commented-out entries rather than active ones —
-an entry for a servo the board cannot see would publish `-253 deg` as that
-joint's measured position.
+All 22 servos are on the bus: two 7-DOF arms (ids 0-13), two grippers (14/15),
+the 2-DOF head (32/34) and the four wheels (20-23). A board scan on 2026-08-03
+(`actuo-kondo-probe --scan`, ARM-H7) found every one of them present.
 
 **A servo's ICS id is decided by wiring, not by a dial**: the six UARTs split
 into two groups of three, one giving `2 * n` and the other `2 * n + 1`, `n`
@@ -265,15 +270,15 @@ Five failures that cost real time here, each with the thing that identifies it.
 
 **The spawners contradict each other**: `Controller already loaded, skipping
 load_controller` and, a line later, `no controller with this name exists` — or
-`Failed loading controller` for every one of the five. That is two bring-ups of
+`Failed loading controller` for every one of them. That is two bring-ups of
 the same robot. Both controller managers answer on the same service names, so
 each spawner request lands on whichever one, and the controllers end up loaded
 but never activated: the action servers still accept goals and report success,
 and the arm does not move. `ros2 node list` will not show it — the two share a
 node name — so look at the process list. Both halves are now guarded and it
 should not be reachable: the servicer takes a lock keyed to the shm name, and
-`jedy_four_dof.launch.py` refuses to start while a `ros2_control_node` for this
-namespace exists. To clear it, `ros2 run jedy_bringup jedy_stop`, which
+`jedy_fullbody_all.launch.py` refuses to start while another robot launch
+(itself, Gazebo or Isaac Sim) is running (`jedy_preflight.py`). To clear it, `ros2 run jedy_bringup jedy_stop`, which
 interrupts the launch processes first so each takes its own nodes down, leaves
 the bus servicer (and therefore torque) alone unless given `--servicer`, and
 deletes the leftover shm file once nothing holds it.
@@ -281,7 +286,7 @@ deletes the leftover shm file once nothing holds it.
 **The robot comes up but never moves, and nothing errors.** Restarting
 ros2_control alone against a servicer that has already finished its
 shared-memory handshake deadlocks. Restart both, or use
-`jedy_four_dof_all.launch.py`, which deletes the leftover segment file first.
+`jedy_fullbody_all.launch.py`, which deletes the leftover segment file first.
 
 **The pose on `/joint_states` is frozen but every counter looks healthy.** The
 FTDI adapter holds replies until its USB latency timer expires and ships at

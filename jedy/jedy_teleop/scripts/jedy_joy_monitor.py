@@ -53,8 +53,9 @@ def parse_args(argv):
     p = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--wheel-radius", type=float, default=0.03)
-    p.add_argument("--centre-projection", type=float, default=0.11975)
+    # jedy_fullbody's base, as jedy_joy defaults to.
+    p.add_argument("--wheel-radius", type=float, default=0.02525)
+    p.add_argument("--centre-projection", type=float, default=0.094)
     p.add_argument("--min-wheel-rad-s", type=float, default=2.83)
     p.add_argument("--max-wheel-rad-s", type=float, default=6.85)
     p.add_argument("--ros-args", dest="ros_args", nargs=argparse.REMAINDER,

@@ -1,7 +1,7 @@
 """Self-collision filter for Jedy, plugged into actuo's real bus servicer.
 
     ros2 run actuo_ros actuo_bus_node --real \\
-        --config .../jedy_four_dof_kondo.yaml --shm-name jedy_four_dof \\
+        --config .../jedy_fullbody_kondo.yaml --shm-name jedy_fullbody \\
         --command-filter jedy_safety.collision_filter:build
 
 This is the part that knows Jedy has links and where they are, which is exactly
@@ -9,14 +9,8 @@ why it is here and not in actuo: link geometry stays out of the driver layer,
 so actuo offers a seam (``actuo.core.contracts.CommandFilter``) and the robot's
 own package fills it, with actuo.safety's gate and monitor.
 
-WHAT THIS CAN AND CANNOT PROMISE, on the robot as wired on 2026-08-01
----------------------------------------------------------------------
-Measured over the right arm's whole joint range: **no pose of the driven joints
-alone self-collides.** Every collision the arms can reach involves a hand link,
-and the hand's servo (id 14/15) is not on the bus -- nothing reports it, so the
-model places it at 0. The filter is therefore judging a link whose real pose is
-a guess. It is honest plumbing and it is not yet a safety guarantee; that
-changes when the hand is either driven or removed from the URDF.
+The model is jedy_description's jedy_fullbody.urdf (pass ``urdf=`` to
+:class:`JedyCollisionFilter` for another).
 """
 
 from __future__ import annotations
@@ -32,8 +26,8 @@ from actuo.safety import CollisionGate, SelfCollisionMonitor
 #: Groups the gate decelerates/stops independently. Each arm judges only its own
 #: links' proximity, so one arm approaching the body does not slow the other.
 _GROUP_PREFIXES = {
-    "rarm": ("rarm", "right_hand"),
-    "larm": ("larm", "left_hand"),
+    "rarm": ("rarm",),
+    "larm": ("larm",),
     "head": ("head",),
 }
 
@@ -41,7 +35,7 @@ _GROUP_PREFIXES = {
 def _urdf_path() -> str:
     from ament_index_python.packages import get_package_share_directory
     return os.path.join(get_package_share_directory("jedy_description"),
-                        "urdf", "jedy_four_dof.urdf")
+                        "urdf", "jedy_fullbody.urdf")
 
 
 class JedyCollisionFilter(CommandFilter):

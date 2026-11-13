@@ -39,11 +39,9 @@ ament_uv_install_python_scripts(
   STRIP_PY_EXTENSION
 )
 
-# Imported by the script at runtime, not entry points of their own. One per
-# Jedy configuration; jedy_interface picks between them with --robot.
+# Imported by the script at runtime, not entry points of their own.
 install(
   FILES
-    scripts/jedy_robot_interface.py
     scripts/jedy_fullbody_robot_interface.py
     scripts/servicer_robot_interface.py
   DESTINATION share/${PROJECT_NAME}/scripts

@@ -2,7 +2,10 @@
 """A servicer that drives NOTHING, so the collision gate can be exercised.
 
     ros2 run jedy_sim jedy_fake_servicer                                # here
-    ros2 launch jedy_bringup jedy_four_dof.launch.py use_sim:=true      # there
+    ros2 launch jedy_bringup jedy_fullbody.launch.py use_sim:=true      # there
+
+The launch must run with its default wheels:=false: this services the 18
+position joints only.
 
 It occupies exactly the position the real one does -- attaches the same shared
 memory segment, reads the same stride-3 command block, writes the same stride-2
@@ -22,12 +25,6 @@ Two things it deliberately is not:
   start, and its shm name defaults to the same segment precisely so that
   running both at once fails loudly rather than silently splitting the robot's
   commands between two writers.
-
-READ THIS BEFORE TRUSTING WHAT IT SHOWS: on the robot as currently wired, every
-self-collision the arms can produce involves a hand link, and the hand's servo
-(id 14/15) is not on the bus -- the model puts it at 0 because nothing reports
-it. The gate is therefore checking a link whose real pose is unknown. That is
-fine for exercising this plumbing and NOT fine as a safety claim.
 """
 
 from __future__ import annotations
@@ -57,12 +54,16 @@ from actuo.drivers.shm import ShmBridge  # noqa: E402
 CMD_STRIDE = 3
 STATE_STRIDE = 2
 
-#: The nine joints the Kondo bus drives, in the controller's order. Same list,
-#: same order, as jedy_four_dof_kondo.yaml and the <ros2_control> block: that
-#: order IS the shm layout.
-JOINTS = ["rarm_joint0", "rarm_module1_joint1", "rarm_module1_joint2",
-          "rarm_module2_joint1", "larm_joint0", "larm_module1_joint1",
-          "larm_module1_joint2", "head_joint0", "head_module1_joint1"]
+#: The 18 position joints, in the controller's order. Same list, same order,
+#: as jedy_fullbody_kondo.yaml and the <ros2_control> block of
+#: jedy_fullbody_actuo.urdf.xacro expanded with wheels:=false: that order IS
+#: the shm layout. (With wheels:=true the four wheel joints follow these.)
+JOINTS = ["head_joint0", "head_joint1",
+          "rarm_joint0", "rarm_joint1", "rarm_joint2", "rarm_joint3",
+          "rarm_joint4", "rarm_joint5", "rarm_joint6",
+          "larm_joint0", "larm_joint1", "larm_joint2", "larm_joint3",
+          "larm_joint4", "larm_joint5", "larm_joint6",
+          "rarm_gripper_joint", "larm_gripper_joint"]
 
 
 def build_filter(decelerate):
@@ -80,7 +81,7 @@ def build_filter(decelerate):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--shm-name", default="jedy_four_dof")
+    parser.add_argument("--shm-name", default="jedy_fullbody")
     parser.add_argument("--rate", type=float, default=100.0)
     parser.add_argument("--timeout", type=float, default=90.0,
                         help="how long to wait for the C++ side to create the "

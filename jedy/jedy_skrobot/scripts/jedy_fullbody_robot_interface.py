@@ -7,10 +7,8 @@
     rarm_gripper_joint   servo id 14        larm_gripper_joint   servo id 15
     the four wheels      servo ids 20..23
 
-The 4-DOF sibling of this module (jedy_robot_interface) carries a list of things
-it cannot do honestly because the board did not report servos 7, 14 and 15.
-NONE of that applies here: the scan on 2026-08-03 found all 22 present, so every
-joint this module names is one the bus actually drives.
+The board scan on 2026-08-03 found all 22 servos present, so every joint this
+module names is one the bus actually drives.
 
 What is still excluded, and why
 -------------------------------

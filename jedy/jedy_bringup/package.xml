@@ -37,9 +37,7 @@
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>
-  <!-- the mecanum base, named by both jedy_four_dof_controllers.yaml and
-       jedy_fullbody_controllers.yaml. It was already being loaded by name
-       without being declared here. -->
+  <!-- the mecanum base, named by jedy_fullbody_controllers.yaml. -->
   <exec_depend>mecanum_drive_controller</exec_depend>
   <exec_depend>velocity_controllers</exec_depend>
   <exec_depend>effort_controllers</exec_depend>

@@ -203,15 +203,12 @@ joints:
   # WHICH CORNER: derived from the URDF, not read off the names. Mapping the
   # wheel origins through pseudo_base_joint puts each joint at the corner its
   # name claims (see jedy_fullbody_controllers.yaml for the table). That is a
-  # finding rather than an assumption, and it differs from jedy_four_dof.urdf,
-  # where the same derivation contradicts the names.
+  # finding rather than an assumption.
   #
   # DIRECTION: taken from the legacy servo map (jedy_servo_config.yaml). All
   # four <axis> in jedy_gz.xacro are "1. 0. 0.", which maps to [0, 1, 0] in
-  # base_link: four parallel, identically signed spin axes. jedy_four_dof_kondo
-  # .yaml carries a +1 where the map says -1, and says why: that model has ONE
-  # wheel whose axis is flipped, and the sign compensates. No such flip exists
-  # here, so the map's own signs stand.
+  # base_link: four parallel, identically signed spin axes. No wheel axis is
+  # flipped, so no sign needs compensating and the map's own signs stand.
   #
   #   ==> NOT YET VERIFIED ON HARDWARE. Turn each wheel by hand and watch the
   #       model before driving. A wrong sign on a mecanum base is not a slower
@@ -234,8 +231,8 @@ joints:
   # tried (all four turned there; below it is unmeasured, so it is commanded as
   # a stop); saturate_deg is 10, the top of the range where the line fits, which
   # caps the base at ~0.98 rev/s (~0.156 m/s on the 25.25 mm wheels). The ARM-H7
-  # map copied here before (jedy_four_dof_wheels.yaml: 9 deg deadband, 0.053-
-  # 0.072 rev/s per deg) was 1.4-1.9x slow for this robot. For the full map:
+  # map copied here before (9 deg deadband, 0.053-0.072 rev/s per deg) was
+  # 1.4-1.9x slow for this robot. For the full map:
   #
   #   ros2 run actuo_ros actuo-wheel-calibrate --board rcb4mini \
   #       --channel /dev/actuo_kondo_rcb4mini --ids 20 21 22 23 --rotation-checked ...

@@ -158,9 +158,8 @@
   # --- the mecanum base ------------------------------------------------------
   #
   # Which servo sits at which corner was DERIVED from the URDF rather than read
-  # off the joint names, because on this robot's other model it is not the
-  # obvious reading. Here it happens to agree with the names, and that agreement
-  # is the finding, not an assumption:
+  # off the joint names. It agrees with the names, and that agreement is the
+  # finding, not an assumption:
   #
   # pseudo_base_joint carries rpy="1.5707926535897931 0 1.5707926535897931", so
   # real_base_link (which every wheel hangs off) is rotated with respect to
@@ -174,11 +173,10 @@
   #   rear_left_wheel_joint     -0.0435   +0.0505   -0.0970  rear left
   #
   # All four <axis> are "1. 0. 0.", which maps to [0, 1, 0] in base_link: the
-  # four spin axes are PARALLEL and identically signed. That is unlike
-  # jedy_four_dof.urdf, where one wheel's axis is flipped and its config carries
-  # a compensating sign. Nothing of the sort is needed here, so if a wheel turns
-  # the wrong way on the robot the fix belongs in `direction:` in
-  # jedy_fullbody_kondo.yaml, not here.
+  # four spin axes are PARALLEL and identically signed, so no wheel needs a
+  # compensating sign. If a wheel turns the wrong way on the robot the fix
+  # belongs in `direction:` in the bus config (jedy_fullbody_kondo.yaml or
+  # jedy_fullbody_rcb4.yaml), not here.
   #
   # DIRECTION IS NOT YET VERIFIED ON HARDWARE. The signs in the kondo config are
   # ported from the legacy servo map. Confirm each corner by hand before driving:

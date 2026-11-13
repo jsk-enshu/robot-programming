@@ -556,14 +556,13 @@ def generate_launch_description():
                      "jedy_joy.launch.py"])),
                 launch_arguments={
                     "namespace": "/" + NAMESPACE,
-                    # This robot's second head joint is head_joint1, where
-                    # jedy_four_dof calls it head_module1_joint1.
+                    # Pan, then tilt.
                     "head_joints": "head_joint0,head_joint1",
                     # This robot's own poses, and the file jedy_joy reads its
                     # controller/joint grouping from.
                     "poses": poses,
-                    # Geometry, derived from this URDF rather than four_dof's:
-                    # the wheels' collision cylinders (from the CAD), and
+                    # Geometry, derived from this robot's URDF: the wheels'
+                    # collision cylinders (from the CAD), and
                     # |x| + |y| = 0.0435 + 0.0505 for a wheel from the centre.
                     "wheel_radius": "0.02525",
                     "centre_projection": "0.094",

@@ -1,19 +1,12 @@
 #!/usr/bin/env python3
-"""Interactive scikit-robot shell for Jedy, either configuration.
+"""Interactive scikit-robot shell for Jedy's whole body (22 joints).
 
-The 4-DOF modular arms (default)::
+    ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4  # terminal 1
+    ros2 run jedy_skrobot jedy_interface --limb head                  # terminal 2
 
-    ros2 launch jedy_bringup jedy_four_dof_all.launch.py    # terminal 1
-    ros2 run jedy_skrobot jedy_interface                    # terminal 2
-
-The whole body, 22 joints::
-
-    ros2 launch jedy_bringup jedy_fullbody_all.launch.py    # terminal 1
-    ros2 run jedy_skrobot jedy_interface --robot fullbody --limb head
-
-``--robot`` picks the model, the namespace, the limb set and the poses file
-together, because those four have to agree: a shell that reads one robot and
-commands another is the failure this argument exists to prevent.
+``--robot`` picks the model, the namespace and the limb set together, because
+those have to agree. ``fullbody`` is the only configuration left; the flag is
+kept so existing ``--robot fullbody`` command lines keep working.
 
 Binds ``robot`` (the model) and ``ri`` (the live interface, spinning). The same
 interactive shell for a robot that has real geometry to look at.
@@ -40,17 +33,12 @@ from rclpy.executors import SingleThreadedExecutor  # noqa: E402
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def _load_robot_module(which):
-    """Pick the model/interface pair for one of Jedy's configurations.
-
-    Imported here rather than at module scope because the two are alternatives,
-    not layers: each carries its own CONTROLLED_JOINTS, LIMBS and namespace, and
-    importing both would leave two same-named constants in scope for a reader
-    to confuse.
+    """Pick the model/interface pair for a Jedy configuration.
 
     Parameters
     ----------
     which : str
-        'four_dof' or 'fullbody'.
+        'fullbody', the only configuration.
 
     Returns
     -------
@@ -60,43 +48,37 @@ def _load_robot_module(which):
         model whose URDF disagrees with the robot's still lands on it; 0.0 when
         the two agree.
     """
-    if which == "fullbody":
-        import jedy_fullbody_robot_interface as mod
-        return (mod.JedyFullbody, mod.JedyFullbodyROS2RobotInterface,
-                mod.CONTROLLED_JOINTS, mod.LIMBS, FULLBODY_BANNER,
-                mod.GHOST_OFFSET_Z)
-    import jedy_robot_interface as mod
-    return (mod.Jedy, mod.JedyROS2RobotInterface,
-            mod.CONTROLLED_JOINTS, mod.LIMBS, BANNER, 0.0)
+    if which != "fullbody":
+        raise ValueError("unknown Jedy configuration {!r}".format(which))
+    import jedy_fullbody_robot_interface as mod
+    return (mod.JedyFullbody, mod.JedyFullbodyROS2RobotInterface,
+            mod.CONTROLLED_JOINTS, mod.LIMBS, FULLBODY_BANNER,
+            mod.GHOST_OFFSET_Z)
 
 
 def parse_args(argv):
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--robot", default="four_dof",
-                   choices=["four_dof", "fullbody"],
-                   help="which Jedy configuration. 'four_dof' (default) is the "
-                        "modular-arm robot in /jedy_four_dof; 'fullbody' is the "
-                        "22-joint robot in /jedy_fullbody, brought up by "
-                        "jedy_fullbody_all.launch.py. They differ in joint "
-                        "names, namespace and which limbs exist, so this picks "
-                        "the whole set rather than any one of them.")
+    p.add_argument("--robot", default="fullbody", choices=["fullbody"],
+                   help="which Jedy configuration: 'fullbody', the 22-joint "
+                        "robot in /jedy_fullbody brought up by "
+                        "jedy_fullbody_all.launch.py (the only one).")
     p.add_argument("--limb", default="right_arm",
                    help="which limb this shell drives. One trajectory "
                         "controller per limb; skrobot's ros2 base keeps ONE "
                         "action per controller type, so a shell drives one "
                         "limb at a time. Run a second shell for a second limb. "
-                        "four_dof: head, right_arm, left_arm. fullbody adds "
-                        "right_gripper and left_gripper. Validated against the "
-                        "chosen --robot rather than by argparse, because the "
-                        "two have different limbs.")
+                        "head, right_arm, left_arm, right_gripper or "
+                        "left_gripper. Validated against the robot module's "
+                        "LIMBS rather than by argparse.")
     p.add_argument("--controller", default=None,
                    help="override the controller name, INCLUDING its "
-                        "namespace. See JedyROS2RobotInterface for why the "
+                        "namespace. See JedyFullbodyROS2RobotInterface for "
+                        "why the "
                         "namespace rides here and not in skrobot's namespace "
                         "argument.")
     p.add_argument("--joint-states", default=None,
                    help="joint_states topic (default "
-                        "/jedy_four_dof/joint_states). Change it together with "
+                        "/jedy_fullbody/joint_states). Change it together with "
                         "--controller or the shell reads one robot and "
                         "commands another.")
     p.add_argument("--node-name", default="jedy_skrobot_interface")
@@ -118,39 +100,6 @@ def parse_args(argv):
                         "skipping it means a mismatch surfaces later, as a "
                         "trajectory the controller rejects entirely.")
     return p.parse_args(argv)
-
-
-BANNER = """\
-=== Jedy 4-DOF scikit-robot shell ===
-  robot : Jedy                    (jedy_description, real geometry)
-  ri    : JedyROS2RobotInterface  (spinning)
-
-  ri.servo_state()                       # enabled / mismatch / would_jump, per joint
-  ri.measured()                          # where the robot IS -- unclamped truth
-  ri.outside_model_limits()              # {} unless the model is lying to you
-  ri.servo_on()                          # re-syncs the controller first, then holds
-
-  robot.angle_vector()                   # model's pose (edit, then send)
-  ri.angle_vector(robot.angle_vector(), 5.0); ri.wait_interpolation()
-  ri.servo_off()                         # SUPPORT THE ARMS -- they go limp
-
-  robot.rarm_module1_joint1.joint_angle(-0.3)   # one joint, in the model
-  ri.angle_vector(robot.angle_vector(), 5.0)    # ...then on the robot
-
-This shell drives ONE limb (--limb head | right_arm | left_arm); `ri.limb`
-says which. The three controllers are independent, so a head goal does not
-replace an arm's trajectory -- run a second shell for a second limb.
-
-! THE MODEL HAS JOINTS THE ROBOT DOES NOT. larm_module2_joint1 and both
-! hand joints are in the URDF, but servos 7, 14 and 15 were not on the bus:
-! moving them in the model moves nothing, and they are not in the angle vector
-! this interface sends. The four mecanum wheels are continuous joints and the
-! Kondo servo model is position-only, so they are not driven either.
-
-! potentio_vector() CLAMPS to the URDF limits and does not say so. If a joint
-! sits outside its limits the model reports the limit, not the truth -- use
-! ri.measured(). ri.outside_model_limits() tells you when this is live.
-"""
 
 
 FULLBODY_BANNER = """\
@@ -175,8 +124,8 @@ right_gripper | left_gripper; `ri.limb` says which. The five controllers claim
 disjoint interfaces, so they are all active at once and a head goal does not
 replace an arm's trajectory -- run a second shell for a second limb.
 
-! ALL 22 SERVOS ARE ON THE BUS (board scan 2026-08-03), so unlike the 4-DOF
-! shell there is no joint here that the model can move and the robot cannot.
+! ALL 22 SERVOS ARE ON THE BUS (board scan 2026-08-03), so there is no joint
+! here that the model can move and the robot cannot.
 ! The exceptions are structural rather than missing hardware:
 !   - the four mecanum wheels are continuous joints in VELOCITY mode, so they
 !     are in no trajectory. Drive the base with a twist on /cmd_vel.
@@ -289,7 +238,7 @@ def main(argv=None):
     #     actual = ri.angle_vector()
     #     if len(actual) == len(robot.joint_list): robot.angle_vector(actual)
     #
-    # is what the sibling shells use and it silently did nothing here: it
+    # is the obvious version and it silently did nothing here: it
     # depends on a joint_states message having arrived in the moment between
     # starting the executor and asking, and when it has not, the guard fails
     # quietly and the model stays at zero. Measured on this robot: the shell

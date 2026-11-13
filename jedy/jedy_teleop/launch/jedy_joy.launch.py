@@ -3,9 +3,10 @@
 
     ros2 launch jedy_teleop jedy_joy.launch.py
 
-Runs alongside jedy_four_dof.launch.py rather than inside it: a pad is
-something you plug in, not part of the robot, and keeping it separate means it
-can be restarted (or unplugged and replugged) without touching the controllers.
+jedy_fullbody_all.launch.py includes it (joy:=true, the default). It is a
+launch of its own because a pad is something you plug in, not part of the
+robot: with joy:=false it can be started separately and restarted (or unplugged
+and replugged) without touching the controllers.
 """
 
 from launch import LaunchDescription
@@ -20,23 +21,22 @@ def generate_launch_description():
                               description="the joydev node. joy_linux reads "
                                           "this directly, so it is a path and "
                                           "not an SDL index."),
-        DeclareLaunchArgument("namespace", default_value="/jedy_four_dof"),
-        # Everything below defaults to jedy_four_dof's values, so this launch
-        # keeps behaving exactly as it did for that robot. jedy_fullbody passes
-        # its own, because it has a different second head joint, a different
-        # poses file and a slightly different wheelbase.
+        DeclareLaunchArgument("namespace", default_value="/jedy_fullbody"),
+        # Everything below defaults to jedy_fullbody's values (what
+        # jedy_fullbody_all.launch.py passes, with the ARM-H7 wheel speeds;
+        # that launch passes the RCB-4mini's for board:=rcb4).
         DeclareLaunchArgument(
-            "head_joints", default_value="head_joint0,head_module1_joint1",
+            "head_joints", default_value="head_joint0,head_joint1",
             description="pan joint, then tilt joint. The D-pad drives exactly "
                         "these two, so the order is the mapping."),
         DeclareLaunchArgument(
             "poses", default_value="",
             description="named-pose YAML. Empty means jedy_bringup's "
-                        "jedy_four_dof_poses.yaml. jedy_joy also takes its "
+                        "jedy_fullbody_poses.yaml. jedy_joy also takes its "
                         "controller/joint grouping from this file, so it must "
                         "be the one matching the robot in `namespace`."),
-        DeclareLaunchArgument("wheel_radius", default_value="0.03"),
-        DeclareLaunchArgument("centre_projection", default_value="0.11975",
+        DeclareLaunchArgument("wheel_radius", default_value="0.02525"),
+        DeclareLaunchArgument("centre_projection", default_value="0.094",
                               description="|x| + |y| of a wheel from the base "
                                           "centre"),
         DeclareLaunchArgument(

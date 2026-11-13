@@ -230,7 +230,7 @@
 
          No position: these servos have none to report. The reported angle is a
          potentiometer that wraps once per wheel revolution and is clamped over
-         roughly a sixth of each turn (see jedy_four_dof_wheels.yaml), so it is
+         roughly a sixth of each turn, so it is
          neither a joint pose nor differentiable into a speed at the control
          rate. Publishing 0.0 for it would put a stationary wheel on
          /joint_states while it spins.

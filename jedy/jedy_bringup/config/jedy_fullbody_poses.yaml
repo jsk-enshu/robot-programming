@@ -22,12 +22,9 @@
 # with no colliding link pairs beyond the 29 already touching at the reference
 # pose.
 #
-# That check is worth more here than the equivalent one on jedy_four_dof. That
-# robot's collision filter carries a caveat in its own docstring: the hand
-# servos (14/15) are not on its bus, nothing reports them, so the model places
-# the hand links at 0 and the filter judges a link whose real pose is a guess.
-# On THIS robot ids 14 and 15 are present and driven (board scan 2026-08-03),
-# so the gripper links are where the model says they are.
+# The check means something for the grippers too: ids 14 and 15 are present
+# and driven (board scan 2026-08-03), so the gripper links are where the model
+# says they are rather than parked at a guessed 0.
 #
 # Anything added here should be checked the same way before a robot is asked to
 # drive to it over five seconds.

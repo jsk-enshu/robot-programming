@@ -93,25 +93,28 @@ from jedy_teleop.mapping import (  # noqa: E402
     AXIS_DPAD_X, AXIS_DPAD_Y, AXIS_LEFT_X, AXIS_LEFT_Y, AXIS_RIGHT_X,
     BUTTON_CIRCLE, BUTTON_L1, BUTTON_L2, BUTTON_R1, BUTTON_TRIANGLE)
 
-#: Fallback head joints, used only when --head-joints is not given. They are
-#: jedy_four_dof's, because that is the robot this node was written against;
-#: jedy_fullbody calls its second head joint head_joint1 and passes it in.
-DEFAULT_HEAD_JOINTS = "head_joint0,head_module1_joint1"
+#: Fallback head joints, used only when --head-joints is not given: Jedy's
+#: pan and tilt joints, as jedy_fullbody_all.launch.py passes them.
+DEFAULT_HEAD_JOINTS = "head_joint0,head_joint1"
 
 
 def parse_args(argv):
     p = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--namespace", default="/jedy_four_dof")
+    p.add_argument("--namespace", default="/jedy_fullbody")
     p.add_argument("--servicer", default="/actuo_bus_servicer")
     p.add_argument("--head-joints", default=DEFAULT_HEAD_JOINTS,
                    help="comma-separated, pan first then tilt. The D-pad "
                         "drives exactly these two, so the order is the "
                         "mapping and not a formality.")
-    p.add_argument("--wheel-radius", type=float, default=0.03)
-    p.add_argument("--centre-projection", type=float, default=0.11975)
-    # Measured, and the reason the stick is remapped at all. See the config.
+    # jedy_fullbody's base: the wheels' collision cylinders in the URDF, and
+    # |x| + |y| = 0.0435 + 0.0505 for a wheel from the centre.
+    p.add_argument("--wheel-radius", type=float, default=0.02525)
+    p.add_argument("--centre-projection", type=float, default=0.094)
+    # Measured, and the reason the stick is remapped at all. The defaults are
+    # the ARM-H7 config's (jedy_fullbody_kondo.yaml); jedy_fullbody_all.launch.py
+    # passes the RCB-4mini's for board:=rcb4.
     p.add_argument("--min-wheel-rad-s", type=float, default=2.83,
                    help="the deadband, as a wheel speed: 9 command deg at "
                         "0.0528 rev/s per deg. Below this a wheel does not "
@@ -192,7 +195,7 @@ def main(argv=None):
         from ament_index_python.packages import get_package_share_directory
         poses_path = os.path.join(
             get_package_share_directory("jedy_bringup"), "config",
-            "jedy_four_dof_poses.yaml")
+            "jedy_fullbody_poses.yaml")
     import yaml
     with open(poses_path) as handle:
         poses = yaml.safe_load(handle)["poses"]
@@ -211,9 +214,7 @@ def main(argv=None):
     # it, silently, right before a torque enable that then fails its guard.
     #
     # The poses file already states this grouping, go_home already trusts it,
-    # and its own header says why it is written out instead of inferred. On
-    # jedy_four_dof the two agree joint for joint, so this changes nothing
-    # there.
+    # and its own header says why it is written out instead of inferred.
     resync_groups = {controller: list(joints)
                      for controller, joints in poses.get("home", {}).items()}
     if not resync_groups:

@@ -15,7 +15,7 @@ is left completely alone, so nothing about how the robot LOOKS changes.
 
 Run it from this package (it needs skrobot + coacd + trimesh)::
 
-    <venv>/bin/python scripts/make_collision_meshes.py urdf/jedy_four_dof.urdf
+    <venv>/bin/python scripts/make_collision_meshes.py urdf/jedy_fullbody.urdf
 
 It rewrites the URDF in place and writes meshes to meshes/collision/<link>_N.stl.
 Idempotent: a link whose collision already points into meshes/collision/ is

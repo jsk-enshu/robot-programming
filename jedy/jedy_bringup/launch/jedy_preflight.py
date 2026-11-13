@@ -24,7 +24,6 @@ ROBOT_LAUNCH_FILES = (
     "jedy_gazebo.launch.py",
     "jedy_fullbody_all.launch.py",
     "jedy_isaac.launch.py",
-    "jedy_four_dof_all.launch.py",
 )
 
 

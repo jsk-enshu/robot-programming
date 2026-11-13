@@ -62,23 +62,27 @@ from actuo_msgs.msg import ServoState  # noqa: E402
 
 from jedy_odometry.wheel_angle import WheelAngle  # noqa: E402
 
-#: Corner order the mecanum forward kinematics below is written in.
-#: Derived, not read off the joint origins: dummy_joint_rleg carries
-#: rpy="pi 0 0", so mechanum_base_link is rolled 180 degrees against base_link
-#: and every wheel's y flips. See jedy_four_dof_kondo.yaml, which must agree.
+#: Corner order the mecanum forward kinematics below is written in. Derived
+#: from the URDF, and on jedy_fullbody each joint sits at the corner its name
+#: says (see the table in jedy_fullbody_controllers.yaml).
 CORNERS = {
-    "front_left": "mechanum_joint2",
-    "front_right": "mechanum_joint1",
-    "rear_left": "mechanum_joint4",
-    "rear_right": "mechanum_joint3",
+    "front_left": "front_left_wheel_joint",
+    "front_right": "front_right_wheel_joint",
+    "rear_left": "rear_left_wheel_joint",
+    "rear_right": "rear_right_wheel_joint",
 }
 
-#: Must match jedy_four_dof_controllers.yaml. Duplicated deliberately rather
+#: The order --directions is given in: the wheels' order in the bus config
+#: (jedy_fullbody_kondo.yaml / jedy_fullbody_rcb4.yaml).
+WHEEL_JOINTS = ["front_right_wheel_joint", "front_left_wheel_joint",
+                "rear_right_wheel_joint", "rear_left_wheel_joint"]
+
+#: Must match jedy_fullbody_controllers.yaml (wheels_radius,
+#: sum_of_robot_center_projection_on_X_Y_axis). Duplicated deliberately rather
 #: than read from the controller: this node runs without the controller, and a
 #: value that silently differs would produce a pose that looks fine and drifts.
-#: The launch passes them, so the two are set in one place in practice.
-WHEEL_RADIUS = 0.03
-CENTRE_PROJECTION = 0.11975          # |x| + |y| of a wheel from the base centre
+WHEEL_RADIUS = 0.02525
+CENTRE_PROJECTION = 0.094            # |x| + |y| of a wheel from the base centre
 
 
 def parse_args(argv):
@@ -92,11 +96,11 @@ def parse_args(argv):
                         "number mecanum_drive_controller calls "
                         "sum_of_robot_center_projection_on_X_Y_axis")
     p.add_argument("--directions", nargs=4, type=int,
-                   default=[1, -1, 1, 1], metavar=("J1", "J2", "J3", "J4"),
-                   help="per-joint direction, in mechanum_joint1..4 order, "
-                        "matching the robot config. joint4 is +1 on Jedy "
-                        "because its URDF axis is flipped relative to the "
-                        "other three -- see the config's note before changing.")
+                   default=[1, -1, 1, -1], metavar=("FR", "FL", "RR", "RL"),
+                   help="per-joint direction, in front_right, front_left, "
+                        "rear_right, rear_left order, matching `direction:` "
+                        "in the robot's bus config -- see the config's note "
+                        "before changing.")
     p.add_argument("--frame", default="odom")
     p.add_argument("--child-frame", default="base_link")
     p.add_argument("--publish-tf", action="store_true",
@@ -114,9 +118,7 @@ def main(argv=None):
     rclpy.init(args=args.ros_args or None)
     node = Node("jedy_wheel_odometry")
 
-    directions = dict(zip(
-        ["mechanum_joint1", "mechanum_joint2", "mechanum_joint3",
-         "mechanum_joint4"], args.directions))
+    directions = dict(zip(WHEEL_JOINTS, args.directions))
     wheels = {name: WheelAngle(direction=directions[name])
               for name in CORNERS.values()}
     previous = {name: None for name in CORNERS.values()}

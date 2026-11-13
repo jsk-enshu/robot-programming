@@ -5,16 +5,12 @@
     ros2 run jedy_bringup jedy_stop --servicer   # the bus servicer too
     ros2 run jedy_bringup jedy_stop --dry-run    # say what it would stop
 
-    ros2 run jedy_bringup jedy_stop --robot jedy_fullbody --servicer
-
-`--robot` is the ROS namespace, which on every Jedy configuration is also the
-shm name; that is what lets one flag select both. Nodes, the segment and the
+`--robot` (default jedy_fullbody) is the ROS namespace, which is also the shm
+name; that is what lets one flag select both. Nodes, the segment and the
 servicer are all matched by it. The `ros2 launch` processes are NOT -- they are
 matched on the package, so that a launch file added tomorrow is covered the day
-it is written, and stopping either robot interrupts any jedy_bringup or
-jedy_teleop launch. That is not the hazard it looks like: both configurations
-drive the same board through the same serial adapter, so two of them cannot be
-up at once anyway.
+it is written, and stopping the robot interrupts any jedy_bringup or
+jedy_teleop launch.
 
 Why a script and not `pkill -f ros2`
 ------------------------------------
@@ -28,7 +24,7 @@ directly.
 
 The thing that must not happen: the bus servicer owns torque. Stopping it drops
 every joint, and an arm held out drops with it. So it is left running unless
-asked for by name, which is the same reason jedy_four_dof.launch.py does not
+asked for by name, which is the same reason jedy_fullbody.launch.py does not
 start it.
 
 The leftover: /tmp/actuo_<shm>.shm is an mmap'd file, not a POSIX shm object, so
@@ -44,9 +40,10 @@ import signal
 import sys
 import time
 
-#: Default robot. Both the ROS namespace and the shm name are this string on
-#: every Jedy configuration, which is what lets one --robot select both.
-DEFAULT_ROBOT = "jedy_four_dof"
+#: Default robot. Both the ROS namespace and the shm name are this string
+#: (NAMESPACE and SHM_NAME in jedy_fullbody_all.launch.py), which is what lets
+#: one --robot select both.
+DEFAULT_ROBOT = "jedy_fullbody"
 
 # Rebound in main() from --robot. Module-level because classify() and
 # remove_stale_segment() read them, and threading a config object through both
@@ -201,9 +198,9 @@ def main():
     parser.add_argument(
         "--robot", default=DEFAULT_ROBOT,
         help="which Jedy to stop: the ROS namespace, which is also the shm "
-             "name. 'jedy_four_dof' (default) or 'jedy_fullbody'. Getting this "
-             "wrong is not destructive, it just finds nothing: every match "
-             "here is keyed to the name.")
+             "name (default: %(default)s). Getting this wrong is not "
+             "destructive, it just finds nothing: every match here is keyed "
+             "to the name.")
     args = parser.parse_args()
 
     global NAMESPACE, SHM_NAME, SHM_PATH
