@@ -71,6 +71,7 @@ from rclpy.parameter import Parameter
 from rclpy.qos import DurabilityPolicy
 from rclpy.qos import QoSProfile
 from rclpy.qos import qos_profile_sensor_data
+from rclpy.qos import ReliabilityPolicy
 from rclpy.signals import SignalHandlerOptions
 from sensor_msgs.msg import CameraInfo
 from sensor_msgs.msg import Image
@@ -581,13 +582,41 @@ class JedyInterface(RobotInterface):
             self._image_msgs[topic] = msg
         self._image_seen[topic].set()
 
+    def _image_qos(self, topic, timeout=2.0):
+        """Reliable when every publisher of ``topic`` is, else best effort.
+
+        A 640x480 image is about 1 MB, which DDS sends in many fragments. A
+        best-effort reader drops the whole image when one fragment is lost,
+        and on one PC (Fast DDS, Gazebo's 30 Hz camera) it received 17-22 of
+        the 30 images a second, and 2 of 5 at 5 Hz; a reliable one received
+        all of them. Reliable with depth 1 keeps only the latest image, so a
+        slow program is not sent a backlog. A reliable reader does not
+        match a best-effort publisher at all, hence the check; with no
+        publisher found within ``timeout`` it stays best effort, which
+        matches both.
+        """
+        deadline = time.monotonic() + timeout
+        while True:
+            infos = self.get_publishers_info_by_topic(topic)
+            if infos or time.monotonic() >= deadline:
+                break
+            time.sleep(0.05)
+        if infos and all(info.qos_profile.reliability
+                         == ReliabilityPolicy.RELIABLE for info in infos):
+            return QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE)
+        return qos_profile_sensor_data
+
     def _latest_image(self, topic, timeout, newer_than):
         with self._lock:
-            if topic not in self._image_subs:
-                self._image_subs[topic] = self.create_subscription(
-                    Image, topic,
-                    lambda msg, topic=topic: self._on_image(topic, msg),
-                    qos_profile_sensor_data)
+            subscribed = topic in self._image_subs
+        if not subscribed:
+            qos = self._image_qos(topic)
+            with self._lock:
+                if topic not in self._image_subs:
+                    self._image_subs[topic] = self.create_subscription(
+                        Image, topic,
+                        lambda msg, topic=topic: self._on_image(topic, msg),
+                        qos)
         deadline = time.monotonic() + timeout
         while True:
             if self._image_seen[topic].wait(
