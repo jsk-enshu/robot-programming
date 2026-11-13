@@ -1,0 +1,429 @@
+#!/usr/bin/env python3
+"""The 2025 Jedy topic and action names, served on top of the 2026 bring-up.
+
+The 2025 bring-up had no namespace and three trajectory controllers, each arm
+with its gripper in one controller. The 2026 bring-up puts everything under
+/jedy_fullbody and gives each gripper a controller of its own. Joint and link
+names did not change. This node serves the 2025 names, so programs written
+for 2025 (and the robot system lecture's material) run unchanged:
+
+    /joint_states                         <- /jedy_fullbody/joint_states
+    /mecanum_drive_controller/reference   -> /cmd_vel (TwistStamped)
+    /head_controller/joint_trajectory     -> /jedy_fullbody/head_controller/...
+    /rarm_controller/joint_trajectory     -> right_arm_controller + right_gripper_controller
+    /larm_controller/joint_trajectory     -> left_arm_controller + left_gripper_controller
+    /{head,rarm,larm}_controller/follow_joint_trajectory   (action servers)
+
+A trajectory or goal is split by joint name between the 2026 controllers that
+own its joints. A goal naming only some of a group's joints is accepted (the
+2026 controllers allow partial goals). A goal is accepted only if every 2026
+controller it is sent to accepts its part, and it succeeds only if every part
+succeeds; otherwise it is aborted with the first failing part's error code.
+Cancelling it cancels every part.
+
+Stamps on another clock: a 2025 program run without ``use_sim_time:=true``
+stamps its messages in wall time, which on the simulator's clock lies decades
+in the future, so a trajectory never starts and a base command never times
+out. A stamp further than ``restamp_threshold`` seconds from this node's clock
+is replaced by this node's current time, with a warning. A trajectory that is
+sent again with the same stamp (send_joint_position.py repeats its message for
+a second) gets the same replacement, so the repeats do not restart it.
+"""
+
+import functools
+import threading
+
+from control_msgs.action import FollowJointTrajectory
+from geometry_msgs.msg import TwistStamped
+import rclpy
+from rclpy.action import ActionClient, ActionServer, CancelResponse, GoalResponse
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
+from rclpy.node import Node
+from sensor_msgs.msg import JointState
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+from action_msgs.msg import GoalStatus
+
+#: The 2025 controllers, and for each the 2026 controllers (under the
+#: namespace parameter) that own its joints. This table IS the 2025
+#: interface: it is what jedy_controllers.ros2.yaml declared in 2025.
+LEGACY_CONTROLLERS = {
+    "head_controller": {
+        "head_controller": ["head_joint0", "head_joint1"],
+    },
+    "rarm_controller": {
+        "right_arm_controller": ["rarm_joint%d" % i for i in range(7)],
+        "right_gripper_controller": ["rarm_gripper_joint"],
+    },
+    "larm_controller": {
+        "left_arm_controller": ["larm_joint%d" % i for i in range(7)],
+        "left_gripper_controller": ["larm_gripper_joint"],
+    },
+}
+
+#: How many off-clock trajectory stamps to remember (see restamped_trajectory).
+RESTAMP_MEMORY = 32
+
+POINT_FIELDS = ("positions", "velocities", "accelerations", "effort")
+
+
+def split_points(points, indices, n_joints):
+    """The points of a trajectory restricted to the joints at ``indices``.
+
+    Parameters
+    ----------
+    points : list of trajectory_msgs.msg.JointTrajectoryPoint
+        Points over ``n_joints`` joints.
+    indices : list of int
+        Which joints to keep, in order.
+    n_joints : int
+        Length of the trajectory's joint_names.
+
+    Returns
+    -------
+    list of trajectory_msgs.msg.JointTrajectoryPoint
+        One point per input point, over the kept joints only.
+
+    Raises
+    ------
+    ValueError
+        If a non-empty field does not have one value per joint.
+    """
+    out = []
+    for k, point in enumerate(points):
+        part = JointTrajectoryPoint()
+        part.time_from_start = point.time_from_start
+        for field in POINT_FIELDS:
+            values = list(getattr(point, field))
+            if not values:
+                continue
+            if len(values) != n_joints:
+                raise ValueError(
+                    "point %d has %d %s for %d joints"
+                    % (k, len(values), field, n_joints))
+            setattr(part, field, [values[i] for i in indices])
+        out.append(part)
+    return out
+
+
+def split_trajectory(trajectory, owners):
+    """Split a trajectory between the controllers that own its joints.
+
+    Parameters
+    ----------
+    trajectory : trajectory_msgs.msg.JointTrajectory
+        The 2025 trajectory.
+    owners : dict
+        2026 controller name -> list of its joint names.
+
+    Returns
+    -------
+    dict
+        2026 controller name -> trajectory_msgs.msg.JointTrajectory, for each
+        controller owning at least one of the trajectory's joints. An empty
+        trajectory (no joint names) goes to every controller.
+
+    Raises
+    ------
+    ValueError
+        If a joint belongs to none of the controllers, is named twice, or a
+        point is malformed.
+    """
+    names = list(trajectory.joint_names)
+    if not names:
+        return {ctrl: JointTrajectory(header=trajectory.header)
+                for ctrl in owners}
+    if len(set(names)) != len(names):
+        raise ValueError("joint names repeat: %s" % names)
+    owner_of = {j: ctrl for ctrl, joints in owners.items() for j in joints}
+    unknown = [j for j in names if j not in owner_of]
+    if unknown:
+        raise ValueError("joints %s are not in this controller (it has %s)"
+                         % (unknown, sorted(owner_of)))
+    parts = {}
+    for ctrl in owners:
+        indices = [i for i, j in enumerate(names) if owner_of[j] == ctrl]
+        if not indices:
+            continue
+        part = JointTrajectory()
+        part.header = trajectory.header
+        part.joint_names = [names[i] for i in indices]
+        part.points = split_points(trajectory.points, indices, len(names))
+        parts[ctrl] = part
+    return parts
+
+
+class _Goal:
+    """One 2025 goal in flight: its parts sent to the 2026 controllers."""
+
+    def __init__(self, request, joint_order):
+        self.request = request
+        self.joint_order = joint_order
+        self.handles = {}
+        self.feedback = {}
+        self.legacy_handle = None
+
+
+class JedyLegacyBridge(Node):
+    """Serve the 2025 names; see the module docstring."""
+
+    def __init__(self):
+        super().__init__("jedy_legacy_bridge")
+        self.declare_parameter("namespace", "jedy_fullbody")
+        self.declare_parameter("base_topic", "/cmd_vel")
+        self.declare_parameter("restamp_threshold", 60.0)
+        ns = "/" + self.get_parameter("namespace").value.strip("/")
+        self.restamp_threshold_ns = int(
+            self.get_parameter("restamp_threshold").value * 1e9)
+        group = ReentrantCallbackGroup()
+        # Off-clock trajectory stamp (ns) -> its replacement, newest last.
+        self.restamped = {}
+        self.restamped_lock = threading.Lock()
+
+        self.joint_state_pub = self.create_publisher(
+            JointState, "/joint_states", 10)
+        self.create_subscription(
+            JointState, ns + "/joint_states", self.joint_state_pub.publish,
+            10, callback_group=group)
+
+        self.base_pub = self.create_publisher(
+            TwistStamped, self.get_parameter("base_topic").value, 10)
+        self.create_subscription(
+            TwistStamped, "/mecanum_drive_controller/reference",
+            self.on_base, 10, callback_group=group)
+
+        self.owners = {}
+        self.trajectory_pubs = {}
+        self.action_clients = {}
+        self.goals = {}
+        self.legacy_servers = []
+        for legacy, owners in LEGACY_CONTROLLERS.items():
+            self.owners[legacy] = owners
+            for ctrl in owners:
+                self.trajectory_pubs[ctrl] = self.create_publisher(
+                    JointTrajectory, "%s/%s/joint_trajectory" % (ns, ctrl), 10)
+                self.action_clients[ctrl] = ActionClient(
+                    self, FollowJointTrajectory,
+                    "%s/%s/follow_joint_trajectory" % (ns, ctrl),
+                    callback_group=group)
+            self.create_subscription(
+                JointTrajectory, "/%s/joint_trajectory" % legacy,
+                functools.partial(self.on_trajectory, legacy), 10,
+                callback_group=group)
+            self.legacy_servers.append(ActionServer(
+                self, FollowJointTrajectory,
+                "/%s/follow_joint_trajectory" % legacy,
+                execute_callback=self.execute,
+                goal_callback=functools.partial(self.on_goal, legacy),
+                cancel_callback=self.on_cancel,
+                callback_group=group))
+        self.get_logger().info(
+            "serving the 2025 names on top of %s: /joint_states, "
+            "/mecanum_drive_controller/reference, /{%s}/joint_trajectory and "
+            "follow_joint_trajectory" % (ns, ",".join(LEGACY_CONTROLLERS)))
+
+    # -- stamps ----------------------------------------------------------
+
+    def off_clock(self, stamp, what):
+        """Whether ``stamp`` (non-zero) is too far from this node's clock."""
+        t = stamp.sec * 1000000000 + stamp.nanosec
+        if t == 0:
+            return False
+        now = self.get_clock().now().nanoseconds
+        if abs(now - t) <= self.restamp_threshold_ns:
+            return False
+        self.get_logger().warning(
+            "%s: stamp %.1f s is %.0f s away from this clock (%.1f s); "
+            "restamping it. Run the sender with --ros-args -p "
+            "use_sim_time:=true to avoid this."
+            % (what, t / 1e9, (t - now) / 1e9, now / 1e9),
+            throttle_duration_sec=10.0)
+        return True
+
+    def restamped_trajectory(self, trajectory, what):
+        stamp = trajectory.header.stamp
+        if self.off_clock(stamp, what):
+            key = stamp.sec * 1000000000 + stamp.nanosec
+            with self.restamped_lock:
+                if key not in self.restamped:
+                    self.restamped[key] = self.get_clock().now().to_msg()
+                    while len(self.restamped) > RESTAMP_MEMORY:
+                        del self.restamped[next(iter(self.restamped))]
+                trajectory.header.stamp = self.restamped[key]
+        return trajectory
+
+    # -- base and topics -------------------------------------------------
+
+    def on_base(self, msg):
+        if self.off_clock(msg.header.stamp, "/mecanum_drive_controller/reference"):
+            msg.header.stamp = self.get_clock().now().to_msg()
+        self.base_pub.publish(msg)
+
+    def on_trajectory(self, legacy, msg):
+        what = "/%s/joint_trajectory" % legacy
+        try:
+            parts = split_trajectory(self.restamped_trajectory(msg, what),
+                                     self.owners[legacy])
+        except ValueError as e:
+            self.get_logger().error("%s: dropped: %s" % (what, e))
+            return
+        for ctrl, part in parts.items():
+            self.trajectory_pubs[ctrl].publish(part)
+
+    # -- actions ---------------------------------------------------------
+
+    def split_goal(self, legacy, goal):
+        """The parts of a 2025 goal, one per 2026 controller."""
+        what = "/%s/follow_joint_trajectory" % legacy
+        if goal.multi_dof_trajectory.joint_names:
+            raise ValueError("multi-DOF trajectories are not supported")
+        owners = self.owners[legacy]
+        trajectories = split_trajectory(
+            self.restamped_trajectory(goal.trajectory, what), owners)
+        own = {j for joints in owners.values() for j in joints}
+        for tol in list(goal.path_tolerance) + list(goal.goal_tolerance):
+            if tol.name not in own:
+                raise ValueError("tolerance for unknown joint %s" % tol.name)
+        parts = {}
+        for ctrl, trajectory in trajectories.items():
+            joints = set(owners[ctrl])
+            part = FollowJointTrajectory.Goal()
+            part.trajectory = trajectory
+            part.path_tolerance = [t for t in goal.path_tolerance
+                                   if t.name in joints]
+            part.goal_tolerance = [t for t in goal.goal_tolerance
+                                   if t.name in joints]
+            part.goal_time_tolerance = goal.goal_time_tolerance
+            parts[ctrl] = part
+        return parts
+
+    async def on_goal(self, legacy, goal):
+        """Send the parts; accept only if every 2026 controller accepts."""
+        what = "/%s/follow_joint_trajectory" % legacy
+        try:
+            parts = self.split_goal(legacy, goal)
+        except ValueError as e:
+            self.get_logger().error("%s: goal rejected: %s" % (what, e))
+            return GoalResponse.REJECT
+        missing = [c for c in parts if not self.action_clients[c].server_is_ready()]
+        if missing:
+            self.get_logger().error(
+                "%s: goal rejected: %s not running"
+                % (what, ", ".join(missing)))
+            return GoalResponse.REJECT
+        state = _Goal(goal, list(goal.trajectory.joint_names))
+        futures = {
+            ctrl: self.action_clients[ctrl].send_goal_async(
+                part, feedback_callback=functools.partial(
+                    self.on_feedback, state, ctrl))
+            for ctrl, part in parts.items()}
+        rejected = []
+        for ctrl, future in futures.items():
+            handle = await future
+            if handle.accepted:
+                state.handles[ctrl] = handle
+            else:
+                rejected.append(ctrl)
+        if rejected:
+            for handle in state.handles.values():
+                handle.cancel_goal_async()
+            self.get_logger().error(
+                "%s: goal rejected: %s rejected its part"
+                % (what, ", ".join(rejected)))
+            return GoalResponse.REJECT
+        self.goals[id(goal)] = state
+        return GoalResponse.ACCEPT
+
+    def on_cancel(self, goal_handle):
+        state = self.goals.get(id(goal_handle.request))
+        if state is not None:
+            for handle in state.handles.values():
+                handle.cancel_goal_async()
+        return CancelResponse.ACCEPT
+
+    def on_feedback(self, state, ctrl, msg):
+        state.feedback[ctrl] = msg.feedback
+        if state.legacy_handle is None:
+            return
+        merged = FollowJointTrajectory.Feedback()
+        where = {}
+        for c, fb in state.feedback.items():
+            merged.header = fb.header
+            for i, j in enumerate(fb.joint_names):
+                where[j] = (fb, i)
+        names = [j for j in state.joint_order if j in where]
+        merged.joint_names = names
+        for point in ("desired", "actual", "error"):
+            out = getattr(merged, point)
+            for field in POINT_FIELDS:
+                values = []
+                for j in names:
+                    fb, i = where[j]
+                    src = getattr(getattr(fb, point), field)
+                    if len(src) != len(fb.joint_names):
+                        values = None
+                        break
+                    values.append(src[i])
+                if values:
+                    setattr(out, field, values)
+        state.legacy_handle.publish_feedback(merged)
+
+    async def execute(self, goal_handle):
+        """Wait for every part; combine their results."""
+        state = self.goals[id(goal_handle.request)]
+        state.legacy_handle = goal_handle
+        result = FollowJointTrajectory.Result()
+        result.error_code = FollowJointTrajectory.Result.SUCCESSFUL
+        errors = []
+        all_succeeded = True
+        try:
+            for ctrl, handle in state.handles.items():
+                response = await handle.get_result_async()
+                part = response.result
+                ok = (response.status == GoalStatus.STATUS_SUCCEEDED
+                      and part.error_code
+                      == FollowJointTrajectory.Result.SUCCESSFUL)
+                if not ok:
+                    all_succeeded = False
+                    if (result.error_code
+                            == FollowJointTrajectory.Result.SUCCESSFUL):
+                        result.error_code = part.error_code
+                    errors.append("%s: %s (status %d, error_code %d)"
+                                  % (ctrl, part.error_string or "failed",
+                                     response.status, part.error_code))
+        finally:
+            del self.goals[id(goal_handle.request)]
+        result.error_string = "; ".join(errors)
+        if goal_handle.is_cancel_requested:
+            goal_handle.canceled()
+        elif all_succeeded:
+            goal_handle.succeed()
+        else:
+            # A part can end unsuccessfully with error_code SUCCESSFUL: one
+            # cancelled from elsewhere. joint_trajectory_controller reports a
+            # goal preempted by a newer one as INVALID_GOAL; do the same.
+            if result.error_code == FollowJointTrajectory.Result.SUCCESSFUL:
+                result.error_code = FollowJointTrajectory.Result.INVALID_GOAL
+            goal_handle.abort()
+        return result
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = JedyLegacyBridge()
+    # One thread is enough: the goal and execute callbacks are coroutines,
+    # which yield while they wait for the 2026 controllers.
+    executor = SingleThreadedExecutor()
+    executor.add_node(node)
+    try:
+        executor.spin()
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
+    finally:
+        executor.shutdown()
+        node.destroy_node()
+        rclpy.try_shutdown()
+
+
+if __name__ == "__main__":
+    main()

@@ -8,6 +8,7 @@
     ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true camera:=d405  # demo stage
     ros2 launch jedy_bringup jedy_gazebo.launch.py tags:=true  # 10 AprilTags around
     ros2 launch jedy_bringup jedy_gazebo.launch.py world:=empty   # no room, an endless floor
+    ros2 launch jedy_bringup jedy_gazebo.launch.py legacy:=false  # no 2025 names, no ball
 
 By default the robot stands in Room 13BC, the exercise room
 (room13bc_description), at its jedy_spot.
@@ -37,6 +38,13 @@ What the simulator has that the board does not, and the other way round:
   (and the Sensors system) for machines with no usable GL; the IMU still runs.
   There is no LiDAR: the exercises do not use one, and rendering it slowed
   the simulation.
+
+legacy:=true (the default) also serves the 2025 names, for the robot system
+lecture and other programs written for the 2025 simulation: jedy_legacy_bridge
+maps /joint_states, /mecanum_drive_controller/reference and
+/{head,rarm,larm}_controller/{joint_trajectory,follow_joint_trajectory} onto
+the ones above, and ball:= (default: legacy) puts back the 2025 world's red
+ball.
 """
 
 import math
@@ -284,6 +292,22 @@ RED_BOX_SDF = (
     "</geometry><material><ambient>0.8 0 0 1</ambient>"
     "<diffuse>0.8 0 0 1</diffuse></material></visual>"
     "</link></model></sdf>")
+
+
+#: The 2025 world's red ball (empty.world's "sphere"): radius 0.5 m, its
+#: centre 1.5 m to the left of the spawn pose, resting on the floor. Static
+#: like the box. In the room it is in the open floor: the nearest collision
+#: shapes are the end wall 1.5 m behind it and the desks 2.0 m ahead.
+RED_BALL_SDF = (
+    "<sdf version='1.9'><model name='red_ball'><static>true</static>"
+    "<link name='link'>"
+    "<collision name='c'><geometry><sphere><radius>0.5</radius></sphere>"
+    "</geometry></collision>"
+    "<visual name='v'><geometry><sphere><radius>0.5</radius></sphere>"
+    "</geometry><material><ambient>1 0 0 1</ambient>"
+    "<diffuse>1 0 0 1</diffuse></material></visual>"
+    "</link></model></sdf>")
+RED_BALL_XYZ = (0.0, 1.5, 0.5)
 
 
 #: The checkerboard of the 2025 day-1 exercise (checkerboard_detector): 7 x 4
@@ -751,6 +775,16 @@ def generate_launch_description():
         output="screen",
     )
 
+    # legacy:=true: the 2025 red ball, for the camshift exercises.
+    ball = Node(
+        package="ros_gz_sim", executable="create",
+        arguments=["-name", "red_ball", "-string", RED_BALL_SDF,
+                   "-x", str(RED_BALL_XYZ[0]), "-y", str(RED_BALL_XYZ[1]),
+                   "-z", str(RED_BALL_XYZ[2])],
+        condition=IfCondition(LaunchConfiguration("ball")),
+        output="screen",
+    )
+
     # The day-1 checkerboard (jedy_skrobot checkerboard_pose).
     checkerboard = Node(
         package="ros_gz_sim", executable="create",
@@ -881,6 +915,15 @@ def generate_launch_description():
         condition=sounds, output="screen",
     )
 
+    # legacy:=true: the 2025 topic and action names, on top of the ones
+    # above (jedy_legacy_bridge's docstring has the mapping).
+    legacy_bridge = Node(
+        package="jedy_bringup", executable="jedy_legacy_bridge",
+        parameters=[{"namespace": NAMESPACE}, use_sim_time],
+        condition=IfCondition(LaunchConfiguration("legacy")),
+        output="screen",
+    )
+
     rviz = Node(
         package="rviz2", executable="rviz2", name="rviz2",
         arguments=["-d", PathJoinSubstitution(
@@ -916,14 +959,32 @@ def generate_launch_description():
                               choices=["true", "false"],
                               description="a red box for the camera "
                                           "exercise (track_box)"),
-        DeclareLaunchArgument("clock_every", default_value="4",
-                              description="publish /clock every N physics "
-                                          "steps (5 ms each): 4 = 50 Hz"),
         DeclareLaunchArgument("tags", default_value="false",
                               choices=["true", "false"],
                               description="ten 64 mm AprilTags (ids 0-9) on "
                                           "posts around the robot (tag_pose, "
                                           "approach_tag); not with demo:=true"),
+        DeclareLaunchArgument("legacy", default_value="true",
+                              choices=["true", "false"],
+                              description="also serve the 2025 topic/action "
+                                          "names (/joint_states, "
+                                          "/mecanum_drive_controller/"
+                                          "reference, /{head,rarm,larm}_"
+                                          "controller/...) for the robot "
+                                          "system lecture and older "
+                                          "programs"),
+        # Default: legacy, except with tags:=true, whose posts 2 and 3
+        # stand where the ball would be. Declared after tags, which it reads.
+        DeclareLaunchArgument("ball", default_value=PythonExpression([
+            "'true' if '", LaunchConfiguration("legacy"), "' == 'true' and '",
+            LaunchConfiguration("tags"), "' != 'true' else 'false'"]),
+                              choices=["true", "false"],
+                              description="the 2025 world's red ball (r 0.5 "
+                                          "m, 1.5 m to the left); default: "
+                                          "legacy, but false with tags:=true"),
+        DeclareLaunchArgument("clock_every", default_value="4",
+                              description="publish /clock every N physics "
+                                          "steps (5 ms each): 4 = 50 Hz"),
         DeclareLaunchArgument("rviz", default_value="false",
                               choices=["true", "false"]),
         DeclareLaunchArgument("demo", default_value="false",
@@ -970,7 +1031,7 @@ def generate_launch_description():
         gazebo, OpaqueFunction(function=room_nodes),
         OpaqueFunction(function=room_tag_nodes),
         robot_state_pub, joint_state_pub, spawn, bridge, clock_bridge, clock_drop,
-        render_bridge, box, checkerboard, person, *demo_nodes,
+        render_bridge, box, ball, checkerboard, person, *demo_nodes,
         *controller_nodes, servo, presence, sound_play, sim_sounds,
-        rviz,
+        legacy_bridge, rviz,
     ])

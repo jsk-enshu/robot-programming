@@ -53,6 +53,26 @@
   <exec_depend>topic_tools</exec_depend>
   <exec_depend>gz_ros2_control</exec_depend>
 
+  <!-- jedy_legacy_bridge and the 2025 exercise scripts and launch files -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>action_msgs</exec_depend>
+  <!-- track_box_to_cmd_vel_{0,1}.py: /camshift/track_box -->
+  <exec_depend>opencv_apps</exec_depend>
+  <!-- checkerboard_detector.py / .launch.py -->
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>image_view</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  <!-- launch/enshu.perspective -->
+  <exec_depend>rqt_joint_trajectory_controller</exec_depend>
+  <exec_depend>rqt_robot_steering</exec_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

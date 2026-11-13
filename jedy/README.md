@@ -10,6 +10,30 @@
 - 同じネットワークで複数人が ROS 2 を動かすと通信が混ざるので，必ず
   `export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` を設定する (`~/.bashrc` に書いておく)．
 
+## 2025 互換 (ロボットシステムの講義)
+
+`jedy_gazebo.launch.py` は既定 (`legacy:=true`) で 2025 年度のシミュレーションの名前も提供する
+(`jedy_bringup/scripts/jedy_legacy_bridge` が 2026 年度の `/jedy_fullbody/...` に中継する)．不要なら `legacy:=false`．
+
+- `/joint_states` (`/jedy_fullbody/joint_states` の中継)
+- `/mecanum_drive_controller/reference` (`geometry_msgs/TwistStamped`) → `/cmd_vel`
+- `/{head,rarm,larm}_controller/joint_trajectory` と `/{head,rarm,larm}_controller/follow_joint_trajectory`
+  (関節名で 2026 年度の `head` / `right_arm`+`right_gripper` / `left_arm`+`left_gripper` コントローラに振り分ける．腕は 2025 年度と同じくグリッパ関節も含められる．一部の関節だけの指令も可)
+- 2025 年度の world の赤い球 (半径 0.5 m，ロボットの左 1.5 m)．`ball:=false` で消す (`tags:=true` のときは既定で出ない)
+- `use_sim_time` を付けずに実行した 2025 年度のプログラムの時刻 (壁時計) は，ブリッジがシミュレーション時刻に付け直す
+
+2025 年度のまま戻したもの (`jedy_bringup`): `ros2 run jedy_bringup` で
+`send_joint_position.py`，`send_joint_position_action.py`，`track_box_to_cmd_vel_0.py`，`track_box_to_cmd_vel_1.py`
+(`opencv_apps` の `/camshift/track_box` を使う)，`checkerboard_detector.py` と `launch/checkerboard_detector.launch.py`，
+`enshu.perspective` (rqt; コントローラマネージャは `/jedy_fullbody/controller_manager`)．
+シミュレーションのチェッカーボード (`checkerboard:=true`) は内側コーナー 7x4，1 マス 0.04 m なので
+
+```
+ros2 launch jedy_bringup checkerboard_detector.launch.py use_sim_time:=true \
+  input_topic:=/camera/color/image_rect_raw camera_info_topic:=/camera/color/camera_info \
+  checkerboard_size:='[7, 4]' square_size:=0.04
+```
+
 The rest of this file is for whoever runs and maintains the real robot.
 
 Everything that is *about this robot*: its description, its ros2_control

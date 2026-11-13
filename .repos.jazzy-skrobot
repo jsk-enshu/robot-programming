@@ -36,3 +36,10 @@ repositories:
     type: git
     url: https://github.com/iory/audio_common.git
     version: fix-sound-play-idle-deadlock
+  # The robot system lecture (2025 material, jedy_gazebo.launch.py legacy:=true):
+  # ros2 launch opencv_apps camshift.launch.py / face_detection.launch.py, and
+  # jedy_bringup's track_box_to_cmd_vel_*.py read /camshift/track_box.
+  opencv_apps:
+    type: git
+    url: https://github.com/iory/opencv_apps.git
+    version: ros2
