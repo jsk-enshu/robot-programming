@@ -1,0 +1,73 @@
+# 物体検出 (ri.what_do_you_see / ri.sees) で使う日本語の単語と，検出器に渡す英語の対応表．
+# 検出器 (YOLOE) は英語で学習されているので，日本語の単語はここで英語に直してから渡す．
+# 使いたい単語を自由に足してよい (足したら colcon build し直す)．
+#
+# ここに無い日本語の単語はエラーになる (黙って何も見つからない，とはならない)．
+# 英語の単語はここに無くてもそのまま使える．
+#
+# 英語は「短い一般的な名詞」ほどよく当たる．例 (同じ画像):
+#   bottle         -> 4 個見つかる
+#   plastic bottle -> 0 個      (具体的すぎると当たらない)
+# 新しい単語を足したら，実際の画像で当たるか確かめること．
+# 確かめたのは 人 (person)・ペットボトル (bottle)・コップ (cup)・椅子 (chair) だけ．
+#
+# 色の付いた物は「色 + object」がよく当たる．Gazebo の赤い箱 (box:=true) は
+#   box 0.02 / red box 0.07 / block 0.15 / red object 0.75
+# だった (模様の無い単色の箱は「箱」に見えない)．
+
+# 人・身の回り
+人: person
+顔: face
+手: hand
+靴: shoes
+帽子: hat
+
+# 文房具
+鉛筆: pencil
+消しゴム: eraser
+ペン: pen
+定規: ruler
+はさみ: scissors
+のり: glue stick
+筆箱: pencil case
+ノート: notebook
+本: book
+
+# 電子機器
+スマホ: smartphone
+タブレット: tablet
+パソコン: laptop
+キーボード: keyboard
+マウス: computer mouse
+
+# 飲み物・食べ物
+ペットボトル: bottle
+水筒: water bottle
+コップ: cup
+牛乳: milk carton
+お茶: bottle
+ジュース: juice box
+りんご: apple
+バナナ: banana
+みかん: orange
+ぶどう: grapes
+パン: bread
+おにぎり: rice ball
+
+# 家具・部屋
+机: desk
+椅子: chair
+いす: chair
+ドア: door
+窓: window
+時計: wall clock
+リュック: backpack
+ボール: ball
+箱: box
+
+# 色 (Gazebo の赤い箱はこれで見つかる)
+赤いもの: red object
+赤い箱: red object
+青いもの: blue object
+緑のもの: green object
+黄色いもの: yellow object

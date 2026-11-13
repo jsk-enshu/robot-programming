@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypelang="RNG" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<package format="3">
+  <name>jedy_skrobot</name>
+  <version>0.0.1</version>
+  <description>
+    Interactive scikit-robot shell for Jedy: `ri.angle_vector(...)` drives the
+    real robot through the same JointTrajectoryController the RViz panel and the
+    CLI use, and `ri.servo_on()` / `servo_off()` through the same SetServo
+    action.
+
+    A thin robot-specific layer over actuo_ros's RobotInterface: this
+    package supplies the model, the joint order and the namespaced controller
+    name; everything about talking to the bus servicer lives there. Like
+    jedy_bringup, it depends on actuo and actuo never depends back.
+  </description>
+  <maintainer email="ab.ioryz@gmail.com">iory</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_uv_virtualenv</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>actuo_msgs</depend>
+  <depend>control_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>trajectory_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>diagnostic_msgs</depend>
+  <depend>controller_manager_msgs</depend>
+
+  <exec_depend>actuo_ros</exec_depend>
+  <!-- ri.what_do_you_see() / ri.gesture(): imported when called -->
+  <exec_depend>jedy_vision_msgs</exec_depend>
+  <!-- matplotlib's window (show_camera) -->
+  <exec_depend>python3-tk</exec_depend>
+  <!-- ri.say() / ri.listen(): imported when called (jsk_3rdparty, audio_common) -->
+  <exec_depend>sound_play_msgs</exec_depend>
+  <exec_depend>speech_recognition_msgs</exec_depend>
+  <exec_depend>jedy_description</exec_depend>
+  <exec_depend>jedy_bringup</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,48 +1,93 @@
 <?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypelang="RNG" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <package format="3">
   <name>jedy_bringup</name>
-  <version>8.0.0</version>
-  <description>JEDY bringup for jsk robot programming enshu (ROS2)</description>
-  <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
-  <license>BSD</license>
+  <version>0.0.1</version>
+  <description>
+    ros2_control bring-up for the Jedy robot on real hardware: the
+    &lt;ros2_control&gt; xacro that wraps jedy_description, the controller and
+    Kondo bus configs, the launch files and the RViz layout. Also the
+    simulator side (Gazebo system plugins, the simulated servo switch, motor
+    sounds), wheel odometry (an estimate, kept out of actuo) and driving from
+    a gamepad.
+
+    This is where the robot meets the driver, and the dependency runs one way:
+    jedy depends on actuo, never the reverse. actuo is the actuator
+    abstraction and must not know this robot's joint names, servo ids or link
+    lengths. Everything
+    here is per-robot, which is exactly why it lives here and not there.
+  </description>
+  <maintainer email="ab.ioryz@gmail.com">iory</maintainer>
+  <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>jedy_description</depend>
+  <!-- the Gazebo system plugins in src/ (servo OFF, mimic joints) -->
+  <depend>gz_sim_vendor</depend>
+  <depend>gz_plugin_vendor</depend>
 
-  <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>ros2_controllers</exec_depend>
-  <exec_depend>ros2_control</exec_depend>
-  <exec_depend>gz_ros2_control</exec_depend>
-  <exec_depend>rviz2</exec_depend>
-  <exec_depend>topic_tools</exec_depend>
-  <exec_depend>ros_gz_sim</exec_depend>
-  <exec_depend>xacro</exec_depend>
-  <exec_depend>joint_state_publisher_gui</exec_depend>
+  <!-- the robot -->
+  <exec_depend>jedy_description</exec_depend>
+
+  <!-- the driver (actuo's ROS 2 layer): the C++ ros2_control shim, the Python
+       bus servicer that speaks to the Kondo RCB-4mini, the udev rules, and the RViz servo/diagnostics panels. -->
+  <exec_depend>actuo_hardware</exec_depend>
+  <exec_depend>actuo_ros</exec_depend>
+  <exec_depend>actuo_msgs</exec_depend>
+  <exec_depend>actuo_rviz_plugins</exec_depend>
+
+  <!-- stock ros2_control -->
   <exec_depend>controller_manager</exec_depend>
-  <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
-  <exec_depend>ros_gz_bridge</exec_depend>
-  <exec_depend>depth_image_proc</exec_depend>
-  <exec_depend>robot_localization</exec_depend>
-  <exec_depend>rqt_joint_trajectory_controller</exec_depend>
-  <exec_depend>rqt_robot_steering</exec_depend>
-  <exec_depend>image_view</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <!-- the mecanum base, named by jedy_fullbody_controllers.yaml. -->
   <exec_depend>mecanum_drive_controller</exec_depend>
-  <exec_depend>image_transport</exec_depend>
-  <exec_depend>image_transport_plugins</exec_depend>
-  <exec_depend>compressed_image_transport</exec_depend>
-  <exec_depend>compressed_depth_image_transport</exec_depend>
-  <exec_depend>theora_image_transport</exec_depend>
-  <exec_depend>zstd_image_transport</exec_depend>
+  <exec_depend>velocity_controllers</exec_depend>
+  <exec_depend>effort_controllers</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <!-- jedy_gazebo.launch.py only -->
+  <exec_depend>ros_gz_sim</exec_depend>
+  <!-- jedy_gazebo.launch.py world:=room13bc (the default): the exercise room -->
+  <exec_depend>room13bc_description</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+  <!-- topic_tools drop: thins /clock (jedy_gazebo.launch.py) -->
+  <exec_depend>topic_tools</exec_depend>
+  <exec_depend>gz_ros2_control</exec_depend>
+
+  <!-- jedy_legacy_bridge and the 2025 exercise scripts and launch files -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>action_msgs</exec_depend>
+  <!-- track_box_to_cmd_vel_{0,1}.py: /camshift/track_box -->
+  <exec_depend>opencv_apps</exec_depend>
+  <!-- checkerboard_detector.py / .launch.py -->
   <exec_depend>cv_bridge</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
-  <exec_depend>rviz_2d_overlay_msgs</exec_depend>
-  <exec_depend>gnome-terminal</exec_depend>
-
-  <!-- Python dependencies for robocrew_image_to_cmd_vel.py -->
+  <exec_depend>image_view</exec_depend>
   <exec_depend>python3-opencv</exec_depend>
   <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  <!-- launch/enshu.perspective -->
+  <exec_depend>rqt_joint_trajectory_controller</exec_depend>
+  <exec_depend>rqt_robot_steering</exec_depend>
+
+  <!-- jedy_sim_servo, jedy_sim_sounds (motor sounds in Gazebo, sounds:=true) -->
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sound_play</exec_depend>
+  <exec_depend>sound_play_msgs</exec_depend>
+  <!-- jedy_wheel_odometry -->
+  <exec_depend>nav_msgs</exec_depend>
+  <!-- jedy_joy.launch.py: the gamepad driver -->
+  <exec_depend>joy_linux</exec_depend>
+
+  <test_depend>ament_cmake_pytest</test_depend>
+  <test_depend>python3-pytest</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

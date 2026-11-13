@@ -1,34 +1,16 @@
-// Reset exercise counter for each day
+// Number the checkpoints of each page from 1.
+//
+// sphinx-exercise numbers exercises across the whole book, so a page's first
+// checkpoint gets the number after the last one of the pages before it. This
+// renumbers them in page order instead of subtracting a fixed offset per page,
+// which went wrong whenever a page was added, moved or given another checkpoint.
 document.addEventListener('DOMContentLoaded', function() {
-    // Get the current page filename
-    var currentPage = window.location.pathname.split('/').pop();
-
-    // Define offset for each day
-    var offsets = {
-        'robot-programming-3-2025.html': 0,  // Day 1: starts from 1 (no offset)
-        'robot-programming-1-2025.html': -7, // Day 2: should start from 1 (offset -7)
-        'robot-programming-2-2025.html': -15 // Day 3: should start from 1 (offset -15)
-    };
-
-    // Check if current page needs exercise number adjustment
-    if (currentPage in offsets) {
-        var offset = offsets[currentPage];
-
-        // Find all exercise caption numbers
-        var captionNumbers = document.querySelectorAll('.exercise .admonition-title .caption-number');
-
-        captionNumbers.forEach(function(element) {
-            // Extract current number
-            var text = element.textContent;
-            var match = text.match(/チェックポイント (\d+)/);
-
-            if (match) {
-                var currentNumber = parseInt(match[1]);
-                var newNumber = currentNumber + offset;
-
-                // Update the text with new number
-                element.textContent = 'チェックポイント ' + newNumber + ' ';
-            }
-        });
-    }
+    var captionNumbers = document.querySelectorAll('.exercise .admonition-title .caption-number');
+    var n = 0;
+    captionNumbers.forEach(function(element) {
+        if (/チェックポイント \d+/.test(element.textContent)) {
+            n += 1;
+            element.textContent = 'チェックポイント ' + n + ' ';
+        }
+    });
 });

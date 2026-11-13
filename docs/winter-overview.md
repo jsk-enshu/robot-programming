@@ -50,7 +50,7 @@ name: fig:system-configuration-all-index
 
 3. **第3回 令和8年11月19日（木）知能ロボット行動プログラミング(3)**
    - メカトロボットの製作とプログラミング
-   - ※機械工学総合演習第二「電子回路演習」で配布した回路教材を用意しておくこと
+   - ※{doc}`機械系二学科 夏学期演習 マイコンプログラミング演習<micon-programming>`で配布した回路教材を用意しておくこと
 
 ## 演習の進め方
 
@@ -62,7 +62,7 @@ name: fig:system-configuration-all-index
 各チェックポイントはその日の必須課題となっているので実行結果の画面などをスクリーンショットや写真で保存しておくとよい．
 各チェックポイントを確認し終えたら進捗報告シート(Googleスプレッドシートを予定)に記入していくこと．
 各チェックポイントに書いてあることができない場合次回以降の演習遂行が困難になるのでうまくいかなければTAを呼んで解決し先に進んで欲しい．
-また**ロボットシステムの講義で扱ったROS (Robot Operating System)およびPythonやEusLisp**をある程度習得していることを前提に進めるがこれらに関することも遠慮なく質問して構わない．
+また**ロボットシステムの講義で扱ったROS (Robot Operating System)およびPython**をある程度習得していることを前提に進めるがこれらに関することも遠慮なく質問して構わない．
 **TAとして来ている研究室の学生もこういったロボットプログラミングを学習してきているが，自分で行うのと自分以外の人の質問に答えたりすることはまた異なる能力が求められるため，どんどん質問して一緒に問題を解決していってほしい．**
 毎回最終的に「本日の課題」に取り組み実行結果をUTOLで提出すること．
 
@@ -114,18 +114,19 @@ GitHubでの貢献方法を知っている人は積極的に修正してほし�
 - **演習FAQ**
   - https://github.com/jsk-enshu/robot-programming/wiki/FAQ
 
-- **EusLispのドキュメント**
-  - https://github.com/euslisp/jskeus/blob/master/doc/jmanual.pdf
-  - http://euslisp-docs.readthedocs.io/en/latest
+- **scikit-robot のドキュメント** (ロボットモデル・運動学・ビューワ)
+  - https://scikit-robot.readthedocs.io/en/latest/
+  - ソースコード: https://github.com/iory/scikit-robot
 
-- **EusLisp document for robot-programming**
-  - http://jsk-enshu.github.io/robot-programming/robot_programming_manual.pdf
-  - タートルボットのメソッド等，演習に役立つEusLispのドキュメント
-  - (https://github.com/jsk-enshu/robot-programming のREADMEのdocumentationsからたどれる)
+- **scikit-robot-web** (ブラウザだけで Jedy をプログラムして動かせる．インストール不要)
+  - https://iory.github.io/scikit-robot-web/
+
+- **ROS 2 Jazzy のドキュメント**
+  - https://docs.ros.org/en/jazzy/
 
 ## 事前準備
 
-{doc}`robot-programming-3-2026`は機械工学総合演習第二「電子回路演習」で配布した回路教材を用意しておくこと．
+{doc}`robot-programming-3-2026`は{doc}`機械系二学科 夏学期演習 マイコンプログラミング演習<micon-programming>`で配布した回路教材を用意しておくこと．
 {doc}`robot-programming-1-2026`と{doc}`robot-programming-2-2026`ではジョイスティックコントローラ・Jedyは適宜充電すること．
 各回の資料や付録の情報もぜひ見ながら演習を進めてほしい．
 また必須ではないが左のサイドバーに[Caps LockをCtrlに変更](tips/caps-to-ctrl.md)などの便利な情報がまとまっているので適宜参照してほしい．

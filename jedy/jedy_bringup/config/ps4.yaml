@@ -1,0 +1,31 @@
+# The PS4 pad as Linux reports it on kernel 6.8: 8 axes, 13 buttons. Read from
+# the device rather than copied -- the numbering moves between kernel drivers,
+# and a wrong index is not an error, it is a button that quietly does something
+# else. Check any new pad with `ros2 run jedy_bringup jedy_joy_buttons`.
+#
+# These are documentation: jedy_joy.py holds the same numbers as named
+# constants so the node needs no config file to run. They live here so the
+# mapping can be looked up without reading the source.
+axes:
+  0: left stick X    # strafe
+  1: left stick Y    # forward / back
+  2: L2 analogue     # unused
+  3: right stick X   # turn
+  4: right stick Y   # unused
+  5: R2 analogue     # unused
+  6: D-pad X         # head pan
+  7: D-pad Y         # head tilt
+buttons:
+  0: cross
+  1: circle          # RELEASE torque -- deliberately needs no deadman
+  2: triangle        # torque ON, after re-syncing the controllers
+  3: square
+  4: L1              # deadman: nothing moves without it
+  5: R1              # slow mode
+  6: L2
+  7: R2
+  8: share
+  9: options
+  10: PS
+  11: L3
+  12: R3

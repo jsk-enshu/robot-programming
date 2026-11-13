@@ -1,0 +1,7 @@
+# `uv pip compile --override`: drop the OpenCV distributions that the
+# dependencies ask for, so only requirements.in's
+# opencv-contrib-python-headless provides cv2. (A marker that is never true
+# removes a requirement.)
+opencv-python ; sys_platform == 'never'
+opencv-contrib-python ; sys_platform == 'never'
+opencv-python-headless ; sys_platform == 'never'

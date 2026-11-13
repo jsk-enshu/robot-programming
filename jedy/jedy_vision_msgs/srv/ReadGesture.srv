@@ -1,0 +1,7 @@
+# The hand gesture held steady in the latest camera images.
+---
+# False when there is no recent image; message says why. No hand is
+# success with an empty label.
+bool success
+string message
+Gesture gesture

@@ -1,0 +1,286 @@
+#!/usr/bin/env python3
+"""Take Jedy's ROS 2 side down, leaving nothing for the next launch to trip on.
+
+    ros2 run jedy_bringup jedy_stop              # controllers, RViz, teleop
+    ros2 run jedy_bringup jedy_stop --servicer   # the bus servicer too
+    ros2 run jedy_bringup jedy_stop --dry-run    # say what it would stop
+
+`--robot` (default jedy_fullbody) is the ROS namespace, which is also the shm
+name; that is what lets one flag select both. Nodes, the segment and the
+servicer are all matched by it. The `ros2 launch` processes are NOT -- they are
+matched on the package, so that a launch file added tomorrow is covered the day
+it is written, and stopping the robot interrupts any jedy_bringup launch.
+
+Why a script and not `pkill -f ros2`
+------------------------------------
+Two things have to happen in an order, and one thing must NOT happen.
+
+The order: `ros2 launch` is what owns the nodes it started, so it gets the
+interrupt first and takes them down itself. Killing the children instead leaves
+a launch process alive that thinks its robot is still running. Only what
+survives that -- an orphan from an earlier `kill -9` -- is then killed
+directly.
+
+The thing that must not happen: the bus servicer owns torque. Stopping it drops
+every joint, and an arm held out drops with it. So it is left running unless
+asked for by name, which is the same reason jedy_fullbody.launch.py does not
+start it.
+
+The leftover: /tmp/actuo_<shm>.shm is an mmap'd file, not a POSIX shm object, so
+it outlives every process that touched it. A stale one lets the next servicer
+complete its handshake against nobody while ros2_control waits for a segment it
+now owns alone -- the deadlock in the README. Removed here, but only once
+nothing is left holding it.
+"""
+
+import argparse
+import os
+import signal
+import sys
+import time
+
+#: Default robot. Both the ROS namespace and the shm name are this string
+#: (NAMESPACE and SHM_NAME in jedy_fullbody_all.launch.py), which is what lets
+#: one --robot select both.
+DEFAULT_ROBOT = "jedy_fullbody"
+
+# Rebound in main() from --robot. Module-level because classify() and
+# remove_stale_segment() read them, and threading a config object through both
+# would buy nothing at this size.
+NAMESPACE = DEFAULT_ROBOT
+SHM_NAME = DEFAULT_ROBOT
+SHM_PATH = os.path.join("/tmp", "actuo_{}.shm".format(SHM_NAME))
+
+# Long enough for ros2 launch to shut down RViz and a controller manager, short
+# enough that a wedged process is not something you sit and wait for.
+GRACE_SECONDS = 8.0
+
+
+def process_argv(pid):
+    """The command line of one process, as a list.
+
+    Parameters
+    ----------
+    pid : int
+        Process id to read.
+
+    Returns
+    -------
+    list of str
+        Empty if the process is gone or unreadable, which is not an error --
+        it simply is not something to stop.
+    """
+    try:
+        with open("/proc/{}/cmdline".format(pid), "rb") as handle:
+            return handle.read().decode("utf-8", "replace").split("\0")
+    except OSError:
+        return []
+
+
+def all_pids():
+    """Every process id currently on this machine, as ints."""
+    return sorted(int(e) for e in os.listdir("/proc") if e.isdigit())
+
+
+def classify(argv):
+    """What role a process plays in this robot, or None if it plays none.
+
+    Parameters
+    ----------
+    argv : list of str
+        A process command line.
+
+    Returns
+    -------
+    str or None
+        'launch' for a ros2 launch of one of this repo's launch files,
+        'node' for a node namespaced to this robot, 'servicer' for the bus
+        servicer holding this robot's shared memory.
+    """
+    if not argv:
+        return None
+    joined = " ".join(argv)
+    namespaced = "__ns:=/{}".format(NAMESPACE) in argv \
+        or "/{}/controller_manager".format(NAMESPACE) in argv
+
+    # The launch process itself: `ros2 launch jedy_bringup <file>.launch.py`.
+    # Matched on the package rather than the file name so a new launch file in
+    # this package is covered the day it is written.
+    if "launch" in argv and "jedy_bringup" in argv:
+        return "launch"
+    if "actuo_bus_node" in joined and SHM_NAME in argv:
+        return "servicer"
+    if namespaced:
+        return "node"
+    # RViz is started with -d <config>, which carries no namespace.
+    if argv[0].endswith("rviz2") and "{}.rviz".format(NAMESPACE) in joined:
+        return "node"
+    # The teleop node runs in the global namespace -- it publishes /cmd_vel,
+    # which is where the base listens. An orphan of it is not cosmetic: it is a
+    # second thing commanding the wheels, and it holds the pad. Its monitor
+    # (jedy_joy_monitor) only reads, so the exact name is what matches.
+    if argv[0].endswith("jedy_joy"):
+        return "node"
+    return None
+
+
+def survey(include_servicer):
+    """Group this robot's live processes by role.
+
+    Parameters
+    ----------
+    include_servicer : bool
+        Whether the bus servicer counts as something to stop. See the module
+        docstring: it owns torque.
+
+    Returns
+    -------
+    dict
+        Keys 'launch', 'node', 'servicer'; values are lists of
+        (pid, command line) pairs. 'servicer' is reported either way -- the
+        caller needs to know one is running even when it is not stopping it.
+    """
+    found = {"launch": [], "node": [], "servicer": []}
+    for pid in all_pids():
+        if pid == os.getpid():
+            continue
+        argv = process_argv(pid)
+        role = classify(argv)
+        if role is None:
+            continue
+        if role == "servicer" and not include_servicer:
+            found["servicer"].append((pid, " ".join(a for a in argv if a)))
+            continue
+        found[role].append((pid, " ".join(a for a in argv if a)))
+    return found
+
+
+def alive(pid):
+    """Whether a process still exists."""
+    return os.path.exists("/proc/{}".format(pid))
+
+
+def signal_and_wait(pids, sig, seconds):
+    """Send one signal to each pid, then wait for them to go.
+
+    Returns
+    -------
+    list of int
+        Those still alive when the wait ran out.
+    """
+    for pid in pids:
+        try:
+            os.kill(pid, sig)
+        except ProcessLookupError:
+            pass          # died on its own between the survey and here
+        except PermissionError:
+            print("  cannot signal pid {} (not yours)".format(pid))
+    deadline = time.time() + seconds
+    remaining = list(pids)
+    while remaining and time.time() < deadline:
+        time.sleep(0.2)
+        remaining = [p for p in remaining if alive(p)]
+    return remaining
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description=__doc__.splitlines()[0],
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "--servicer", action="store_true",
+        help="stop the bus servicer as well. THIS DROPS TORQUE: every joint "
+             "goes limp, so hold or lower the arms first.")
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="list what would be stopped and exit")
+    parser.add_argument(
+        "--robot", default=DEFAULT_ROBOT,
+        help="which Jedy to stop: the ROS namespace, which is also the shm "
+             "name (default: %(default)s). Getting this wrong is not "
+             "destructive, it just finds nothing: every match here is keyed "
+             "to the name.")
+    args = parser.parse_args()
+
+    global NAMESPACE, SHM_NAME, SHM_PATH
+    NAMESPACE = args.robot
+    SHM_NAME = args.robot
+    SHM_PATH = os.path.join("/tmp", "actuo_{}.shm".format(SHM_NAME))
+
+    found = survey(args.servicer)
+    targets = found["launch"] + found["node"] + \
+        (found["servicer"] if args.servicer else [])
+
+    if not targets:
+        print("nothing of {} is running.".format(NAMESPACE))
+        if found["servicer"]:
+            for pid, cmd in found["servicer"]:
+                print("  (bus servicer pid {} left alone: {})"
+                      .format(pid, cmd[:100]))
+        if not args.dry_run:
+            remove_stale_segment(found["servicer"])
+        elif os.path.exists(SHM_PATH) and not found["servicer"]:
+            print("would remove stale segment {}".format(SHM_PATH))
+        return 0
+
+    for role in ("launch", "node", "servicer"):
+        for pid, cmd in found[role]:
+            kept = role == "servicer" and not args.servicer
+            print("{:9s} pid {:<7d} {}{}".format(
+                role, pid, cmd[:110], "   [left running]" if kept else ""))
+    if args.dry_run:
+        return 0
+
+    # The launches first, and alone: each one takes its own nodes down, so what
+    # is left after this is by definition an orphan.
+    if found["launch"]:
+        print("\ninterrupting {} launch process(es)..."
+              .format(len(found["launch"])))
+        signal_and_wait([p for p, _ in found["launch"]],
+                        signal.SIGINT, GRACE_SECONDS)
+
+    still = [p for p, _ in targets if alive(p)]
+    if still:
+        print("interrupting {} remaining process(es)...".format(len(still)))
+        still = signal_and_wait(still, signal.SIGINT, GRACE_SECONDS)
+    if still:
+        print("killing {}: {}".format(
+            len(still), ", ".join(str(p) for p in still)))
+        still = signal_and_wait(still, signal.SIGKILL, 3.0)
+    if still:
+        print("STILL RUNNING after SIGKILL: {} -- these are not stoppable "
+              "from here, and a relaunch will collide with them."
+              .format(", ".join(str(p) for p in still)))
+        return 1
+
+    servicer_left = [] if args.servicer else found["servicer"]
+    remove_stale_segment(servicer_left)
+    print("stopped. {}".format(
+        "torque is off." if args.servicer
+        else "the bus servicer keeps torque as it was."))
+    return 0
+
+
+def remove_stale_segment(servicer_left):
+    """Delete the leftover shm file, unless a servicer is still using it.
+
+    Parameters
+    ----------
+    servicer_left : list
+        Servicer processes deliberately left running. Non-empty means the
+        segment is live and must not be touched.
+    """
+    if servicer_left:
+        return
+    if os.path.exists(SHM_PATH):
+        try:
+            os.remove(SHM_PATH)
+            print("removed stale segment {}".format(SHM_PATH))
+        except OSError as error:
+            print("could not remove {}: {} -- delete it by hand before the "
+                  "next bring-up, or the servicer will hand-shake against "
+                  "nobody.".format(SHM_PATH, error))
+
+
+if __name__ == "__main__":
+    sys.exit(main())

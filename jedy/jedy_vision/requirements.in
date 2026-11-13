@@ -1,0 +1,36 @@
+# scikit-robot: the SAME pin as jedy_skrobot. The demos call
+# jedy_skrobot.connect(), whose interface subclasses skrobot's; two different
+# scikit-robots in two venvs would be two different base classes.
+scikit-robot @ git+https://github.com/iory/scikit-robot.git@main
+
+numpy
+
+# One OpenCV only. ultralytics asks for opencv-python and mediapipe for
+# opencv-contrib-python; together with jedy_skrobot's headless wheel that is
+# three distributions writing the same cv2/ directory, and which one wins
+# depends on install order. overrides.txt removes the other two; this one has
+# both the contrib modules and no GUI dependency.
+opencv-contrib-python-headless
+
+# Person detection / pose: YOLO (AGPL-3.0) and MediaPipe Tasks (Apache-2.0).
+ultralytics
+mediapipe
+# YOLOE's text encoder (objects named by words) tokenises with Ultralytics'
+# fork of OpenAI CLIP; ultralytics imports it but does not depend on it, and
+# installs it at run time only when online -- jedy_vision runs offline.
+clip @ git+https://github.com/ultralytics/CLIP.git
+pyyaml
+
+# torch / torchvision as the CPU builds. From PyPI they are the CUDA builds,
+# several GB of nvidia-* wheels. Direct wheel URLs instead of an extra index:
+# ament_uv_virtualenv's `uv pip compile` has no per-package index, and an extra
+# index would also serve numpy & co. Linux x86_64, CPython 3.12 (Ubuntu 24.04).
+torch @ https://download-r2.pytorch.org/whl/cpu/torch-2.15.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
+torchvision @ https://download-r2.pytorch.org/whl/cpu/torchvision-0.29.2%2Bcpu-py3-none-manylinux_2_28_x86_64.whl
+
+# shapely in this venv, not from the system. trimesh (via scikit-robot) imports
+# it when present, and with --system-site-packages an apt python3-shapely
+# (pulled in by e.g. ROS One jsk_recognition_utils) is found instead: built for
+# NumPy 1, it prints "A module that was compiled using NumPy 1.x cannot be run
+# in NumPy 2" on every start. PyPI shapely 2.x is built for NumPy 2.
+shapely

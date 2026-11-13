@@ -1,0 +1,55 @@
+# Named whole-body poses for Jedy's 22-joint configuration, and which
+# controller commands which joint.
+#
+# In a config rather than in the teleop node for two reasons. The angles are
+# this robot's, and the rule that per-robot facts live in the robot's own
+# package applies just as much to a pose as to a servo id. And the grouping is
+# stated explicitly instead of being inferred from joint-name prefixes: a
+# trajectory naming joints a controller does not own is rejected outright, so
+# getting this wrong is not a partial move, it is no move at all.
+#
+# ON THIS ROBOT THAT IS NOT A STYLE POINT, it is the difference between working
+# and not. rarm_gripper_joint starts with "rarm_" but is owned by
+# right_gripper_controller, not right_arm_controller -- the grippers are split
+# out so a gripper can close while an arm is mid-reach. A prefix rule puts it in
+# the wrong goal and the whole goal is refused, taking the seven real arm joints
+# with it. jedy_joy reads the grouping below for its TRIANGLE re-sync for
+# exactly this reason.
+#
+# `home` was CHECKED, not assumed, on 2026-08-03: the all-zero pose was run
+# through actuo.safety's SelfCollisionMonitor against this configuration's own
+# URDF (jedy_fullbody_actuo.urdf.xacro expanded with wheels:=true) and comes back
+# with no colliding link pairs beyond the 29 already touching at the reference
+# pose.
+#
+# The check means something for the grippers too: ids 14 and 15 are present
+# and driven (board scan 2026-08-03), so the gripper links are where the model
+# says they are rather than parked at a guessed 0.
+#
+# Anything added here should be checked the same way before a robot is asked to
+# drive to it over five seconds.
+poses:
+  home:
+    head_controller:
+      head_joint0: 0.0
+      head_joint1: 0.0
+    right_arm_controller:
+      rarm_joint0: 0.0
+      rarm_joint1: 0.0
+      rarm_joint2: 0.0
+      rarm_joint3: 0.0
+      rarm_joint4: 0.0
+      rarm_joint5: 0.0
+      rarm_joint6: 0.0
+    left_arm_controller:
+      larm_joint0: 0.0
+      larm_joint1: 0.0
+      larm_joint2: 0.0
+      larm_joint3: 0.0
+      larm_joint4: 0.0
+      larm_joint5: 0.0
+      larm_joint6: 0.0
+    right_gripper_controller:
+      rarm_gripper_joint: 0.0
+    left_gripper_controller:
+      larm_gripper_joint: 0.0

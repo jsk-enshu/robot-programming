@@ -1,0 +1,168 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  # Torque on/off, per joint, with the jump each would make shown before the
+  # button. Needs `actuo_bus_node --real` running; with backend:=mock it finds no
+  # action server and says so rather than drawing dead buttons.
+  #
+  # ON re-syncs the controller to the robot first (a trajectory to where the
+  # joint already is), which is why the trajectory action below must name THIS
+  # robot's controller -- a stale name here means ON is refused by the jump
+  # guard with no way to satisfy it from the panel.
+  #
+  # Limitation: there are three controllers (head / right_arm / left_arm) and
+  # the panel holds one trajectory action, so its ON re-syncs the right arm
+  # only. Enabling a head or left-arm joint that has drifted from its
+  # controller's command is still refused by the jump guard (the refusal names
+  # the joint and both values); to clear it, send a trajectory to that limb's
+  # own controller.
+  - Class: actuo_rviz_plugins/ServoPanel
+    Name: Servo
+    Namespace: /actuo_bus_servicer
+    TrajectoryNamespace: /jedy_fullbody/right_arm_controller/follow_joint_trajectory
+  # Read-only: shows what /diagnostics currently says and whether updates have
+  # gone stale. It never clears or resets anything.
+  - Class: actuo_rviz_plugins/DiagnosticsPanel
+    Name: Diagnostics
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Background Color: 48; 48; 48
+    # base_footprint does not exist in this robot's URDF (that is the 7-DOF
+    # Jedy's description); base_link is this model's root.
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 10
+      Cell Size: 0.5
+      Color: 160; 160; 164
+    - Class: rviz_default_plugins/RobotModel
+      Name: RobotModel
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /jedy_fullbody/robot_description
+        Depth: 5
+        Durability Policy: Volatile
+        Reliability Policy: Reliable
+      Visual Enabled: true
+      Collision Enabled: false
+      TF Prefix: ""
+      # Alpha stays 1: RViz drops a mesh's colours when a RobotModel is drawn
+      # translucent, so a see-through robot is a white robot.
+      Alpha: 1
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Show Names: false
+      Show Axes: true
+      Show Arrows: false
+      Marker Scale: 0.15
+    # The scikit-robot shell's ghost, from
+    # `jedy_interface --robot fullbody --viewer rviz2`. It draws the MODEL --
+    # the pose about to be commanded -- translucent and on top of the robot,
+    # which the RobotModel above draws from its MEASURED joint states.
+    #
+    # Left enabled with nothing publishing: a MarkerArray display with no
+    # publisher draws nothing and costs nothing, and having it here is what
+    # makes --viewer rviz2 work without anyone configuring RViz first.
+    #
+    # Durability Transient Local matches the viewer's latched publisher, so a
+    # shell started BEFORE this RViz still appears, rather than staying
+    # invisible until someone happens to call redraw() again.
+    - Class: rviz_default_plugins/MarkerArray
+      Name: skrobot ghost
+      Enabled: true
+      Topic:
+        Value: /skrobot_viewer/markers
+        Depth: 1
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+      Namespaces: {}
+    # Links of servos that do not answer, blinking red with the reason
+    # (actuo_presence_markers). Draws nothing while every servo answers.
+    - Class: rviz_default_plugins/MarkerArray
+      Name: missing servos
+      Enabled: true
+      Topic:
+        Value: /actuo_presence_markers/markers
+        Depth: 5
+        Durability Policy: Volatile
+        Reliability Policy: Reliable
+      Namespaces: {}
+    # What the object detector found (jedy_vision object_detection_node, i.e.
+    # ri.what_do_you_see / ri.sees): the image with the boxes, labels and
+    # distances, and a sphere + label at each object's 3D position. Updated
+    # on each detection; empty until recognition.launch.py runs and is asked.
+    - Class: rviz_default_plugins/MarkerArray
+      Name: detections (3D)
+      Enabled: true
+      Topic:
+        Value: /object_detection/markers
+        Depth: 1
+        Durability Policy: Volatile
+        Reliability Policy: Reliable
+      Namespaces: {}
+    # AprilTags found by jedy_vision tag_pose (and the cube's pose).
+    - Class: rviz_default_plugins/MarkerArray
+      Name: AprilTags
+      Enabled: true
+      Topic:
+        Value: /demo/markers
+        Depth: 5
+        Durability Policy: Volatile
+        Reliability Policy: Reliable
+      Namespaces: {}
+    # The same detections drawn on the head camera's image. Docked on the
+    # right: under the three left panels a 1040 px window leaves it 0 px tall,
+    # and rviz2 then dies ("failed to create drawable", SIGSEGV in
+    # RenderWindow::exposeEvent).
+    - Class: rviz_default_plugins/Image
+      Name: detections (image)
+      Enabled: true
+      Topic:
+        Value: /object_detection/image
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Name: Current View
+      # This robot is small (roughly 0.35 m tall); the 7-DOF config's 2.5 m
+      # standoff frames it as a speck.
+      Distance: 1.2
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0.15
+      Pitch: 0.3
+      Yaw: 0.8
+# Three docked panels each declare a ~520 px minimum width, so a narrow window
+# squeezes the 3D view out entirely -- the robot does not shrink, it vanishes,
+# with no message saying why. Open wide enough that the model and the panels
+# both fit; RViz overwrites this block when the operator saves their own layout.
+Window Geometry:
+  # Dock layout (Qt's saveState): Displays, Servo, Diagnostics on the left,
+  # "detections (image)" on the right. Made with QMainWindow.saveState() on
+  # docks of these names; RViz restores it by name.
+  QMainWindow State: 000000ff00000000fd00000002000000000000020800000410fc0200000003fb000000100044006900730070006c0061007900730100000000000001570000001700fffffffb0000000a0053006500720076006f010000015d000001560000001700fffffffb000000160044006900610067006e006f0073007400690063007301000002b9000001570000001700ffffff00000001000001e000000410fc0200000001fb000000240064006500740065006300740069006f006e0073002000280069006d00610067006500290100000000000004100000001700ffffff000002ec0000041000000004000000040000000800000008fc00000000
+  Width: 1760
+  Height: 1040
+  X: 60
+  Y: 60
+  Displays:
+    collapsed: false
+  Servo:
+    collapsed: false
+  Diagnostics:
+    collapsed: false
+  detections (image):
+    collapsed: false

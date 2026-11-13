@@ -1,5 +1,85 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<robot name="jedy">
+<!-- Brought over from jsk-enshu/robot-programming (jedy/jedy_description).
+
+     Two changes from upstream, both recorded here because a diff against
+     upstream will show them:
+
+     1. Meshes moved to meshes/gz/. This package already had a jedy mesh set
+        with the SAME filenames and DIFFERENT content: upstream's have the link
+        transform baked in (every visual/collision <origin> here is zero), this
+        package's do not. Mixing the two sets draws a robot that parses,
+        articulates, and is assembled wrong. The subdirectory is what keeps
+        them apart.
+     2. The <ros2_control> block and the gz_ros2_control plugin below are now
+        conditional on gz_control, so the same kinematics can be driven by a
+        real backend. Expanded with no arguments this file is still exactly the
+        Gazebo model it was; jedy_bringup expands it with gz_control:=false and
+        supplies its own <ros2_control>. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" xmlns:drake="http://drake.mit.edu" name="jedy">
+  <!-- true = keep the gz_ros2_control block below (upstream behaviour).
+       false = emit kinematics only, for a caller that adds its own. -->
+  <xacro:arg name="gz_control" default="true"/>
+  <!-- Head camera in Gazebo: wide | d405 (see the rgbd_camera sensor). -->
+  <xacro:arg name="camera_model" default="wide"/>
+  <!-- Head camera frame rate in Gazebo [Hz]. 5 by default: rendering the
+       rgbd camera is most of Gazebo's CPU (one PC: 123% at 30 Hz, 77% at 5 Hz,
+       13% without it), and approach_tag reached its tag in 12.5 s at 5 Hz
+       against 11.6 s at 30 Hz. The real D405 runs at its own rate. -->
+  <xacro:arg name="camera_rate" default="5"/>
+
+  <!-- ==================================================================
+       Joint passive dynamics: what holds a joint whose servo is OFF.
+       (GOAL phase 4, 2026-11-07. This URDF is the ONE place these numbers
+       live; Gazebo reads <dynamics> directly. No simulator has its own.)
+
+       Where each number goes:
+       * <dynamics friction> = tau_f [N m], the static (Coulomb) friction
+         at the joint: a load below it is held still with the torque off, a
+         load above it back-drives the gear train.
+       * <dynamics damping> = b [N m s/rad], viscous friction at the joint.
+       * armature = rotor inertia x gear ratio^2 [kg m^2], the inertia the
+         joint feels from the spinning motor. URDF has no tag for it; it is
+         written the way Drake reads it, <drake:rotor_inertia> and
+         <drake:gear_ratio> in the joint's <transmission><actuator>
+         (https://drake.mit.edu/doxygen_cxx/group__multibody__parsing.html),
+         with the standard <mechanicalReduction> next to it.
+
+       THE SERVO: KRS-3302 ICS, ASSUMED (UNVERIFIED). Nothing in this repo or
+       upstream names the model. The URDF's velocity="6.55" rad/s is exactly
+       KRS-3302 ICS's 0.16 s/60 deg at 7.4 V (60 deg / 0.16 s = 6.545 rad/s);
+       no other ICS servo has that speed. effort="0.48" does NOT match it
+       (6.7 kgf cm = 0.657 N m); kept as upstream wrote it.
+       Product page: https://kondo-robot.com/robospot/html/products/detail.php?product_id=1852
+         stall torque      6.7 kgf cm = 0.657 N m @ 7.4 V (5.5 kgf cm @ 6.0 V)   datasheet
+         no-load speed     0.16 s/60 deg = 6.545 rad/s @ 7.4 V                    datasheet
+         gear ratio        N = 262.92                                             datasheet
+         gear type         plastic spur gear train                                datasheet (material); 平歯 (spur) is how KRS servos are built, stage count 不明
+         motor             cored DC motor, square can; model 不明                  datasheet
+         rotor inertia     J_r 不明. Estimated 1e-8 kg m^2 (0.1 g cm^2, the order of a ~15 mm cored motor)   UNVERIFIED
+         forward/back-drive efficiency  不明. Estimated eta = 0.6 both ways (multi-stage plastic spur)  UNVERIFIED
+         torque constant / winding resistance  不明
+         backlash          不明 (not on the datasheet)
+         OFF mode          ICS "free" (position 0 command). Whether the driver floats
+                           the motor (coast) or shorts it (brake) is 不明: the ICS 3.5
+                           manual says neither (https://kondo-robot.com/w/wp-content/uploads/ICS3_5SoftwareManual_V1English.pdf).
+                           Coast is assumed here.
+
+       Derived (the same for every KRS-3302 joint until measured):
+         motor stall torque   tau_ms = 0.657 / (N eta) = 0.657 / (262.92 x 0.6) = 4.16e-3 N m
+         motor no-load friction tau_m0 = 0.07 x tau_ms = 2.9e-4 N m
+                              (0.07 = no-load / stall current of a small cored DC motor, typical, UNVERIFIED)
+         tau_f = N tau_m0 / eta_back = 262.92 x 2.9e-4 / 0.6 = 0.13 N m        ESTIMATE, UNVERIFIED
+         b (coast)  = mechanical viscous loss only; small. 0.001 N m s/rad      ESTIMATE, UNVERIFIED
+           (if OFF turned out to be a brake, b = stall / no-load speed
+            = 0.657 / 6.545 = 0.10 N m s/rad, and the arm would fall ~100x
+            slower: the identification in HUMAN_CHECKLIST.md tells them apart)
+         armature = J_r N^2 = 1e-8 x 262.92^2 = 6.9e-4 kg m^2                   ESTIMATE, UNVERIFIED
+
+       Each joint below says where ITS numbers come from. To replace an
+       estimate with a measurement: HUMAN_CHECKLIST.md "サーボ OFF の静止摩擦の
+       同定" (rewrite the <dynamics> line and the "source:" line of that
+       joint here).
+       ================================================================== -->
   <link name="base_link"/>
   <link name="real_base_link">
     <inertial>
@@ -9,356 +89,428 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/base_link.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/base_link.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 -0.127 -4.66497046e-07" rpy="-0.785398163 -1.57079113 -0.785398163"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/base_link.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/base_link.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="base_laser"/>
   <link name="rarm_link0">
+    <!-- inertial: the upstream origin (0.0075 0.0511983 -0.077423) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="0.00750000000000114 0.0511983289893697 -0.0774229781318287" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0.000907404 -0.0150045 -1.18469e-05" rpy="0 0 0"/>
       <mass value="0.00775312250160503"/>
-      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-3.2627e-22" ixz="1.73727e-23" iyy="0.0001" iyz="2.47279e-21" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link0.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link0.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link0.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link0.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rarm_link1">
+    <!-- inertial: the upstream origin (0.00607266 0.0630175 -0.0762781) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="0.0060726594429343 0.0630174693748998 -0.076278104560333" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-0.014701 -0.00805279 -0.00121579" rpy="0 0 0"/>
       <mass value="0.0488819579417231"/>
-      <inertia ixx="0.0001" ixy="-2.40958659059239e-08" ixz="-1.15959128616825e-08" iyy="0.0001" iyz="-4.77616974109193e-10" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="1.89779e-22" ixz="-2.09668e-23" iyy="0.0001" iyz="-4.13098e-21" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link1.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link1.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link1.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link1.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rarm_link2">
+    <!-- inertial: the upstream origin (-0.0137818 0.0785761 -0.0510709) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.013781849714382 0.078576090677525 -0.0510708977208851" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-4.04746e-06 -0.000248405 -0.0194926" rpy="0 0 0"/>
       <mass value="0.0267722516782373"/>
-      <inertia ixx="0.0001" ixy="-2.1054501660018e-08" ixz="1.16767691320589e-08" iyy="0.0001" iyz="3.18816576527695e-09" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="2.13304e-24" ixz="9.06837e-23" iyy="0.0001" iyz="2.2843e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link2.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link2.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link2.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link2.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rarm_link3">
+    <!-- inertial: the upstream origin (-0.0419798 0.0785696 -0.0231515) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.0419797687715683 0.0785695933122011 -0.0231515381895025" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="1.8231e-05 -0.00300069 -0.0367531" rpy="0 0 0"/>
       <mass value="0.0356190541582585"/>
-      <inertia ixx="0.0001" ixy="5.40131440804977e-08" ixz="-3.18560639543114e-09" iyy="0.0001" iyz="1.16768356053738e-08" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-2.59258e-23" ixz="-4.61396e-23" iyy="0.0001" iyz="-1.10221e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link3.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link3.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link3.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link3.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rarm_link4">
+    <!-- inertial: the upstream origin (0.00165104 0.0778058 0.056621) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="0.0016510438589472 0.0778057578962844 0.0566210301742714" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="4.78557e-06 2.40059e-06 -0.0139743" rpy="0 0 0"/>
       <mass value="0.00736377671410321"/>
-      <inertia ixx="0.0001" ixy="4.64911587686377e-09" ixz="-1.21774119934071e-14" iyy="0.0001" iyz="-1.47706067420849e-12" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="2.14788e-23" ixz="4.47004e-23" iyy="0.0001" iyz="1.03761e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link4.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link4.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link4.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link4.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rarm_link5">
+    <!-- inertial: the upstream origin (-0.000466912 0.0624063 0.0815727) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.000466911885189514 0.0624063256412892 0.0815726594429263" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-0.0146028 -0.0012796 -0.0108028" rpy="0 0 0"/>
       <mass value="0.0488819579417229"/>
-      <inertia ixx="0.0001" ixy="-1.80131374142072e-08" ixz="-2.38311555265213e-08" iyy="0.0001" iyz="1.15959128617003e-08" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-2.65614e-22" ixz="-1.728e-21" iyy="0.0001" iyz="3.8154e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link5.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link5.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link5.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link5.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rarm_link6">
+    <!-- inertial: the upstream origin (-0.0330277 0.0768233 0.10062) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.0330277428947269 0.0768233052251458 0.100619882815324" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="5.17439e-05 -0.00254394 -0.0319991" rpy="0 0 0"/>
       <mass value="0.0333926389608614"/>
-      <inertia ixx="0.0001" ixy="2.99884795330491e-07" ixz="1.36097064864093e-08" iyy="0.0001" iyz="2.71887959762946e-08" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-1.43346e-22" ixz="6.76379e-22" iyy="0.0001" iyz="1.21944e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link6.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link6.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link6.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link6.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rarm_link7">
+    <!-- inertial: the upstream origin (-0.00575793 0.0909947 0.154629) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.00575793188359448 0.0909946641170031 0.154628764458567" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-3.27995e-06 -0.00355774 -0.0123677" rpy="0 0 0"/>
       <mass value="0.00895541725275716"/>
-      <inertia ixx="0.0001" ixy="2.90079247027908e-07" ixz="1.36850293455652e-12" iyy="0.0001" iyz="5.6685247064795e-13" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="1.33878e-23" ixz="2.54155e-23" iyy="0.0001" iyz="-2.04654e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link7.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link7.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link7.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link7.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="rarm_link8">
+    <!-- inertial: the upstream origin (-0.00575793 0.0646119 0.165977) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.00575793188359814 0.064611878473499 0.165977177563427" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="4.14241e-06 0.00355594 -0.012369" rpy="0 0 0"/>
       <mass value="0.00895541725275716"/>
-      <inertia ixx="0.0001" ixy="-2.90079247027908e-07" ixz="1.3685029352065e-12" iyy="0.0001" iyz="-5.66852472660774e-13" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="1.98849e-23" ixz="3.53306e-24" iyy="0.0001" iyz="-1.88277e-21" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link8.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/rarm_link8.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/rarm_link8.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/rarm_link8.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link0">
+    <!-- inertial: the upstream origin (0.0075 0.0498017 0.077423) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="0.00750000000000804 0.0498016710106214 0.0774229781318285" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0.000903325 -0.0150056 -7.14391e-06" rpy="0 0 0"/>
       <mass value="0.00775312250160503"/>
-      <inertia ixx="0.0001" ixy="3.76136064915158e-22" ixz="7.33040243663328e-09" iyy="0.0001" iyz="-9.82862838779766e-22" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="2.90155e-22" ixz="-8.00024e-23" iyy="0.0001" iyz="4.37189e-21" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link0.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link0.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link0.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link0.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link1">
+    <!-- inertial: the upstream origin (0.00742734 -0.0939825 -0.0607219) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="0.00742734055676281 -0.0939825306250985 -0.0607218954396666" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-0.0147383 0.0080559 -0.000263276" rpy="0 0 0"/>
       <mass value="0.0488819579417233"/>
-      <inertia ixx="0.0001" ixy="-2.40958659059249e-08" ixz="1.15959128616777e-08" iyy="0.0001" iyz="4.77616974083206e-10" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-5.28497e-22" ixz="-9.24276e-24" iyy="0.0001" iyz="-3.7798e-21" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link1.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link1.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link1.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link1.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link2">
+    <!-- inertial: the upstream origin (-0.0137818 -0.0785761 -0.0509291) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.0137818497143928 -0.0785760906775208 -0.0509291022791145" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="3.36407e-06 0.000261084 -0.019518" rpy="0 0 0"/>
       <mass value="0.0267722516782377"/>
-      <inertia ixx="0.0001" ixy="2.10545016600191e-08" ixz="1.16767691320627e-08" iyy="0.0001" iyz="-3.18816576528393e-09" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-5.49e-23" ixz="1.00548e-22" iyy="0.0001" iyz="-2.26189e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link2.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link2.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link2.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link2.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link3">
+    <!-- inertial: the upstream origin (-0.0419798 -0.0785573 -0.0126924) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.0419797687715708 -0.0785572640137325 -0.012692437828887" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="9.0346e-07 0.00299824 -0.036745" rpy="0 0 0"/>
       <mass value="0.035619054158259"/>
-      <inertia ixx="0.0001" ixy="-4.07455626958971e-08" ixz="-3.18560639540328e-09" iyy="0.0001" iyz="-1.1676718625715e-08" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-1.41225e-23" ixz="-4.44954e-24" iyy="0.0001" iyz="-1.30634e-21" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link3.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link3.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link3.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link3.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link4">
+    <!-- inertial: the upstream origin (0.00165104 -0.0778058 0.057379) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="0.00165104385894364 -0.0778057578962786 0.0573789698257278" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-6.96878e-06 -3.26504e-06 -0.0139764" rpy="0 0 0"/>
       <mass value="0.0073637767141032"/>
-      <inertia ixx="0.0001" ixy="-4.64911587686424e-09" ixz="-1.21774114868373e-14" iyy="0.0001" iyz="1.47706067387539e-12" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="4.3742e-25" ixz="-1.00043e-22" iyy="0.0001" iyz="6.06674e-21" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link4.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link4.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link4.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link4.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link5">
+    <!-- inertial: the upstream origin (-0.000466912 -0.0932045 0.0830727) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.000466911885188184 -0.0932044741964692 0.083072659443248" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-0.0146176 0.000217291 -0.0107976" rpy="0 0 0"/>
       <mass value="0.0488819579417233"/>
-      <inertia ixx="0.0001" ixy="-1.80131374141397e-08" ixz="-2.38311555265008e-08" iyy="0.0001" iyz="1.15959128617046e-08" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="6.22427e-22" ixz="3.2167e-22" iyy="0.0001" iyz="-7.24049e-21" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link5.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link5.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link5.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link5.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link6">
+    <!-- inertial: the upstream origin (-0.0330277 -0.0777002 0.10738) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.033027742894731 -0.0777001820412116 0.107380117184671" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0.000458608 0.00255961 -0.0320331" rpy="0 0 0"/>
       <mass value="0.0333926389608612"/>
-      <inertia ixx="0.0001" ixy="-2.99884795330496e-07" ixz="1.36097064863934e-08" iyy="0.0001" iyz="-1.25309536168303e-08" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-3.39011e-22" ixz="1.4423e-22" iyy="0.0001" iyz="1.95479e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link6.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link6.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link6.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link6.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link7">
+    <!-- inertial: the upstream origin (-0.00575793 -0.0909947 0.165977) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.00575793188358857 -0.0909946641169996 0.165977177563423" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="3.17888e-06 0.00355777 -0.0123677" rpy="0 0 0"/>
       <mass value="0.00895541725275716"/>
-      <inertia ixx="0.0001" ixy="-2.90079247027908e-07" ixz="1.3685029341339e-12" iyy="0.0001" iyz="-5.66852473175791e-13" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-1.35006e-23" ixz="-1.55343e-23" iyy="0.0001" iyz="1.16422e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link7.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link7.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link7.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link7.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="larm_link8">
+    <!-- inertial: the upstream origin (-0.00575793 -0.0646119 0.154629) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.00575793188358593 -0.0646118784734955 0.154628764458567" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-4.21436e-06 -0.00355594 -0.0123692" rpy="0 0 0"/>
       <mass value="0.00895541725275716"/>
-      <inertia ixx="0.0001" ixy="2.90079247027908e-07" ixz="1.36850293341796e-12" iyy="0.0001" iyz="5.66852471090155e-13" izz="0.0001"/>
+      <inertia ixx="0.0001" ixy="-1.33224e-24" ixz="-7.73301e-24" iyy="0.0001" iyz="-2.60439e-20" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link8.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/larm_link8.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="1.19755372e-12 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/larm_link8.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/larm_link8.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
@@ -371,32 +523,36 @@
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/head_link0.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/head_link0.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/head_link0.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/head_link0.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
   </link>
   <link name="head_link1">
+    <!-- inertial: the upstream origin (-0.001016 3.60351e-18 0.186465) was outside this link's meshes.
+         COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
+         uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
+         UNVERIFIED. -->
     <inertial>
-      <origin xyz="-0.001016 3.60351e-18 0.186465" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="-0.000263924 4.07576e-05 0.0395543" rpy="0 0 0"/>
       <mass value="0.093045"/>
-      <inertia ixx="0.000665" ixy="-1.79922e-07" ixz="-6.65543e-08" iyy="0.000652" iyz="-1.79583e-08" izz="0.000109"/>
+      <inertia ixx="0.0001" ixy="-1.24251e-22" ixz="1.13596e-21" iyy="0.0001" iyz="2.26317e-22" izz="0.0001"/>
     </inertial>
     <visual>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/head_link1.dae"/>
+        <mesh filename="package://jedy_description/meshes/cad/head_link1.dae"/>
       </geometry>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://jedy_description/meshes/head_link1.stl"/>
+        <mesh filename="package://jedy_description/meshes/gz/head_link1.stl"/>
       </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
     </collision>
@@ -409,18 +565,15 @@
     </inertial>
     <visual>
       <geometry>
-        <cylinder radius="0.030082940123975277" length="0.0336999895516783"/>
+        <mesh filename="package://jedy_description/meshes/cad/front_right_wheel_link.dae"/>
       </geometry>
-      <origin xyz="-0.01364997576456517 2.9239803552627563e-05 -8.88695940375328e-05" rpy="0.0 1.5707963267948963 0.0"/>
-      <material name="yellow">
-        <color rgba="1.0 1.0 0.0 1.0"/>
-      </material>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <cylinder radius="0.030082940123975277" length="0.0336999895516783"/>
+        <cylinder length="0.0305" radius="0.0252501"/>
       </geometry>
-      <origin xyz="-0.01364997576456517 2.9239803552627563e-05 -8.88695940375328e-05" rpy="0.0 1.5707963267948963 0.0"/>
+      <origin xyz="-0.01525 0 0" rpy="-3.14159265 1.57079633 -3.14159265"/>
     </collision>
   </link>
   <link name="front_left_wheel_link">
@@ -431,18 +584,15 @@
     </inertial>
     <visual>
       <geometry>
-        <cylinder radius="0.03012910485267639" length="0.0336999895516783"/>
+        <mesh filename="package://jedy_description/meshes/cad/front_left_wheel_link.dae"/>
       </geometry>
-      <origin xyz="0.01364997576456517 -0.00011649541556835175 -0.00010368041694164276" rpy="0.0 1.5707963267948963 0.0"/>
-      <material name="yellow">
-        <color rgba="1.0 1.0 0.0 1.0"/>
-      </material>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <cylinder radius="0.03012910485267639" length="0.0336999895516783"/>
+        <cylinder length="0.0305" radius="0.0252501"/>
       </geometry>
-      <origin xyz="0.01364997576456517 -0.00011649541556835175 -0.00010368041694164276" rpy="0.0 1.5707963267948963 0.0"/>
+      <origin xyz="0.01525 0 0" rpy="-3.14159265 1.57079633 -3.14159265"/>
     </collision>
   </link>
   <link name="rear_right_wheel_link">
@@ -453,18 +603,15 @@
     </inertial>
     <visual>
       <geometry>
-        <cylinder radius="0.030142544768750668" length="0.0336999895516783"/>
+        <mesh filename="package://jedy_description/meshes/cad/rear_right_wheel_link.dae"/>
       </geometry>
-      <origin xyz="-0.01364997576456517 0.00010615494102239609 -3.0875205993652344e-05" rpy="0.0 1.5707963267948963 0.0"/>
-      <material name="yellow">
-        <color rgba="1.0 1.0 0.0 1.0"/>
-      </material>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <cylinder radius="0.030142544768750668" length="0.0336999895516783"/>
+        <cylinder length="0.0305" radius="0.0252501"/>
       </geometry>
-      <origin xyz="-0.01364997576456517 0.00010615494102239609 -3.0875205993652344e-05" rpy="0.0 1.5707963267948963 0.0"/>
+      <origin xyz="-0.01525 0 0" rpy="-3.14159265 1.57079633 -3.14159265"/>
     </collision>
   </link>
   <link name="rear_left_wheel_link">
@@ -475,18 +622,15 @@
     </inertial>
     <visual>
       <geometry>
-        <cylinder radius="0.030229220166802406" length="0.0336999895516783"/>
+        <mesh filename="package://jedy_description/meshes/cad/rear_left_wheel_link.dae"/>
       </geometry>
-      <origin xyz="0.01364997576456517 0.00011532939970493317 5.5635347962379456e-05" rpy="0.0 1.5707963267948963 0.0"/>
-      <material name="yellow">
-        <color rgba="1.0 1.0 0.0 1.0"/>
-      </material>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
     </visual>
     <collision>
       <geometry>
-        <cylinder radius="0.030229220166802406" length="0.0336999895516783"/>
+        <cylinder length="0.0305" radius="0.0252501"/>
       </geometry>
-      <origin xyz="0.01364997576456517 0.00011532939970493317 5.5635347962379456e-05" rpy="0.0 1.5707963267948963 0.0"/>
+      <origin xyz="0.01525 0 0" rpy="-3.14159265 1.57079633 -3.14159265"/>
     </collision>
   </link>
   <link name="camera_link">
@@ -520,6 +664,10 @@
     <child link="rarm_link0"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="-0.0505 0.0685 -0.0075" rpy="-1.5707926535897931 -1.5707926535897931 -0.001592653589793114"/>
+    <!-- rarm_joint0: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="rarm_joint1" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="0.52"/>
@@ -527,6 +675,10 @@
     <child link="rarm_link1"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0 -0.028 0.0" rpy="0.0 -0.0 0.0"/>
+    <!-- rarm_joint1: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="rarm_joint2" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
@@ -534,6 +686,10 @@
     <child link="rarm_link2"/>
     <axis xyz="0. 0. 1."/>
     <origin xyz="0.0 0.0 -0.0175" rpy="0.0 -0.0 0.0"/>
+    <!-- rarm_joint2: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="rarm_joint3" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
@@ -541,6 +697,10 @@
     <child link="rarm_link3"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="0.0 0.0 -0.033" rpy="0.0 -0.0 0.0"/>
+    <!-- rarm_joint3: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="rarm_joint4" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
@@ -548,6 +708,10 @@
     <child link="rarm_link4"/>
     <axis xyz="0. 0. 1."/>
     <origin xyz="-0.0024791 0.0006946 -0.075" rpy="0.0 -0.0 0.0"/>
+    <!-- rarm_joint4: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="rarm_joint5" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.05"/>
@@ -555,6 +719,10 @@
     <child link="rarm_link5"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="0.0 0.0 -0.026" rpy="0.0 -0.0 0.0"/>
+    <!-- rarm_joint5: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="rarm_joint6" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.57"/>
@@ -562,6 +730,10 @@
     <child link="rarm_link6"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0 0.0 -0.021" rpy="0.0 -0.0 0.0"/>
+    <!-- rarm_joint6: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="rarm_gripper_joint" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-0.5" upper="1.57"/>
@@ -569,6 +741,10 @@
     <child link="rarm_link7"/>
     <axis xyz="-1. 0. 0."/>
     <origin xyz="0.0 -0.011737 -0.056303" rpy="0.0 -0.0 0.0"/>
+    <!-- rarm_gripper_joint: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="rarm_mimic_gripper_joint" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-1.57" upper="0.5"/>
@@ -577,6 +753,8 @@
     <child link="rarm_link8"/>
     <axis xyz="-1. 0. 0."/>
     <origin xyz="0.0 0.011741 -0.056303" rpy="0.0 -0.0 0.0"/>
+    <!-- rarm_mimic_gripper_joint: no servo; it follows its gripper through a linkage. No <dynamics>:
+         the linkage's own friction is 不明 and the gripper servo's friction is on the gripper joint. -->
   </joint>
   <joint name="larm_joint0" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
@@ -584,6 +762,10 @@
     <child link="larm_link0"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="0.0505 0.0685 -0.0075" rpy="-1.5707926535897931 -1.5707926535897931 3.141592653589793"/>
+    <!-- larm_joint0: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="larm_joint1" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-0.56" upper="2.35"/>
@@ -591,6 +773,10 @@
     <child link="larm_link1"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0 -0.028 0.0" rpy="3.1415853071795867 -0.0 0.0"/>
+    <!-- larm_joint1: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="larm_joint2" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
@@ -598,6 +784,10 @@
     <child link="larm_link2"/>
     <axis xyz="0. 0. 1."/>
     <origin xyz="0.0 0.0 -0.0175" rpy="0.0 -0.0 0.0"/>
+    <!-- larm_joint2: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="larm_joint3" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
@@ -605,6 +795,10 @@
     <child link="larm_link3"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="0.0 0.0 -0.033" rpy="0.0 -0.0 0.0"/>
+    <!-- larm_joint3: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="larm_joint4" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
@@ -612,6 +806,10 @@
     <child link="larm_link4"/>
     <axis xyz="0. 0. 1."/>
     <origin xyz="-0.0024791 -0.0006946 -0.075" rpy="0.0 -0.0 0.0"/>
+    <!-- larm_joint4: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="larm_joint5" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.05"/>
@@ -619,6 +817,10 @@
     <child link="larm_link5"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="0.0 0.0 -0.026" rpy="0.0 -0.0 0.0"/>
+    <!-- larm_joint5: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="larm_joint6" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.57"/>
@@ -626,6 +828,10 @@
     <child link="larm_link6"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0 0.0 -0.021" rpy="0.0 -0.0 0.0"/>
+    <!-- larm_joint6: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="larm_gripper_joint" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-0.5" upper="1.57"/>
@@ -633,6 +839,10 @@
     <child link="larm_link7"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0 0.011737 -0.056303" rpy="0.0 -0.0 0.0"/>
+    <!-- larm_gripper_joint: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="larm_mimic_gripper_joint" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-1.57" upper="0.5"/>
@@ -641,6 +851,8 @@
     <child link="larm_link8"/>
     <axis xyz="1. 0. 0."/>
     <origin xyz="0.0 -0.011741 -0.056303" rpy="0.0 -0.0 0.0"/>
+    <!-- larm_mimic_gripper_joint: no servo; it follows its gripper through a linkage. No <dynamics>:
+         the linkage's own friction is 不明 and the gripper servo's friction is on the gripper joint. -->
   </joint>
   <joint name="head_joint0" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-2.35" upper="2.35"/>
@@ -648,6 +860,10 @@
     <child link="head_link0"/>
     <axis xyz="0. 0. 1."/>
     <origin xyz="0.0 0.086 -0.0075" rpy="-3.141592653589793 -1.5707926535897931 1.5707926535897931"/>
+    <!-- head_joint0: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="head_joint1" type="revolute">
     <limit effort="0.48" velocity="6.55" lower="-1.57" upper="1.57"/>
@@ -655,34 +871,50 @@
     <child link="head_link1"/>
     <axis xyz="0. 1. 0."/>
     <origin xyz="0.0 0.0 0.033" rpy="0.0 -0.0 0.0"/>
+    <!-- head_joint1: KRS-3302 ICS (assumed, see the block at the top).
+         tau_f 0.13 N m, b 0.001 N m s/rad, armature 6.9e-4 kg m^2 (transmission below).
+         source: estimate from the datasheet, UNVERIFIED; not measured on the robot. -->
+    <dynamics damping="0.001" friction="0.13"/>
   </joint>
   <joint name="front_right_wheel_joint" type="continuous">
     <limit effort="100.0" velocity="6.55"/>
     <parent link="real_base_link"/>
     <child link="front_right_wheel_link"/>
     <axis xyz="1. 0. 0."/>
-    <origin xyz="-0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
+    <origin xyz="-0.0505 -0.091 0.0435" rpy="-3.58979313e-09 -3.58979313e-09 0"/>
+    <!-- front_right_wheel_joint: continuous-rotation servo, model 不明 (jedy/README.md says only
+         "continuous-rotation servo"). No <dynamics>: its friction would also be what the
+         rollers drive against, and nothing about it is known. -->
   </joint>
   <joint name="front_left_wheel_joint" type="continuous">
     <limit effort="100.0" velocity="6.55"/>
     <parent link="real_base_link"/>
     <child link="front_left_wheel_link"/>
     <axis xyz="1. 0. 0."/>
-    <origin xyz="0.0505 -0.097 0.0435" rpy="0.0 -0.0 0.0"/>
+    <origin xyz="0.0505 -0.091 0.0435" rpy="-3.58979313e-09 -3.58979313e-09 0"/>
+    <!-- front_left_wheel_joint: continuous-rotation servo, model 不明 (jedy/README.md says only
+         "continuous-rotation servo"). No <dynamics>: its friction would also be what the
+         rollers drive against, and nothing about it is known. -->
   </joint>
   <joint name="rear_right_wheel_joint" type="continuous">
     <limit effort="100.0" velocity="6.55"/>
     <parent link="real_base_link"/>
     <child link="rear_right_wheel_link"/>
     <axis xyz="1. 0. 0."/>
-    <origin xyz="-0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
+    <origin xyz="-0.0505 -0.091 -0.0435" rpy="-3.58979313e-09 -3.58979313e-09 0"/>
+    <!-- rear_right_wheel_joint: continuous-rotation servo, model 不明 (jedy/README.md says only
+         "continuous-rotation servo"). No <dynamics>: its friction would also be what the
+         rollers drive against, and nothing about it is known. -->
   </joint>
   <joint name="rear_left_wheel_joint" type="continuous">
     <limit effort="100.0" velocity="6.55"/>
     <parent link="real_base_link"/>
     <child link="rear_left_wheel_link"/>
     <axis xyz="1. 0. 0."/>
-    <origin xyz="0.0505 -0.097 -0.0435" rpy="0.0 -0.0 0.0"/>
+    <origin xyz="0.0505 -0.091 -0.0435" rpy="-3.58979313e-09 -3.58979313e-09 0"/>
+    <!-- rear_left_wheel_joint: continuous-rotation servo, model 不明 (jedy/README.md says only
+         "continuous-rotation servo"). No <dynamics>: its friction would also be what the
+         rollers drive against, and nothing about it is known. -->
   </joint>
   <joint name="camera_joint" type="fixed">
     <limit effort="0.0" velocity="0.0"/>
@@ -744,35 +976,6 @@
     <kp>100000</kp>
     <kd>1</kd>
     <gravity>true</gravity>
-  </gazebo>
-  <gazebo reference="base_laser">
-    <sensor name="laser" type="gpu_lidar">
-      <pose>0 0 0 0 0 0</pose>
-      <visualize>true</visualize>
-      <update_rate>10</update_rate>
-      <topic>/scan_raw</topic>
-      <gz:frame_id xmlns:gz="http://sdformat.org/schemas/sensor">base_laser</gz:frame_id>
-      <lidar>
-        <scan>
-          <horizontal>
-            <samples>360</samples>
-            <resolution>1</resolution>
-            <min_angle>-1.5708</min_angle>
-            <max_angle>1.5708</max_angle>
-          </horizontal>
-        </scan>
-        <range>
-          <min>0.12</min>
-          <max>10.0</max>
-          <resolution>0.01</resolution>
-        </range>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.01</stddev>
-        </noise>
-      </lidar>
-    </sensor>
   </gazebo>
   <gazebo reference="rarm_joint0">
     <mu1>0.4</mu1>
@@ -928,51 +1131,132 @@
     <minDepth value="0.0"/>
   </gazebo>
   <gazebo reference="front_right_wheel_link">
-    <mu1>100.0</mu1>
-    <mu2>100.0</mu2>
+    <!-- Mecanum: the rollers turn freely along one diagonal, so the contact
+         grips (mu 1) only along the other (fdir1), expressed in base_link
+         so it does not turn with the wheel (gz-sim's mecanum_drive.sdf).
+         Isotropic friction (mu1 = mu2) made plain wheels that could not move
+         sideways. No <material>: the CAD visual has its own colours. -->
+    <collision name="front_right_wheel_link_collision">
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+            <fdir1 xmlns:gz="http://gazebosim.org/schema" gz:expressed_in="base_link">1 1 0</fdir1>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
     <kp>10000000</kp>
     <kd>1</kd>
-    <material>Gazebo/Yellow</material>
   </gazebo>
   <gazebo reference="front_left_wheel_link">
-    <mu1>100.0</mu1>
-    <mu2>100.0</mu2>
+    <!-- Mecanum: the rollers turn freely along one diagonal, so the contact
+         grips (mu 1) only along the other (fdir1), expressed in base_link
+         so it does not turn with the wheel (gz-sim's mecanum_drive.sdf).
+         Isotropic friction (mu1 = mu2) made plain wheels that could not move
+         sideways. No <material>: the CAD visual has its own colours. -->
+    <collision name="front_left_wheel_link_collision">
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+            <fdir1 xmlns:gz="http://gazebosim.org/schema" gz:expressed_in="base_link">1 -1 0</fdir1>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
     <kp>10000000</kp>
     <kd>1</kd>
-    <material>Gazebo/Yellow</material>
   </gazebo>
   <gazebo reference="rear_right_wheel_link">
-    <mu1>100.0</mu1>
-    <mu2>100.0</mu2>
+    <!-- Mecanum: the rollers turn freely along one diagonal, so the contact
+         grips (mu 1) only along the other (fdir1), expressed in base_link
+         so it does not turn with the wheel (gz-sim's mecanum_drive.sdf).
+         Isotropic friction (mu1 = mu2) made plain wheels that could not move
+         sideways. No <material>: the CAD visual has its own colours. -->
+    <collision name="rear_right_wheel_link_collision">
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+            <fdir1 xmlns:gz="http://gazebosim.org/schema" gz:expressed_in="base_link">1 -1 0</fdir1>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
     <kp>10000000</kp>
     <kd>1</kd>
-    <material>Gazebo/Yellow</material>
   </gazebo>
   <gazebo reference="rear_left_wheel_link">
-    <mu1>100.0</mu1>
-    <mu2>100.0</mu2>
+    <!-- Mecanum: the rollers turn freely along one diagonal, so the contact
+         grips (mu 1) only along the other (fdir1), expressed in base_link
+         so it does not turn with the wheel (gz-sim's mecanum_drive.sdf).
+         Isotropic friction (mu1 = mu2) made plain wheels that could not move
+         sideways. No <material>: the CAD visual has its own colours. -->
+    <collision name="rear_left_wheel_link_collision">
+      <surface>
+        <friction>
+          <ode>
+            <mu>1.0</mu>
+            <mu2>0.0</mu2>
+            <fdir1 xmlns:gz="http://gazebosim.org/schema" gz:expressed_in="base_link">1 1 0</fdir1>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
     <kp>10000000</kp>
     <kd>1</kd>
-    <material>Gazebo/Yellow</material>
   </gazebo>
   <gazebo reference="camera_link">
     <sensor name="camera" type="rgbd_camera">
       <always_on>1</always_on>
-      <update_rate>30</update_rate>
+      <update_rate>$(arg camera_rate)</update_rate>
       <visualize>true</visualize>
       <topic>camera</topic>
       <gz_frame_id>camera_color_optical_frame</gz_frame_id>
       <camera name="camera">
-        <horizontal_fov>1.0471975511965976</horizontal_fov>
+        <!-- camera_model:=wide (default): 60 deg, depth to 10 m, the camera
+             the samples were written against. camera_model:=d405: the real
+             robot's RealSense D405: 87 deg wide, and depth only 0.07-0.5 m
+             (its rated range; farther pixels have no depth, as on the robot,
+             while the colour image still sees the whole room). -->
+        <xacro:if value="${'$(arg camera_model)' == 'd405'}">
+          <horizontal_fov>1.5184364492350666</horizontal_fov>
+        </xacro:if>
+        <xacro:unless value="${'$(arg camera_model)' == 'd405'}">
+          <horizontal_fov>1.0471975511965976</horizontal_fov>
+        </xacro:unless>
         <image>
           <width>640</width>
           <height>480</height>
           <format>R8G8B8</format>
         </image>
+        <!-- The colour image draws out to 40 m, so the far end of Room 13BC
+             (26.8 m long) is in it; at 10 m the room beyond the desks came
+             out blank. Depth keeps its own range below. -->
         <clip>
           <near>0.05</near>
-          <far>10.0</far>
+          <far>40.0</far>
         </clip>
+        <xacro:if value="${'$(arg camera_model)' == 'd405'}">
+          <depth_camera>
+            <clip>
+              <near>0.07</near>
+              <far>0.5</far>
+            </clip>
+          </depth_camera>
+        </xacro:if>
+        <xacro:unless value="${'$(arg camera_model)' == 'd405'}">
+          <depth_camera>
+            <clip>
+              <near>0.05</near>
+              <far>10.0</far>
+            </clip>
+          </depth_camera>
+        </xacro:unless>
         <noise>
           <type>gaussian</type>
           <mean>0.0</mean>
@@ -1037,6 +1321,208 @@
       </imu>
     </sensor>
   </gazebo>
+  <!-- Rotor inertia and gear ratio per servo joint, in Drake's tags (see the
+       block at the top). mechanicalReduction is the ROS transmission field for the same ratio.
+       Not read by ros2_control (it reads only what is inside <ros2_control>) or by Gazebo. -->
+  <transmission name="head_joint0_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="head_joint0">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="head_joint0_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="head_joint1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="head_joint1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="head_joint1_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint0_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint0">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint0_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint1_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint2_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint2">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint2_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint3_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint3">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint3_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint4_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint4">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint4_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint5_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint5">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint5_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="rarm_joint6_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_joint6">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_joint6_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint0_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint0">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint0_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint1_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint1">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint1_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint2_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint2">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint2_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint3_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint3">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint3_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint4_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint4">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint4_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint5_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint5">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint5_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="larm_joint6_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_joint6">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_joint6_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="rarm_gripper_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="rarm_gripper_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="rarm_gripper_joint_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <transmission name="larm_gripper_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="larm_gripper_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="larm_gripper_joint_servo">
+      <mechanicalReduction>262.92</mechanicalReduction>  <!-- KRS-3302 ICS datasheet -->
+      <drake:gear_ratio value="262.92"/>
+      <drake:rotor_inertia value="1e-8"/>  <!-- 不明; estimate, UNVERIFIED -->
+    </actuator>
+  </transmission>
+  <xacro:if value="${'$(arg gz_control)' == 'true'}">
   <ros2_control name="GazeboSimSystem" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
@@ -1259,4 +1745,5 @@
       <parameters>$(arg controllers_config)</parameters>
     </plugin>
   </gazebo>
+  </xacro:if>
 </robot>

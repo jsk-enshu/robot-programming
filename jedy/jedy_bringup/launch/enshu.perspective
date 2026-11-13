@@ -57,7 +57,7 @@
             "plugin": {
               "keys": {
                 "cm_ns": {
-                  "repr": "'/controller_manager'",
+                  "repr": "'/jedy_fullbody/controller_manager'",
                   "type": "repr"
                 },
                 "jtc_name": {
