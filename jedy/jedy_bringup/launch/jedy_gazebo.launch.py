@@ -43,8 +43,8 @@ legacy:=true (the default) also serves the 2025 names, for the robot system
 lecture and other programs written for the 2025 simulation: jedy_legacy_bridge
 maps /joint_states, /mecanum_drive_controller/reference and
 /{head,rarm,larm}_controller/{joint_trajectory,follow_joint_trajectory} onto
-the ones above, and ball:= (default: legacy) puts back the 2025 world's red
-ball.
+the ones above, and ball:= (default: legacy, but not with box:=true or
+tags:=true) puts back the 2025 world's red ball.
 """
 
 import math
@@ -974,14 +974,17 @@ def generate_launch_description():
                                           "system lecture and older "
                                           "programs"),
         # Default: legacy, except with tags:=true, whose posts 2 and 3
-        # stand where the ball would be. Declared after tags, which it reads.
+        # stand where the ball would be, and with box:=true, where the day 1
+        # camera exercises would find the 1 m red ball instead of the red box.
+        # Declared after box and tags, which it reads.
         DeclareLaunchArgument("ball", default_value=PythonExpression([
             "'true' if '", LaunchConfiguration("legacy"), "' == 'true' and '",
-            LaunchConfiguration("tags"), "' != 'true' else 'false'"]),
+            LaunchConfiguration("tags"), "' != 'true' and '",
+            LaunchConfiguration("box"), "' != 'true' else 'false'"]),
                               choices=["true", "false"],
                               description="the 2025 world's red ball (r 0.5 "
                                           "m, 1.5 m to the left); default: "
-                                          "legacy, but false with tags:=true"),
+                                          "legacy, but false with box:=true or tags:=true"),
         DeclareLaunchArgument("clock_every", default_value="4",
                               description="publish /clock every N physics "
                                           "steps (5 ms each): 4 = 50 Hz"),
