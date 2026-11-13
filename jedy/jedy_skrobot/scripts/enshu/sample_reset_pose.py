@@ -2,7 +2,7 @@
 """Send Jedy to its reset pose and print how close every joint got.
 
 The scikit-robot version of jedyeus/euslisp/reset-pose.l. Runs unchanged on
-Gazebo, the real robot and Isaac Sim:
+Gazebo and the real robot:
 
     ros2 launch jedy_bringup jedy_gazebo.launch.py     # or another bring-up
     ros2 run jedy_skrobot sample_reset_pose

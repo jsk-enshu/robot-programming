@@ -113,9 +113,8 @@ LIMBS = {
 #:   head_link1     z = 0.246 against 0.119
 #:   rarm_end_coords z = -0.079 against -0.206
 #:
-#: 0.127 m is the chassis height, and it is the same constant
-#: jedy_bringup's jedy_actuo.urdf.xacro bakes into its origins, where its
-#: comment records the old pseudo_base_joint as "xyz 0 0 0.127".
+#: 0.127 m is the chassis height (the old pseudo_base_joint was
+#: "xyz 0 0 0.127").
 #:
 #: THIS IS A PATCH OVER A REAL DISCREPANCY, not a fix for one. Two files
 #: describe one robot and disagree, here about the base and elsewhere about

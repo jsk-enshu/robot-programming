@@ -1,4 +1,4 @@
-"""The Jedy robot interface (``ri``) shared by Gazebo, the real robot and Isaac Sim.
+"""The Jedy robot interface (``ri``) shared by Gazebo and the real robot.
 
 Joints, ``wait_interpolation`` and the torque switch are actuo_ros'
 :class:`~actuo_ros.robot_interface.RobotInterface`, unchanged. This module adds the
@@ -83,12 +83,12 @@ from actuo_ros.robot_interface import RobotInterface
 from actuo_ros.robot_interface import ServoRefused
 from diagnostic_msgs.msg import DiagnosticArray
 
-#: The namespace every Jedy bring-up (Gazebo, real, Isaac) puts its
+#: The namespace every Jedy bring-up (Gazebo, real) puts its
 #: controller manager, joint_states and robot_description under.
 NAMESPACE = '/jedy_fullbody'
 
 #: The servo switch: actuo's bus servicer on the real robot, jedy_sim_servo in
-#: Gazebo and Isaac Sim serve the same action here.
+#: Gazebo serve the same action here.
 SERVO_NS = '/actuo_bus_servicer'
 
 CMD_VEL_TOPIC = '/cmd_vel'
@@ -223,7 +223,7 @@ class JedyInterface(RobotInterface):
     controller_joints : dict
         ``{controller name: [joint name, ...]}``.
     use_sim_time : bool
-        Follow ``/clock``. Gazebo and Isaac publish it; the real robot does
+        Follow ``/clock``. Gazebo publishes it; the real robot does
         not. ``joint_states`` are stamped in that clock, so waiting for a fresh
         state against the wrong one never ends.
     **kwargs
@@ -341,7 +341,7 @@ class JedyInterface(RobotInterface):
     def has_imu(self, timeout=PROBE_TIMEOUT):
         """Whether anything publishes the IMU (``/imu``).
 
-        Gazebo and Isaac do; the RCB-4mini board does not.
+        Gazebo does; the RCB-4mini board does not.
 
         Parameters
         ----------
@@ -358,7 +358,7 @@ class JedyInterface(RobotInterface):
     def can_servo_off(self):
         """Whether the torque can be released.
 
-        True on the real robot, Gazebo and Isaac Sim, which all serve
+        True on the real robot and Gazebo, which both serve
         ``/actuo_bus_servicer/servo/set``; False only for a bring-up without
         a servo switch (e.g. mock hardware).
         """
@@ -576,7 +576,7 @@ class JedyInterface(RobotInterface):
         if not self._imu_seen.wait(timeout):
             raise RuntimeError(
                 'no IMU reading on {} within {} s (publishers: {}). The '
-                'RCB-4mini board has no IMU of its own; in Gazebo/Isaac the '
+                'RCB-4mini board has no IMU of its own; in Gazebo the '
                 'bridge provides it.'.format(
                     IMU_TOPIC, timeout, self.count_publishers(IMU_TOPIC)))
         with self._lock:
@@ -1155,8 +1155,8 @@ class JedyInterface(RobotInterface):
                 return
             raise RuntimeError(
                 'servo off is not available here: nothing serves {}/servo/set '
-                '(the real robot, jedy_gazebo.launch.py and '
-                'jedy_isaac.launch.py all do; is the bring-up running?)'
+                '(the real robot and jedy_gazebo.launch.py both do; is the '
+                'bring-up running?)'
                 .format(SERVO_NS))
         return super(JedyInterface, self)._servo(enable, joints, timeout)
 

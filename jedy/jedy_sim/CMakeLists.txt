@@ -22,16 +22,9 @@ ament_generate_virtualenv(
   REQUIREMENTS "${CMAKE_CURRENT_BINARY_DIR}/requirements.in"
   PYTHON ${Python3_EXECUTABLE})
 
-# Headless via `ros2 run jedy_sim jedy_servicer` (venv python). The interactive
-# viewer needs the venv's own mjpython, which owns the GUI main thread:
-#   install/jedy_sim/share/jedy_sim/venv/bin/mjpython \
-#     install/jedy_sim/share/jedy_sim/scripts/jedy_servicer.py --view
 ament_uv_install_python_scripts(
   PROGRAMS
-    scripts/jedy_servicer.py
-    scripts/jedy_physics_demo.py
     scripts/jedy_fake_servicer.py
-    scripts/jedy_isaac_servicer.py
     scripts/jedy_sim_servo.py
     scripts/jedy_sim_sounds.py
   STRIP_PY_EXTENSION
@@ -51,13 +44,9 @@ target_link_libraries(jedy_mimic_joint gz-sim::core gz-plugin::register)
 install(TARGETS jedy_mimic_joint LIBRARY DESTINATION lib)
 
 # The simulators' servo switch (jedy_sim.sim_servo), shared by
-# jedy_sim_servo and jedy_isaac_servicer; on PYTHONPATH through the env hook.
+# jedy_sim_servo; on PYTHONPATH through the env hook.
 install(DIRECTORY jedy_sim DESTINATION share/${PROJECT_NAME})
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/jedy_sim.dsv.in")
-
-# Isaac Sim: the USD generator and the script run inside the Isaac container.
-install(DIRECTORY isaac DESTINATION share/${PROJECT_NAME}
-        USE_SOURCE_PERMISSIONS)
 
 if(BUILD_TESTING)
   ament_uv_check_virtualenv()

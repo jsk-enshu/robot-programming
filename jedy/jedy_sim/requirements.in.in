@@ -1,9 +1,8 @@
 # Sim-servicer deps. rclpy/numpy/ament_index come from the ROS environment via
 # --system-site-packages; these are the non-ROS pieces.
 python-fcl
-mujoco
 
-# actuo: the shared memory the servicers write and the collision gate
+# actuo: the shared memory jedy_fake_servicer writes and the collision gate
 # (filled in by CMakeLists.txt via actuo_ros' actuo_requirement()).
 @ACTUO_REQUIREMENT@
 

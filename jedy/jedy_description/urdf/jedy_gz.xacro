@@ -30,8 +30,7 @@
   <!-- ==================================================================
        Joint passive dynamics: what holds a joint whose servo is OFF.
        (GOAL phase 4, 2026-11-07. This URDF is the ONE place these numbers
-       live; Gazebo reads <dynamics> directly, scikit-robot's urdf_to_mjcf /
-       urdf_to_usd copy it into MuJoCo / Isaac. No simulator has its own.)
+       live; Gazebo reads <dynamics> directly. No simulator has its own.)
 
        Where each number goes:
        * <dynamics friction> = tau_f [N m], the static (Coulomb) friction
@@ -43,8 +42,7 @@
          written the way Drake reads it, <drake:rotor_inertia> and
          <drake:gear_ratio> in the joint's <transmission><actuator>
          (https://drake.mit.edu/doxygen_cxx/group__multibody__parsing.html),
-         with the standard <mechanicalReduction> next to it. Decision log:
-         jedy/jedy_description/README_dynamics.md.
+         with the standard <mechanicalReduction> next to it.
 
        THE SERVO: KRS-3302 ICS, ASSUMED (UNVERIFIED). Nothing in this repo or
        upstream names the model. The URDF's velocity="6.55" rad/s is exactly
@@ -79,8 +77,8 @@
 
        Each joint below says where ITS numbers come from. To replace an
        estimate with a measurement: HUMAN_CHECKLIST.md "サーボ OFF の静止摩擦の
-       同定" and jedy_skrobot's identify_friction (it rewrites the
-       <dynamics> line and the "source:" line of that joint here).
+       同定" (rewrite the <dynamics> line and the "source:" line of that
+       joint here).
        ================================================================== -->
   <link name="base_link"/>
   <link name="real_base_link">
@@ -107,7 +105,7 @@
     <!-- inertial: the upstream origin (0.0075 0.0511983 -0.077423) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="0.000907404 -0.0150045 -1.18469e-05" rpy="0 0 0"/>
       <mass value="0.00775312250160503"/>
@@ -130,7 +128,7 @@
     <!-- inertial: the upstream origin (0.00607266 0.0630175 -0.0762781) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-0.014701 -0.00805279 -0.00121579" rpy="0 0 0"/>
       <mass value="0.0488819579417231"/>
@@ -153,7 +151,7 @@
     <!-- inertial: the upstream origin (-0.0137818 0.0785761 -0.0510709) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-4.04746e-06 -0.000248405 -0.0194926" rpy="0 0 0"/>
       <mass value="0.0267722516782373"/>
@@ -176,7 +174,7 @@
     <!-- inertial: the upstream origin (-0.0419798 0.0785696 -0.0231515) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="1.8231e-05 -0.00300069 -0.0367531" rpy="0 0 0"/>
       <mass value="0.0356190541582585"/>
@@ -199,7 +197,7 @@
     <!-- inertial: the upstream origin (0.00165104 0.0778058 0.056621) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="4.78557e-06 2.40059e-06 -0.0139743" rpy="0 0 0"/>
       <mass value="0.00736377671410321"/>
@@ -222,7 +220,7 @@
     <!-- inertial: the upstream origin (-0.000466912 0.0624063 0.0815727) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-0.0146028 -0.0012796 -0.0108028" rpy="0 0 0"/>
       <mass value="0.0488819579417229"/>
@@ -245,7 +243,7 @@
     <!-- inertial: the upstream origin (-0.0330277 0.0768233 0.10062) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="5.17439e-05 -0.00254394 -0.0319991" rpy="0 0 0"/>
       <mass value="0.0333926389608614"/>
@@ -268,7 +266,7 @@
     <!-- inertial: the upstream origin (-0.00575793 0.0909947 0.154629) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-3.27995e-06 -0.00355774 -0.0123677" rpy="0 0 0"/>
       <mass value="0.00895541725275716"/>
@@ -291,7 +289,7 @@
     <!-- inertial: the upstream origin (-0.00575793 0.0646119 0.165977) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="4.14241e-06 0.00355594 -0.012369" rpy="0 0 0"/>
       <mass value="0.00895541725275716"/>
@@ -314,7 +312,7 @@
     <!-- inertial: the upstream origin (0.0075 0.0498017 0.077423) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="0.000903325 -0.0150056 -7.14391e-06" rpy="0 0 0"/>
       <mass value="0.00775312250160503"/>
@@ -337,7 +335,7 @@
     <!-- inertial: the upstream origin (0.00742734 -0.0939825 -0.0607219) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-0.0147383 0.0080559 -0.000263276" rpy="0 0 0"/>
       <mass value="0.0488819579417233"/>
@@ -360,7 +358,7 @@
     <!-- inertial: the upstream origin (-0.0137818 -0.0785761 -0.0509291) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="3.36407e-06 0.000261084 -0.019518" rpy="0 0 0"/>
       <mass value="0.0267722516782377"/>
@@ -383,7 +381,7 @@
     <!-- inertial: the upstream origin (-0.0419798 -0.0785573 -0.0126924) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="9.0346e-07 0.00299824 -0.036745" rpy="0 0 0"/>
       <mass value="0.035619054158259"/>
@@ -406,7 +404,7 @@
     <!-- inertial: the upstream origin (0.00165104 -0.0778058 0.057379) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-6.96878e-06 -3.26504e-06 -0.0139764" rpy="0 0 0"/>
       <mass value="0.0073637767141032"/>
@@ -429,7 +427,7 @@
     <!-- inertial: the upstream origin (-0.000466912 -0.0932045 0.0830727) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-0.0146176 0.000217291 -0.0107976" rpy="0 0 0"/>
       <mass value="0.0488819579417233"/>
@@ -452,7 +450,7 @@
     <!-- inertial: the upstream origin (-0.0330277 -0.0777002 0.10738) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="0.000458608 0.00255961 -0.0320331" rpy="0 0 0"/>
       <mass value="0.0333926389608612"/>
@@ -475,7 +473,7 @@
     <!-- inertial: the upstream origin (-0.00575793 -0.0909947 0.165977) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="3.17888e-06 0.00355777 -0.0123677" rpy="0 0 0"/>
       <mass value="0.00895541725275716"/>
@@ -498,7 +496,7 @@
     <!-- inertial: the upstream origin (-0.00575793 -0.0646119 0.154629) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-4.21436e-06 -0.00355594 -0.0123692" rpy="0 0 0"/>
       <mass value="0.00895541725275716"/>
@@ -540,7 +538,7 @@
     <!-- inertial: the upstream origin (-0.001016 3.60351e-18 0.186465) was outside this link's meshes.
          COM and inertia (about the COM, link frame) are those of the collision mesh's convex hull at
          uniform density with the upstream mass, principal moments floored at 0.0001 for DART; estimate,
-         UNVERIFIED (jedy_description/scripts/fix_inertials_from_mesh.py). -->
+         UNVERIFIED. -->
     <inertial>
       <origin xyz="-0.000263924 4.07576e-05 0.0395543" rpy="0 0 0"/>
       <mass value="0.093045"/>

@@ -19,13 +19,12 @@ ament_uv_install_python_scripts(
   PROGRAMS
     scripts/jedy_interface.py
     # The exercise samples: scikit-robot ports of the 2025 EusLisp ones. Same
-    # code for Gazebo, the real robot and Isaac Sim. Installed through the venv
+    # code for Gazebo and the real robot. Installed through the venv
     # wrapper because scikit-robot lives in the venv, not in the system python.
     scripts/enshu/sample_reset_pose.py
     scripts/enshu/sample_joint.py
     scripts/enshu/sample_ik.py
     scripts/enshu/sample_servo.py
-    scripts/enshu/identify_friction.py
     scripts/enshu/sample_controllers.py
     scripts/enshu/checkerboard_pose.py
     scripts/enshu/color_clusters.py

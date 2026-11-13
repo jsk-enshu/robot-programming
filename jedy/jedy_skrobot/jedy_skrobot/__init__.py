@@ -1,4 +1,4 @@
-"""Jedy from scikit-robot: one interface for Gazebo, the real robot and Isaac Sim.
+"""Jedy from scikit-robot: one interface for Gazebo and the real robot.
 
     from jedy_skrobot import connect
 
@@ -12,10 +12,9 @@ Which robot answers is decided by what was launched, never by this code:
 
     ros2 launch jedy_bringup jedy_gazebo.launch.py            # Gazebo
     ros2 launch jedy_bringup jedy_fullbody_all.launch.py      # the real robot
-    ros2 launch jedy_bringup jedy_isaac.launch.py             # Isaac Sim
 
-All three publish the same topics under the same namespace (see
-jedy_gazebo.launch.py), so the same script runs on any of them unchanged.
+Both publish the same topics under the same namespace (see
+jedy_gazebo.launch.py), so the same script runs on either unchanged.
 
 What this adds to actuo_ros's RobotInterface is what Jedy has beyond its
 joints: the mecanum base (``go_velocity``), the IMU and the head camera. Each

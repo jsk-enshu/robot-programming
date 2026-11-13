@@ -45,7 +45,7 @@ packages under `ros/`), depended on and never modified from here.
 | --- | --- |
 | `jedy_description` | URDF, meshes and the servo map. No code, no ros2_control. |
 | `jedy_bringup` | The `<ros2_control>` xacro, controller + Kondo bus configs, launch files, RViz layout. Depends on actuo. |
-| `jedy_sim` | MuJoCo plant, and a fake servicer for exercising the pipeline. |
+| `jedy_sim` | Gazebo plugins (servo OFF, mimic joints), the simulated servo switch and motor sounds, and a fake servicer for exercising the pipeline. |
 | `jedy_safety` | Self-collision filter, plugged into actuo's real servicer. |
 | `jedy_odometry` | Wheel odometry. An ESTIMATE, which is why it is not in actuo. |
 | `jedy_teleop` | PS4 pad: the base, the head, torque on and off, go-home. |
@@ -298,7 +298,7 @@ and the arm does not move. `ros2 node list` will not show it — the two share a
 node name — so look at the process list. Both halves are now guarded and it
 should not be reachable: the servicer takes a lock keyed to the shm name, and
 `jedy_fullbody_all.launch.py` refuses to start while another robot launch
-(itself, Gazebo or Isaac Sim) is running (`jedy_preflight.py`). To clear it, `ros2 run jedy_bringup jedy_stop`, which
+(itself or Gazebo) is running (`jedy_preflight.py`). To clear it, `ros2 run jedy_bringup jedy_stop`, which
 interrupts the launch processes first so each takes its own nodes down, leaves
 the bus servicer (and therefore torque) alone unless given `--servicer`, and
 deletes the leftover shm file once nothing holds it.

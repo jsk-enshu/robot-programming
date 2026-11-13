@@ -1,6 +1,6 @@
 """Refuse to start a Jedy robot on top of one that is already running.
 
-Only one of Gazebo / the real robot / Isaac Sim may run at a time (the course
+Only one of Gazebo / the real robot may run at a time (the course
 docs say so): two of them publish the same topics, and a Gazebo server left
 over from an earlier launch keeps the old world, so a "fresh" launch starts
 with the robot wherever it was. Both used to fail late and confusingly
@@ -23,7 +23,6 @@ from launch.actions import OpaqueFunction
 ROBOT_LAUNCH_FILES = (
     "jedy_gazebo.launch.py",
     "jedy_fullbody_all.launch.py",
-    "jedy_isaac.launch.py",
 )
 
 
@@ -123,7 +122,7 @@ def find_conflicts():
 def format_conflicts(found):
     """Human-readable error for students (Japanese) with the fix."""
     lines = [
-        "Jedy (Gazebo / 実機 / Isaac Sim のどれか) がすでに起動しています。"
+        "Jedy (Gazebo か実機) がすでに起動しています。"
         "2 つ同時には起動できません (topic がぶつかり，古い Gazebo の状態が残ります)。",
         "動いているもの:",
     ]

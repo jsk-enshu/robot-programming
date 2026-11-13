@@ -2,15 +2,13 @@
 """Servo ON/OFF for Jedy in a simulator: the real robot's SetServo action.
 
     ros2 launch jedy_bringup jedy_gazebo.launch.py     # starts this
-    ros2 launch jedy_bringup jedy_isaac.launch.py      # and so does this
 
 Serves ``/actuo_bus_servicer/servo/set`` (actuo_msgs/action/SetServo) with the
 real servicer's rules (jedy_sim.sim_servo). A released joint is handed to the
 simulator, which stops applying the controller's command to it, so it falls
 under gravity while ``joint_states`` keeps reporting where it is; the
 trajectory controllers stay active, as on the robot. The simulator side is the
-``jedy_servo_switch`` system plugin in Gazebo and jedy_isaac.py in Isaac Sim;
-both speak the same two topics:
+``jedy_servo_switch`` system plugin in Gazebo, on two topics:
 
     /jedy_fullbody/servo/released        std_msgs/String  out (to the simulator)
     /jedy_fullbody/servo/released_state  std_msgs/String  in  (its ack)

@@ -57,19 +57,9 @@ def generate_launch_description():
     urdf = PathJoinSubstitution([pkg, "urdf", "jedy_fullbody_actuo.urdf.xacro"])
     controllers = PathJoinSubstitution(
         [pkg, "config", "jedy_fullbody_controllers.yaml"])
-    # This robot's own config, not jedy.rviz: that one is namespaced to /jedy
-    # and subscribes to /jedy/robot_description, which does not exist here. RViz
-    # does not complain about a topic nobody publishes, so the symptom would be
-    # an empty scene rather than an error.
     rviz_config = PathJoinSubstitution([pkg, "rviz", "jedy_fullbody.rviz"])
 
     wheels = LaunchConfiguration("wheels")
-    # True only under a simulator that publishes /clock (jedy_isaac.launch.py):
-    # then joint_states are stamped in the simulator's time, which is the time
-    # a client following /clock compares them against.
-    sim_time = {"use_sim_time": ParameterValue(
-        LaunchConfiguration("use_sim_time"), value_type=bool)}
-
     # ParameterValue(..., value_type=str): a URDF is a string, but launch
     # otherwise tries to parse it as YAML and fails.
     robot_description = {
@@ -86,7 +76,7 @@ def generate_launch_description():
         package="controller_manager",
         executable="ros2_control_node",
         namespace=NAMESPACE,
-        parameters=[robot_description, controllers, sim_time],
+        parameters=[robot_description, controllers],
         output="screen",
     )
 
@@ -121,7 +111,6 @@ def generate_launch_description():
         namespace="%s/state_merge" % NAMESPACE,
         parameters=[
             {"source_list": ["/%s/joint_states" % NAMESPACE], "rate": 30},
-            sim_time,
         ],
         # This node takes the URDF from the robot_description TOPIC, not from a
         # parameter of that name, and the sub-namespace above puts the topic it
@@ -137,7 +126,7 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         namespace=NAMESPACE,
-        parameters=[robot_description, sim_time],
+        parameters=[robot_description],
         remappings=[("joint_states", merged_topic)],
         output="screen",
     )
@@ -221,9 +210,6 @@ def generate_launch_description():
                               description="passed to ActuoSystem. true = sim "
                                           "bus servicer, false = real bus "
                                           "servicer"),
-        DeclareLaunchArgument("use_sim_time", default_value="false",
-                              choices=["true", "false"],
-                              description="follow /clock (Isaac Sim)"),
         DeclareLaunchArgument("wheels", default_value="false",
                               choices=["true", "false"],
                               description="true = expose and drive the four "

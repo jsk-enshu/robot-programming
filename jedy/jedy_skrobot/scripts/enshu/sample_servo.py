@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Torque off, then on again: the scikit-robot ``:servo-off`` / ``:servo-on``.
 
-On every backend (the real robot, Gazebo, Isaac Sim) the released joints go
+On every backend (the real robot, Gazebo) the released joints go
 LIMP and fall under gravity; ``joint_states`` keeps reporting where they are.
 On the real robot, support the arms or run it with the robot seated.
 

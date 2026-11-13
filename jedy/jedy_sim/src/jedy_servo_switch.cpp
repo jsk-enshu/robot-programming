@@ -19,7 +19,7 @@
 // through its gear train, whose dry friction holds a light load and lets a
 // heavy one fall. That friction is the joint's, not the motor's: it is the
 // URDF's <dynamics friction=... damping=...> (jedy_description/urdf/
-// jedy_gz.xacro, README_dynamics.md), which sdformat turns into the SDF
+// jedy_gz.xacro), which sdformat turns into the SDF
 // axis <friction>/<damping> and DART applies as joint Coulomb friction and
 // viscous damping, servo on or off. So releasing a joint only removes the
 // motor: DART's velocity motor (the one gz_ros2_control drives position
@@ -100,7 +100,7 @@ public:
       // silently ignores a value its author meant to apply.
       std::cerr << "[Err] jedy_servo_switch: <friction> is no longer a parameter; "
             << "put the joint's friction in the URDF's <dynamics friction=...> "
-            << "(jedy_description/README_dynamics.md). Not loading.\n";
+            << "(jedy_description/urdf/jedy_gz.xacro). Not loading.\n";
       return;
     }
     node_.Subscribe(topic, &JedyServoSwitch::OnReleased, this);

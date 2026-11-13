@@ -72,7 +72,7 @@ def main():
                    help='stop after this many seconds (robot clock)')
     p.add_argument('--min-turn', type=float, default=0.1,
                    help='slowest turn that is sent [rad/s]: below it a base '
-                        'on real wheels (and Isaac\'s) does not move at all')
+                        'on real wheels does not move at all')
     p.add_argument('--tolerance', type=float, default=0.05,
                    help='how far from the middle counts as centred (1 = the '
                         'edge of the picture)')
@@ -131,7 +131,7 @@ def main():
                 if not hinted and ri.now() - start > NO_BOX_HINT_S:
                     hinted = True
                     print('hint: {:.0f} 秒間, 赤い箱が一度も見えていません. '
-                          'Gazebo は box:=true, Isaac Sim は ISAAC_ARGS=--box '
+                          'Gazebo は box:=true '
                           'で起動しましたか? 実機ならカメラの前に赤い物を置いてください.'
                           .format(NO_BOX_HINT_S))
             if box is not None:

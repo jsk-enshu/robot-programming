@@ -9,13 +9,8 @@ ipython
 
 numpy
 
-# Geometry, for two jobs in this repo that need the SAME skrobot as the shell:
-#   - jedy_description/scripts/make_collision_meshes.py (CoACD decomposition)
-#   - actuo.safety's SelfCollisionMonitor (fcl)
-# They live here rather than in jedy_description because the tool needs the
-# scikit-robot pinned above -- the system-site-packages copy is older and has no
-# skrobot.utils.convex_decomposition, which is how this was found.
-coacd
+# Geometry for actuo.safety's SelfCollisionMonitor (fcl), with the SAME
+# scikit-robot as the shell.
 python-fcl
 
 # Image processing for the camera exercises (track_box). The ROS-side cv2

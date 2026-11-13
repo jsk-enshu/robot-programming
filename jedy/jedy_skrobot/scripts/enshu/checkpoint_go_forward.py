@@ -13,7 +13,7 @@ moved 30 degrees" example from the 2025 text. Pick the sensor:
 so the head can be tilted by hand, and stops once its pitch has changed by
 ``--threshold`` degrees. The joint angle is a sensor even with the torque off.
 ``depth`` stops once the head camera's depth in the middle of the image is
-nearer than ``--distance`` (Gazebo ``box:=true`` / Isaac ``--box`` put a box
+nearer than ``--distance`` (Gazebo ``box:=true`` puts a box
 in front). ``time`` uses no sensor at all and is there to check the base.
 Times are on the robot's clock (``ri.now()``), so in a simulator that runs
 slower than real time ``--timeout 3`` is still three seconds of driving.

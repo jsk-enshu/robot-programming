@@ -2,9 +2,9 @@
 
 The real robot's torque switch is actuo's bus servicer
 (``/actuo_bus_servicer/servo/set``, ``actuo_msgs/action/SetServo``). Gazebo
-(the ``jedy_servo_switch`` system plugin) and Isaac Sim (jedy_isaac.py), both
-behind ``jedy_sim_servo``, serve the same action under the same name, so
-``ri.servo_off()`` / ``ri.servo_on()`` are the same calls on all three and a
+(the ``jedy_servo_switch`` system plugin, behind ``jedy_sim_servo``) serves the
+same action under the same name, so
+``ri.servo_off()`` / ``ri.servo_on()`` are the same calls on both and a
 released joint does what it does on the robot: it stops following the
 controller and falls under gravity, and ``joint_states`` reports where it fell.
 

@@ -7,7 +7,7 @@ changes by more than a threshold (lift or tip the robot to try it).
 
     ros2 run jedy_skrobot checkpoint_go_forward_imu
 
-Needs an IMU on /imu. Gazebo and Isaac Sim have one. The RCB-4mini board does
+Needs an IMU on /imu. Gazebo has one. The RCB-4mini board does
 not, so on the real robot this runs only if a sensor board publishes /imu.
 """
 

@@ -4,13 +4,12 @@
   <name>jedy_sim</name>
   <version>0.0.1</version>
   <description>
-    MuJoCo plant and bus-servicer for Jedy: converts the robot to MJCF, drives
-    it from the ros2_control commands over shared memory, gates self-collisions,
-    and offers an interactive viewer.
+    Simulator side of Jedy: the Gazebo system plugins (servo OFF, mimic
+    joints), the simulators' servo ON/OFF action (jedy_sim_servo), motor
+    sounds (jedy_sim_sounds), and a fake bus servicer that exercises the
+    shared-memory and collision-gate plumbing without hardware.
 
-    Robot-specific, so it lives with the robot: this package is what knows
-    Jedy's reset pose, its arm groups and its collision-ignore set. The shared
-    memory and the collision gate come from actuo.
+    The shared memory and the collision gate come from actuo.
   </description>
   <maintainer email="ab.ioryz@gmail.com">iory</maintainer>
   <license>MIT</license>

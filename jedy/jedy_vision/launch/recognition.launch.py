@@ -4,7 +4,7 @@
     ros2 launch jedy_vision recognition.launch.py image_topic:=/image_raw   # a PC's web camera
 
 Start it next to any Jedy bring-up (Gazebo, the real robot with
-``camera:=true``, Isaac Sim); both nodes read the head camera's colour image.
+``camera:=true``); both nodes read the head camera's colour image.
 """
 
 from launch import LaunchDescription
