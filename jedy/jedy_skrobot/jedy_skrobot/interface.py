@@ -142,6 +142,13 @@ ARM_FLOOR_WARN = 0.05
 WHEEL_JOINTS = ['front_right_wheel_joint', 'front_left_wheel_joint',
                 'rear_right_wheel_joint', 'rear_left_wheel_joint']
 
+#: The real base's geometry and its slowest wheel speed (the RCB-4mini's
+#: deadband, as jedy_fullbody_all.launch.py gives the pad): slower than this a
+#: wheel does not turn. Same numbers as jedy_fullbody_controllers.yaml.
+WHEEL_RADIUS = 0.02525
+CENTRE_PROJECTION = 0.094
+MIN_WHEEL_RAD_S = 3.09
+
 #: Seconds to look for an optional topic (camera, IMU) before deciding the
 #: running robot has none.
 PROBE_TIMEOUT = 3.0
@@ -255,6 +262,7 @@ class JedyInterface(RobotInterface):
         self._servo_state_seen = threading.Event()
         self._missing_warn_time = {}
         self._board_status = None      # (monotonic time, level, message)
+        self._slow_warn_time = -1e9
         self._board_reported = None    # the reason last reported, or None
         if self._servo_client is not None:
             self.create_subscription(DiagnosticArray, '/diagnostics',
@@ -433,6 +441,7 @@ class JedyInterface(RobotInterface):
             # drive command reaches the controller before the error.
             self._check_board()
             self._check_arms_before_driving()
+            self._warn_too_slow(vx, vy, vtheta)
             self._warn_missing(WHEEL_JOINTS, 'go_velocity')
 
     def tuck_arms(self, time=2.0):
@@ -471,6 +480,32 @@ class JedyInterface(RobotInterface):
         model.angle_vector(self.angle_vector())
         return min(link.worldpos()[2] for link in model.link_list
                    if link.name.startswith(('rarm', 'larm'))) - FLOOR_Z
+
+    def _warn_too_slow(self, vx, vy, vtheta):
+        """Say when a twist is too slow for the real base's wheels to turn.
+
+        Only on the real robot (a board is reporting): the simulators have no
+        deadband, so the same twist moves there.
+        """
+        if self._board_status is None:
+            return
+        k = CENTRE_PROJECTION * vtheta
+        wheels = [abs(vx + sy * vy + sk * k) / WHEEL_RADIUS
+                  for sy, sk in ((1, 1), (-1, -1), (-1, 1), (1, -1))]
+        fastest = max(wheels)
+        if fastest == 0.0 or fastest >= MIN_WHEEL_RAD_S:
+            return
+        now = time.monotonic()
+        if now - self._slow_warn_time < MISSING_WARN_PERIOD:
+            return
+        self._slow_warn_time = now
+        self.get_logger().warn(
+            'go_velocity({:.3f}, {:.3f}, {:.3f}) is too slow for the real base: '
+            'the wheels do not turn below {:.3f} m/s ({:.2f} rad/s turning in '
+            'place). 遅すぎて車輪が回らない: 前後・左右は 0.078 m/s 以上，'
+            '旋回は 0.83 rad/s 以上にしよう'.format(
+                vx, vy, vtheta, MIN_WHEEL_RAD_S * WHEEL_RADIUS,
+                MIN_WHEEL_RAD_S * WHEEL_RADIUS / CENTRE_PROJECTION))
 
     def _check_arms_before_driving(self):
         now = time.monotonic()

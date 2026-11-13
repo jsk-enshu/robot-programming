@@ -151,3 +151,79 @@ def test_a_stopped_wheel_would_report_its_last_speed_forever():
     assert wheel.speed_rev_s is not None, "nothing here can notice a stop"
     wheel.reset_speed()
     assert wheel.speed_rev_s is None
+
+
+def ramp(wheel, start, stop, t, step=115, dt=0.0025):
+    """Feed pulses from `start` towards `stop` (either way), no wrap."""
+    sign = 1 if stop >= start else -1
+    pulse = start
+    while (stop - pulse) * sign > 0:
+        wheel.update(pulse, t)
+        pulse += sign * step
+        t += dt
+    wheel.update(stop, t)
+    return t + dt
+
+
+def test_a_short_move_advances_the_angle_with_the_nominal_scale():
+    """The course drives in half revolutions. Before any wrap the nominal scale
+    gives the fraction; without it the angle would not move at all."""
+    wheel = WheelAngle(nominal_pulses_per_rev=CYCLE)
+    ramp(wheel, 3000 + 1000, 3000 + 1000 + CYCLE / 2, 0.0)
+    assert wheel.angle == pytest.approx(math.pi, rel=0.02)
+
+
+def test_the_first_wrap_does_not_jump_the_angle():
+    """Started mid-revolution: the pulses before the first wrap are not a whole
+    revolution, so counting one there would add the part never travelled."""
+    wheel = WheelAngle(nominal_pulses_per_rev=CYCLE)
+    t = ramp(wheel, 3000 + CYCLE * 0.6, 3000 + CYCLE, 0.0)
+    before = wheel.angle
+    wheel.update(3000.0, t)                       # the wrap
+    assert wheel.angle == pytest.approx(before, abs=0.05)
+    assert wheel.angle == pytest.approx(0.4 * 2 * math.pi, rel=0.05)
+
+
+def test_a_backward_wrap_keeps_the_angle_continuous():
+    wheel = WheelAngle(nominal_pulses_per_rev=CYCLE)
+    t = 0.0
+    for _ in range(2):
+        t = revolution(wheel, start_time=t)
+    before = wheel.angle
+    t = ramp(wheel, 3000.0, 3000.0 - 0.0, t)      # at the bottom
+    wheel.update(3000 + CYCLE, t)                 # back through the wrap
+    assert wheel.angle == pytest.approx(before, abs=0.05)
+    t = ramp(wheel, 3000 + CYCLE, 3000 + CYCLE / 2, t + 0.0025)
+    assert wheel.angle == pytest.approx(before - math.pi, rel=0.02)
+
+
+def test_turning_back_between_wraps_does_not_poison_the_scale():
+    """Measured 2026-11-13: forward and back moves of 15 cm drove the learned
+    spread to 133 %. A cycle between a forward and a backward wrap is not a
+    revolution and must not be learned, nor give a speed."""
+    wheel = WheelAngle(nominal_pulses_per_rev=CYCLE)
+    t = 0.0
+    for _ in range(3):
+        t = revolution(wheel, start_time=t)
+    learned = wheel.pulses_per_rev
+    for _ in range(4):                            # back and forth over the wrap
+        wheel.update(3000 + CYCLE, t)             # backward wrap
+        t = ramp(wheel, 3000 + CYCLE, 3000 + CYCLE - 500, t + 0.0025)
+        t = ramp(wheel, 3000 + CYCLE - 500, 3000 + CYCLE, t)
+        wheel.update(3000.0, t)                   # forward wrap
+        t += 0.0025
+        assert wheel.speed_rev_s is None
+    assert wheel.pulses_per_rev == pytest.approx(learned)
+    assert wheel.scale_spread < 0.05
+
+
+def test_two_wraps_per_revolution_halve_the_angle_and_speed():
+    """The RCB-4mini's reading wraps twice per wheel revolution."""
+    one, two = WheelAngle(), WheelAngle(wraps_per_rev=2)
+    for wheel in (one, two):
+        t = 0.0
+        for _ in range(3):
+            t = revolution(wheel, start_time=t)
+    assert two.revolutions == one.revolutions == 3
+    assert two.angle == pytest.approx(one.angle / 2)
+    assert two.speed_rev_s == pytest.approx(one.speed_rev_s / 2)

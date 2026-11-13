@@ -83,6 +83,11 @@ WHEEL_JOINTS = ["front_right_wheel_joint", "front_left_wheel_joint",
 #: value that silently differs would produce a pose that looks fine and drifts.
 WHEEL_RADIUS = 0.02525
 CENTRE_PROJECTION = 0.094            # |x| + |y| of a wheel from the base centre
+#: The RCB-4mini's wheel reading, measured 2026-11-13 (see
+#: jedy_odometry.wheel_angle): it wraps every ~9850 pulses, twice per wheel
+#: revolution. The pulses are used until each wheel has learned its own.
+PULSES_PER_WRAP = 9850
+WRAPS_PER_REV = 2
 
 
 def parse_args(argv):
@@ -101,6 +106,11 @@ def parse_args(argv):
                         "rear_right, rear_left order, matching `direction:` "
                         "in the robot's bus config -- see the config's note "
                         "before changing.")
+    p.add_argument("--pulses-per-wrap", type=float, default=PULSES_PER_WRAP,
+                   help="each wheel's scale until it has learned its own "
+                        "(0: count whole wraps only until then)")
+    p.add_argument("--wraps-per-rev", type=int, default=WRAPS_PER_REV,
+                   help="wraps of the reading per wheel revolution")
     p.add_argument("--frame", default="odom")
     p.add_argument("--child-frame", default="base_link")
     p.add_argument("--publish-tf", action="store_true",
@@ -119,7 +129,9 @@ def main(argv=None):
     node = Node("jedy_wheel_odometry")
 
     directions = dict(zip(WHEEL_JOINTS, args.directions))
-    wheels = {name: WheelAngle(direction=directions[name])
+    wheels = {name: WheelAngle(direction=directions[name],
+                               nominal_pulses_per_rev=args.pulses_per_wrap or None,
+                               wraps_per_rev=args.wraps_per_rev)
               for name in CORNERS.values()}
     previous = {name: None for name in CORNERS.values()}
 
