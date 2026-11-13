@@ -973,28 +973,32 @@ def generate_launch_description():
                                           "controller/...) for the robot "
                                           "system lecture and older "
                                           "programs"),
-        # Default: legacy, except with tags:=true, whose posts 2 and 3
-        # stand where the ball would be, and with box:=true, where the day 1
-        # camera exercises would find the 1 m red ball instead of the red box.
-        # Declared after box and tags, which it reads.
-        DeclareLaunchArgument("ball", default_value=PythonExpression([
-            "'true' if '", LaunchConfiguration("legacy"), "' == 'true' and '",
-            LaunchConfiguration("tags"), "' != 'true' and '",
-            LaunchConfiguration("box"), "' != 'true' else 'false'"]),
-                              choices=["true", "false"],
-                              description="the 2025 world's red ball (r 0.5 "
-                                          "m, 1.5 m to the left); default: "
-                                          "legacy, but false with box:=true or tags:=true"),
-        DeclareLaunchArgument("clock_every", default_value="4",
-                              description="publish /clock every N physics "
-                                          "steps (5 ms each): 4 = 50 Hz"),
-        DeclareLaunchArgument("rviz", default_value="false",
-                              choices=["true", "false"]),
         DeclareLaunchArgument("demo", default_value="false",
                               choices=["true", "false"],
                               description="the jedy_vision demo stage: an "
                                           "AprilTag box on a stand, a chair "
                                           "and a cup (Fuel)"),
+        # Default: legacy, except with tags:=true, whose posts 2 and 3
+        # stand where the ball would be, with box:=true, where the day 1
+        # camera exercises would find the 1 m red ball instead of the red box,
+        # and with demo:=true, the jedy_vision demo stage (the ball stood next
+        # to it, in the way of the views of the demos).
+        # Declared after box, tags and demo, which it reads.
+        DeclareLaunchArgument("ball", default_value=PythonExpression([
+            "'true' if '", LaunchConfiguration("legacy"), "' == 'true' and '",
+            LaunchConfiguration("tags"), "' != 'true' and '",
+            LaunchConfiguration("box"), "' != 'true' and '",
+            LaunchConfiguration("demo"), "' != 'true' else 'false'"]),
+                              choices=["true", "false"],
+                              description="the 2025 world's red ball (r 0.5 "
+                                          "m, 1.5 m to the left); default: "
+                                          "legacy, but false with box:=true, "
+                                          "tags:=true or demo:=true"),
+        DeclareLaunchArgument("clock_every", default_value="4",
+                              description="publish /clock every N physics "
+                                          "steps (5 ms each): 4 = 50 Hz"),
+        DeclareLaunchArgument("rviz", default_value="false",
+                              choices=["true", "false"]),
         DeclareLaunchArgument("camera", default_value="wide",
                               choices=["wide", "d405"],
                               description="d405 = the real robot's camera: "
