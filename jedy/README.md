@@ -28,7 +28,7 @@ packages under `ros/`), depended on and never modified from here.
 | `jedy_skrobot` | `connect()` → `robot, ri`: the scikit-robot model and robot interface the exercises program against. |
 | `jedy_vision` | Head-camera demos (people, pose, AprilTag), and the recognition nodes behind `ri.what_do_you_see()` / `ri.gesture()` (`ros2 launch jedy_vision recognition.launch.py`). |
 | `jedy_vision_msgs` | The recognition nodes' messages and services, so `ri` can call them without `jedy_vision`'s venv. |
-| `jedy_speech` | Japanese speech, offline on the CPU: Open JTalk for `ri.say()`, Whisper for `ri.listen()`, and a speech bubble in RViz. |
+| `jedy_speech` | An offline speech demo on the CPU (Open JTalk, Whisper, a speech bubble in RViz). `ri.say()` / `ri.listen()` use jsk_3rdparty's VOICEVOX and ros_speech_recognition instead. |
 | `room13bc_description` | The exercise room (13BC) and its desks, for RViz and Gazebo (`world:=room13bc`). |
 
 ## Starting it

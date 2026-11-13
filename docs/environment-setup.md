@@ -22,13 +22,13 @@ $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/
 $ echo "yaml file://$HOME/ros2_ws/src/robot-programming/jedy/rosdep.yaml" | sudo tee /etc/ros/rosdep/sources.list.d/50-jedy.list
 $ rosdep update
 $ cd ~/ros2_ws/
-$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip"
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
 $ colcon build --symlink-install
 $ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc   # ROS 2 の通信を自分の PC の中だけにする
 ```
 
 - `50-jedy.list` は，ROS の rosdep の一覧に無い依存 (発話の吹き出しの日本語フォント `fonts-noto-cjk`) の定義を rosdep に教える (1 回だけ)．
-- `--skip-keys` の 2 つは，本演習で使わないパッケージ (`mechatrobot_ros2`，`jsk_data`) の依存で，rosdep では入らない．
+- `--skip-keys` の 3 つは，本演習で使わないパッケージ (`mechatrobot_ros2`，`jsk_data`) の依存で，rosdep では入らない．
   付けないと `rosdep install` が最後に `ERROR` を出すが，演習には影響しない．
 
 ```{important}
@@ -58,7 +58,7 @@ $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/
 $ vcs pull
 $ rosdep update
 $ cd ~/ros2_ws/
-$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip"
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
 $ colcon build --symlink-install
 ```
 
