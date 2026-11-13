@@ -444,11 +444,20 @@ class JedyInterface(RobotInterface):
             self._warn_too_slow(vx, vy, vtheta)
             self._warn_missing(WHEEL_JOINTS, 'go_velocity')
 
-    def tuck_arms(self, time=2.0):
+    def tuck_arms(self, time=2.0, pose=None):
         """Fold both arms into the driving pose (:data:`TUCK_POSE`) and wait.
 
         Call this before driving: with the arms hanging (Gazebo's start pose)
         the hands are millimetres above the floor and drag on it.
+
+        Parameters
+        ----------
+        time : float
+            Seconds for the motion.
+        pose : dict, optional
+            Another right-arm pose in the same form as :data:`TUCK_POSE`
+            (degrees; the left arm mirrors it), e.g. one that keeps the hands
+            clear of what the robot drives up to.
         """
         robot = self.robot
         arm_joints = [j.name for j in robot.rarm.joint_list + robot.larm.joint_list]
@@ -459,7 +468,7 @@ class JedyInterface(RobotInterface):
             self.servo_on(joints=arm_joints)
         robot.angle_vector(self.angle_vector())
         for side, sign in (('rarm', 1.0), ('larm', -1.0)):
-            for name, deg in TUCK_POSE.items():
+            for name, deg in (TUCK_POSE if pose is None else pose).items():
                 if name in _MIRRORED:
                     deg = sign * deg
                 getattr(robot, '{}_{}'.format(side, name)).joint_angle(math.radians(deg))
