@@ -98,6 +98,35 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
 Gazebo の演習室の Jedy と赤い箱 (`box:=true`)
 :::
 
+#### Gazebo に物を置く
+
+起動するときの引数で，演習で使う物を置ける (複数指定してよい)．
+
+| 引数 | 置かれる物 |
+| --- | --- |
+| `box:=true` | 赤い箱 (色で見つける演習用) |
+| `demo:=true` | AprilTag の付いた台と立方体，椅子，コップ |
+| `person:=true` | 人 (人を見つける・追うデモ用) |
+| `checkerboard:=true` | チェッカーボード |
+
+起動したあとでも，別のターミナルから物を足せる．位置は起動したときのロボットの位置が原点で，`-x` が前，`-y` が左，`-z` が上 (m)．
+
+```{code-block} console
+$ # 緑の箱 (一辺 0.2 m) をロボットの 1 m 前，0.4 m 右に置く
+$ ros2 run ros_gz_sim create -name green_box -x 1.0 -y -0.4 -z 0.1 -string \
+  "<sdf version='1.9'><model name='m'><static>true</static><link name='l'><collision name='c'><geometry><box><size>0.2 0.2 0.2</size></box></geometry></collision><visual name='v'><geometry><box><size>0.2 0.2 0.2</size></box></geometry><material><diffuse>0 0.8 0 1</diffuse></material></visual></link></model></sdf>"
+$ # Gazebo Fuel (https://app.gazebosim.org/fuel/models) のモデルを URL で置く (例: コップ)
+$ ros2 run ros_gz_sim create -name my_cup -x 0.8 -y 0.0 -z 0.0 \
+  -file https://fuel.gazebosim.org/1.0/GoogleResearch/models/ACE_Coffee_Mug_Kristen_16_oz_cup/1
+$ gz model --list                    # 置かれている物の名前
+$ gz service -s /world/jedy_world/remove --reqtype gz.msgs.Entity --reptype gz.msgs.Boolean \
+  --timeout 3000 --req 'name: "green_box" type: MODEL'   # 名前を指定して消す
+```
+
+`-name` は物ごとに違う名前にする．
+物体の認識 (YOLO) は本物らしい見た目の物でないと見つけにくい．単色の箱は色で見つけ (`track_box`)，
+「コップ」「ペットボトル」などを認識させたいときは Fuel の実物をスキャンしたモデル (GoogleResearch など) を置くとよい．
+
 ### 実機 (RCB-4mini)
 
 初回だけ，USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) に `/dev/actuo_kondo_rcb4mini` という名前を付ける udev ルールを入れる．
