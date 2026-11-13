@@ -36,6 +36,7 @@
 | 声で操縦するロボット: 「前」「右」「止まって」で台車を動かし，「手を振って」で腕を振る | 声・台車・腕 | `ri.listen`, `ri.go_velocity` |
 | 案内ロボット: 人が来たらあいさつし，「いいね」をされたらお辞儀する | 認識・声・首 | `ri.wait_until_sees('人')`, `ri.gesture`, `ri.say` |
 | 人について行くロボット | カメラ・台車・首 | `ri.what_do_you_see(['人'])`, `ri.go_velocity` |
+| 実況するロボット: 「何が見える?」と聞かれたら，見えているものを AI に聞いてしゃべる | 声・カメラ (AI) | `ri.listen`, `ri.ask`, `ri.say` |
 
 ### すでにあるデモ
 
@@ -53,6 +54,7 @@ Gazebo では `jedy_gazebo.launch.py demo:=true person:=true camera:=d405` が�
 | 人の腕のまねをする | `ros2 run jedy_vision mimic_arms` | 姿勢推定の結果から逆運動学で腕の姿勢を作る |
 | 手を挙げた人に手を振り返す | `ros2 run jedy_vision wave_back` | 姿勢から合図を判定し，動作を作る |
 | 声でデモを切り替える | `ros2 run jedy_vision voice_demo` | 音声認識の結果で行動を選ぶ |
+| 言葉で言った目標へ走る | `ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて` | カメラの画像を VLM に送って次の一手を決める ({ref}`day-recognition-manipulation` の「VLM に聞いて動く」) |
 | 色の付いた物の 3 次元の位置 | `ros2 run jedy_skrobot color_clusters` | 色で画素を選び，深度画像で 3 次元に戻す |
 | チェッカーボードの位置と向き | `ros2 run jedy_skrobot checkerboard_pose` | 既知の模様から姿勢を求める (PnP) |
 | 傾いたら止まる | `ros2 run jedy_skrobot checkpoint_go_forward_imu` | IMU (Gazebo のみ．実機の RCB-4mini には無い) |
@@ -209,6 +211,9 @@ Gazebo に無いもの (人・ペットボトル・手) は，PC の Web カメ�
 | 時間 | `ri.now()` / `ri.sleep(秒)` (シミュレータの時計にも合う) |
 | 画像 / 深度 / 内部パラメータ | `ri.image()` / `ri.depth_image()` / `ri.camera_info()` |
 | 物体を探す | `ri.sees('単語')` / `ri.what_do_you_see(['単語', ...])` / `ri.wait_until_sees('単語', timeout=秒)` |
+| AI に画像について聞く | `ri.ask('質問')` / `ri.ask('質問', [画像1, 画像2])` (`model='vlm-er'`) |
+| AI に選ばせる / 指さしてもらう | `ri.ask('質問', choices=['左', '右'])` / `ri.point('赤い箱')` → `(u, v)` か None |
+| 画素の 3D 位置 (base_link) | `ri.pixel_position(u, v, depth)` [m] か None |
 | ジェスチャ | `ri.gesture()` / `ri.janken()` / `ri.wait_until_gesture('チョキ')` / `ri.wait_until_janken()` |
 | しゃべる / 聞く | `ri.say('文')` (`wait=False`, `speaker='ずんだもん-ノーマル'`) / `ri.listen(timeout=秒)` |
 | モデル: 初期姿勢 / 関節 | `robot.reset_pose()` / `robot.head_joint1.joint_angle(rad)` |

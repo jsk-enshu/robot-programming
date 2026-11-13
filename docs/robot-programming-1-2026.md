@@ -43,7 +43,7 @@
 - 台車を動かす: `ri.go_velocity(vx, vy, vtheta)`
 - 腕と首を動かす: `ri.servo_on()`, `ri.angle_vector(av, time)`, `robot.rarm.inverse_kinematics(coords)`
 - カメラで見る: `ri.image()`, `ri.depth_image()`
-- カメラで認識する: `ri.sees('ペットボトル')`, `ri.what_do_you_see()`, `ri.janken()`
+- カメラで認識する: `ri.sees('ペットボトル')`, `ri.what_do_you_see()`, `ri.janken()`, `ri.ask('質問')`
 - 声でしゃべる・聞く: `ri.say('こんにちは')`, `ri.listen()`
 
 </div>
@@ -655,6 +655,229 @@ $ ros2 run jedy_vision detect_people --pose --face --hands --tilt -25 --save peo
 
 学科 PC で上の `detect_people` を実行したところ．中央が保存した `people.png` (2 倍速)
 :::
+
+### AI に画像について聞く (`ri.ask`, `ri.point`)
+
+`ri.ask('質問')` はカメラの画像と質問を AI (Google の Gemini) に送り，答えを文で返す．
+決まった単語を探す `ri.what_do_you_see` と違い，「机の上に何がある?」「人は何をしている?」のような自由な質問ができる．
+
+```{code-block} python
+print(ri.ask('この画像に何が写っていますか? 1 文で'))     # 頭のカメラの今の画像について聞く
+
+img, _ = ri.image()
+print(ri.ask('赤い物はどちら側にありますか? 左か右で答えて', img))   # 自分で撮った画像で聞く
+
+before, _ = ri.image()
+ri.go_velocity(0.0, 0.0, 0.5, duration=1.0)
+after, _ = ri.image()
+print(ri.ask('2 枚の画像で何が変わりましたか?', [before, after]))     # 2 枚まで送れる
+```
+
+**答えを選ばせる．** `choices=` を付けると，答えはその中の 1 つの文字列そのものになる (違う答えが 2 回続くと `RuntimeError`)．
+`if` で分けるときはこちらを使う．
+
+```{code-block} python
+side = ri.ask('赤い箱は画像のどちら側にありますか?', choices=['左', '真ん中', '右'])
+if side == '左':
+    ri.go_velocity(0.0, 0.0, 1.0, duration=0.4)   # 左に回る
+```
+
+**指さしてもらう．** `ri.point('赤い箱')` は Gemini Robotics-ER (`vlm-er`) に画像の中の位置を聞き，
+画素の位置 `(u, v)` (`u` が右向き，`v` が下向き．`img[v, u]` の画素) を返す．写っていなければ `None`．
+`ri.pixel_position(u, v, depth)` はその画素の距離を距離画像で測り，ロボットの座標系 (base_link: 前が x，左が y，上が z) の位置 [m] にする
+(`ri.detection_position` と同じ計算．距離が測れなければ `None`)．これを逆運動学の目標にすれば，言葉で言った物に手を伸ばせる．
+
+```{code-block} python
+import numpy as np
+from skrobot.coordinates import Coordinates
+
+img, _ = ri.image()
+depth, _ = ri.depth_image()                 # 同じ時の距離画像
+uv = ri.point('赤い箱', img)                # (u, v) [画素] か None
+if uv is not None:
+    p = ri.pixel_position(uv[0], uv[1], depth)   # [x, y, z] [m] か None
+    print('赤い箱は', p)
+    if p is not None:
+        robot.angle_vector(ri.angle_vector())
+        target = p - np.array([0.03, 0.0, 0.0])                   # 3 cm 手前
+        # 一度 上・手前 (経由点) に出してから近づける．いきなり近づけると腕が台の角に引っかかった
+        for goal in (target + np.array([-0.03, 0.0, 0.04]), target):
+            if robot.larm.inverse_kinematics(Coordinates(pos=goal), rotation_axis=False) is False:
+                print('IK が解けない', goal)
+                break
+            ri.angle_vector(robot.angle_vector(), 2.0)
+            ri.wait_interpolation()
+```
+
+Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは `[{"point": [545, 138], "label": "赤い箱"}]` で
+([縦, 横] を 0〜1000 にした値)，`ri.point` は 640×480 の画像の画素 (88, 262) を返した．箱の赤い領域の中心 (87, 262) とほぼ同じである．
+`ri.pixel_position` は [1.123, 0.475, 0.137] m で，箱の手前の面 (x = 1.125 m) から 2 mm だった．
+腕が届くのは base_link から前に 0.25 m ほどまでなので，手を伸ばすときは物の近くまで台車で寄っておく．
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-ri-ask-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 学科 PC の Gazebo で，台の上の赤い箱 (一辺 6 cm) を前に `ri.ask('何が見えますか？…')` と聞いて答えを表示し，
+`ri.point('赤い箱')` と `ri.pixel_position` で求めた位置 ([0.258, 0.095, 0.137] m．箱の手前の面の中心は [0.26, 0.10, 0.134] m) の
+3 cm 手前へ，上のコードの経由点を通して左手を伸ばしたところ (1.25 倍速．手先は目標から 1 mm に着いた．問い合わせ 2 回で $0.0031)．
+左が Gazebo，右上が頭のカメラの画像，右下が端末．
+
+- 使う前に `ta login` が要る (キーは AI TA と同じ．API キーを取ったり `.env` を書いたりしなくてよい)．
+  `ta login` で「カメラ画像を AI に送る機能」に同意したときだけ使える．
+  「ta login で同意したキーだけで使えます」と断られたら，`ta login` をやり直して同意するか選ぶ．
+- **送った画像・質問・答えは演習のサーバーに保存され，演習の教員・TA が見る．** 人の顔や個人の物が写らないように向けること．
+- 1 人あたり **1 秒に 1 回**まで (`ri.ask` は自分で 1.1 秒あけて送る)，**1 日 $2** まで (AI TA の分とは別)，1 回に画像 2 枚まで．
+  1 回 $0.001〜0.003 ほど．`ta usage` で今日の利用額が分かる．
+- 1 回に `vlm-er` で 1.3 秒，`vlm-gemini` で 2.7 秒ほどかかる (Gazebo の画像 1 枚，12 回の中央値．まれに 20 秒以上かかった)．
+  台車や腕を止めずに動かし続ける制御には使わない．「次に何をするか」を決めるのに使う．
+  既定では AI はほとんど考えずに答える (`reasoning='none'`)．難しい質問では `reasoning='low'` などにすると答えが良くなることがあるが，遅く高くなる．
+  速く繰り返し見たいときは `ri.what_do_you_see` や `ri.gesture` を使う．
+- サーバーに断られると `VlmRefused` (`RuntimeError` の一種) になる．`e.kind` が `'rate'` (速すぎる) なら少し待てばまた使え，
+  `'budget'` (予算を使い切った)，`'key'` (キーが無い・使えない・同意していない) ならその日・その設定では使えない．
+- `model='vlm-er'` で Gemini Robotics-ER を使う．画像の中の物の位置を指すのが得意．
+- Gazebo の画像は CG なので，実機のカメラとは答えが変わることがある．
+
+### VLM に聞いて動く (言葉で目標を言う)
+
+2025 年度の「LLM を使用したロボットの自律操縦」の 2026 年度版である．
+カメラの画像と「赤い箱に近づいて」のような言葉の目標を **VLM** (画像の分かる大規模言語モデル．ここでは Google の Gemini) に送り，
+「前へ」「左へ回る」などの次の一手を答えてもらって，台車をその分だけ動かす．これを目標に着くまでくり返す．
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-vlm-nav-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 学科 PC の Gazebo (`box:=true`) で `ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて` を実行したところ (2 倍速)．
+左が Gazebo，右上が頭のカメラの画像，右下が端末．VLM (`vlm-er`) は左に 1 回回ってから前に 5 回進み，
+箱まで 0.31 m で `done` と答えて止まった (7 回の問い合わせで合計 $0.0172)．
+
+ほかの例 (どれも学科 PC の Gazebo の演習室，`vlm-er`，`reasoning low`，3 倍速)：
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-vlm-nav-search-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**探してから近づく：** 「青い箱を探して近づいて」．青い箱はロボットの左後ろにあり，最初は見えない．
+右に 12 回回って (ほぼ一周) 見つけ，前に 4 回進んで 0.35 m で止まった (18 手，1 手 3.3 s (中央値)，$0.043)．
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-vlm-nav-person-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**人のところへ：** `person:=true person_x:=2.0 person_y:=-0.6` で人を置き，「人のところに行って」．
+右に 1 回回って前に進み，0.52 m で 1 度 `done` と答えたが「まだ遠い」と返されて，もう 1 歩進んで止まった (12 手，1 手 5.2 s，$0.033)．
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-vlm-nav-switch-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**途中で目標を変える：** 「赤い箱に近づいて」で走り出し，3 手目のあとで右下の端末から
+`ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '緑の箱に近づいて'}"` を送った (緑の箱は `ros2 run ros_gz_sim create` で置いた)．
+赤い箱へ 4 手 (左に 1 回，前に 3 回) 動いたところで新しい目標に切り替わり，右に 3 回回って緑の箱を見つけ，近づいて 0.31 m で止まった (4 + 8 手，$0.029)．
+
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
+$ ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて
+```
+
+1 回の手順は次のとおり．
+
+1. 台車を止め，止まってから撮った画像と距離画像を取る (`ri.image()`, `ri.depth_image()`)．
+2. 画像と目標と直前の数手，それに距離画像で測った正面 (画像の真ん中) の距離を VLM に送り，`{"action": "left", "point": [520, 310], "reason": "赤い箱が左にあるので左に回る"}` の形で答えてもらう．
+   `action` は `forward` / `back` (前後に約 0.18 m)，`left` / `right` (その場で約 23 度回る)，
+   `strafe_left` / `strafe_right` (横に約 0.18 m)，`stop` (動かない)，`done` (目標に着いた) のどれか．
+   `point` は画像の中の目標の位置 ([縦, 横]，0〜1000)．
+3. `point` の所の距離を距離画像で測る (`done` の確認と，次の問い合わせの「直前の数手」に使う)．
+4. 答えの動きを `ri.go_velocity(..., duration=...)` で 1 回分だけして止まる．
+
+中心は次のくり返しである (`vlm_navigate.py` から抜き出して短くしたもの．`SYSTEM` は動きの一覧と答えの形を書いた指示，
+`parse_answer` は答えの JSON を読む関数，`distance_at` は距離画像の `point` の所の距離，`describe` はそれを VLM に伝える文，`ACTIONS` は動きの名前から `(前後, 左右, 旋回)` の向きへの表)．
+
+```{code-block} python
+history = []
+for step in range(30):
+    ri.stop()
+    stopped = ri.now()
+    rgb, _ = ri.image(newer_than=stopped)            # 止まってから撮った画像
+    depth, _ = ri.depth_image(newer_than=stopped)
+    ahead = distance_at(depth, (500, 500))            # 正面 (画像の真ん中) の距離 [m]
+    reply = ri.ask('Goal: {}\nDistance straight ahead now: {}\nPrevious steps: {}'.format(
+                       goal, ahead, '; '.join(history[-6:])),
+                   rgb, model='vlm-er', system=SYSTEM, reasoning='low')
+    action, reason, point = parse_answer(reply)      # 'forward', '赤い箱が正面に...', (y, x)
+    distance = distance_at(depth, point) if point else None   # point の所の距離 [m]
+    print(step, action, reason, distance)
+    if action == 'done':
+        if distance is not None and distance <= 0.45:
+            break                                     # 本当に近いときだけ止まる
+        history.append('done refused: {}'.format(describe(distance)))
+        continue
+    sx, sy, st = ACTIONS[action]
+    ri.go_velocity(0.12 * sx, 0.12 * sy, 1.0 * st, duration=0.4 if st else 1.5)
+    history.append('{} ({}; {})'.format(action, reason, describe(distance)))
+```
+
+自分で変えるときは，コピーして jedy_skrobot の仮想環境の python で実行する．
+`SYSTEM` (VLM への指示) を書き換えると，動き方や「着いた」の決め方が変わる．
+
+```{code-block} console
+$ cp ~/ros2_ws/src/robot-programming/jedy/jedy_skrobot/scripts/enshu/vlm_navigate.py ~/enshu/my_vlm_navigate.py
+$ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_vlm_navigate.py 赤い箱に近づいて
+```
+
+頭のカメラは床から 0.4 m ほどと低いので，物は近くに見えやすい．
+VLM は 1 m 先の箱でも「着いた」と答えたので，`done` は測った距離が `--near` (既定 0.45 m) 以下のときだけ受け付け，
+そうでなければ「まだ遠い」と表示して続ける (実機の D405 は 0.5 m より遠いと測れないので，近づくまで `done` にならない)．
+正面 0.25 m 以内に物があるときは `forward` もしない．
+`ri.ask` の既定と違い，ここでは AI に少し考えさせている (`--reasoning low`)．
+`none` にすると 1 回の答えは速くなるが，箱の近くで左右に回り続けて 14 手かかった (`low` では 7 手)．
+
+Gazebo (`box:=true`) で測った 1 手の時間 (2026 年 11 月，各 1 回)：
+
+| モデル | 着くまで | 1 手 (中央値) | 止めて撮る | VLM の答え | 動く | 合計の金額 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `vlm-er` (`low`) | 7 手 | 4.9 s | 0.2 s | 3.3 s | 1.5 s | $0.018 |
+| `vlm-gemini` (`none`) | 7 手 | 5.5 s | 0.2 s | 3.7 s | 1.5 s | $0.013 |
+
+1 手に 1 秒より長くかかるので，サーバーの「1 秒に 1 回」の制限で待つことは無かった．
+
+答えを待っている間はロボットは動かない．`done` か，`--max-steps` 回 (既定 30) か，Ctrl-C で終わり，どの場合も台車を止める．
+端末には 1 手ごとに `[何回目/最大] 動き 理由 (目標までの距離, 答えまでの秒数, その回の金額, 合計の金額)` が出る．
+終わると 1 手の時間の内訳 (止めて撮る・VLM の答え・動く) が出る．
+`--save 保存先` で，VLM に送った画像を 1 手ずつ保存する．
+`--dry-run left,forward,done` は VLM に聞かず，書いた順に動く (キー無し・0 円で動きと表示を確かめる)．
+
+速さは実機の台車が動ける範囲の中にしてある (前後・左右 0.12 m/s，旋回 1.0 rad/s．範囲外を指定するとエラー)．
+1 回で動く量は `--step` (前後・左右の秒数) と `--turn-step` (旋回の秒数) で変えられる．
+`--model vlm-gemini` で普通の Gemini になる (既定の `vlm-er` はロボット向けの Gemini Robotics-ER)．
+`--say` を付けると理由を `ri.say()` でしゃべる (VOICEVOX を起動しておく)．
+
+目標は起動したあとでトピックからも送れる (2025 年度の `/robocrew/prompt` と同じ使い方)．
+目標を付けずに起動すると，`/vlm_nav/prompt` に目標が来るのを待つ．動いている途中で新しい目標を送ると，そちらに切り替わる．
+
+```{code-block} console
+$ ros2 run jedy_skrobot vlm_navigate
+$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '赤い箱に近づいて'}"
+$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '左を向いて机を探して'}"
+$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: 'Approach the red box'}"
+```
+
+今の状態は `/vlm_nav/status` (`std_msgs/String`) に出る (`ros2 topic echo /vlm_nav/status`)．
+RViz では，左下の Add から `rviz_2d_overlay_plugins` の `TextOverlay` を足し，Topic を `/vlm_nav/overlay` にすると左上に出る
+(`rviz_2d_overlay_msgs` が入っているときだけ出す)．
+
+キー・同意・利用の上限は `ri.ask` と同じ (上の節)．速すぎて断られたら (HTTP 429)，台車を止めて 2, 4, 8 秒待ってからやり直す．
+予算を使い切った，キーが使えない，などで断られたら，台車を止めてサーバーの言葉をそのまま表示して終わる．
+
+AI の答えは間違えることがあり，同じ画像でも毎回同じ答えとは限らない．実機で使うときは，1 回に動く量を小さくし，
+ぶつかりそうなときに止める人がそばにいること．
 
 ### <span style="color:green">チェックポイント: カメラ</span>
 

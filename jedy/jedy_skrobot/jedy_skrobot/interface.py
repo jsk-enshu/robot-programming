@@ -59,7 +59,9 @@ written against a stream of zeros would look like it works and do nothing.
 """
 
 import copy
+import json
 import math
+import os
 import threading
 import time
 
@@ -101,6 +103,11 @@ IMAGE_TOPIC = '/camera/color/image_rect_raw'
 IMAGE_FRAME = 'camera_color_optical_frame'
 DEPTH_TOPIC = '/camera/depth/image_rect_raw'
 CAMERA_INFO_TOPIC = '/camera/color/camera_info'
+#: Seconds between two VLM questions from one ``ri``: the AI TA server takes
+#: one a second per student and a refused one does not reset its clock.
+VLM_MIN_INTERVAL = 1.1
+#: Token limit of one VLM answer, thinking included.
+VLM_MAX_TOKENS = 4096
 
 #: The trajectory controllers every Jedy bring-up runs, one per limb.
 CONTROLLERS = ['head_controller', 'right_arm_controller', 'left_arm_controller',
@@ -273,6 +280,15 @@ class JedyInterface(RobotInterface):
         self._speech_sub = None
         self._speech_text = None
         self._speech_heard = threading.Event()
+        self._vlm_lock = threading.Lock()
+        self._vlm_sent = None
+        #: Seconds and cost [USD] of the last VLM answer, and the cost of all
+        #: of them so far, as the server reports them; seconds the last
+        #: question waited to keep VLM_MIN_INTERVAL.
+        self.vlm_last_latency = 0.0
+        self.vlm_last_wait = 0.0
+        self.vlm_last_cost = 0.0
+        self.vlm_total_cost = 0.0
         if self._servo_client is not None:
             from actuo_msgs.msg import ServoState
             self.create_subscription(
@@ -842,15 +858,18 @@ class JedyInterface(RobotInterface):
         if not detection.has_position:
             return None
         frame = getattr(self, '_detection_frame', '') or IMAGE_FRAME
+        p = detection.position
+        return self._optical_to_base(np.array([p.x, p.y, p.z]), frame)
+
+    def _optical_to_base(self, p, frame):
+        """A point in the camera link ``frame`` to base_link, at the current pose."""
         robot = self.robot
         robot.angle_vector(self.angle_vector())
         links = [link for link in robot.link_list if link.name == frame]
         if not links:
-            raise RuntimeError('the robot model has no link {!r} (the detection '
+            raise RuntimeError('the robot model has no link {!r} (the camera '
                                "image's frame)".format(frame))
-        p = detection.position
-        return links[0].copy_worldcoords().transform_vector(
-            np.array([p.x, p.y, p.z]))
+        return links[0].copy_worldcoords().transform_vector(np.asarray(p, dtype=float))
 
     def sees(self, word, min_score=0.0, timeout=10.0):
         """Whether the head camera sees ``word`` now.
@@ -943,6 +962,225 @@ class JedyInterface(RobotInterface):
                 return hand
             time.sleep(RECOGNITION_POLL)
         return None
+
+    # -- VLM (Gemini, through the course's AI TA server) ----------------------
+
+    def ask(self, question, images=None, model='vlm-gemini', choices=None,
+            system=None, reasoning='none', max_side=640, timeout=60.0):
+        """Ask a vision-language model (Gemini) about camera images.
+
+        The images and the question go to the course's AI TA server (the key
+        of ``ta login``), which passes them to Google's Gemini and keeps a
+        copy (see the consent shown by ``ta login``). The server allows one
+        question per second and two images per question; this method waits
+        so that its own questions are at least :data:`VLM_MIN_INTERVAL` apart.
+
+        Parameters
+        ----------
+        question : str
+            In Japanese or English.
+        images : numpy.ndarray or list of numpy.ndarray or None
+            RGB ``(height, width, 3)`` uint8 images, e.g. from
+            :meth:`image`. ``None``: the head camera's latest image.
+            ``[]``: the question only, no image.
+        model : str
+            ``vlm-gemini`` (Gemini Flash) or ``vlm-er`` (Gemini Robotics-ER,
+            good at pointing at things in the image).
+        choices : list of str, optional
+            Answer with exactly one of these, returned unchanged (e.g.
+            ``['左', '真ん中', '右']``). The server is asked for JSON limited
+            to them (a JSON schema) and the answer is checked here; after one
+            retry an answer outside them is a RuntimeError.
+        system : str, optional
+            Instructions sent before the question as a system message.
+        reasoning : str
+            How much the model thinks before answering: ``'none'`` (fastest:
+            about 1.3 s for vlm-er, 2.6 s for vlm-gemini on one 640x480
+            image), ``'low'``, ``'medium'`` or ``'high'`` (slower, dearer,
+            sometimes better on hard questions).
+        max_side : int
+            Images are shrunk so the longer side is at most this [px]
+            before sending (smaller is faster and cheaper).
+        timeout : float
+            Seconds (wall clock) to wait for the answer.
+
+        Returns
+        -------
+        str
+            The model's answer (one of ``choices`` if given).
+
+        Raises
+        ------
+        VlmRefused
+            (a RuntimeError) No key (run ``ta login``), or the server refused
+            (no consent, more than one question a second, the day's budget
+            used up), or no answer within ``timeout``. ``kind`` says which.
+        RuntimeError
+            With ``choices``: the answer was not one of them, twice.
+        """
+        if images is None:
+            images = [self.image()[0]]
+        elif isinstance(images, np.ndarray):
+            images = [images]
+        text = str(question)
+        if choices is not None:
+            choices = [str(c) for c in choices]
+            if not choices:
+                raise ValueError('choices is empty')
+            text += ('\n\nAnswer with JSON only: {{"answer": <exactly one of {}>}}'
+                     .format(json.dumps(choices, ensure_ascii=False)))
+        content = [{'type': 'text', 'text': text}]
+        for img in images:
+            content.append({'type': 'image_url',
+                            'image_url': {'url': _jpeg_data_url(img, max_side)}})
+        messages = [{'role': 'user', 'content': content}]
+        if system:
+            messages.insert(0, {'role': 'system', 'content': str(system)})
+        if choices is None:
+            return _strip_fence(self._vlm_chat(model, messages, timeout, reasoning))
+        schema = {'type': 'json_schema', 'json_schema': {
+            'name': 'answer', 'strict': True, 'schema': {
+                'type': 'object',
+                'properties': {'answer': {'type': 'string', 'enum': choices}},
+                'required': ['answer'], 'additionalProperties': False}}}
+        reply = ''
+        for _ in range(2):
+            reply = self._vlm_chat(model, messages, timeout, reasoning,
+                                   response_format=schema)
+            answer = _json_from_reply(reply)
+            if isinstance(answer, dict) and answer.get('answer') in choices:
+                return answer['answer']
+        raise RuntimeError('ask: 答えが選択肢 {} のどれでもありません (2 回聞いた): {!r}'
+                           .format(choices, reply[:200]))
+
+    def point(self, what, image=None, reasoning='none', timeout=60.0):
+        """Where ``what`` is in an image, by Gemini Robotics-ER (``vlm-er``).
+
+        Parameters
+        ----------
+        what : str
+            What to point at, in words (``'赤い箱'``, ``'the cup handle'``).
+        image : numpy.ndarray or None
+            One RGB image; ``None``: the head camera's latest
+            (:meth:`image`). Take it yourself when you also want the depth
+            of the same moment.
+        reasoning : str
+            As for :meth:`ask`.
+        timeout : float
+            Seconds (wall clock) to wait for the answer.
+
+        Returns
+        -------
+        tuple of float or None
+            ``(u, v)``: pixel column and row in that image (``u`` to the
+            right, ``v`` down, as ``image[v, u]``); None when the model says
+            it is not in the image. :meth:`pixel_position` turns it into a
+            3D position.
+
+        Raises
+        ------
+        VlmRefused
+            As for :meth:`ask`.
+        RuntimeError
+            The answer was not a point list.
+        """
+        if image is None:
+            image = self.image()[0]
+        image = np.asarray(image)
+        # Robotics-ER's own convention: [y, x], each normalised to 0-1000
+        # (checked on a Gazebo image of the red box: [545, 138] on 640x480
+        # for a box centred at pixel (87, 261)).
+        question = ('Point to {}. Answer in JSON only: [{{"point": [y, x], "label": '
+                    '"<name>"}}], the point normalized to 0-1000. If it is not in '
+                    'the image, answer [].'.format(what))
+        content = [{'type': 'text', 'text': question},
+                   {'type': 'image_url', 'image_url': {'url': _jpeg_data_url(image, 640)}}]
+        reply = self._vlm_chat('vlm-er', [{'role': 'user', 'content': content}], timeout,
+                               reasoning)
+        points = _json_from_reply(reply)
+        if isinstance(points, dict):
+            points = [points]
+        if not isinstance(points, list):
+            raise RuntimeError('point: 答えが点のリストではありません: {!r}'.format(reply[:200]))
+        if not points:
+            return None
+        try:
+            y, x = (float(c) for c in points[0]['point'])
+        except (KeyError, TypeError, ValueError):
+            raise RuntimeError('point: 答えが点のリストではありません: {!r}'.format(reply[:200]))
+        height, width = image.shape[:2]
+        return x / 1000.0 * width, y / 1000.0 * height
+
+    def pixel_position(self, u, v, depth=None, radius=3):
+        """The base_link position [m] of an image pixel, from the depth image.
+
+        Like :meth:`detection_position`, through the robot's current pose
+        (so call it before turning the head).
+
+        Parameters
+        ----------
+        u, v : float
+            Pixel column and row of the colour image (as :meth:`point`
+            returns them).
+        depth : numpy.ndarray or None
+            A depth image from :meth:`depth_image` (metres, the colour
+            image's size); ``None``: the latest.
+        radius : int
+            The median of the depth within this many pixels of ``(u, v)``
+            is used (one pixel may have no reading).
+
+        Returns
+        -------
+        numpy.ndarray or None
+            ``(3,)`` x forward, y left, z up; None when there is no depth
+            reading there (too near or too far for the camera: the real
+            D405 measures 0.07 to 0.5 m).
+        """
+        if depth is None:
+            depth = self.depth_image()[0]
+        K, _ = self.camera_info()
+        with self._lock:
+            info = self._camera_info
+        if (info.height, info.width) != tuple(depth.shape[:2]):
+            raise RuntimeError(
+                'the depth image is {}x{}, the colour image {}x{}: its pixels are not '
+                "the colour image's".format(depth.shape[1], depth.shape[0],
+                                            info.width, info.height))
+        col, row = int(round(u)), int(round(v))
+        patch = depth[max(0, row - radius):row + radius + 1,
+                      max(0, col - radius):col + radius + 1]
+        if not np.isfinite(patch).any():
+            return None
+        z = float(np.nanmedian(patch))
+        p = np.array([(u - K[0, 2]) * z / K[0, 0], (v - K[1, 2]) * z / K[1, 1], z])
+        return self._optical_to_base(p, IMAGE_FRAME)
+
+    def _vlm_chat(self, model, messages, timeout, reasoning, response_format=None):
+        """One request to the AI TA server; the answer text.
+
+        Requests from this ``ri`` are kept :data:`VLM_MIN_INTERVAL` apart.
+        The token limit counts the model's thinking too, so it is large (with
+        200 tokens and some thinking, Robotics-ER used them all and the answer
+        was cut off).
+        """
+        base_url, key = aita_credentials()
+        body = {'model': model, 'messages': messages,
+                'max_tokens': VLM_MAX_TOKENS, 'reasoning_effort': reasoning}
+        if response_format is not None:
+            body['response_format'] = response_format
+        with self._vlm_lock:
+            self.vlm_last_wait = 0.0
+            if self._vlm_sent is not None:
+                wait = VLM_MIN_INTERVAL - (time.monotonic() - self._vlm_sent)
+                if wait > 0:
+                    time.sleep(wait)
+                    self.vlm_last_wait = wait
+            self._vlm_sent = time.monotonic()
+        text, cost = _post_chat(base_url, key, body, timeout)
+        self.vlm_last_latency = time.monotonic() - self._vlm_sent
+        self.vlm_last_cost = cost
+        self.vlm_total_cost += cost
+        return text
 
     # -- speech (jsk_3rdparty's VOICEVOX and ros_speech_recognition) ----------
 
@@ -1168,6 +1406,166 @@ class JedyInterface(RobotInterface):
                 'bring-up running?)'
                 .format(SERVO_NS))
         return super(JedyInterface, self)._servo(enable, joints, timeout)
+
+
+AITA_ENV_FILE = os.path.join(
+    os.environ.get('AITA_CONFIG_DIR', os.path.expanduser('~/.config/ai-ta')), 'env')
+
+
+class VlmRefused(RuntimeError):
+    """The AI TA server did not answer a :meth:`JedyInterface.ask` / ``point``.
+
+    Attributes
+    ----------
+    kind : str
+        ``'rate'`` (more than one question a second: wait and ask again),
+        ``'budget'`` (the day's budget is used up), ``'key'`` (no key, a key
+        the server does not accept, or no consent to sending images),
+        ``'request'`` (the request itself was refused), ``'server'`` (the
+        server or the network failed; may work again later).
+    status : int or None
+        The HTTP status, if there was an answer.
+    """
+
+    def __init__(self, kind, message, status=None):
+        super(VlmRefused, self).__init__(message)
+        self.kind = kind
+        self.status = status
+
+    @property
+    def retryable(self):
+        """Whether waiting and asking again can help."""
+        return self.kind in ('rate', 'server')
+
+
+def aita_credentials():
+    """AI TA server URL and key: AITA_BASE_URL / AITA_KEY, else ``ta login``'s file."""
+    values = {}
+    if os.path.isfile(AITA_ENV_FILE):
+        with open(AITA_ENV_FILE) as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('export '):
+                    line = line[len('export '):]
+                name, sep, value = line.partition('=')
+                if sep and not name.startswith('#'):
+                    values[name.strip()] = value.strip().strip('\'"')
+    base_url = os.environ.get('AITA_BASE_URL') or values.get('AITA_BASE_URL')
+    key = os.environ.get('AITA_KEY') or values.get('AITA_KEY')
+    if not base_url or not key:
+        raise VlmRefused('key', 'AI TA のキーがありません ({} に AITA_BASE_URL / AITA_KEY '
+                         'が無い). ta login してください'.format(AITA_ENV_FILE))
+    return base_url.rstrip('/'), key
+
+
+def _jpeg_data_url(img, max_side):
+    """RGB uint8 image -> ``data:image/jpeg;base64,...``, longer side <= max_side."""
+    import base64
+    import cv2
+    arr = np.asarray(img)
+    if arr.ndim != 3 or arr.shape[2] != 3 or arr.dtype != np.uint8:
+        raise ValueError('images must be RGB uint8 (height, width, 3), got {} {}'.format(
+            arr.shape, arr.dtype))
+    height, width = arr.shape[:2]
+    scale = float(max_side) / max(height, width)
+    if scale < 1.0:
+        arr = cv2.resize(arr, (max(1, int(width * scale)), max(1, int(height * scale))),
+                         interpolation=cv2.INTER_AREA)
+    ok, jpeg = cv2.imencode('.jpg', cv2.cvtColor(arr, cv2.COLOR_RGB2BGR),
+                            [cv2.IMWRITE_JPEG_QUALITY, 85])
+    if not ok:
+        raise ValueError('could not encode the image as JPEG')
+    return 'data:image/jpeg;base64,' + base64.b64encode(jpeg.tobytes()).decode('ascii')
+
+
+def _strip_fence(text):
+    """A reply without the Markdown code fence models often wrap it in."""
+    text = text.strip()
+    if text.startswith('```') and text.endswith('```') and '\n' in text:
+        text = text.split('\n', 1)[1].rsplit('```', 1)[0].strip()
+    return text
+
+
+def _json_from_reply(text):
+    """The JSON in a model's reply (often in a code fence), or None."""
+    text = _strip_fence(text)
+    try:
+        return json.loads(text)
+    except ValueError:
+        pass
+    for opening, closing in (('{', '}'), ('[', ']')):
+        start, end = text.find(opening), text.rfind(closing)
+        if 0 <= start < end:
+            try:
+                return json.loads(text[start:end + 1])
+            except ValueError:
+                continue
+    return None
+
+
+def _refusal(status, body):
+    """VlmRefused for an HTTP error answer, with the server's message in Japanese."""
+    try:
+        detail = json.loads(body)
+        error = detail.get('error', detail)
+        message = error.get('message') if isinstance(error, dict) else str(error)
+        message = message or detail.get('detail') or body
+    except (ValueError, AttributeError):
+        message = body
+    message = str(message).strip()[:500]
+    lower = message.lower()
+    if '予算' in message or 'budget' in lower:
+        return VlmRefused('budget', 'VLM の予算を使い切りました (HTTP {})。サーバーの返事: {}'
+                          .format(status, message), status)
+    if status == 429:
+        return VlmRefused('rate', 'VLM サーバーが断りました (HTTP 429，回数の制限): '
+                          + message, status)
+    if status == 403 and ('同意' in message or 'consent' in lower):
+        return VlmRefused('key', 'このキーはまだカメラ画像を AI に送る機能に同意していません '
+                          '(HTTP 403)。ta login をやり直し，同意するか選んでください。'
+                          'サーバーの返事: {}'.format(message), status)
+    if status in (401, 403):
+        return VlmRefused('key', 'AI TA のサーバーがこのキーを受け付けません (HTTP {})。'
+                          'ta login をやり直すか，TA に聞いてください。サーバーの返事: {}'
+                          .format(status, message), status)
+    if status >= 500:
+        return VlmRefused('server', 'AI TA のサーバーのエラーです (HTTP {}): {}'
+                          .format(status, message), status)
+    return VlmRefused('request', 'AI TA のサーバーが問い合わせを断りました (HTTP {}): {}'
+                      .format(status, message), status)
+
+
+def _post_chat(base_url, key, body, timeout):
+    """POST /v1/chat/completions; ``(answer text, cost in USD)``.
+
+    Raises VlmRefused with the server's reason.
+    """
+    import socket
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(
+        base_url + '/v1/chat/completions', data=json.dumps(body).encode('utf-8'),
+        headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            data = json.load(resp)
+            cost = resp.headers.get('x-litellm-response-cost')
+    except urllib.error.HTTPError as e:
+        raise _refusal(e.code, e.read().decode('utf-8', errors='replace'))
+    except (urllib.error.URLError, socket.timeout, OSError) as e:
+        raise VlmRefused('server', 'AI TA のサーバー ({}) に接続できません ({})'.format(
+            base_url, getattr(e, 'reason', e)))
+    choice = (data.get('choices') or [{}])[0]
+    text = ((choice.get('message') or {}).get('content') or '').strip()
+    if not text and choice.get('finish_reason') == 'length':
+        raise VlmRefused('request', 'AI の答えが長さの上限 (max_tokens {}) で切れました'
+                         .format(body.get('max_tokens')))
+    try:
+        cost = float(cost) if cost else 0.0
+    except ValueError:
+        cost = 0.0
+    return text, cost
+
 
 def _decode_image(msg):
     """sensor_msgs/Image to a numpy array, without cv_bridge.
