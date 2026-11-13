@@ -2,7 +2,8 @@
 """Start and stop the demos by voice.
 
     ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:=d405
-    ros2 launch jedy_speech speech_demo.launch.py     # speaker + listener + RViz
+    ros2 launch voicevox voicevox_texttospeech.launch.xml     # speaker
+    ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP  # listener
     ros2 run jedy_vision voice_demo
 
 What it understands (keywords; read ``COMMANDS`` and add your own):
@@ -25,7 +26,7 @@ import subprocess
 import unicodedata
 
 import rclpy
-from std_msgs.msg import String
+from speech_recognition_msgs.msg import SpeechRecognitionCandidates
 
 from jedy_vision import say
 
@@ -80,8 +81,11 @@ def main():
         return True
 
     def on_heard(msg):
-        text = normalize(msg.data)
-        log.info('heard: ' + msg.data)
+        if not msg.transcript:
+            return
+        heard = msg.transcript[0]
+        text = normalize(heard)
+        log.info('heard: ' + heard)
         if re.search(STOP, text):
             if running['proc'] is None:
                 say(node, '何も動いていないのだ')
@@ -103,8 +107,8 @@ def main():
                 return
         say(node, 'すみません、もう一度言ってください')
 
-    node.create_subscription(String, '/speech/heard', on_heard, 10)
-    log.info('waiting for /speech/heard (say "コップを探して")')
+    node.create_subscription(SpeechRecognitionCandidates, '/speech_to_text', on_heard, 10)
+    log.info('waiting for /speech_to_text (say "コップを探して")')
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:

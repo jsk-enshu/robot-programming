@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Publish wheel odometry for Jedy's mecanum base, and say how much to trust it.
 
-    ros2 run jedy_odometry jedy_wheel_odometry
+    ros2 run jedy_bringup jedy_wheel_odometry
 
 Reads the raw potentiometer pulses the driver publishes on
 ``/actuo_bus_servicer/servo/state`` (channel ``pulse``), turns each into a

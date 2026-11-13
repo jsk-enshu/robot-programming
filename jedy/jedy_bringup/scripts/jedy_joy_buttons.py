@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Say which axis or button just moved, so a pad's numbering is read not guessed.
 
-    ros2 run jedy_teleop jedy_joy_buttons
+    ros2 run jedy_bringup jedy_joy_buttons
 
 Press one thing at a time. The indices move between kernel drivers and pad
 models, and a wrong one in jedy_joy.py is not an error -- it is a button that

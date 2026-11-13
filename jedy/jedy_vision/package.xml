@@ -31,6 +31,8 @@
   <exec_depend>python3-yaml</exec_depend>
   <exec_depend>jedy_skrobot</exec_depend>
   <exec_depend>actuo_ros</exec_depend>
+  <!-- voice_demo: /speech_to_text from ros_speech_recognition -->
+  <exec_depend>speech_recognition_msgs</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

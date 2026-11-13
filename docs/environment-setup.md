@@ -20,18 +20,16 @@ $ mkdir -p ~/ros2_ws/src
 $ cd ~/ros2_ws/src
 $ source /opt/ros/jazzy/setup.bash
 $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
-$ echo "yaml file://$HOME/ros2_ws/src/robot-programming/jedy/rosdep.yaml" | sudo tee /etc/ros/rosdep/sources.list.d/50-jedy.list
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
-$ colcon build --symlink-install --packages-up-to jedy_enshu
+$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision voicevox ros_speech_recognition
 ```
 
 - `sudo apt upgrade` を省くと，入っている ROS 2 が古いままになる．`rosdep install` は足りないパッケージを入れるだけで，入っているものは新しくしない．
   古い ROS 2 Jazzy では `speech_recognition_msgs` のビルドが `Unknown CMake command "rosidl_auto_generate_interfaces"` で止まる．
-- `--packages-up-to jedy_enshu` で，演習に使うパッケージ (`jedy/jedy_enshu/package.xml` に並べてある) とそれが使うものだけをビルドする．
+- `--packages-up-to` の後に並べた，演習に使うパッケージ (ロボットとシミュレータ，`robot, ri`，カメラの認識，音声合成と音声認識) とそれが使うものだけをビルドする．
   ワークスペースには演習で使わないパッケージ (jsk_3rdparty の他のパッケージ，メカトロボットなど) も入っているが，それらはビルドしない．
-- `50-jedy.list` は，ROS の rosdep の一覧に無い依存 (発話の吹き出しの日本語フォント `fonts-noto-cjk`) の定義を rosdep に教える (1 回だけ)．
 - `--skip-keys` の 3 つは，本演習で使わないパッケージ (`mechatrobot_ros2`，`jsk_data`) の依存で，rosdep では入らない．
   付けないと `rosdep install` が最後に `ERROR` を出すが，演習には影響しない．
 
@@ -75,7 +73,7 @@ $ vcs pull
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
-$ colcon build --symlink-install --packages-up-to jedy_enshu
+$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision voicevox ros_speech_recognition
 ```
 
 ## トラブルシューティング
@@ -96,7 +94,7 @@ gmake[2]: *** No rule to make target '/opt/ros/jazzy/lib/libfastcdr.so.2.2.5', n
 ```{code-block} console
 $ cd ~/ros2_ws/
 $ rm -rf build install log
-$ colcon build --symlink-install --packages-up-to jedy_enshu
+$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision voicevox ros_speech_recognition
 ```
 
 ### より詳細なトラブルシューティング

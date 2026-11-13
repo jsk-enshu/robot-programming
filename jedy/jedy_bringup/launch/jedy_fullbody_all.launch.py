@@ -544,7 +544,7 @@ def generate_launch_description():
         GroupAction([
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(PathJoinSubstitution(
-                    [FindPackageShare("jedy_teleop"), "launch",
+                    [FindPackageShare("jedy_bringup"), "launch",
                      "jedy_joy.launch.py"])),
                 launch_arguments={
                     "namespace": "/" + NAMESPACE,

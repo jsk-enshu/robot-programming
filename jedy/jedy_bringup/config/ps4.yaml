@@ -1,7 +1,7 @@
 # The PS4 pad as Linux reports it on kernel 6.8: 8 axes, 13 buttons. Read from
 # the device rather than copied -- the numbering moves between kernel drivers,
 # and a wrong index is not an error, it is a button that quietly does something
-# else. Check any new pad with `ros2 run jedy_teleop jedy_joy_buttons`.
+# else. Check any new pad with `ros2 run jedy_bringup jedy_joy_buttons`.
 #
 # These are documentation: jedy_joy.py holds the same numbers as named
 # constants so the node needs no config file to run. They live here so the

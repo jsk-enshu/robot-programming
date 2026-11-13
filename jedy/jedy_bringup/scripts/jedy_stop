@@ -9,8 +9,7 @@
 name; that is what lets one flag select both. Nodes, the segment and the
 servicer are all matched by it. The `ros2 launch` processes are NOT -- they are
 matched on the package, so that a launch file added tomorrow is covered the day
-it is written, and stopping the robot interrupts any jedy_bringup or
-jedy_teleop launch.
+it is written, and stopping the robot interrupts any jedy_bringup launch.
 
 Why a script and not `pkill -f ros2`
 ------------------------------------
@@ -107,7 +106,7 @@ def classify(argv):
     # The launch process itself: `ros2 launch jedy_bringup <file>.launch.py`.
     # Matched on the package rather than the file name so a new launch file in
     # this package is covered the day it is written.
-    if "launch" in argv and ("jedy_bringup" in argv or "jedy_teleop" in argv):
+    if "launch" in argv and "jedy_bringup" in argv:
         return "launch"
     if "actuo_bus_node" in joined and SHM_NAME in argv:
         return "servicer"

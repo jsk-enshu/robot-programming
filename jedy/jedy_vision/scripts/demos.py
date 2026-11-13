@@ -29,7 +29,7 @@ DEMOS = [
         ('mimic_arms', '人の腕を鏡のようにまねる', '姿勢推定→逆運動学'),
         ('wave_back', '手を挙げた人に手を振り返して「こんにちは」', '姿勢の判定, 動作の生成'),
     ]),
-    ('声 (jedy_speech)', [
+    ('声 (VOICEVOX と音声認識)', [
         ('voice_demo', '「コップを探して」「ついてきて」「止まって」で上のデモを切り替え',
          '音声認識→行動選択'),
     ]),
@@ -39,7 +39,8 @@ DEMOS = [
 def main():
     print('Gazebo の舞台:  ' + STAGE)
     print('実機 (D405):    ' + REAL)
-    print('声を使うなら:   ros2 launch jedy_speech speech_demo.launch.py\n')
+    print('声を使うなら:   ros2 launch voicevox voicevox_texttospeech.launch.xml')
+    print('                ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP\n')
     for group, items in DEMOS:
         print('[{}]'.format(group))
         for cmd, what, learn in items:

@@ -615,7 +615,7 @@ def gz_sim_process(context, world):
     behind after ``kill -INT``; this one stops it in 2 s either way.
 
     The rest is what gz_sim.launch.py does: Gazebo finds system plugins
-    (gz_ros2_control, jedy_sim's) on GZ_SIM_SYSTEM_PLUGIN_PATH, which gets
+    (gz_ros2_control, jedy_bringup's) on GZ_SIM_SYSTEM_PLUGIN_PATH, which gets
     LD_LIBRARY_PATH.
     """
     gui = LaunchConfiguration("gui").perform(context) == "true"
@@ -880,7 +880,7 @@ def generate_launch_description():
     # The real robot's servo switch (/actuo_bus_servicer/servo/set), so
     # ri.servo_off() releases joints here too.
     servo = Node(
-        package="jedy_sim", executable="jedy_sim_servo",
+        package="jedy_bringup", executable="jedy_sim_servo",
         arguments=[["--missing=", LaunchConfiguration("missing_servos")]],
         parameters=[use_sim_time], output="screen",
     )
@@ -910,7 +910,7 @@ def generate_launch_description():
         condition=sounds, output="screen",
     )
     sim_sounds = Node(
-        package="jedy_sim", executable="jedy_sim_sounds",
+        package="jedy_bringup", executable="jedy_sim_sounds",
         parameters=[{"sound_topic": "/jedy_sim/sound_effects"}],
         condition=sounds, output="screen",
     )

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Every axis and button, live, next to what the teleop node thinks it is.
 
-    ros2 run jedy_teleop jedy_joy_monitor
+    ros2 run jedy_bringup jedy_joy_monitor
 
 Press a button or move a stick and watch its row change. The label beside it is
 read from jedy_teleop.mapping -- the same module the teleop node imports -- so
@@ -93,7 +93,7 @@ def main(argv=None):
         if msg is None:
             out.append(RED + "no /joy messages yet.\n" + RESET)
             out.append(DIM + "  is joy_linux_node running?  "
-                             "ros2 launch jedy_teleop jedy_joy.launch.py\n" + RESET)
+                             "ros2 launch jedy_bringup jedy_joy.launch.py\n" + RESET)
             print("".join(out), flush=True)
             return
 

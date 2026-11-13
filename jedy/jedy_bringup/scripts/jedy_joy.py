@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Drive Jedy from a PS4 pad: the base, the head, and torque on and off.
 
-    ros2 launch jedy_teleop jedy_joy.launch.py
+    ros2 launch jedy_bringup jedy_joy.launch.py
 
     L1 (hold)          deadman. Nothing moves without it, and letting go stops
                        the base within one command period.

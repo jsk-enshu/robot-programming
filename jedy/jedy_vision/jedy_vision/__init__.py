@@ -756,10 +756,15 @@ def set_head(robot, ri, pan_deg=0.0, tilt_deg=0.0, seconds=1.0):
 
 
 def say(node, text):
-    """Publish to /speech/say (jedy_speech's speaker says it, if running)."""
+    """Publish ``text`` to /robotsound_jp/text, without waiting.
+
+    VOICEVOX says it (the same voice as ``ri.say``), if running::
+
+        ros2 launch voicevox voicevox_texttospeech.launch.xml
+    """
     from std_msgs.msg import String
     if not hasattr(node, '_jedy_say_pub'):
-        node._jedy_say_pub = node.create_publisher(String, '/speech/say', 10)
+        node._jedy_say_pub = node.create_publisher(String, '/robotsound_jp/text', 10)
     node._jedy_say_pub.publish(String(data=text))
     print('say:', text)
 

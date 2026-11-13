@@ -24,7 +24,7 @@ Parameters
 sound_topic : str
     sound_play's request topic (sound_play_msgs/SoundRequest).
 wheel_sound, servo_sound : str
-    The sounds (wav files). Empty: ``share/jedy_sim/sounds/{wheels,servos}.wav``.
+    The sounds (wav files). Empty: ``share/jedy_bringup/sounds/{wheels,servos}.wav``.
 volume : float
     0..1.
 namespace : str
@@ -68,9 +68,9 @@ def duration(path):
 
 
 def default_sound(name):
-    """``share/jedy_sim/sounds/<name>``."""
+    """``share/jedy_bringup/sounds/<name>``."""
     from ament_index_python.packages import get_package_share_directory
-    return os.path.join(get_package_share_directory('jedy_sim'), 'sounds', name)
+    return os.path.join(get_package_share_directory('jedy_bringup'), 'sounds', name)
 
 
 class SimSounds(Node):

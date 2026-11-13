@@ -175,7 +175,7 @@ def generate_launch_description():
     # this base has none to give: the driver publishes NaN there deliberately
     # and the controller correctly skips its integration.
     odometry = Node(
-        package="jedy_odometry", executable="jedy_wheel_odometry",
+        package="jedy_bringup", executable="jedy_wheel_odometry",
         namespace=NAMESPACE,
         condition=IfCondition(wheels),
         output="screen",

@@ -7,7 +7,7 @@
 MediaPipe Pose gives the person's shoulders and wrists. A hand counts as
 raised when its wrist is above its shoulder in the image by more than
 ``--margin`` of the shoulder width, for ``--frames`` frames in a row (one
-lucky frame is not a wave). Then Jedy says こんにちは (jedy_speech's speaker,
+lucky frame is not a wave). Then Jedy says こんにちは (VOICEVOX,
 if running) and waves its arm on the same side as the person's raised hand,
 mirror-like.
 """

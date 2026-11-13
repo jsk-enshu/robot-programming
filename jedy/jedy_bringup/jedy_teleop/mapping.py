@@ -10,7 +10,7 @@ The numbers are joydev's, as `joy_linux` publishes them. They are NOT
 interchangeable with SDL's: the `joy` package reorders some pads, so a mapping
 verified under one driver says nothing about the other. Check any pad with
 
-    ros2 run jedy_teleop jedy_joy_monitor
+    ros2 run jedy_bringup jedy_joy_monitor
 
 which shows every axis and button live, against what is written here.
 """

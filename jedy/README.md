@@ -44,15 +44,10 @@ packages under `ros/`), depended on and never modified from here.
 | package | what it is |
 | --- | --- |
 | `jedy_description` | URDF, meshes and the servo map. No code, no ros2_control. |
-| `jedy_bringup` | The `<ros2_control>` xacro, controller + Kondo bus configs, launch files, RViz layout. Depends on actuo. |
-| `jedy_sim` | Gazebo plugins (servo OFF, mimic joints), the simulated servo switch and motor sounds. |
-| `jedy_odometry` | Wheel odometry. An ESTIMATE, which is why it is not in actuo. |
-| `jedy_teleop` | PS4 pad: the base, the head, torque on and off, go-home. |
+| `jedy_bringup` | The `<ros2_control>` xacro, controller + Kondo bus configs, launch files, RViz layout. Depends on actuo. Also: the Gazebo plugins (servo OFF, mimic joints), the simulated servo switch and motor sounds (`jedy_sim_servo`, `jedy_sim_sounds`); wheel odometry (`jedy_wheel_odometry`, an ESTIMATE, which is why it is not in actuo); the PS4 pad (`jedy_joy.launch.py`: the base, the head, torque on and off, go-home). |
 | `jedy_skrobot` | `connect()` → `robot, ri`: the scikit-robot model and robot interface the exercises program against. |
 | `jedy_vision` | Head-camera demos (people, pose, AprilTag), and the recognition nodes behind `ri.what_do_you_see()` / `ri.gesture()` (`ros2 launch jedy_vision recognition.launch.py`). |
 | `jedy_vision_msgs` | The recognition nodes' messages and services, so `ri` can call them without `jedy_vision`'s venv. |
-| `jedy_speech` | An offline speech demo on the CPU (Open JTalk, Whisper, a speech bubble in RViz). `ri.say()` / `ri.listen()` use jsk_3rdparty's VOICEVOX and ros_speech_recognition instead. |
-| `jedy_enshu` | Nothing of its own: depends on every package the exercise uses, so `colcon build --packages-up-to jedy_enshu` builds those and no others. |
 | `room13bc_description` | The exercise room (13BC) and its desks, for RViz and Gazebo (`world:=room13bc`). |
 
 ## Starting it
@@ -115,7 +110,7 @@ Unplugging the pad stops the base within 0.3 s and it picks up again by itself.
 **Check the numbering on any new pad** rather than trusting these:
 
 ```
-ros2 run jedy_teleop jedy_joy_monitor
+ros2 run jedy_bringup jedy_joy_monitor
 ```
 
 It draws every axis and button live with the role the NODE assigns it -- read
@@ -169,7 +164,7 @@ ros2 run actuo_ros actuo_bus_node --real \
 ros2 launch jedy_bringup jedy_fullbody.launch.py wheels:=true rviz:=true
 
 # The pad, separately (jedy_fullbody_all.launch.py joy:=false).
-ros2 launch jedy_teleop jedy_joy.launch.py
+ros2 launch jedy_bringup jedy_joy.launch.py
 
 # Torque, without a pad or a panel. It starts OFF for every joint that HAS a
 # pose; the wheels come up driven, because a continuous-rotation servo has no
@@ -227,7 +222,7 @@ on hardware: hand-turn each wheel and watch the model before driving.
 **There is no odometry from the controller.** These servos report no speed, so
 the wheels' velocity state interface is NaN and `mecanum_drive_controller`
 correctly skips its integration; `enable_odom_tf` is false so nothing reaches
-TF. `jedy_odometry` publishes an estimate instead, on
+TF. `jedy_wheel_odometry` publishes an estimate instead, on
 `/jedy_fullbody/jedy_wheel_odometry/odometry`, with `~/scale_spread` beside it
 saying how much to trust it. Its covariance is left at zero deliberately: the
 dominant error is mecanum roller slip, nothing in that node can see it, and a

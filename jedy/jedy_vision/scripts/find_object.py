@@ -12,7 +12,7 @@
    angles). That works at any range; the D405's depth only reaches 0.5 m and
    is printed next to it once close enough.
 3. point: the arm on its side points at it (inverse kinematics), and Jedy
-   says what it found (jedy_speech's speaker, if running).
+   says what it found (VOICEVOX, if running).
 """
 
 import argparse

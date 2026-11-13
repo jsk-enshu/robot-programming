@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """PS4 pad for Jedy: joy_node plus the teleop node, and nothing else.
 
-    ros2 launch jedy_teleop jedy_joy.launch.py
+    ros2 launch jedy_bringup jedy_joy.launch.py
 
 jedy_fullbody_all.launch.py includes it (joy:=true, the default). It is a
 launch of its own because a pad is something you plug in, not part of the
@@ -68,7 +68,7 @@ def generate_launch_description():
                  # and so jedy_joy's watchdog can tell the two apart.
                  "autorepeat_rate": 20.0,
              }]),
-        Node(package="jedy_teleop", executable="jedy_joy", output="screen",
+        Node(package="jedy_bringup", executable="jedy_joy", output="screen",
              arguments=["--namespace", LaunchConfiguration("namespace"),
                         "--head-joints", LaunchConfiguration("head_joints"),
                         "--poses", LaunchConfiguration("poses"),

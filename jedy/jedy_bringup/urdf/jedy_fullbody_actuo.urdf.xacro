@@ -279,7 +279,7 @@
           <namespace>/jedy_fullbody</namespace>
         </ros>
       </plugin>
-      <!-- Servo OFF (jedy_sim/src/jedy_servo_switch.cpp): a joint named on
+      <!-- Servo OFF (jedy_bringup/src/jedy_servo_switch.cpp): a joint named on
            the topic stops following its controller and falls under gravity.
            jedy_sim_servo serves the real robot's SetServo action over it. -->
       <plugin filename="jedy_servo_switch" name="jedy_sim::JedyServoSwitch">
@@ -287,7 +287,7 @@
         <state_topic>/jedy_fullbody/servo/released_state</state_topic>
       </plugin>
       <!-- The second finger of each gripper follows the first, as its URDF
-           <mimic> says (jedy_sim/src/jedy_mimic_joint.cpp): DART does not
+           <mimic> says (jedy_bringup/src/jedy_mimic_joint.cpp): DART does not
            implement mimic constraints, and without this it stayed at 0. -->
       <plugin filename="jedy_mimic_joint" name="jedy_sim::JedyMimicJoint"/>
     </gazebo>
