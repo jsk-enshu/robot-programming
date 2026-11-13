@@ -72,7 +72,10 @@ def generate_launch_description():
         ]), value_type=str)
     }
 
-    # Over the yaml's 100: jedy_fullbody_all.launch.py runs the real
+    # Not in jedy_fullbody_controllers.yaml: a dict here is written for every
+    # node (/**), and a /jedy_fullbody/controller_manager entry in the yaml
+    # outranks it whatever the order (measured: it stayed 100), as does a
+    # params file over `-p`. jedy_fullbody_all.launch.py runs the real
     # RCB-4mini at its servicer's --rate, and the two must match.
     update_rate = {"update_rate": ParameterValue(
         LaunchConfiguration("update_rate"), value_type=int)}

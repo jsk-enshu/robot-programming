@@ -24,12 +24,12 @@
 /jedy_fullbody:
   controller_manager:
     ros__parameters:
-      # Pairs with the servicer's --rate: the board is request/response, so
-      # one control period should map to one bus cycle. 100 here is what the
-      # simulators run; the real robot (jedy_fullbody_all.launch.py) overrides
-      # it with its rate:=, 50 Hz by default, because the RCB-4mini only
-      # drives its servos every 15 ms.
-      update_rate: 100
+      # No update_rate here. It pairs with the servicer's --rate (the board is
+      # request/response, so one control period should map to one bus cycle)
+      # and is set by the launch: jedy_fullbody.launch.py's update_rate:=,
+      # 50 Hz from jedy_fullbody_all.launch.py on the real RCB-4mini, which
+      # only drives its servos every 15 ms. Left out so the launch's value is
+      # not outranked by this file; Gazebo gets controller_manager's 100.
 
       joint_state_broadcaster:
         type: joint_state_broadcaster/JointStateBroadcaster
