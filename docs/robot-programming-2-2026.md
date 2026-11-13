@@ -47,7 +47,7 @@ Gazebo では `jedy_gazebo.launch.py demo:=true person:=true camera:=d405` が�
 | --- | --- | --- |
 | 物を探して近づき，指さす | `ros2 run jedy_vision find_object cup` | 見回して探す，床との交点で距離を推定する |
 | 手で物に触る | `ros2 run jedy_vision touch_tag` | カメラ座標からロボット座標へ，逆運動学，手前で一度止まる経由点 |
-| 物をつかんで持ち上げる | `ros2 run jedy_vision grasp_tag` (先に `approach_tag --standoff 0.17`) | 複数のタグから物の姿勢を求める，姿勢付きの逆運動学，つかめたかの確認 |
+| 物をつかんで持ち上げる | `ros2 run jedy_vision grasp_tag` (遠くからでも台車で寄る) | 複数のタグから物の姿勢を求める，姿勢付きの逆運動学，つかめたかの確認 |
 | 首で人を追う | `ros2 run jedy_vision look_at_person` | 首のコントローラだけに指令を送る |
 | 人について行く | `ros2 run jedy_vision follow_person` | 見え方で台車を動かすフィードバック |
 | 人の腕のまねをする | `ros2 run jedy_vision mimic_arms` | 姿勢推定の結果から逆運動学で腕の姿勢を作る |
@@ -56,6 +56,15 @@ Gazebo では `jedy_gazebo.launch.py demo:=true person:=true camera:=d405` が�
 | 色の付いた物の 3 次元の位置 | `ros2 run jedy_skrobot color_clusters` | 色で画素を選び，深度画像で 3 次元に戻す |
 | チェッカーボードの位置と向き | `ros2 run jedy_skrobot checkerboard_pose` | 既知の模様から姿勢を求める (PnP) |
 | 傾いたら止まる | `ros2 run jedy_skrobot checkpoint_go_forward_imu` | IMU (Gazebo のみ．実機の RCB-4mini には無い) |
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-gazebo-grasp-tag.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** Gazebo のデモの舞台で `ros2 run jedy_vision approach_tag` のあと `ros2 run jedy_vision grasp_tag` を実行したところ．
+左が横から見た Gazebo，右上の小窓がロボットの頭のカメラの画像，右がターミナル．
+台の AprilTag の正面に止まり，立方体の各面のタグから立方体の位置と向きを求めて，片手でつかんで持ち上げてから元に戻す．
 
 ## 計画を書く
 

@@ -19,7 +19,13 @@ coordinates:
     (stable for K_ALPHA > K_RHO > 0 > K_BETA)
 
 It is closed loop, so wheel slip is corrected. If the tag is lost the base
-turns towards the side it was last seen on.
+turns towards the side it was last seen on -- except close to the goal: the
+stand's tag (0) slides down the image as the robot comes in and goes behind
+the tucked hands' fingertips about 4 cm short of the 0.20 m standoff (seen in
+Gazebo's camera image). Lost within ``BLIND_FINISH`` of the goal, the robot
+finishes on the last estimate instead (turn towards the goal, drive the
+distance, turn to face the tag), which at that range is good to about a
+centimetre.
 
 The real base does not move below ~0.078 m/s forward or ~0.83 rad/s turning
 on the spot (docs), so the forward command is raised to ``--min-speed`` and
@@ -34,13 +40,15 @@ import argparse
 import math
 
 from jedy_skrobot import connect
-from jedy_vision import DEMO_TAG_SIZE, TagDetector, say, set_head
+from jedy_vision import ARMS_CLEAR, DEMO_TAG_SIZE, TagDetector, say, set_head
 
 
 #: Pose-controller gains (see the module docstring).
 K_RHO, K_ALPHA, K_BETA = 0.5, 1.2, -0.4
 #: [rad] Largest turn on the spot between two looks at the tag.
 MAX_BURST = math.radians(10.0)
+#: [m] Lost this close to the goal, finish on the last estimate (see above).
+BLIND_FINISH = 0.12
 
 
 def limit(v, vmax, vmin=0.0):
@@ -67,10 +75,18 @@ def main():
 
     robot, ri = connect()
     K, _ = ri.camera_info()
-    ri.tuck_arms()  # arms up before driving: hanging, they drag on the floor
+    # Arms up before driving (hanging, they drag on the floor), and clear of
+    # the stand and of the camera's view of its tag.
+    ri.tuck_arms(pose=ARMS_CLEAR)
     set_head(robot, ri, 0.0, args.tilt)
     detector = TagDetector(args.size)
     start, last_seen, last_side, reason = ri.now(), ri.now(), 1.0, 'timeout'
+    last = None   # (rho, alpha, goal_heading, backwards) of the last look
+
+    def turn(angle):
+        if abs(angle) > math.radians(2.0):
+            ri.go_velocity(0.0, 0.0, math.copysign(args.min_turn, angle),
+                           duration=abs(angle) / args.min_turn)
     try:
         while ri.now() - start < args.timeout:
             rgb, _ = ri.image(newer_than=ri.now() - 0.05)
@@ -78,6 +94,16 @@ def main():
             tags = [t for t in detector.detect(rgb, K, robot) if t.id == args.id]
             if not tags:
                 lost = ri.now() - last_seen
+                if last is not None and last[0] < BLIND_FINISH and lost < 1.0:
+                    rho, alpha, heading, backwards = last
+                    print('tag {} lost {:.0f} cm from the goal: finishing on the last '
+                          'estimate'.format(args.id, 100 * rho))
+                    turn(alpha)
+                    ri.go_velocity(args.min_speed * (-1.0 if backwards else 1.0), 0.0, 0.0,
+                                   duration=rho / args.min_speed)
+                    turn(heading - alpha)
+                    reason = 'reached (the last {:.0f} cm blind)'.format(100 * rho)
+                    break
                 print('tag {} not in view ({:.1f} s)'.format(args.id, lost))
                 ri.go_velocity(0.0, 0.0,
                                args.min_turn * last_side if lost > 1.0 else 0.0)
@@ -94,6 +120,7 @@ def main():
             if backwards:
                 alpha = math.atan2(-goal[1], -goal[0])
             beta = goal_heading - alpha
+            last = (rho, alpha, goal_heading, backwards)
             print('rho {:.3f} m  alpha {:+5.1f}  heading error {:+5.1f} deg'.format(
                 rho, math.degrees(alpha), math.degrees(goal_heading)))
             if rho < args.tolerance and abs(goal_heading) < math.radians(3.0):
@@ -113,7 +140,7 @@ def main():
     finally:
         ri.stop()
     print('stopped by {} after {:.1f} s'.format(reason, ri.now() - start))
-    if reason == 'reached':
+    if reason.startswith('reached'):
         say(ri, 'タグの前に着いたのだ')
         ri.sleep(0.3)
 

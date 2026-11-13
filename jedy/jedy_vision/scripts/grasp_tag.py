@@ -17,8 +17,8 @@ faces are in view, each one gives the cube's centre and orientation
    cube instead of closing on nothing, and the camera sees the cube higher;
 4. it puts the cube back and lets go.
 
-If the cube is too far for the arm, the base drives straight towards or
-away from it (forward/backward only) until it is in reach.
+If the arm cannot do all that from where the robot stands, the base drives
+straight towards or away from the cube (forward/backward only) until it can.
 """
 
 import argparse
@@ -27,7 +27,7 @@ import math
 import numpy as np
 
 from jedy_skrobot import connect
-from jedy_vision import (TAG_CUBE_TAG, TagDetector, cube_pose, say,
+from jedy_vision import (ARMS_CLEAR, TAG_CUBE_TAG, TagDetector, cube_pose, say,
                          set_head, solve_ik)
 
 #: Where the cube's centre should be ahead of base_link for the hand to reach
@@ -68,6 +68,20 @@ MAX_JUMP = 12.0
 #: something (the cube): not still open, not closed on nothing. Closed on
 #: nothing they reach GRIPPER_CLOSE.
 HOLDING = (-0.2, 0.4)
+#: [m] A push shorter than this does not move the base: at the real base's
+#: lowest speed it lasts ~0.1 s (measured in Gazebo: commanded 3-9 mm, the
+#: cube stayed 0.209-0.219 m ahead for 5 pushes). Such a correction backs off
+#: BACK_OFF first and comes in again by that much more.
+MIN_PUSH = 0.03
+BACK_OFF = 0.05
+#: [m] The hand comes down onto the 'pre' pose from this far above it, in a
+#: straight line. From ARMS_CLEAR (hands high and out), one joint-space move
+#: to 'pre' swept the hand across the cube and knocked it 2 cm aside and 15
+#: deg round (Gazebo ground truth) before the grasp. The path is traced UP
+#: from 'pre' a centimetre at a time and reversed: one separate IK for the
+#: point above failed for some cube positions 3 mm apart (model, from
+#: ARMS_CLEAR); lower heights are tried if the full one does not trace.
+ABOVE = 0.06
 
 
 def look(ri, robot, K, detector, frames=3):
@@ -134,9 +148,10 @@ def plan(robot, arm, cube, pre_back, lift_up, start):
     Returns
     -------
     dict or None
-        ``'pre'``: angle vector; ``'in'``, ``'up'``: lists of angle vectors
-        (straight lines in to the cube and up from it); ``'targets'``: the
-        hand positions ``'pre'``, ``'grasp'``, ``'lift'``.
+        ``'above'``, ``'pre'``: angle vectors; ``'down'`` (from 'above' to
+        'pre'), ``'in'``, ``'up'``: lists of angle vectors (straight lines
+        down, in to the cube and up from it); ``'targets'``: the hand
+        positions ``'above'``, ``'pre'``, ``'grasp'``, ``'lift'``.
     """
     R = grasp_frame(cube)
     grasp = cube.position + DEPTH * R[:, 0] + np.array([0.0, 0.0, GRASP_UP])
@@ -150,24 +165,46 @@ def plan(robot, arm, cube, pre_back, lift_up, start):
         if not solve_ik(robot, arm, targets['pre'], rotation=rot):
             continue
         pre = robot.angle_vector().copy()
+        path_down = None
+        for height in (ABOVE, 0.75 * ABOVE, 0.5 * ABOVE):
+            robot.angle_vector(pre)
+            top = targets['pre'] + np.array([0.0, 0.0, height])
+            path_up = straight(robot, arm, targets['pre'], top, rot, STEP)
+            if path_up is not None:
+                above, targets['above'] = path_up[-1], top
+                path_down = path_up[::-1][1:] + [pre]
+                break
+        if path_down is None:
+            continue
+        robot.angle_vector(pre)
         path_in = straight(robot, arm, targets['pre'], grasp, rot, STEP)
         if path_in is None:
             continue
         path_up = straight(robot, arm, grasp, targets['lift'], rot, STEP)
         if path_up is None:
             continue
-        found = {'pre': pre, 'in': path_in, 'up': path_up, 'targets': targets}
+        found = {'above': above, 'down': path_down, 'pre': pre, 'in': path_in,
+                 'up': path_up, 'targets': targets}
         break
     robot.angle_vector(start)
     return found
 
 
-def drive_into_reach(ri, robot, K, detector, attempts=6, speed=0.08):
-    """Forward/backward until the cube's x is within REACH_X. Returns the cube.
+def choose_side(cube):
+    """The arm for the cube: the right arm reaches y 0 to -0.12 m; the left mirrors it."""
+    return 'larm' if cube.position[1] > 0.02 else 'rarm'
+
+
+def drive_into_reach(ri, robot, K, detector, reachable, attempts=6, speed=0.08):
+    """Forward/backward until the arm can grasp the cube. Returns the cube.
 
     The real base does not move below ~0.078 m/s, too fast to stop within a
-    2 cm band by steering, so it moves in short pushes, each as long as the
-    remaining distance takes at that speed, and looks again after each.
+    2 cm band by steering, so it moves in pushes, each as long as the
+    remaining distance to the middle of REACH_X takes at that speed, and
+    looks again after each, until the cube is within REACH_X. Stopping as soon
+    as the IK solved (``reachable``) was tried: at the edge of the reach, the
+    next look at the cube (12 mm off) left it out of reach again, so the
+    middle is the goal and ``reachable`` only decides when the pushes run out.
     """
     goal = sum(REACH_X) / 2.0
     for _ in range(attempts):
@@ -175,12 +212,22 @@ def drive_into_reach(ri, robot, K, detector, attempts=6, speed=0.08):
         if cube is None:
             raise SystemExit('lost the cube while driving to it (not in 10 images)')
         x = cube.position[0]
+        print('cube {:.3f} m ahead (reach {:.3f}-{:.3f})'.format(x, *REACH_X))
         if REACH_X[0] <= x <= REACH_X[1]:
             return cube
-        ri.go_velocity(math.copysign(speed, x - goal), 0.0, 0.0,
-                       duration=abs(x - goal) / speed)
+        push = x - goal
+        if abs(push) < MIN_PUSH:
+            ri.go_velocity(-speed, 0.0, 0.0, duration=BACK_OFF / speed)
+            ri.stop()
+            ri.sleep(0.5)
+            push += BACK_OFF
+        ri.go_velocity(math.copysign(speed, push), 0.0, 0.0,
+                       duration=abs(push) / speed)
         ri.stop()
         ri.sleep(1.0)   # let the base settle before looking
+    cube = look(ri, robot, K, detector, frames=10)
+    if cube is not None and reachable(cube):
+        return cube
     raise SystemExit('could not bring the cube into reach ({:.3f}-{:.3f} m ahead) '
                      'in {} moves'.format(REACH_X[0], REACH_X[1], attempts))
 
@@ -208,14 +255,22 @@ def main():
         raise SystemExit('the tag cube is not in view: run approach_tag --standoff 0.17 first')
     print('cube at {} m, seen on faces {}'.format(
         np.round(cube.position, 3), sorted(t.id for t in cube.tags)))
-    if not REACH_X[0] <= cube.position[0] <= REACH_X[1]:
+
+    def reachable(cube):
+        """Whether the arm on the cube's side can do the whole grasp from here."""
+        av = robot.angle_vector().copy()
+        side = choose_side(cube)
+        ok = plan(robot, getattr(robot, side), cube, args.pre, args.lift, av) is not None
+        robot.angle_vector(av)
+        return ok
+
+    if not reachable(cube):
         print('out of reach ({:.3f} m ahead): driving'.format(cube.position[0]))
-        ri.tuck_arms(time=5.0)  # slowly: see ARM_SPEED
-        cube = drive_into_reach(ri, robot, K, detector)
+        ri.tuck_arms(time=5.0, pose=ARMS_CLEAR)  # slowly: see ARM_SPEED
+        cube = drive_into_reach(ri, robot, K, detector, reachable)
         print('cube at {} m'.format(np.round(cube.position, 3)))
 
-    # The right arm reaches y 0 to -0.12 m; the left mirrors it.
-    side = 'larm' if cube.position[1] > 0.02 else 'rarm'
+    side = choose_side(cube)
     arm = getattr(robot, side)
     gripper = getattr(robot, '{}_gripper_joint'.format(side))
     arm_ctrl = '{}_arm_controller'.format('left' if side == 'larm' else 'right')
@@ -278,7 +333,8 @@ def main():
     # The fingers open only out here: opened in the driving pose they caught
     # on the body and held the arm back (shoulder stuck 70 deg short).
     move_gripper(0.0)
-    move_arm(poses['pre'], args.time, 'pre', poses['targets']['pre'])
+    move_arm(poses['above'], args.time, 'above', poses['targets']['above'])
+    move_arm(poses['down'], 1.5, 'pre', poses['targets']['pre'])
     move_gripper(args.open)
     # Look again from here: the estimate made from farther away, and with the
     # robot maybe nudged by the swing, is refined before reaching in.
@@ -339,6 +395,7 @@ def main():
     move_gripper(args.open)
     move_arm(poses['in'][::-1][1:] + [poses['pre']], 2.0)
     move_gripper(0.0)   # before folding back, for the same reason
+    move_arm(poses['down'][::-1][1:] + [poses['above']], 1.5)   # up, clear of the cube
     move_arm(home, args.time)
     if not lifted:
         raise SystemExit(1)
