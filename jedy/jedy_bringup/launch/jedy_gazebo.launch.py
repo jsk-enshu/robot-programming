@@ -655,6 +655,7 @@ def generate_launch_description():
             " backend:=gazebo",
             " wheels:=", wheels,
             " camera_model:=", LaunchConfiguration("camera"),
+            " camera_rate:=", LaunchConfiguration("camera_rate"),
             " controllers:=", controllers,
         ] + [" init_%s:=%r" % item for item in START_POSE.items()]),
             value_type=str)
@@ -934,6 +935,11 @@ def generate_launch_description():
                               choices=["wide", "d405"],
                               description="d405 = the real robot's camera: "
                                           "87 deg, depth only 0.07-0.5 m"),
+        DeclareLaunchArgument("camera_rate", default_value="5",
+                              description="head camera frame rate [Hz]; "
+                                          "rendering it is most of Gazebo's "
+                                          "CPU (5 Hz: 77%, 30 Hz: 123% on "
+                                          "one PC)"),
         DeclareLaunchArgument("person", default_value="false",
                               choices=["true", "false"],
                               description="a person for the jedy_vision "

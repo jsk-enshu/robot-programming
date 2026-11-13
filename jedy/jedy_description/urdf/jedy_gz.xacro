@@ -21,6 +21,11 @@
   <xacro:arg name="gz_control" default="true"/>
   <!-- Head camera in Gazebo: wide | d405 (see the rgbd_camera sensor). -->
   <xacro:arg name="camera_model" default="wide"/>
+  <!-- Head camera frame rate in Gazebo [Hz]. 5 by default: rendering the
+       rgbd camera is most of Gazebo's CPU (one PC: 123% at 30 Hz, 77% at 5 Hz,
+       13% without it), and approach_tag reached its tag in 12.5 s at 5 Hz
+       against 11.6 s at 30 Hz. The real D405 runs at its own rate. -->
+  <xacro:arg name="camera_rate" default="5"/>
 
   <!-- ==================================================================
        Joint passive dynamics: what holds a joint whose servo is OFF.
@@ -1210,7 +1215,7 @@
   <gazebo reference="camera_link">
     <sensor name="camera" type="rgbd_camera">
       <always_on>1</always_on>
-      <update_rate>30</update_rate>
+      <update_rate>$(arg camera_rate)</update_rate>
       <visualize>true</visualize>
       <topic>camera</topic>
       <gz_frame_id>camera_color_optical_frame</gz_frame_id>

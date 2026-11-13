@@ -80,6 +80,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
 
 `box:=true` でカメラの演習に使う赤い箱をロボットの左前に置く．
 `gui:=false` で画面なし，`render_sensors:=false` で GPU の無い PC 向け (カメラなし)．
+頭のカメラは PC の負担を減らすため 1 秒に 5 枚 (`camera_rate:=5`，既定) にしてある．速い動きを追いたいときは `camera_rate:=30` (実機の D405 は 30 Hz)．
 ロボットは演習室 (13BC) の机の手前に置かれる (`world:=empty` で何も無い床)．
 
 :::{figure} fig/jedy-gazebo-room13bc.png
