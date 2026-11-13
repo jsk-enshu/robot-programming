@@ -58,11 +58,19 @@ EusLisp を知っている人は {doc}`tips/euslisp-to-skrobot` に対応表が�
 ## 準備
 
 ワークスペースは {doc}`environment-setup` で作っておく (初回のビルドはダウンロードを含めて数十分かかるので，演習の前に済ませておくこと)．
-どのターミナルでも最初に次を実行する．
+どのターミナルでも最初に次の 2 行が要る．{doc}`environment-setup` のとおりに `~/.bashrc` に書いてあれば，新しく開いたターミナルでは自動で読み込まれる．
 
 ```{code-block} console
 $ source ~/ros2_ws/install/setup.bash
 $ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+```
+
+まだ書いていなければ，次で `~/.bashrc` に書いておく (1 回だけ)．
+
+```{code-block} console
+$ echo 'source ~/ros2_ws/install/setup.bash' >> ~/.bashrc
+$ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc
+$ source ~/.bashrc
 ```
 
 2 行目は ROS 2 の通信を自分の PC の中だけに閉じる設定である (ロボットは自分の PC に USB でつなぐので，これで他の人のロボットと混ざらない)．

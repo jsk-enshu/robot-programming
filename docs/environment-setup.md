@@ -25,7 +25,6 @@ $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
 $ colcon build --symlink-install --packages-up-to jedy_enshu
-$ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc   # ROS 2 の通信を自分の PC の中だけにする
 ```
 
 - `sudo apt upgrade` を省くと，入っている ROS 2 が古いままになる．`rosdep install` は足りないパッケージを入れるだけで，入っているものは新しくしない．
@@ -43,11 +42,16 @@ Python のパッケージ (scikit-robot，カメラの認識に使う torch・YO
 カメラの認識の `jedy_vision` だけで 15 分ほどかかった (ノート PC，ダウンロード済みのものを除く)．
 ```
 
-ビルドしたら，どのターミナルでも最初に次を実行する (`~/.bashrc` に書いておくとよい)．
+ビルドしたら，どのターミナルでも最初に読み込む設定を `~/.bashrc` に書いておく (**1 回だけ**．2 回実行すると同じ行が 2 回書かれる)．
+これで，新しく開いたターミナルでは自動で読み込まれる．
 
 ```{code-block} console
-$ source ~/ros2_ws/install/setup.bash
+$ echo 'source ~/ros2_ws/install/setup.bash' >> ~/.bashrc
+$ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc   # ROS 2 の通信を自分の PC の中だけにする
+$ source ~/.bashrc   # 今開いているターミナルにも読み込む
 ```
+
+書けたかは `tail -2 ~/.bashrc` で確かめられる．
 
 `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` は，ROS 2 の通信を自分の PC の中だけに閉じる設定である．
 ロボット (実機) は自分の PC に USB でつなぎ，ノードはすべて自分の PC の中で動くので，
