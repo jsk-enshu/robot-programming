@@ -3,6 +3,7 @@
 
 :::{note}
 このページは**2025年度**の演習資料（アーカイブ）である．最新年度の資料は{doc}`robot-programming-2-2026`を参照すること．
+このページで使うプログラム（`jedy/` 以下）は robot-programming の [`c4d5a13`](https://github.com/jsk-enshu/robot-programming/tree/c4d5a13bee9f8c6d520af19fd25a6180e0f496ff) の時点のものである．2025 年度の環境構築で使うリポジトリ一覧（`.repos.jazzy`，`.repos.one`，`.rosinstall.noetic`）もこの時点のものを取得する．
 :::
 
 ```{eval-rst}
@@ -469,7 +470,7 @@ irteusgl$ (send *ri* :state :potentio-vector)   ;; 実機のサーボの角度�
 irteusgl$ (send *ri* :go-velocity x y theta)    ;; 速度指令で動かす．単位は x,y:[mm/s], theta:[deg/s]
 ```
 
-などのセンサ取得や指令値送信ができる．実ロボットのインターフェースプログラムは，[jedy/jedyeus/euslisp/jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l)を参照してみよう．
+などのセンサ取得や指令値送信ができる．実ロボットのインターフェースプログラムは，[jedy/jedyeus/euslisp/jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/c4d5a13bee9f8c6d520af19fd25a6180e0f496ff/jedy/jedyeus/euslisp/jedy-interface.l)を参照してみよう．
 
 `EusLisp`の条件分岐や繰り返しを用いてセンサ情報に基づいてロボットが行動するプログラムを書いてみよう．
 
@@ -856,7 +857,7 @@ irteusgl$ (send *jedy* :rarm :inverse-kinematics
 2.  [逆運動学による動作生成](sec-inverse-kinematics)にしたがって逆運動学でロボットの姿勢を生成し実機に送ってみよ．
 ```
 
-なお，実際に`Jedy`の定義されてるファイルは，[jedy/jedyeus/euslisp/jedy.l](https://github.com/jsk-enshu/robot-programming/tree/master/jedy/jedyeus/euslisp/jedy.l)にある．
+なお，実際に`Jedy`の定義されてるファイルは，[jedy/jedyeus/euslisp/jedy.l](https://github.com/jsk-enshu/robot-programming/tree/c4d5a13bee9f8c6d520af19fd25a6180e0f496ff/jedy/jedyeus/euslisp/jedy.l)にある．
 
 ## 本日の発展課題
 
@@ -1006,11 +1007,11 @@ $ roseus sample-pickup.l
 Jedyの`follow joint trajectory`コントローラーを別々に動かすプログラムを書いて`head_controller`のみを動かすプログラム，`rarm_controller`のみを動かすプログラムで分けて実行することでコントローラーごとに独立して操作できることを確認してみよう．
 
 EusLispのロボットインターフェースでは，複数のコントローラーを独立して制御する仕組みが実装されている．
-[jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l)と[robot-interface.l](https://github.com/jsk-ros-pkg/jsk_pr2eus/blob/master/pr2eus/robot-interface.l)を参考にして，その仕組みを理解しよう．
+[jedy-interface.l](https://github.com/jsk-enshu/robot-programming/blob/c4d5a13bee9f8c6d520af19fd25a6180e0f496ff/jedy/jedyeus/euslisp/jedy-interface.l)と[robot-interface.l](https://github.com/jsk-ros-pkg/jsk_pr2eus/blob/master/pr2eus/robot-interface.l)を参考にして，その仕組みを理解しよう．
 
 #### コントローラーの定義
 
-各コントローラーは以下のようにメソッドとして定義されている（[jedy-interface.l 128-163行目](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l#L128-L163)）：
+各コントローラーは以下のようにメソッドとして定義されている（[jedy-interface.l 128-163行目](https://github.com/jsk-enshu/robot-programming/blob/c4d5a13bee9f8c6d520af19fd25a6180e0f496ff/jedy/jedyeus/euslisp/jedy-interface.l#L128-L163)）：
 
 ```lisp
 (:head-controller
@@ -1047,7 +1048,7 @@ EusLispのロボットインターフェースでは，複数のコントロー�
 
 #### コントローラーテーブルへの登録
 
-初期化時に，各コントローラーが`controller-table`というハッシュテーブルに登録される（[jedy-interface.l 54-64行目](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedyeus/euslisp/jedy-interface.l#L54-L64)）：
+初期化時に，各コントローラーが`controller-table`というハッシュテーブルに登録される（[jedy-interface.l 54-64行目](https://github.com/jsk-enshu/robot-programming/blob/c4d5a13bee9f8c6d520af19fd25a6180e0f496ff/jedy/jedyeus/euslisp/jedy-interface.l#L54-L64)）：
 
 ```lisp
 (dolist (l (list

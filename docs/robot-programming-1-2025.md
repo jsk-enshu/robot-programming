@@ -3,6 +3,7 @@
 
 :::{note}
 このページは**2025年度**の演習資料（アーカイブ）である．最新年度の資料は{doc}`robot-programming-1-2026`を参照すること．
+このページで使うプログラム（`jedy/` 以下）は robot-programming の [`c4d5a13`](https://github.com/jsk-enshu/robot-programming/tree/c4d5a13bee9f8c6d520af19fd25a6180e0f496ff) の時点のものである．2025 年度の環境構築で使うリポジトリ一覧（`.repos.jazzy`，`.repos.one`，`.rosinstall.noetic`）もこの時点のものを取得する．
 :::
 
 ```{eval-rst}
@@ -2443,7 +2444,7 @@ $ ros2 topic pub --once /robocrew/prompt std_msgs/msg/String "{data: 'Find blue 
 $ ros2 topic pub --once /robocrew/prompt std_msgs/msg/String "{data: 'Turn left and explore surroundings'}"
 ```
 
-プログラムの詳細は[robot-programming/jedy/jedy_bringup/scripts/robocrew_image_to_cmd_vel.py](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedy_bringup/scripts/robocrew_image_to_cmd_vel.py)を参照のこと．
+プログラムの詳細は[robot-programming/jedy/jedy_bringup/scripts/robocrew_image_to_cmd_vel.py](https://github.com/jsk-enshu/robot-programming/blob/c4d5a13bee9f8c6d520af19fd25a6180e0f496ff/jedy/jedy_bringup/scripts/robocrew_image_to_cmd_vel.py)を参照のこと．
 
 ### パラメータ調整：シミュレーション速度への対応
 

@@ -1,6 +1,7 @@
 - git:
     local-name: robot-programming
     uri: https://github.com/jsk-enshu/robot-programming.git
+    version: c4d5a13bee9f8c6d520af19fd25a6180e0f496ff
 - git:
     local-name: dynamixel_urdf
     uri: https://github.com/jsk-enshu/dynamixel_urdf.git

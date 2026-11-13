@@ -10,4 +10,4 @@ repositories:
   robot-programming:
     type: git
     url: https://github.com/jsk-enshu/robot-programming
-    version: master
+    version: c4d5a13bee9f8c6d520af19fd25a6180e0f496ff
