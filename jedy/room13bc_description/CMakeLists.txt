@@ -10,7 +10,7 @@ set(ROOM13BC_URL
   "https://github.com/iory/scikit-robot-models/raw/main/room13bc_description.tar.gz"
   CACHE STRING "room13bc_description.tar.gz to download")
 set(ROOM13BC_SHA256
-  "27e268ec79f90cc8d4b716a37b02b888fa271e3a07ad6419fbe5c53d07410c83")
+  "50bd4683ba1270c2cc7afe326155e7437d3dd1ad71b5f5cee158099ec44e68c9")
 set(_archive "${CMAKE_CURRENT_BINARY_DIR}/room13bc_description.tar.gz")
 set(_bundle "${CMAKE_CURRENT_BINARY_DIR}/bundle")
 if(NOT EXISTS "${_bundle}/room13bc_description/urdf/room13bc_scene.urdf")

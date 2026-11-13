@@ -3,7 +3,7 @@
 <package format="3">
   <name>room13bc_description</name>
   <version>0.1.0</version>
-  <description>Room 13BC (Hongo, where the exercise is held) and its 48 KOKUYO MT-GFDM10 folding tables: URDF with photo-textured meshes, for RViz2 and Gazebo</description>
+  <description>Room 13BC on the 1st floor of Engineering Building No. 2, the University of Tokyo (known as "Mechasta", メカスタ), where the exercise is held, and its 48 KOKUYO MT-GFDM10 folding tables: URDF with photo-textured meshes, for RViz2 and Gazebo</description>
   <maintainer email="ab.ioryz@gmail.com">Iori Yanokura</maintainer>
   <license>MIT</license>
   <buildtool_depend>ament_cmake</buildtool_depend>

@@ -1,6 +1,6 @@
 # room13bc_description
 
-13BC 室（メカスタ）と、その中の KOKUYO MT-GFDM10（天板跳ね上げ式の台形テーブル）48 台の URDF。
+東京大学 工学部2号館 1階 13BC 室（通称「メカスタ」）と、その中の KOKUYO MT-GFDM10（天板跳ね上げ式の台形テーブル）48 台の URDF。
 写真から作ったテクスチャつきのメッシュ（OBJ ＋ MTL ＋ PNG）で、RViz2 と Gazebo（gz sim）で表示する。
 
 Ubuntu 24.04 ＋ ROS 2 Jazzy ＋ Gazebo Harmonic で使っている。`jedy_bringup` の `jedy_gazebo.launch.py`
