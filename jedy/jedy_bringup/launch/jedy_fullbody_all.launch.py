@@ -385,6 +385,7 @@ def generate_launch_description():
                             "rviz": LaunchConfiguration("rviz"),
                             "backend": "actuo",
                             "use_sim": "false",
+                            "update_rate": LaunchConfiguration("rate"),
                         }.items()),
                 ], scoped=True),
             ]),
@@ -488,11 +489,13 @@ def generate_launch_description():
                               description="PS4 teleop. Harmless with no pad "
                                           "plugged in: joy_linux opens the "
                                           "device when one appears."),
-        DeclareLaunchArgument("rate", default_value="100.0",
-                              description="servicer loop rate. Pairs with "
-                                          "controller_manager's update_rate "
-                                          "and with bus.move_time_ms in the "
-                                          "Kondo config."),
+        # 50, not 100: the RCB-4mini drives its servos every 15 ms (its
+        # output cycle), so cycles faster than that send nothing new, and at
+        # 100 Hz the loop measured p95 16.7-18.5 ms against the 10 ms target
+        # (2026-11-13). controller_manager runs at the same rate.
+        DeclareLaunchArgument("rate", default_value="50",
+                              description="servicer loop rate [Hz], and "
+                                          "controller_manager's update_rate"),
         DeclareLaunchArgument("wait_port", default_value="true",
                               choices=["true", "false"],
                               description="wait for the serial adapter named "

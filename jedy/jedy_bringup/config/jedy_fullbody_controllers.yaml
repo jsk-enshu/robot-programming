@@ -24,9 +24,11 @@
 /jedy_fullbody:
   controller_manager:
     ros__parameters:
-      # 100 Hz pairs with the servicer's --rate. The board is request/response,
-      # so one control period should map to one bus cycle. NOT yet validated
-      # against a measured round-trip time on this robot.
+      # Pairs with the servicer's --rate: the board is request/response, so
+      # one control period should map to one bus cycle. 100 here is what the
+      # simulators run; the real robot (jedy_fullbody_all.launch.py) overrides
+      # it with its rate:=, 50 Hz by default, because the RCB-4mini only
+      # drives its servos every 15 ms.
       update_rate: 100
 
       joint_state_broadcaster:

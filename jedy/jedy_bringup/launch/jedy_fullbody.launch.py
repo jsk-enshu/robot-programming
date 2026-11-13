@@ -72,11 +72,16 @@ def generate_launch_description():
         ]), value_type=str)
     }
 
+    # Over the yaml's 100: jedy_fullbody_all.launch.py runs the real
+    # RCB-4mini at its servicer's --rate, and the two must match.
+    update_rate = {"update_rate": ParameterValue(
+        LaunchConfiguration("update_rate"), value_type=int)}
+
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         namespace=NAMESPACE,
-        parameters=[robot_description, controllers],
+        parameters=[robot_description, controllers, update_rate],
         output="screen",
     )
 
@@ -201,6 +206,9 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument("rviz", default_value="false",
                               description="launch RViz2 with the Jedy config"),
+        DeclareLaunchArgument("update_rate", default_value="100",
+                              description="controller_manager's update rate "
+                                          "[Hz]; matches the servicer's --rate"),
         DeclareLaunchArgument("backend", default_value="actuo",
                               choices=["actuo", "mock"],
                               description="actuo = ActuoSystem backend; "
