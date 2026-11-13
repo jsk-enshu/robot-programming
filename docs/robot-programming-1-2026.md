@@ -585,6 +585,15 @@ $ ros2 run jedy_vision detect_people --pose --face --hands --tilt -25 --save peo
 どちらも [jsk_3rdparty](https://github.com/jsk-ros-pkg/jsk_3rdparty) のパッケージで，スピーカーとマイクは**自分の PC のもの**を使う．
 音声認識の既定のエンジン (Google) はインターネットにつながっている必要がある．
 
+音声合成の VOICEVOX は環境構築ではビルドしていないので，初めて使う前に 1 回だけビルドする．
+エンジン (約 1.3 GB) をダウンロードするので，回線によっては 30 分以上かかる．**しゃべらせる日の前に済ませておくこと．**
+
+```{code-block} console
+$ cd ~/ros2_ws/
+$ colcon build --symlink-install --packages-up-to voicevox
+$ source ~/ros2_ws/install/setup.bash
+```
+
 ロボットとは別のターミナルで，それぞれ起動しておく．
 
 ```{code-block} console
