@@ -28,5 +28,6 @@ from jedy_skrobot.interface import BoardNotAnswering
 from jedy_skrobot.interface import connect
 from jedy_skrobot.interface import JedyInterface
 from jedy_skrobot.interface import NAMESPACE
+from jedy_skrobot.interface import VlmRefused
 
-__all__ = ['BoardNotAnswering', 'JedyInterface', 'NAMESPACE', 'connect']
+__all__ = ['BoardNotAnswering', 'JedyInterface', 'NAMESPACE', 'VlmRefused', 'connect']

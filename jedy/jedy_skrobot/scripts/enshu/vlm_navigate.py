@@ -3,7 +3,7 @@
 
 The 2026 version of jedy_bringup/scripts/robocrew_image_to_cmd_vel.py
 (2025: langchain, Google AI Studio and a GOOGLE_API_KEY). Here the camera
-image and the goal go to the course's VLM gateway with the AI TA's key
+image and the goal go to the course's VLM gateway (ri.ask) with the AI TA's key
 (``ta login``), and the model answers with one small move::
 
     ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて
@@ -40,15 +40,18 @@ import json
 import os
 import re
 import threading
+import time
 
 import cv2
 import numpy as np
 from std_msgs.msg import String
 
 from jedy_skrobot import connect
-from jedy_skrobot.vlm import MODELS
-from jedy_skrobot.vlm import VlmClient
-from jedy_skrobot.vlm import VlmRefused
+from jedy_skrobot import VlmRefused
+from jedy_skrobot.interface import aita_credentials
+
+#: The AI TA server's models that take images.
+MODELS = ('vlm-er', 'vlm-gemini')
 
 #: What the model may answer, and the base twist (vx, vy, vtheta signs) of each.
 ACTIONS = {
@@ -70,6 +73,8 @@ RETRIES = 3
 BAD_ANSWERS = 3
 #: Earlier steps told to the model, so it knows what it just did.
 HISTORY = 6
+#: A forward step is refused when the depth straight ahead is less than this [m].
+MIN_AHEAD = 0.25
 
 SYSTEM = """You drive a small wheeled robot (a mecanum base, it can also move sideways) \
 by looking through its head camera. Each turn you get the camera image taken just now, \
@@ -88,15 +93,17 @@ The camera is low, about 0.4 m above the floor, so objects look larger than they
 are: an object 1 m away can already look big. One forward step is only {dist:.2f} m, \
 so reaching something 1 m away takes several forward steps.
 
-Also give the point of the target in the image as [y, x], normalized to 0-1000 \
-(null if it is not visible). The robot measures the distance to that point with \
-its depth camera and tells you in the next turn, with your previous steps.
+Each turn also tells you the distance measured now by the depth camera straight \
+ahead (the centre of the image); when the target is in the centre, that is the \
+distance to it. Give the point of the target in the image as [y, x], normalized \
+to 0-1000 (null if it is not visible): the robot measures the distance there too, \
+and tells you in the next turn with your previous steps.
 
 Rules: if the target is not in the image, turn to look for it. Turn until the \
 target is near the centre of the image before driving towards it. Do not drive \
 into walls, furniture or people. For "approach X", say done only when X is about \
-{near:.2f} m away or closer (use the measured distance). If unsure, take one more \
-forward step.
+{near:.2f} m away or closer (use the distance measured now). If unsure, take one \
+more forward step.
 
 Reply with JSON only, no other text and no code fence:
 {{"action": "<forward|back|left|right|strafe_left|strafe_right|stop|done>", \
@@ -253,13 +260,54 @@ class ScriptedAnswers(object):
     def __init__(self, actions):
         self._actions = list(actions)
         self.model = 'dry-run'
-        self.last_cost = self.total_cost = self.last_latency = 0.0
+        self.last_cost = self.total_cost = self.last_latency = self.last_wait = 0.0
 
-    def ask(self, text, images=(), system=None):
+    def ask(self, text, image, system):
         action = self._actions.pop(0) if self._actions else 'done'
         return json.dumps({'action': action,
                            'reason': '[dry-run] 台本どおり (VLM には聞いていない)'},
                           ensure_ascii=False)
+
+
+class RobotAnswers(object):
+    """The VLM's answers, through ``ri.ask`` (the AI TA server)."""
+
+    def __init__(self, ri, model, reasoning):
+        self._ri = ri
+        self.model = model
+        self.reasoning = reasoning
+
+    def ask(self, text, image, system):
+        return self._ri.ask(text, image, model=self.model, system=system,
+                            reasoning=self.reasoning)
+
+    @property
+    def last_cost(self):
+        return self._ri.vlm_last_cost
+
+    @property
+    def total_cost(self):
+        return self._ri.vlm_total_cost
+
+    @property
+    def last_latency(self):
+        return self._ri.vlm_last_latency
+
+    @property
+    def last_wait(self):
+        return self._ri.vlm_last_wait
+
+
+def print_timing(timing):
+    """One line: how a step's time (wall clock) splits up."""
+    if not timing:
+        return
+    t = np.array(timing)
+    period = t[:, 0] + t[:, 1] + t[:, 3]
+    print('時間 (壁時計, {} 手): 1 手 中央値 {:.1f} s / 最大 {:.1f} s = 止めて撮る {:.1f} s '
+          '+ VLM {:.1f} s (最大 {:.1f} s) + 動く {:.1f} s．1 秒制限で待った合計 {:.1f} s'.format(
+              len(t), np.median(period), period.max(), np.median(t[:, 0]),
+              np.median(t[:, 1]), t[:, 1].max(), np.median(t[:, 3]), t[:, 2].sum()))
 
 
 def check_range(name, value, low, high):
@@ -278,6 +326,11 @@ def main():
                         'Without it: wait for /vlm_nav/prompt')
     p.add_argument('--model', default='vlm-er', choices=MODELS,
                    help='vlm-er = Gemini Robotics-ER, vlm-gemini = Gemini')
+    # 'low', not ri.ask's 'none': with 'none' vlm-er turned left and right
+    # around the box for 7 extra steps (Gazebo, 2026-11-14); with 'low' it
+    # reached it in 7 steps, about 1 s more per step.
+    p.add_argument('--reasoning', default='low', choices=('none', 'low', 'medium', 'high'),
+                   help="how much the model thinks before answering ('none' is fastest)")
     p.add_argument('--max-steps', type=int, default=30,
                    help='give up after this many steps (requests) per goal')
     p.add_argument('--speed', type=float, default=0.12,
@@ -318,12 +371,14 @@ def main():
         print('[dry-run] VLM には聞かず，台本 {} のとおりに動きます'.format(script))
     else:
         try:
-            vlm = VlmClient(model=args.model)   # reads the key first: fail before moving
+            aita_credentials()   # the key, before anything moves
         except VlmRefused as exc:
             raise SystemExit(str(exc))
     first = ' '.join(args.goal) or None
 
     robot, ri = connect()
+    if args.dry_run is None:
+        vlm = RobotAnswers(ri, args.model, args.reasoning)
     if not ri.has_camera():
         raise SystemExit('頭のカメラの画像 (/camera/color/image_rect_raw) が来ていません. '
                          'Gazebo は render_sensors:=true，実機は camera:=true で起動する')
@@ -349,20 +404,29 @@ def main():
             bad = retries = 0
             step = 0
             result = 'max_steps'
+            timing = []   # per step: stop + capture, model call, of it waiting, motion [s]
             while step < args.max_steps:
                 if goals.changed():
                     result = 'new goal'
                     break
+                t0 = time.monotonic()
                 ri.stop()
                 stopped = ri.now()
                 rgb, _ = ri.image(newer_than=stopped)   # a picture after stopping
                 depth = ri.depth_image(newer_than=stopped)[0] if has_depth else None
+                t1 = time.monotonic()
                 status.publish('THINKING', goal, 'step {}: asking {}'.format(
                     step + 1, vlm.model))
-                text = 'Goal: {}\nPrevious steps (oldest first): {}'.format(
-                    goal, '; '.join(history[-HISTORY:]) or 'none')
+                ahead = None
+                if depth is not None:
+                    ahead = distance_at(depth, (500.0, 500.0), half=10)
+                text = ('Goal: {}\nDistance straight ahead now: {}\n'
+                        'Previous steps (oldest first): {}'.format(
+                            goal, 'not measured' if ahead is None else '{:.2f} m'.format(ahead),
+                            '; '.join(history[-HISTORY:]) or 'none'))
                 try:
-                    reply = vlm.ask(text, images=[rgb], system=system)
+                    reply = vlm.ask(text, rgb, system)
+                    t2 = time.monotonic()
                 except VlmRefused as exc:
                     ri.stop()
                     status.publish('ERROR', goal, str(exc))
@@ -419,15 +483,24 @@ def main():
                         print('ri.say が使えません ({}). 以後しゃべりません'.format(exc))
                         say = False
                 if action == 'done':
+                    timing.append((t1 - t0, t2 - t1, vlm.last_wait, 0.0))
                     result = 'done'
                     break
+                if action == 'forward' and ahead is not None and ahead < MIN_AHEAD:
+                    # Checked, not trusted: one step must not drive into what is ahead.
+                    print('    -> 前 {:.2f} m に物があるので前進しません'.format(ahead))
+                    history.append('forward refused by the robot: something {:.2f} m '
+                                   'straight ahead'.format(ahead))
+                    continue
                 sx, sy, st = ACTIONS[action]
                 duration = args.turn_step if st else args.step
                 if sx or sy or st:
                     ri.go_velocity(sx * args.speed, sy * args.speed, st * args.turn,
                                    duration=duration)
+                timing.append((t1 - t0, t2 - t1, vlm.last_wait, time.monotonic() - t2))
             ri.stop()
             print('終わり: {} ({} 回, 合計 ${:.4f})'.format(result, step, vlm.total_cost))
+            print_timing(timing)
             if result != 'new goal':
                 status.publish('DONE' if result == 'done' else 'STOPPED', goal, result)
             if first is not None and not args.listen and result != 'new goal':

@@ -212,6 +212,8 @@ Gazebo に無いもの (人・ペットボトル・手) は，PC の Web カメ�
 | 画像 / 深度 / 内部パラメータ | `ri.image()` / `ri.depth_image()` / `ri.camera_info()` |
 | 物体を探す | `ri.sees('単語')` / `ri.what_do_you_see(['単語', ...])` / `ri.wait_until_sees('単語', timeout=秒)` |
 | AI に画像について聞く | `ri.ask('質問')` / `ri.ask('質問', [画像1, 画像2])` (`model='vlm-er'`) |
+| AI に選ばせる / 指さしてもらう | `ri.ask('質問', choices=['左', '右'])` / `ri.point('赤い箱')` → `(u, v)` か None |
+| 画素の 3D 位置 (base_link) | `ri.pixel_position(u, v, depth)` [m] か None |
 | ジェスチャ | `ri.gesture()` / `ri.janken()` / `ri.wait_until_gesture('チョキ')` / `ri.wait_until_janken()` |
 | しゃべる / 聞く | `ri.say('文')` (`wait=False`, `speaker='ずんだもん-ノーマル'`) / `ri.listen(timeout=秒)` |
 | モデル: 初期姿勢 / 関節 | `robot.reset_pose()` / `robot.head_joint1.joint_angle(rad)` |

@@ -36,7 +36,6 @@
   <exec_depend>jedy_vision_msgs</exec_depend>
   <!-- matplotlib's window (show_camera) -->
   <exec_depend>python3-tk</exec_depend>
-  <exec_depend>python3-pil</exec_depend>
   <!-- ri.say() / ri.listen(): imported when called (jsk_3rdparty, audio_common) -->
   <exec_depend>sound_play_msgs</exec_depend>
   <exec_depend>speech_recognition_msgs</exec_depend>
