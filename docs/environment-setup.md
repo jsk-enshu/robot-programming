@@ -53,6 +53,13 @@ $ source ~/.bashrc   # 今開いているターミナルにも読み込む
 
 書けたかは `tail -2 ~/.bashrc` で確かめられる．
 
+:::{figure} fig/jedy-ki-build.gif
+:align: center
+:name: fig:jedy-ki-build
+
+学科 PC で `rosdep install` から `~/.bashrc` への書き込みまで (ビルドは 4 分 20 秒，10 倍速)
+:::
+
 `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` は，ROS 2 の通信を自分の PC の中だけに閉じる設定である．
 ロボット (実機) は自分の PC に USB でつなぎ，ノードはすべて自分の PC の中で動くので，
 同じネットワークにいる他の人のロボットやシミュレータとトピックが混ざらない．

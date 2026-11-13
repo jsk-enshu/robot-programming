@@ -306,6 +306,13 @@ print(np.rad2deg(robot.angle_vector() - ri.angle_vector()))   # 送った姿勢�
 上のプログラムを Gazebo で動かしたところ: 首を回して傾け，うなずきを 3 回 (実時間)
 :::
 
+:::{figure} fig/jedy-ki-move.gif
+:align: center
+:name: fig:jedy-ki-move
+
+学科 PC で「台車を動かす」と「関節角度で動かす」のコードを 1 つのファイルにして実行したところ (左: Gazebo，右: 端末．1.5 倍速)
+:::
+
 ### 手先の位置で動かす (逆運動学)
 
 手先を目標の位置へ動かすための関節角度を求めるのが逆運動学 (IK) である．
@@ -475,6 +482,13 @@ Gazebo (`box:=true`) で `ri.what_do_you_see(['赤いもの'])` を呼んだと�
 枠の上に「単語 確からしさ 距離」．このとき `ri.detection_position(d)` は [1.125, 0.475, 0.135] (箱の手前の面は [1.125, 0.5, 0.134])
 :::
 
+:::{figure} fig/jedy-ki-see.gif
+:align: center
+:name: fig:jedy-ki-see
+
+学科 PC で認識のノードを起動し，上のコードで赤いものの位置を聞いたところ．中央は `/object_detection/image` (2 倍速)
+:::
+
 使える日本語の単語は `jedy_vision` の `config/vocabulary.yaml` にある (英語に直して検出器に渡している)．
 **表に無い日本語の単語はエラーになる**ので，表に足して `colcon build` し直すか，英語で指定する (英語はそのまま使える)．
 英語は短い一般的な名詞ほどよく当たる (`bottle` は見つかり，`plastic bottle` は見つからなかった)．
@@ -518,6 +532,13 @@ $ ros2 run jedy_vision approach_tag --id 2 --size 0.064 --tilt 10 --standoff 0.3
 (Gazebo の真値で，止まった位置の誤差は 7 mm)
 :::
 
+:::{figure} fig/jedy-ki-tag.gif
+:align: center
+:name: fig:jedy-ki-tag
+
+学科 PC で上の `approach_tag` を実行したところ (1.5 倍速)
+:::
+
 ### 人を見つける (体・顔・手)
 
 Gazebo では `person:=true` で人のモデルを置ける (`person_x`, `person_y` で場所 [m])．
@@ -540,6 +561,13 @@ $ ros2 run jedy_vision detect_people --pose --face --hands --tilt -25 --save peo
 
 `detect_people --pose --face --hands --tilt -25` の結果 (Gazebo，1.6 m 先の人)．
 青: 人の枠と距離，緑: 骨格，黄: 顔の枠とメッシュ，赤: 手 (体の横にある手は見つからないこともある)
+:::
+
+:::{figure} fig/jedy-ki-people.gif
+:align: center
+:name: fig:jedy-ki-people
+
+学科 PC で上の `detect_people` を実行したところ．中央が保存した `people.png` (2 倍速)
 :::
 
 ### <span style="color:green">チェックポイント: カメラ</span>
