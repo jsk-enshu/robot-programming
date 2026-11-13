@@ -1,35 +1,15 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 project(jedy_bringup)
 
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY launch
+  DIRECTORY launch config urdf rviz worlds
   DESTINATION share/${PROJECT_NAME}
 )
 
 install(
-  DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
-)
-
-install(
-  DIRECTORY worlds
-  DESTINATION share/${PROJECT_NAME}
-)
-
-install(
-  PROGRAMS
-    scripts/activate_slam_node.py
-    scripts/track_box_to_cmd_vel_0.py
-    scripts/track_box_to_cmd_vel_1.py
-    scripts/send_joint_position.py
-    scripts/send_joint_position_action.py
-    scripts/scan_frame_changer.py
-    scripts/virtual_atom_s3_gui.py
-    scripts/checkerboard_detector.py
-    scripts/bridge_marker.py
-    scripts/publish_robot_description.py
+  PROGRAMS scripts/jedy_stop scripts/jedy_wait_port
   DESTINATION lib/${PROJECT_NAME}
 )
 

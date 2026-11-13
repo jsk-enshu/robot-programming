@@ -19,8 +19,7 @@ $ mkdir -p ~/ros2_ws/src
 $ cd ~/ros2_ws/src
 $ source /opt/ros/jazzy/setup.bash
 $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
-$ touch robot-programming/jedy/COLCON_IGNORE   # 2025 年度版の jedy パッケージは同名なのでビルドしない
-$ echo "yaml file://$HOME/ros2_ws/src/jedy/rosdep.yaml" | sudo tee /etc/ros/rosdep/sources.list.d/50-jedy.list
+$ echo "yaml file://$HOME/ros2_ws/src/robot-programming/jedy/rosdep.yaml" | sudo tee /etc/ros/rosdep/sources.list.d/50-jedy.list
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip"
@@ -69,21 +68,6 @@ $ colcon build --symlink-install
 
 uv が入っていないか，PATH に無い．上の手順の `curl -LsSf https://astral.sh/uv/install.sh | sh` と
 `source $HOME/.local/bin/env` を実行してから，もう一度 `colcon build` する．
-
-### `Duplicate package names not supported` で止まる
-
-```{code-block} console
-ERROR:colcon:colcon build: Duplicate package names not supported:
-- jedy_bringup:
-  - src/jedy/jedy_bringup
-  - src/robot-programming/jedy/jedy_bringup
-```
-
-`robot-programming/jedy/COLCON_IGNORE` を作り忘れている (2025 年度版の jedy パッケージと 2026 年度版の jedy パッケージは同じ名前である)．
-
-```{code-block} console
-$ touch ~/ros2_ws/src/robot-programming/jedy/COLCON_IGNORE
-```
 
 ### より詳細なトラブルシューティング
 

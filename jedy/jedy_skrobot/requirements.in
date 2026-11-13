@@ -1,0 +1,37 @@
+# scikit-robot from its git main branch: this package
+# subclasses actuo_ros' RobotInterface, which subclasses skrobot's ros2
+# interface. Two different scikit-robots would be two different base classes.
+scikit-robot @ git+https://github.com/iory/scikit-robot.git@main
+
+# The interactive shell. Falls back to `code.interact` if absent, but the
+# history and completion are the point.
+ipython
+
+numpy
+
+# Geometry, for two jobs in this repo that need the SAME skrobot as the shell:
+#   - jedy_description/scripts/make_collision_meshes.py (CoACD decomposition)
+#   - actuo.safety's SelfCollisionMonitor (fcl)
+# They live here rather than in jedy_description because the tool needs the
+# scikit-robot pinned above -- the system-site-packages copy is older and has no
+# skrobot.utils.convex_decomposition, which is how this was found.
+coacd
+python-fcl
+
+# Image processing for the camera exercises (track_box). The ROS-side cv2
+# (python3-opencv) is built against NumPy 1 and does not import next to this
+# venv's NumPy 2, and cv_bridge rides on it; so the wheel, and ri.image()
+# decodes sensor_msgs/Image itself.
+opencv-python-headless
+# Showing camera images (show_camera, and students' own programs). The apt
+# python3-matplotlib is built against NumPy 1 and fails to import next to this
+# venv's NumPy 2 ("numpy.core.multiarray failed to import"), so the wheel.
+# Its window needs tkinter, which is the system's python3-tk (package.xml).
+matplotlib
+
+# shapely in this venv, not from the system. trimesh (via scikit-robot) imports
+# it when present, and with --system-site-packages an apt python3-shapely
+# (pulled in by e.g. ROS One jsk_recognition_utils) is found instead: built for
+# NumPy 1, it prints "A module that was compiled using NumPy 1.x cannot be run
+# in NumPy 2" on every start. PyPI shapely 2.x is built for NumPy 2.
+shapely

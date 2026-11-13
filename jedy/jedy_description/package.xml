@@ -1,23 +1,33 @@
 <?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypelang="RNG" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <package format="3">
   <name>jedy_description</name>
-  <version>1.0.0</version>
+  <version>0.0.1</version>
   <description>
-    <p>URDF Description package for jedy_description (ROS2)</p>
-    <p>This package contains configuration data, 3D models and launch files for jedy robot</p>
-  </description>
+    URDF, meshes and the servo map for the Jedy robot, as a ROS 2 (ament)
+    package.
 
+    Ported from the catkin package in jsk-enshu/robot-programming. That one
+    could not be found by anything under ROS 2 -- no ament index entry -- so
+    every `package://jedy_description/meshes/...` in its URDF failed to resolve
+    and RViz drew a complete, correctly articulated, entirely invisible robot.
+    Being a real ament package IS the fix; nothing here rewrites a path.
+
+    This package knows nothing about actuators, buses or ros2_control. What
+    drives the robot lives in jedy_bringup, which depends on actuo.
+  </description>
+  <maintainer email="ab.ioryz@gmail.com">iory</maintainer>
   <license>BSD</license>
-  <maintainer email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</maintainer>
+  <author email="yanokura@jsk.imi.i.u-tokyo.ac.jp">Iori Yanokura</author>
+  <author email="k-kojima@jsk.imi.i.u-tokyo.ac.jp">Kunio Kojima</author>
+  <author email="k-okada@jsk.imi.i.u-tokyo.ac.jp">Kei Okada</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>robot_state_publisher</depend>
-  <depend>rviz2</depend>
-  <depend>joint_state_publisher</depend>
-  <depend>joint_state_publisher_gui</depend>
-  <depend>xacro</depend>
-  <exec_depend>launch_ros</exec_depend>
+  <!-- A description package needs no runtime code. These are what a consumer
+       needs in order to do anything with the files it installs. -->
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

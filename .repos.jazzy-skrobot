@@ -1,16 +1,11 @@
 # 2026 年版 Jedy 演習 (scikit-robot + ROS 2 Jazzy のみ) で使うリポジトリ。
 #   vcs import src < src/robot-programming/.repos.jazzy-skrobot
-# jedy (iory/jedy) の jedy_bringup / jedy_description は robot-programming/jedy の同名パッケージと衝突するので、
-# このワークスペースでは robot-programming/jedy を COLCON_IGNORE してビルドしないこと(docs/environment-setup.md)。
+# Jedy のパッケージは robot-programming/jedy にある (jedyeus と jedy_ros1_bridge は COLCON_IGNORE)。
 repositories:
   robot-programming:
     type: git
     url: https://github.com/jsk-enshu/robot-programming.git
     version: master
-  jedy:
-    type: git
-    url: https://github.com/iory/jedy.git
-    version: skrobot-ros2-2026
   actuo:
     type: git
     url: https://github.com/iory/actuo.git

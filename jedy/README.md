@@ -1,255 +1,301 @@
-# JEDY Robot (ROS2 Jazzy)
+# jedy — the Jedy robot, on ROS 2
 
-JEDY is a dual-arm mobile manipulator robot for ROS2 robot programming exercises.
+ロボットプログラミング演習 (2026 年度) で使う Jedy のパッケージ．
+演習の手順・環境構築は [オンラインマニュアル](http://jsk-enshu.github.io/robot-programming/) を見よ
+(環境構築: `docs/environment-setup.md`，演習: `docs/robot-programming-*-2026.md`)．
 
-詳細なマニュアルとインターフェースの説明は、以下のドキュメントをご覧ください：
+- 実機が無くても，Gazebo のシミュレーション (`ros2 launch jedy_bringup jedy_gazebo.launch.py`) で
+  演習のプログラムがそのまま動く．実機ではロボットを USB でつないだ PC で同じプログラムを動かす．
+- `jedyeus/` と `jedy_ros1_bridge/` は 2025 年度 (ROS 1 / EusLisp) 版で，`COLCON_IGNORE` してありビルドされない．
+- 同じネットワークで複数人が ROS 2 を動かすと通信が混ざるので，必ず
+  `export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` を設定する (`~/.bashrc` に書いておく)．
 
-- **オンラインマニュアル**: [http://jsk-enshu.github.io/robot-programming/](http://jsk-enshu.github.io/robot-programming/)
+The rest of this file is for whoever runs and maintains the real robot.
 
-## ⚠️ **重要: ネットワーク設定**
+Everything that is *about this robot*: its description, its ros2_control
+bring-up, its simulation. The driver it runs on is
+[`actuo`](https://github.com/iory/actuo) (the Python package, and its ROS 2
+packages under `ros/`), depended on and never modified from here.
 
-**<span style="color:red">演習中や同一ネットワークで複数人が ROS2 を起動すると、通信が相互に干渉してしまいます。</span>**
-**<span style="color:red">必ず以下の環境変数を設定してください:</span>**
+| package | what it is |
+| --- | --- |
+| `jedy_description` | URDF, meshes and the servo map. No code, no ros2_control. |
+| `jedy_bringup` | The `<ros2_control>` xacro, controller + Kondo bus configs, launch files, RViz layout. Depends on actuo. |
+| `jedy_sim` | MuJoCo plant, and a fake servicer for exercising the pipeline. |
+| `jedy_safety` | Self-collision filter, plugged into actuo's real servicer. |
+| `jedy_odometry` | Wheel odometry. An ESTIMATE, which is why it is not in actuo. |
+| `jedy_teleop` | PS4 pad: the base, the head, torque on and off, go-home. |
+| `jedy_skrobot` | `connect()` → `robot, ri`: the scikit-robot model and robot interface the exercises program against. |
+| `jedy_vision` | Head-camera demos (people, pose, AprilTag), and the recognition nodes behind `ri.what_do_you_see()` / `ri.gesture()` (`ros2 launch jedy_vision recognition.launch.py`). |
+| `jedy_vision_msgs` | The recognition nodes' messages and services, so `ri` can call them without `jedy_vision`'s venv. |
+| `jedy_speech` | Japanese speech, offline on the CPU: Open JTalk for `ri.say()`, Whisper for `ri.listen()`, and a speech bubble in RViz. |
+| `room13bc_description` | The exercise room (13BC) and its desks, for RViz and Gazebo (`world:=room13bc`). |
+
+## Starting it
+
+```
+ros2 launch jedy_bringup jedy_four_dof_all.launch.py
+```
+
+That is the whole thing from nothing running: the bus servicer, ros2_control
+with its five controllers, RViz with the servo and diagnostics panels, the
+wheel odometry and the PS4 teleop. Turn pieces off with `rviz:=false`,
+`joy:=false`, `wheels:=false`.
+
+The order is not guessable, which is why it is a launch and not three
+terminals. The servicer and ros2_control hand each other a shared-memory
+segment: the C++ side creates it and blocks until the servicer has written the
+MEASURED state into it, and only then seeds its command from that. Starting
+them together is fine. Starting ros2_control alone, against a servicer that has
+already finished its handshake, deadlocks — so if you restart one, restart
+both. The launch also deletes the leftover segment file first, because it is an
+mmap'd file under /tmp and outlives every process that touched it.
+
+### The pad
+
+```
+L1 (hold)          deadman -- nothing moves without it
+left stick         drive and strafe        right stick  turn
+D-pad              head pan and tilt       R1 + stick   slow
+L2 (hold)          head twice as fast      circle       RELEASE all torque
+triangle           torque ON               L1+R1+cross, HELD  go home (5 s)
+```
+
+**L2 speeds up the head, not the base.** The base has no faster to go: a full
+stick already asks for the servos' top speed and `deadband.py` caps there --
+past that one wheel saturates while the others keep theirs, which does not slow
+the base down, it aims it somewhere else. A fast button for the base could only
+work by making the plain stick slower first, which is a worse default than no
+fast button. So the base stays at 0.21 m/s unmodified and 0.11 m/s on R1, and
+L2 takes the head from 1.0 to 2.0 rad/s. The head's ceiling is `--head-lead`
+rather than the hardware: the target may not run more than 0.20 rad ahead of
+the measured angle, which at 20 Hz puts the limit at 4.0 rad/s. The node checks
+that pair at startup and says so rather than letting a held D-pad crawl.
+
+The wheels come up DRIVEN and need no `triangle`: a continuous-rotation servo
+has no position, so the stale-pose hazard that servo-on exists for cannot happen
+to it. `triangle` is for the arms and head, and it re-syncs the trajectory
+controllers first -- without that the enable is refused, because it is only
+allowed when the controller already commands where the robot is. It reports
+what came back, refusals included; a button that swallows the answer teaches you
+the feature is broken while the robot is telling you what is wrong.
+
+Going home is a HELD combination rather than a press because a whole-body move
+over five seconds is not something a pad brushed against a table should start.
+It refuses if any joint involved is still limp, naming them.
+
+Unplugging the pad stops the base within 0.3 s and it picks up again by itself.
+
+**Check the numbering on any new pad** rather than trusting these:
+
+```
+ros2 run jedy_teleop jedy_joy_monitor
+```
+
+It draws every axis and button live with the role the NODE assigns it -- read
+from the same module the node imports, so the label cannot drift from the
+behaviour -- and shows at the bottom what the robot would do right now, so "is
+L1 the deadman on this pad" is answered by holding it and looking.
+
+The driver is `joy_linux`, not `joy`, and that is not a preference. The `joy`
+package goes through SDL, and SDL drops joystick events when the application
+does not have input focus: with RViz focused it opened the pad, read its state
+ONCE and then published that frozen state forever. Measured while chasing it:
+3207 evdev events arriving from the kernel and not one change in `/joy`.
+`joy_linux` reads joydev directly and has no such notion. Its axis and button
+numbering is NOT interchangeable with SDL's, so a mapping verified under one
+says nothing about the other.
+
+### What to expect in the first few seconds
+
+The odometry publishes zeros and a NaN quality figure until each wheel has
+turned far enough for the estimator to time a revolution and learn its own
+pulses-per-revolution. That is a couple of seconds of driving. It reports
+nothing rather than guessing, which is the intended behaviour and not a fault.
+
+## Why the split, and which way the dependency runs
+
+`actuo` is an actuator abstraction: transports, actuator models, buses, and
+(in `ros/`) the ros2_control shim and the bus servicer node. It must not know
+Jedy's joint names, servo ids or link lengths. So every per-robot fact lives
+here, and `jedy_bringup/package.xml` lists the actuo packages as
+`exec_depend`.
+
+`jedy_description` being a real ament package is load-bearing, not tidiness.
+As a catkin package it was invisible to the ament index, so every
+`package://jedy_description/meshes/...` in its own URDF failed to resolve and
+RViz drew a complete, correctly articulated, **entirely invisible** robot — no
+error, no warning, just no geometry. The bring-up launch briefly carried a
+path-rewriting workaround for exactly this; porting the package deleted it.
+
+## Run it
+
+Everything, from nothing running, is the `Starting it` section above. The pieces
+underneath, for when one of them needs to be run on its own:
 
 ```bash
-export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+# The servicer. Talks to the board; owns torque. Add
+#   --command-filter jedy_safety.collision_filter:build
+# for the self-collision gate.
+ros2 run actuo_ros actuo_bus_node --real \
+    --config "$(ros2 pkg prefix jedy_bringup)/share/jedy_bringup/config/jedy_four_dof_kondo.yaml" \
+    --shm-name jedy_four_dof --rate 100 --timeout 90
+
+# Controllers, RViz with the servo + /diagnostics panels, wheel odometry.
+ros2 launch jedy_bringup jedy_four_dof.launch.py wheels:=true rviz:=true
+
+# The pad, separately -- it is something you plug in, not part of the robot.
+ros2 launch jedy_teleop jedy_joy.launch.py
+
+# Torque, without a pad or a panel. It starts OFF for every joint that HAS a
+# pose; the wheels come up driven, because a continuous-rotation servo has no
+# stale pose to be thrown to and so the hazard this guard exists for cannot
+# happen to it.
+ros2 action send_goal /actuo_bus_servicer/servo/set actuo_msgs/action/SetServo "{enable: true}"
+ros2 action send_goal /actuo_bus_servicer/servo/set actuo_msgs/action/SetServo "{enable: false}"
+
+# Back to nothing running. Stops the launches and their nodes, keeps the
+# servicer -- and therefore torque -- unless asked otherwise. --dry-run lists
+# what it would stop. Use this rather than pkill before relaunching: a
+# half-stopped robot is the two-controller-manager failure below.
+ros2 run jedy_bringup jedy_stop
+ros2 run jedy_bringup jedy_stop --servicer   # torque goes with it
 ```
 
-**bashrc に追加して永続化する場合:**
+One trajectory controller per limb, the same split the ROS 1 stack used, all
+three active at once. Moving the head does not disturb an arm mid-motion, which
+a single nine-joint controller cannot offer -- a JTC holds exactly one
+trajectory.
 
-```bash
-echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc
-source ~/.bashrc
+```
+/jedy_four_dof/head_controller/follow_joint_trajectory
+/jedy_four_dof/right_arm_controller/follow_joint_trajectory
+/jedy_four_dof/left_arm_controller/follow_joint_trajectory
 ```
 
-この設定により、ROS2 の通信がローカルホストのみに制限され、他の受講者との通信干渉を防ぐことができます。
+Logic only, no board and no servicer: `backend:=mock`.
 
-> **注意:** ROS 2 Jazzy 以前では `ROS_LOCALHOST_ONLY=1` が使用されていましたが、Jazzy で非推奨となり削除されました。代わりに `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` を使用してください。詳細は [Improved Dynamic Discovery](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Improved-Dynamic-Discovery.html) を参照してください。
+## The mecanum base
 
-## Features
+`wheels:=true` adds the four wheels' velocity interfaces and
+`mecanum_drive_controller`, remapped to `/cmd_vel`. The type is **TwistStamped**,
+not Twist: `teleop_twist_keyboard --ros-args -p stamped:=true` and
+`teleop_twist_joy` both publish that, and a bare
+`ros2 topic pub /cmd_vel geometry_msgs/msg/Twist` silently does not connect.
 
-- Differential drive base with 4 wheels
-- Dual 7-DOF arms with grippers
-- 2-DOF pan-tilt head with RGB-D camera
-- 2D LiDAR sensor
-- Full Gazebo Harmonic simulation support
-- RViz2 visualization
+Three things about this base are worth knowing before driving it.
 
-## Packages
+**It has a floor, not just a ceiling.** The wheels do not turn at a predictable
+speed below about 0.078 m/s and are capped at 0.156 on the RCB-4mini (0.071
+and 0.173 on the ARM-H7): the wheel speeds measured on each board times the
+CAD's 25.25 mm wheel radius. A twist below that gets a
+stopped wheel and a logged refusal rather than a crawl, and the pad's stick is
+mapped onto that range rather than onto 0..max so its first 40 % is not dead.
 
-- **jedy_description**: URDF/xacro robot description files
-- **jedy_bringup**: Launch files and configuration for simulation
+**Which servo is at which corner is not what the joint origins say.**
+`dummy_joint_rleg` carries `rpy="pi 0 0"`, so `mechanum_base_link` is rolled 180
+degrees against `base_link` and every wheel's y flips: `mechanum_joint1` is the
+FRONT RIGHT wheel. Verified on the robot by hand-turning each wheel.
 
-## Setup
+**There is no odometry from the controller.** These servos report no speed, so
+the wheels' velocity state interface is NaN and `mecanum_drive_controller`
+correctly skips its integration; `enable_odom_tf` is false so nothing reaches
+TF. `jedy_odometry` publishes an estimate instead, on
+`/jedy_four_dof/jedy_wheel_odometry/odometry`, with `~/scale_spread` beside it
+saying how much to trust it. Its covariance is left at zero deliberately: the
+dominant error is mecanum roller slip, nothing in that node can see it, and a
+plausible covariance is what would make a filter believe the pose.
 
-### Prerequisites
+## Poses
 
-```bash
-# ROS2 Jazzy
-source /opt/ros/jazzy/setup.bash
+`jedy_bringup/config/jedy_four_dof_poses.yaml` holds named whole-body poses and
+which controller commands which joint. The grouping is written out rather than
+inferred from joint-name prefixes: a trajectory naming joints a controller does
+not own is rejected outright, so a wrong guess there is not a partial move, it
+is no move at all.
+
+`home` is all zeros and that was CHECKED -- run through `jedy_safety`'s
+collision filter, the same one the servicer uses, it comes back collision-free.
+Anything added there deserves the same before a robot is asked to drive to it
+over five seconds.
+
+## A joint parked outside its limit
+
+This happens: the arm droops, or the configured envelope is tighter than the
+hardware. `rarm_module1_joint1` has been found at +13.7 degrees against a
+configured maximum of +4.98.
+
+It used to be a deadlock. The joint could not be commanded to hold where it was
+-- correctly -- so torque could not be enabled, so it could not be driven back,
+so the only way out was pushing it by hand. Now enabling is allowed for such a
+joint, its commands are held at the nearest edge of the envelope so it can only
+travel INWARD, and both the enable and the servicer say so:
+
+```
+rarm_module1_joint1 is +0.2386 rad OUTSIDE its envelope [-1.5700, +0.0870]
+and will move 0.1516 rad back to +0.0870 as soon as torque is applied
 ```
 
-### Build from source
+So the recovery is: torque on, then the home pose. Measured: +13.7 -> +6.8 on
+enable, then every joint within 2.1 degrees of zero after the home move.
 
-```bash
-# Create workspace
-mkdir -p ~/ros2_ws/src
-cd ~/ros2_ws/src
+If a joint keeps stopping short of its edge, that is the envelope disagreeing
+with the hardware rather than a fault -- re-measure it with `actuo-teach-limits`
+rather than widening the number by hand.
 
-# Clone this repository
-git clone https://github.com/jsk-enshu/robot-programming.git
+## State of the hardware
 
-# Import dependencies using vcs (optional - imports opencv_apps and other packages)
-cd ~/ros2_ws
-sudo apt install -y python3-vcstool
-vcs import src < src/robot-programming/.repos.jazzy
+In short: the arms and head run; the
+left arm's 4th joint (servo id 7) and both hands (14/15) are in the servo map
+but were not on the bus when it was imported, so they are present in
+`jedy_four_dof_kondo.yaml` as commented-out entries rather than active ones —
+an entry for a servo the board cannot see would publish `-253 deg` as that
+joint's measured position.
 
-# Install dependencies using rosdep
-sudo rosdep init
-rosdep update
-rosdep install --from-paths src --ignore-src -y -r
+**A servo's ICS id is decided by wiring, not by a dial**: the six UARTs split
+into two groups of three, one giving `2 * n` and the other `2 * n + 1`, `n`
+being the position in that port's chain. So these ids are only valid for one
+cabling — if a servo "goes missing", check which port group it is plugged into
+before touching any id.
 
-# Build
-colcon build --symlink-install
-source install/setup.bash
-```
+## When something does not come up
 
-## Usage
+Five failures that cost real time here, each with the thing that identifies it.
 
-### Start Gazebo simulation with RViz
+**The spawners contradict each other**: `Controller already loaded, skipping
+load_controller` and, a line later, `no controller with this name exists` — or
+`Failed loading controller` for every one of the five. That is two bring-ups of
+the same robot. Both controller managers answer on the same service names, so
+each spawner request lands on whichever one, and the controllers end up loaded
+but never activated: the action servers still accept goals and report success,
+and the arm does not move. `ros2 node list` will not show it — the two share a
+node name — so look at the process list. Both halves are now guarded and it
+should not be reachable: the servicer takes a lock keyed to the shm name, and
+`jedy_four_dof.launch.py` refuses to start while a `ros2_control_node` for this
+namespace exists. To clear it, `ros2 run jedy_bringup jedy_stop`, which
+interrupts the launch processes first so each takes its own nodes down, leaves
+the bus servicer (and therefore torque) alone unless given `--servicer`, and
+deletes the leftover shm file once nothing holds it.
 
-```bash
-source ~/ros2_ws/install/setup.bash
-ros2 launch jedy_bringup jedy_gazebo.launch.py
-```
+**The robot comes up but never moves, and nothing errors.** Restarting
+ros2_control alone against a servicer that has already finished its
+shared-memory handshake deadlocks. Restart both, or use
+`jedy_four_dof_all.launch.py`, which deletes the leftover segment file first.
 
-This will start:
-- Gazebo Harmonic simulator
-- RViz2 visualization
-- All robot controllers (mecanum_drive, head, arms)
-- Camera and LiDAR bridges
-- Point cloud generation from RGB-D
+**The pose on `/joint_states` is frozen but every counter looks healthy.** The
+FTDI adapter holds replies until its USB latency timer expires and ships at
+16 ms, so a loop faster than ~62 Hz reads nothing at all. The servicer refuses
+to start rather than publish a frozen pose and its error says how to fix it;
+the permanent fix is
+`sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh`.
 
-### Control the robot
+**RViz dies with `what(): vector::reserve`.** A `.msg` was changed and a
+dependent package was not rebuilt, so it deserialises with the old layout and
+reads an array length out of the wrong bytes. `colcon build --packages-above
+actuo_msgs`, never `--packages-select`.
 
-#### Move the base (mecanum drive)
-
-```bash
-# Using ros2 topic pub
-ros2 topic pub /mecanum_drive_controller/reference geometry_msgs/msg/TwistStamped \
-  "{twist: {linear: {x: 0.2, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}}" \
-  --rate 10
-
-# Or using teleop_twist_keyboard (optional, not included in rosdep)
-# Install with: sudo apt install ros-jazzy-teleop-twist-keyboard
-ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -r /cmd_vel:=/mecanum_drive_controller/reference -p stamped:=true
-```
-
-#### Control the arms
-
-```bash
-# List available controllers
-ros2 control list_controllers
-
-# Example: Move right arm
-ros2 topic pub /rarm_controller/joint_trajectory \
-  trajectory_msgs/msg/JointTrajectory \
-  "{joint_names: ['rarm_joint0', 'rarm_joint1', 'rarm_joint2', 'rarm_joint3', 'rarm_joint4', 'rarm_joint5', 'rarm_joint6'],
-    points: [{positions: [0.0, 0.0, 0.0, -1.57, 0.0, 0.0, 0.0], time_from_start: {sec: 2}}]}" \
-  --once
-```
-
-#### Control the head
-
-```bash
-# Pan and tilt the head
-ros2 topic pub /head_controller/joint_trajectory \
-  trajectory_msgs/msg/JointTrajectory \
-  "{joint_names: ['head_joint0', 'head_joint1'],
-    points: [{positions: [0.5, 0.3], time_from_start: {sec: 1}}]}" \
-  --once
-```
-
-#### Run the sample scripts in simulation
-
-The sample scripts in `jedy_bringup/scripts` set `header.stamp` from the node clock.
-In Gazebo the controllers run on simulation time, so pass `use_sim_time:=true`:
-
-```bash
-ros2 run jedy_bringup send_joint_position.py --ros-args -p use_sim_time:=true
-ros2 run jedy_bringup track_box_to_cmd_vel_1.py --ros-args -p use_sim_time:=true
-```
-
-Without it, `send_joint_position.py` never starts the head trajectory, `track_box_to_cmd_vel_0.py` leaves the base moving after the commands stop (`reference_timeout` is not applied), and `track_box_to_cmd_vel_1.py` treats every detection as stale and does not move the base.
-
-### Available topics
-
-```bash
-# Check all topics
-ros2 topic list
-
-# Important topics:
-# /mecanum_drive_controller/reference    - Base velocity commands (TwistStamped)
-# /camera/rgb/image_raw                  - RGB camera image
-# /camera/depth/image_raw                - Depth image
-# /camera/depth/points                   - Point cloud (XYZRGB)
-# /scan                                  - 2D LiDAR scan
-# /joint_states                          - All joint states
-# /mecanum_drive_controller/odometry     - Wheel odometry from mecanum drive
-# /odom                                  - Odometry fused by EKF (wheel odometry + IMU)
-# /rarm_controller/joint_trajectory      - Right arm control
-# /larm_controller/joint_trajectory      - Left arm control
-# /head_controller/joint_trajectory      - Head control
-```
-
-### Check controller status
-
-```bash
-# List controllers
-ros2 control list_controllers
-
-# Get controller info
-ros2 control list_hardware_interfaces
-```
-
-## Configuration
-
-### Controllers
-
-Controller configuration is in `jedy_bringup/config/jedy_controllers.ros2.yaml`:
-
-- **mecanum_drive_controller**: Controls 4 mecanum wheels
-  - Wheels: `front_left_wheel_joint`, `front_right_wheel_joint`, `rear_left_wheel_joint`, `rear_right_wheel_joint`
-  - Wheel radius: 0.030083 m
-  - Velocity command: `/mecanum_drive_controller/reference` (TwistStamped, `reference_timeout: 0.5` s)
-
-- **head_controller**: Joint trajectory controller for 2-DOF head
-- **rarm_controller**: Joint trajectory controller for 7-DOF right arm
-- **larm_controller**: Joint trajectory controller for 7-DOF left arm
-
-### Initial joint positions
-
-Modify initial joint positions in `jedy_bringup/launch/jedy_gazebo.launch.py`:
-
-```python
-robot_description = {'robot_description': Command([
-    'xacro ', model_file,
-    ' head_j0_init:=0.0',              # 0 deg
-    ' head_j1_init:=0.0',              # 0 deg
-    ' rarm_j0_init:=1.5708',           # 90 deg
-    ' rarm_j1_init:=0.0',              # 0 deg
-    # ... modify as needed
-])}
-```
-
-## RViz Configuration
-
-The default RViz configuration is in `jedy_bringup/config/jedy.rviz`.
-
-To save your own configuration:
-1. Open RViz manually: `rviz2`
-2. Load topics and adjust views
-3. File -> Save Config As -> `jedy_bringup/config/jedy.rviz`
-
-## Troubleshooting
-
-### Controllers fail to load
-
-Wait for gz_ros2_control plugin to initialize. Controllers are spawned with delays:
-- joint_state_broadcaster: 5s
-- mecanum_drive_controller: 7s
-- head_controller: 9s
-- rarm_controller: 11s
-- larm_controller: 13s
-
-### Robot falls through ground
-
-Check that Gazebo has fully loaded before spawning the robot. Increase spawn delay if needed.
-
-### Camera/LiDAR topics not available
-
-Ensure ros_gz_bridge nodes are running:
-```bash
-ros2 node list | grep bridge
-```
-
-### TF errors
-
-Check that all required TF frames are published:
-```bash
-ros2 run tf2_tools view_frames
-```
-
-## Architecture
-
-- **Simulation**: Gazebo Harmonic
-- **Control**: ros2_control with gz_ros2_control plugin
-- **Base**: mecanum_drive_controller
-- **Arm Control**: joint_trajectory_controller
-- **Sensors**: RGB-D camera via ros_gz_bridge, 2D LiDAR via ros_gz_bridge
-
-## Related Links
-
-- [ROS2 Jazzy Documentation](https://docs.ros.org/en/jazzy/)
-- [Gazebo Harmonic](https://gazebosim.org/docs/harmonic)
-- [ros2_control](https://control.ros.org/jazzy/index.html)
+**The board stops answering with nothing raised.** The usb-serial link can wedge
+while the device stays enumerated and the port still opens; neither reopening it
+nor unplugging and replugging clears it, and a USB device reset does. The
+servicer does this by itself now -- releasing torque first, and coming back
+released, because the robot may have moved while it was gone.

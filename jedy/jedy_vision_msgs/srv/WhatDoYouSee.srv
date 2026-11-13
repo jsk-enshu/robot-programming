@@ -1,0 +1,11 @@
+# Detect objects in the latest camera image.
+
+# Words to look for, in Japanese or English (e.g. ["ペットボトル", "cup"]).
+# Empty: the node's current words.
+string[] words
+---
+# False when there is no recent image or the words could not be used;
+# message says why. "Nothing found" is success with no detections.
+bool success
+string message
+DetectionArray result

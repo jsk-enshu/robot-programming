@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypelang="RNG" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<package format="3">
+  <name>jedy_sim</name>
+  <version>0.0.1</version>
+  <description>
+    MuJoCo plant and bus-servicer for Jedy: converts the robot to MJCF, drives
+    it from the ros2_control commands over shared memory, gates self-collisions,
+    and offers an interactive viewer.
+
+    Robot-specific, so it lives with the robot: this package is what knows
+    Jedy's reset pose, its arm groups and its collision-ignore set. The shared
+    memory and the collision gate come from actuo.
+  </description>
+  <maintainer email="ab.ioryz@gmail.com">iory</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_uv_virtualenv</buildtool_depend>
+
+  <depend>gz_sim_vendor</depend>
+  <depend>gz_plugin_vendor</depend>
+  <exec_depend>jedy_description</exec_depend>
+  <exec_depend>actuo_msgs</exec_depend>
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+  <!-- jedy_sim_sounds: motor sounds in Gazebo (sounds:=true) -->
+  <exec_depend>sound_play</exec_depend>
+  <exec_depend>sound_play_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <!-- actuo_requirement(): this venv installs the same actuo checkout. -->
+  <depend>actuo_ros</depend>
+  <test_depend>ament_cmake_pytest</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+"""Block until the robot's serial adapter is there, then exit 0.
+
+    ros2 run jedy_bringup jedy_wait_port --config <...>/jedy_fullbody_kondo.yaml
+    ros2 run jedy_bringup jedy_wait_port --channel /dev/actuo_kondo_rcb4mini --timeout 60
+
+Why a launch needs this
+-----------------------
+`actuo_bus_node --real` opens the port in its first second and does not survive
+not finding it::
+
+    serial.serialutil.SerialException: [Errno 2] could not open port
+    /dev/actuo_kondo_rcb4mini: No such file or directory
+
+That one exit takes the whole robot with it, and not in a way that says so.
+Measured on 2026-08-06 with nothing plugged in, `jedy_fullbody_all.launch.py`
+produced, in this order:
+
+    actuo_bus_node        died, exit 1     (the SerialException above)
+    ros2_control_node    died, exit -6    std::runtime_error, 10 s later:
+                                          "no state from the bus servicer"
+    7 x spawner          alive, retrying "Failed to acquire lock" forever
+
+So the operator reads a C++ abort and a wall of spawner retries, and the one
+line that says what is actually wrong scrolled past a minute earlier. A launch
+that WAITS says it once and keeps saying it, and the moment the adapter is
+plugged in the robot comes up on its own -- which is also the answer to
+"the launch is running, can I plug the robot in now".
+
+Waiting rather than starting anyway
+-----------------------------------
+There is no useful half-robot. Without the servicer, ros2_control cannot know
+where the joints are, and it refuses to activate rather than command a guess
+(that refusal is what the abort above is). Bringing up RViz and the state
+publishers against a robot that will never answer only makes the failure
+quieter, so nothing starts until the port does.
+
+Openable, not merely present
+----------------------------
+The check opens the port and closes it. A device node that exists but cannot be
+opened is the `dialout` group case: the symlink is right there in `ls`, so a
+test for existence passes, and the servicer then dies on EACCES exactly as if
+the file had been missing. Group membership needs a re-login to take effect,
+which is not something a wait loop can outlast, so that case is reported as
+itself and gives up.
+"""
+
+from __future__ import annotations
+
+import argparse
+import errno
+import os
+import sys
+import time
+
+# Two ways one missing symlink happens, with opposite fixes: the rules were
+# never installed on this computer, or they are installed and nothing matched.
+UDEV_RULE_PATH = "/etc/udev/rules.d/99-actuo-kondo-symlink.rules"
+
+
+def channel_from_config(path):
+    """The serial device the bus config names.
+
+    Parameters
+    ----------
+    path : str
+        Path to a bus config YAML, e.g. ``jedy_fullbody_kondo.yaml``.
+
+    Returns
+    -------
+    str
+        The value of ``bus.transport.channel``.
+
+    Raises
+    ------
+    SystemExit
+        If the file cannot be read, or names no channel. Guessing
+        ``/dev/actuo_kondo_rcb4mini`` here would wait on a port the servicer is not
+        going to open.
+    """
+    try:
+        import yaml
+    except ImportError:
+        raise SystemExit(
+            "jedy_wait_port: PyYAML is not available, so --config cannot be "
+            "read. Pass --channel <device> instead.")
+    try:
+        with open(path) as handle:
+            document = yaml.safe_load(handle)
+    except OSError as error:
+        raise SystemExit(
+            "jedy_wait_port: cannot read {}: {}".format(path, error))
+    try:
+        channel = document["bus"]["transport"]["channel"]
+    except (KeyError, TypeError):
+        raise SystemExit(
+            "jedy_wait_port: {} has no bus.transport.channel".format(path))
+    if not isinstance(channel, str) or channel == "":
+        raise SystemExit(
+            "jedy_wait_port: bus.transport.channel in {} is not a device "
+            "path".format(path))
+    return channel
+
+
+def probe(channel):
+    """Try to open the port.
+
+    Parameters
+    ----------
+    channel : str
+        Device path, e.g. ``/dev/actuo_kondo_rcb4mini``.
+
+    Returns
+    -------
+    tuple of (bool, str or None)
+        ``(True, None)`` when the port opened. Otherwise ``False`` and one of
+        ``"missing"`` (no such file), ``"denied"`` (there, but not ours) or
+        ``"busy"`` (someone else has it).
+    """
+    try:
+        handle = os.open(channel, os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)
+    except OSError as error:
+        if error.errno in (errno.ENOENT, errno.ENXIO, errno.ENODEV):
+            return False, "missing"
+        if error.errno in (errno.EACCES, errno.EPERM):
+            return False, "denied"
+        if error.errno in (errno.EBUSY, errno.EAGAIN):
+            return False, "busy"
+        return False, "missing"
+    os.close(handle)
+    return True, None
+
+
+def missing_advice(channel):
+    """What to do about a device node that is not there.
+
+    Parameters
+    ----------
+    channel : str
+        The device path being waited on.
+
+    Returns
+    -------
+    list of str
+        Lines to print, already ordered most-likely-first.
+    """
+    if channel.startswith("/dev/actuo_kondo") and not os.path.exists(UDEV_RULE_PATH):
+        return [
+            "  {} is not installed on this machine, so no adapter can".format(
+                UDEV_RULE_PATH),
+            "  ever take this name. Install it:",
+            "    sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros"
+            "/udev/install.sh",
+        ]
+    return [
+        "  Plug the robot's serial adapter in and switch the robot on.",
+        "  If it is already plugged in, its vendor:product may not be one",
+        "  the udev rule names. Check with:  lsusb; ls -l /dev/serial/by-id/",
+    ]
+
+
+def wait(channel, timeout, report_interval, now=time.monotonic,
+         sleep=time.sleep, out=sys.stderr):
+    """Poll until the port opens.
+
+    Parameters
+    ----------
+    channel : str
+        Device path to wait for.
+    timeout : float
+        Seconds to wait. ``0`` waits forever, which is the launch default: a
+        workshop laptop left running with the robot switched off should come
+        up when someone switches it on, not time out over lunch.
+    report_interval : float
+        Seconds between repeats of the "still waiting" message.
+    now : callable, optional
+        Monotonic clock, injected by the tests.
+    sleep : callable, optional
+        Sleep function, injected by the tests.
+    out : file, optional
+        Where the messages go. stderr, so this stays readable when a launch
+        interleaves it with node output.
+
+    Returns
+    -------
+    int
+        Process exit status: 0 once the port opened, 1 on timeout or on a
+        permission problem that waiting cannot fix.
+    """
+    def emit(line):
+        print(line, file=out, flush=True)
+
+    started = now()
+    deadline = None if timeout <= 0 else started + timeout
+    last_report = None
+
+    while True:
+        opened, reason = probe(channel)
+        if opened:
+            waited = now() - started
+            if last_report is None:
+                emit("[jedy_wait_port] {} is there".format(channel))
+            else:
+                emit("[jedy_wait_port] {} appeared after {:.0f} s -- starting "
+                     "the robot".format(channel, waited))
+            return 0
+
+        if reason == "denied":
+            # Not waited out: group membership is applied at login, so this
+            # will still be true in an hour.
+            emit("[jedy_wait_port] {} exists but this user cannot open it."
+                 .format(channel))
+            emit("  Add the user to dialout and LOG OUT AND BACK IN "
+                 "(a new terminal is not enough):")
+            emit("    sudo usermod -aG dialout $USER")
+            return 1
+
+        if deadline is not None and now() >= deadline:
+            emit("[jedy_wait_port] gave up waiting for {} after {:.0f} s."
+                 .format(channel, timeout))
+            for line in missing_advice(channel):
+                emit(line)
+            return 1
+
+        if last_report is None or now() - last_report >= report_interval:
+            last_report = now()
+            if reason == "busy":
+                emit("[jedy_wait_port] waiting for {}: it is open by another "
+                     "process. Is a second servicer running?".format(channel))
+            else:
+                emit("[jedy_wait_port] waiting for {} -- the robot is not "
+                     "connected yet.".format(channel))
+                for line in missing_advice(channel):
+                    emit(line)
+                emit("  Nothing else starts until it appears. Ctrl-C to give "
+                     "up.")
+
+        sleep(0.25)
+
+
+def main(argv=None):
+    """Parse arguments and wait.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Argument vector without the program name.
+
+    Returns
+    -------
+    int
+        Process exit status.
+    """
+    parser = argparse.ArgumentParser(
+        description="Wait until the robot's serial port can be opened.")
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--channel",
+                        help="device path to wait for, e.g. /dev/actuo_kondo_rcb4mini")
+    source.add_argument("--config",
+                        help="bus config YAML to read bus.transport.channel "
+                             "from, so the launch and the servicer cannot "
+                             "disagree about which port they mean")
+    parser.add_argument("--timeout", type=float, default=0.0,
+                        help="seconds before giving up; 0 waits forever "
+                             "(default)")
+    parser.add_argument("--report-interval", type=float, default=15.0,
+                        help="seconds between 'still waiting' messages "
+                             "(default 15)")
+    # ros2 launch appends this to every process it starts.
+    parser.add_argument("--ros-args", action="store_true",
+                        help=argparse.SUPPRESS)
+    args, _ignored = parser.parse_known_args(argv)
+
+    channel = args.channel or channel_from_config(args.config)
+    try:
+        return wait(channel, args.timeout, args.report_interval)
+    except KeyboardInterrupt:
+        print("\n[jedy_wait_port] interrupted while waiting for {}."
+              .format(channel), file=sys.stderr, flush=True)
+        return 130
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

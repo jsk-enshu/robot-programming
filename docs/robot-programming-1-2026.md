@@ -389,7 +389,7 @@ plt.show()            # ウィンドウを閉じると次へ進む
 
 ```{code-block} console
 $ mkdir -p ~/enshu
-$ cp ~/ros2_ws/src/jedy/jedy_skrobot/scripts/enshu/show_camera.py ~/enshu/my_camera.py
+$ cp ~/ros2_ws/src/robot-programming/jedy/jedy_skrobot/scripts/enshu/show_camera.py ~/enshu/my_camera.py
 $ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_camera.py
 ```
 

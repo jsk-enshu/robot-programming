@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypelang="RNG" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<package format="3">
+  <name>jedy_vision</name>
+  <version>0.0.1</version>
+  <description>
+    People in the head camera for the Jedy exercises: person detection
+    (Ultralytics YOLO) and body pose (MediaPipe Pose Landmarker), and demos
+    that use them through jedy_skrobot's robot interface (follow a person,
+    look at a person, copy a person's arms). Also the recognition nodes that
+    jedy_skrobot's ri.what_do_you_see() / ri.gesture() call: objects named by
+    words (YOLOE) and hand gestures (MediaPipe Gesture Recognizer).
+
+    A separate package from jedy_skrobot on purpose: its venv carries torch
+    (CPU build) and is about 1.7 GB, which students who do not do the vision
+    exercises should not have to download.
+  </description>
+  <maintainer email="ab.ioryz@gmail.com">iory</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_uv_virtualenv</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>jedy_vision_msgs</depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>jedy_skrobot</exec_depend>
+  <exec_depend>actuo_ros</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

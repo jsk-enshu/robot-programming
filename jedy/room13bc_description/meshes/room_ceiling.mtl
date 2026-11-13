@@ -1,0 +1,81 @@
+newmtl room_ceiling_m0
+Ka 1.0000 1.0000 1.0000
+Kd 1.0000 1.0000 1.0000
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+map_Kd room_ceiling_t0.png
+
+newmtl room_ceiling_m1
+Ka 0.1020 0.1020 0.1059
+Kd 0.1020 0.1020 0.1059
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+
+newmtl room_ceiling_m2
+Ka 0.1647 0.1490 0.1373
+Kd 0.1647 0.1490 0.1373
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+
+newmtl room_ceiling_m3
+Ka 0.2000 0.2000 0.2039
+Kd 0.2000 0.2000 0.2039
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+
+newmtl room_ceiling_m4
+Ka 0.2275 0.2000 0.1725
+Kd 0.2275 0.2000 0.1725
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+
+newmtl room_ceiling_m5
+Ka 0.4000 0.4000 0.4039
+Kd 0.4000 0.4000 0.4039
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+
+newmtl room_ceiling_m6
+Ka 0.5412 0.4549 0.3373
+Kd 0.5412 0.4549 0.3373
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+
+newmtl room_ceiling_m7
+Ka 0.6039 0.5059 0.3725
+Kd 0.6039 0.5059 0.3725
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+
+newmtl room_ceiling_m8
+Ka 0.6706 0.5569 0.4078
+Kd 0.6706 0.5569 0.4078
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2

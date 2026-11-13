@@ -1,0 +1,38 @@
+newmtl room_floor_m0
+Ka 1.0000 1.0000 1.0000
+Kd 1.0000 1.0000 1.0000
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+map_Kd room_floor_t0.png
+
+newmtl room_floor_m1
+Ka 1.0000 1.0000 1.0000
+Kd 1.0000 1.0000 1.0000
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+map_Kd room_floor_t1.png
+
+newmtl room_floor_m2
+Ka 1.0000 1.0000 1.0000
+Kd 1.0000 1.0000 1.0000
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+map_Kd room_floor_t2.png
+
+newmtl room_floor_m3
+Ka 0.6000 0.6000 0.6000
+Kd 0.6000 0.6000 0.6000
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2

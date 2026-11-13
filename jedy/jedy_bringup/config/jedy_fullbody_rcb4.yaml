@@ -1,0 +1,290 @@
+# Jedy's whole body on the Kondo RCB-4mini: the same 22 joints, in the same
+# order, as jedy_fullbody_kondo.yaml (the ARM-H7 config), so the same
+# jedy_fullbody_actuo.urdf.xacro and the same controllers drive it.
+#
+#   ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4
+#
+# Derived from jedy_fullbody_kondo.yaml on 2026-10-26 WITHOUT A BOARD. Every
+# value below that the H7 config did not already carry is marked UNVERIFIED and
+# listed in HUMAN_CHECKLIST.md. What changes from the H7 and why:
+#
+# * bus/transport: kondo_rcb4_bus over kondo_rcb4 (even parity, 1.25 Mbit/s,
+#   switched to from the board's power-up 115200 by the bus itself).
+# * ids: the H7 numbers are kept. On the RCB-4mini a servo answers on ICS
+#   number 2 x ID + port (port 0 = SIO1-4, 1 = SIO5-8), the same even/odd split
+#   the H7's two port groups give, so these numbers hold IF the right arm and
+#   head are on SIO1-4 and the left arm on SIO5-8 with the same IDs as on the
+#   H7. UNVERIFIED: run actuo-kondo-rcb4-probe and compare.
+# * velocity: the RCB-4mini's move-duration unit has not been measured
+#   (kondo_rcb4_bus.FRAME_SCALE_MS is None), so move_time_ms is refused and each
+#   servo carries a move byte instead. The board takes ONE move byte for every
+#   servo in the 0x10 packet and a wheel's is always 1, so every joint is 1:
+#   one output cycle, 15 ms on a flat board. UNVERIFIED for smoothness.
+# * wheels: need `rotation_checked` (see the comment on each); until it is
+#   filled in the servicer refuses to start with this config. That is the
+#   safety check working, not a bug: a position servo driven as a wheel swings
+#   to wherever the speed command points.
+
+bus:
+  plugin: kondo_rcb4_bus
+  state_slots: [current_angle]
+  ics_bitrate: 1250000   # UNVERIFIED: what the servos are set to
+  transport:
+    plugin: kondo_rcb4
+    # The udev symlink for the Kondo DUAL USB ADAPTER HS (165c:0008), from
+    # actuo_ros' 99-actuo-kondo-symlink.rules:
+    #   sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh
+    channel: /dev/actuo_kondo_rcb4mini
+    bitrate: 1250000
+
+joints:
+  - name: head_joint0
+    actuator:
+      plugin: kondo_ics
+      id: 32
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: -1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: head_joint1
+    actuator:
+      plugin: kondo_ics
+      id: 34
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: -1
+      offset_deg: 0.0
+      position_limit_deg: [-89.954374, 89.954374]
+  - name: rarm_joint0
+    actuator:
+      plugin: kondo_ics
+      id: 0
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: rarm_joint1
+    actuator:
+      plugin: kondo_ics
+      id: 2
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 29.793805]
+  - name: rarm_joint2
+    actuator:
+      plugin: kondo_ics
+      id: 4
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: rarm_joint3
+    actuator:
+      plugin: kondo_ics
+      id: 6
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: rarm_joint4
+    actuator:
+      plugin: kondo_ics
+      id: 8
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: rarm_joint5
+    actuator:
+      plugin: kondo_ics
+      id: 10
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-89.954374, 60.160568]
+  - name: rarm_joint6
+    actuator:
+      plugin: kondo_ics
+      id: 12
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: -1
+      offset_deg: 0.0
+      position_limit_deg: [-89.954374, 89.954374]
+  - name: larm_joint0
+    actuator:
+      plugin: kondo_ics
+      id: 1
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: larm_joint1
+    actuator:
+      plugin: kondo_ics
+      id: 3
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-32.085637, 134.645082]
+  - name: larm_joint2
+    actuator:
+      plugin: kondo_ics
+      id: 5
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: larm_joint3
+    actuator:
+      plugin: kondo_ics
+      id: 7
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: -1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: larm_joint4
+    actuator:
+      plugin: kondo_ics
+      id: 9
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-134.645082, 134.645082]
+  - name: larm_joint5
+    actuator:
+      plugin: kondo_ics
+      id: 11
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-89.954374, 60.160568]
+  - name: larm_joint6
+    actuator:
+      plugin: kondo_ics
+      id: 13
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: -1
+      offset_deg: 0.0
+      position_limit_deg: [-89.954374, 89.954374]
+  - name: rarm_gripper_joint
+    actuator:
+      plugin: kondo_ics
+      id: 14
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: -1
+      offset_deg: 0.0
+      position_limit_deg: [-28.64789, 89.954374]
+  - name: larm_gripper_joint
+    actuator:
+      plugin: kondo_ics
+      id: 15
+      velocity: 1       # UNVERIFIED move byte; see the header
+      direction: 1
+      offset_deg: 0.0
+      position_limit_deg: [-28.64789, 89.954374]
+
+  # --- the mecanum base ------------------------------------------------------
+  #
+  # ADDED BY HAND, below the eighteen the importer wrote, and they belong here
+  # rather than in its output: the importer refuses to emit a `type: continuous`
+  # servo, because it only knows how to write kondo_ics and that plugin is
+  # POSITION-only. These four are the same servos with ServoStruct.rotation set,
+  # which makes the board read their command field as a SPEED rather than a
+  # target pulse. They ride in the same packet as the arm joints; only the
+  # actuator model differs, and the bus refuses to start if the board disagrees
+  # with the plugin named here.
+  #
+  # Their position in this list is NOT free. It has to match the tail of the
+  # <ros2_control> block in jedy_fullbody_actuo.urdf.xacro expanded with
+  # wheels:=true, because actuo_hardware maps the two by index: front right,
+  # front left, rear right, rear left, after the two grippers. If the importer
+  # is ever re-run, re-append this block in the same place.
+  #
+  # WHICH CORNER: derived from the URDF, not read off the names. Mapping the
+  # wheel origins through pseudo_base_joint puts each joint at the corner its
+  # name claims (see jedy_fullbody_controllers.yaml for the table). That is a
+  # finding rather than an assumption, and it differs from jedy_four_dof.urdf,
+  # where the same derivation contradicts the names.
+  #
+  # DIRECTION: taken from the legacy servo map (jedy_servo_config.yaml). All
+  # four <axis> in jedy_gz.xacro are "1. 0. 0.", which maps to [0, 1, 0] in
+  # base_link: four parallel, identically signed spin axes. jedy_four_dof_kondo
+  # .yaml carries a +1 where the map says -1, and says why: that model has ONE
+  # wheel whose axis is flipped, and the sign compensates. No such flip exists
+  # here, so the map's own signs stand.
+  #
+  #   ==> NOT YET VERIFIED ON HARDWARE. Turn each wheel by hand and watch the
+  #       model before driving. A wrong sign on a mecanum base is not a slower
+  #       robot: it strafes when told to drive forward, at full speed, with
+  #       every wheel doing exactly what it was asked.
+  #
+  # deadband_deg / saturate_deg / rev_s_per_command_deg: a QUICK CHECK on this
+  # robot's RCB-4mini (2026-11-12, 7.4 V supply, wheels lifted), not a full
+  # actuo-wheel-calibrate run. Forward speed, median over 3 s at ~74 Hz:
+  #
+  #   servo     5 deg       10 deg      20 deg     [rev/s]
+  #     20      0.511       0.966       1.539
+  #     21      0.515       0.966       1.573
+  #     22      0.509       0.970       1.513
+  #     23      0.522       0.972       1.534
+  #
+  # So about 0.1 rev/s per deg up to 10 deg, sub-linear by 20 deg. The values
+  # below claim only what was measured: rev_s_per_command_deg is the mean of the
+  # 5 and 10 deg slopes; deadband_deg is 5 because that is the smallest offset
+  # tried (all four turned there; below it is unmeasured, so it is commanded as
+  # a stop); saturate_deg is 10, the top of the range where the line fits, which
+  # caps the base at ~0.98 rev/s (~0.156 m/s on the 25.25 mm wheels). The ARM-H7
+  # map copied here before (jedy_four_dof_wheels.yaml: 9 deg deadband, 0.053-
+  # 0.072 rev/s per deg) was 1.4-1.9x slow for this robot. For the full map:
+  #
+  #   ros2 run actuo_ros actuo-wheel-calibrate --board rcb4mini \
+  #       --channel /dev/actuo_kondo_rcb4mini --ids 20 21 22 23 --rotation-checked ...
+  #
+  - name: front_right_wheel_joint
+    actuator:
+      plugin: kondo_ics_wheel
+      id: 20
+      # Seen in rotation mode on this robot's RCB-4mini: reference set to stop
+      # (7500), then +300 pulses for 1.5 s turned it continuously (the pot
+      # wrapped twice); a position servo would have stopped at 7800.
+      rotation_checked: "2026-11-12, +300 pulse command on the RCB-4mini turned it continuously (pot wrapped twice in 1.5 s)"
+      direction: 1
+      deadband_deg: 5.0
+      saturate_deg: 10.0
+      rev_s_per_command_deg: 0.0985
+  - name: front_left_wheel_joint
+    actuator:
+      plugin: kondo_ics_wheel
+      id: 21
+      # Seen in rotation mode on this robot's RCB-4mini: reference set to stop
+      # (7500), then +300 pulses for 1.5 s turned it continuously (the pot
+      # wrapped twice); a position servo would have stopped at 7800.
+      rotation_checked: "2026-11-12, +300 pulse command on the RCB-4mini turned it continuously (pot wrapped twice in 1.5 s)"
+      direction: -1
+      deadband_deg: 5.0
+      saturate_deg: 10.0
+      rev_s_per_command_deg: 0.0985
+  - name: rear_right_wheel_joint
+    actuator:
+      plugin: kondo_ics_wheel
+      id: 22
+      # Seen in rotation mode on this robot's RCB-4mini: reference set to stop
+      # (7500), then +300 pulses for 1.5 s turned it continuously (the pot
+      # wrapped twice); a position servo would have stopped at 7800.
+      rotation_checked: "2026-11-12, +300 pulse command on the RCB-4mini turned it continuously (pot wrapped twice in 1.5 s)"
+      direction: 1
+      deadband_deg: 5.0
+      saturate_deg: 10.0
+      rev_s_per_command_deg: 0.0994
+  - name: rear_left_wheel_joint
+    actuator:
+      plugin: kondo_ics_wheel
+      id: 23
+      # Seen in rotation mode on this robot's RCB-4mini: reference set to stop
+      # (7500), then +300 pulses for 1.5 s turned it continuously (the pot
+      # wrapped twice); a position servo would have stopped at 7800.
+      rotation_checked: "2026-11-12, +300 pulse command on the RCB-4mini turned it continuously (pot wrapped twice in 1.5 s)"
+      direction: -1
+      deadband_deg: 5.0
+      saturate_deg: 10.0
+      rev_s_per_command_deg: 0.1008

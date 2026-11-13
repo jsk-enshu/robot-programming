@@ -1,0 +1,228 @@
+# Controllers for Jedy's whole body on the Kondo ARM-H7 board: two 7-DOF arms,
+# two grippers, a 2-DOF head and the four-wheel mecanum base.
+#
+# Five trajectory controllers, one per limb, plus the base. It is not cosmetic.
+# With one eighteen-joint controller, closing a gripper means sending a goal
+# that names the gripper and letting `allow_partial_joints_goal` fill in the
+# other seventeen, so every gripper motion also REPLACES whatever the arms were
+# doing: a JointTrajectoryController holds exactly one trajectory. Split, the
+# head can pan while an arm is mid-reach and a gripper closes.
+#
+# ros2_control allows this because the groups claim DISJOINT command interfaces.
+# Two active controllers naming the same joint is refused by the controller
+# manager rather than interleaved.
+#
+# Position only on all eighteen, and that is a statement about the hardware: the
+# ICS wire carries exactly one control quantity, a target pulse, and velocity is
+# not sensed. A velocity state interface here would make joint_state_broadcaster
+# publish a steady 0 rad/s for a moving joint.
+#
+# The joint names must match the <ros2_control> block in
+# jedy_fullbody_actuo.urdf.xacro and `joints:` in jedy_fullbody_kondo.yaml. That
+# file's ORDER is the shm contract; the split here is free, because each
+# controller addresses its joints by name.
+/jedy_fullbody:
+  controller_manager:
+    ros__parameters:
+      # 100 Hz pairs with the servicer's --rate. The board is request/response,
+      # so one control period should map to one bus cycle. NOT yet validated
+      # against a measured round-trip time on this robot.
+      update_rate: 100
+
+      joint_state_broadcaster:
+        type: joint_state_broadcaster/JointStateBroadcaster
+
+      # Only loaded when the URDF was expanded with wheels:=true. Loading it
+      # otherwise fails to claim interfaces that do not exist, which is the
+      # behaviour we want: there is no half-configured base.
+      mecanum_drive_controller:
+        type: mecanum_drive_controller/MecanumDriveController
+
+      head_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+      right_arm_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+      left_arm_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+      right_gripper_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+      left_gripper_controller:
+        type: joint_trajectory_controller/JointTrajectoryController
+
+  # The eighteen position joints, named explicitly rather than left to the
+  # default "everything with a state interface". The four wheels export a
+  # velocity state that is deliberately NaN (they cannot measure one), and a NaN
+  # on /joint_states would travel straight into robot_state_publisher and TF.
+  # A joint absent from this topic says "not measured"; a joint present with a
+  # number says something false.
+  joint_state_broadcaster:
+    ros__parameters:
+      joints:
+        - head_joint0
+        - head_joint1
+        - rarm_joint0
+        - rarm_joint1
+        - rarm_joint2
+        - rarm_joint3
+        - rarm_joint4
+        - rarm_joint5
+        - rarm_joint6
+        - larm_joint0
+        - larm_joint1
+        - larm_joint2
+        - larm_joint3
+        - larm_joint4
+        - larm_joint5
+        - larm_joint6
+        - rarm_gripper_joint
+        - larm_gripper_joint
+      interfaces:
+        - position
+
+  head_controller:
+    ros__parameters:
+      joints:
+        - head_joint0
+        - head_joint1
+      command_interfaces:
+        - position
+      state_interfaces:
+        - position
+      allow_nonzero_velocity_at_trajectory_end: true
+      allow_partial_joints_goal: true
+
+  right_arm_controller:
+    ros__parameters:
+      joints:
+        - rarm_joint0
+        - rarm_joint1
+        - rarm_joint2
+        - rarm_joint3
+        - rarm_joint4
+        - rarm_joint5
+        - rarm_joint6
+      command_interfaces:
+        - position
+      state_interfaces:
+        - position
+      allow_nonzero_velocity_at_trajectory_end: true
+      allow_partial_joints_goal: true
+
+  left_arm_controller:
+    ros__parameters:
+      joints:
+        - larm_joint0
+        - larm_joint1
+        - larm_joint2
+        - larm_joint3
+        - larm_joint4
+        - larm_joint5
+        - larm_joint6
+      command_interfaces:
+        - position
+      state_interfaces:
+        - position
+      allow_nonzero_velocity_at_trajectory_end: true
+      allow_partial_joints_goal: true
+
+  # One joint each. The opposite finger (rarm_mimic_gripper_joint /
+  # larm_mimic_gripper_joint) carries a URDF <mimic> with multiplier -1 and has
+  # no servo, so it is not an interface and cannot be commanded; it follows in
+  # TF only.
+  right_gripper_controller:
+    ros__parameters:
+      joints:
+        - rarm_gripper_joint
+      command_interfaces:
+        - position
+      state_interfaces:
+        - position
+      allow_nonzero_velocity_at_trajectory_end: true
+      allow_partial_joints_goal: true
+
+  left_gripper_controller:
+    ros__parameters:
+      joints:
+        - larm_gripper_joint
+      command_interfaces:
+        - position
+      state_interfaces:
+        - position
+      allow_nonzero_velocity_at_trajectory_end: true
+      allow_partial_joints_goal: true
+
+  # --- the mecanum base ------------------------------------------------------
+  #
+  # Which servo sits at which corner was DERIVED from the URDF rather than read
+  # off the joint names, because on this robot's other model it is not the
+  # obvious reading. Here it happens to agree with the names, and that agreement
+  # is the finding, not an assumption:
+  #
+  # pseudo_base_joint carries rpy="1.5707926535897931 0 1.5707926535897931", so
+  # real_base_link (which every wheel hangs off) is rotated with respect to
+  # base_link. Mapping the four wheel origins through it gives, in base_link
+  # with x forward and y left:
+  #
+  #   joint                      x         y         z      corner
+  #   front_right_wheel_joint   +0.0435   -0.0505   -0.0970  front right
+  #   front_left_wheel_joint    +0.0435   +0.0505   -0.0970  front left
+  #   rear_right_wheel_joint    -0.0435   -0.0505   -0.0970  rear right
+  #   rear_left_wheel_joint     -0.0435   +0.0505   -0.0970  rear left
+  #
+  # All four <axis> are "1. 0. 0.", which maps to [0, 1, 0] in base_link: the
+  # four spin axes are PARALLEL and identically signed. That is unlike
+  # jedy_four_dof.urdf, where one wheel's axis is flipped and its config carries
+  # a compensating sign. Nothing of the sort is needed here, so if a wheel turns
+  # the wrong way on the robot the fix belongs in `direction:` in
+  # jedy_fullbody_kondo.yaml, not here.
+  #
+  # DIRECTION IS NOT YET VERIFIED ON HARDWARE. The signs in the kondo config are
+  # ported from the legacy servo map. Confirm each corner by hand before driving:
+  #   ros2 run actuo_ros actuo-wheel-calibrate --identify 15 --ids 20 21 22 23
+  # A wrong sign on a mecanum base is not a slower robot: it strafes when told
+  # to drive forward, at full speed, with every wheel doing what it was asked.
+  mecanum_drive_controller:
+    ros__parameters:
+      # Command joints, by corner. The controller's own internal order is
+      # FL, FR, RR, RL; these names are what map it onto this robot.
+      front_left_wheel_command_joint_name: front_left_wheel_joint
+      front_right_wheel_command_joint_name: front_right_wheel_joint
+      rear_right_wheel_command_joint_name: rear_right_wheel_joint
+      rear_left_wheel_command_joint_name: rear_left_wheel_joint
+
+      kinematics:
+        # The wheels' collision cylinders in jedy_gz.xacro, taken from the CAD
+        # model (scikit-robot-models jedy_draco_description: the outer part of
+        # the wheel reaches 25.25 mm from the axle). The 0.030146 used before
+        # was the mean of cylinders fitted to the old, uncalibrated meshes.
+        wheels_radius: 0.02525
+        # |x| + |y| of a wheel from the base centre: 0.0435 + 0.0505. The four
+        # wheels ARE symmetric about base_link once the rotation above is
+        # applied, which is why base_frame_offset stays zero.
+        sum_of_robot_center_projection_on_X_Y_axis: 0.094
+        base_frame_offset:
+          x: 0.0
+          y: 0.0
+          theta: 0.0
+
+      base_frame_id: base_link
+      odom_frame_id: odom
+
+      # There is no odometry from this base and this is where that is said.
+      # The wheels report no speed, so the controller's forward-kinematics step
+      # is skipped every cycle and its /odometry output stays at the origin
+      # forever. It publishes that message regardless -- the controller offers
+      # no way to suppress it -- so the one thing that CAN be prevented is it
+      # reaching TF, where a frame claiming the robot never moved would be
+      # believed by everything downstream. Do not use /odometry from this
+      # controller. Its /controller_state topic is honest: the per-wheel
+      # velocities there read NaN.
+      enable_odom_tf: false
+
+      # Stop the wheels if no twist arrives within this long. A base whose
+      # command stream dies keeps rolling otherwise.
+      reference_timeout: 0.5

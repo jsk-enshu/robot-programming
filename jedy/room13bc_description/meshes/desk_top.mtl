@@ -1,0 +1,28 @@
+newmtl desk_top_m0
+Ka 1.0000 1.0000 1.0000
+Kd 1.0000 1.0000 1.0000
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+map_Kd desk_top_t0.png
+
+newmtl desk_top_m1
+Ka 1.0000 1.0000 1.0000
+Kd 1.0000 1.0000 1.0000
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2
+map_Kd desk_top_t1.png
+
+newmtl desk_top_m2
+Ka 0.8000 0.7176 0.5804
+Kd 0.8000 0.7176 0.5804
+Ks 0.05 0.05 0.05
+Ns 10
+d 1.000
+Tr 0.000
+illum 2

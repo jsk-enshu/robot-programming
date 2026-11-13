@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypelang="RNG" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<package format="3">
+  <name>jedy_safety</name>
+  <version>0.0.1</version>
+  <description>
+    Self-collision filter for Jedy, plugged into actuo's real bus servicer
+    through its CommandFilter seam.
+
+    It lives here, not in actuo, because it needs link geometry, which stays
+    out of the driver layer. actuo.safety supplies the general monitor and
+    gate; this package supplies the Jedy-shaped configuration of them.
+  </description>
+  <maintainer email="ab.ioryz@gmail.com">iory</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- imported by actuo_bus_node, whose venv has actuo[safety] -->
+  <exec_depend>actuo_ros</exec_depend>
+  <exec_depend>jedy_description</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypelang="RNG" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<package format="3">
+  <name>jedy_speech</name>
+  <version>0.0.1</version>
+  <description>
+    Jedy talks and listens, in Japanese, offline on the CPU: Open JTalk for
+    speech (pyopenjtalk), Whisper for recognition (faster-whisper), and what
+    is said / heard drawn as a speech bubble above the robot in RViz. A voice
+    command demo moves the robot through jedy_skrobot.
+  </description>
+  <maintainer email="ab.ioryz@gmail.com">iory</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_uv_virtualenv</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <exec_depend>jedy_skrobot</exec_depend>
+  <exec_depend>rviz2</exec_depend>
+  <!-- aplay / arecord, the Japanese font for the bubbles. -->
+  <exec_depend>alsa-utils</exec_depend>
+  <exec_depend>fonts-noto-cjk</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

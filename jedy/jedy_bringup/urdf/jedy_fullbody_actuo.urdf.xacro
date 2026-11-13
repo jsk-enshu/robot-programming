@@ -1,0 +1,295 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Jedy's whole body on the Kondo ARM-H7 board: two 7-DOF arms, two grippers,
+     a 2-DOF head and the four-wheel mecanum base.
+
+     The kinematics come from jedy_description/urdf/jedy_gz.xacro, included by
+     path, so this file cannot drift from the model. That file was brought over
+     from jsk-enshu/robot-programming and carries its own <ros2_control> for
+     gz_ros2_control; gz_control:=false below turns that block off and leaves
+     the kinematics, which is what makes one description serve both backends.
+     Its meshes resolve on their own as package://jedy_description/meshes/gz/...
+
+     The include is a path because xacro includes files, not packages. The
+     launch resolves it through the ament index and passes it in; override with
+     description:=... to load a variant.
+
+     THE JOINT ORDER BELOW IS THE SHM CONTRACT. It must stay identical, in
+     order, to `joints:` in jedy_fullbody_kondo.yaml, because actuo_hardware maps
+     the two by index and not by name. That config is GENERATED from this file
+     (actuo-kondo-import-rcb4 reads <ros2_control> order), so regenerate rather
+     than hand-edit whenever this list changes.
+
+     Position only on the 18 arm/gripper/head joints, on both sides of the
+     interface, and that is a statement about the hardware rather than a
+     simplification:
+
+       * command: the ICS wire carries exactly one control quantity, a target
+         pulse (actuo/drivers/actuators/kondo_ics.py). There is no velocity,
+         current or PWM mode to expose.
+       * state: velocity is NOT sensed. Declaring a velocity state interface
+         would make joint_state_broadcaster publish a steady 0 rad/s for a
+         moving joint: an invented measurement. Current and temperature ARE
+         sensed and reach ROS through the driver's own telemetry, not here.
+
+     This differs from jedy_gz.xacro's own <ros2_control>, which declares a
+     velocity state on every joint. Gazebo can supply that; this board cannot.
+
+     initial_value is only read before the servicer connects; on the real
+     backend on_activate adopts the MEASURED pose and overwrites it. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="jedy">
+  <xacro:arg name="backend" default="actuo"/>  <!-- actuo | mock | gazebo -->
+  <!-- gazebo only: the controllers yaml gz_ros2_control loads. It is the SAME
+       jedy_fullbody_controllers.yaml the real robot runs, so Gazebo exposes the
+       same controllers under the same /jedy_fullbody namespace and a client
+       cannot tell the two apart by topic names. -->
+  <xacro:arg name="controllers" default=""/>
+  <!-- Where each joint starts before anything is measured. On the real robot
+       on_activate adopts the MEASURED pose and these are never seen. In
+       Gazebo they are the pose the model is spawned in, and all-zero hangs
+       both arms straight down through the floor, which throws the robot over
+       before the controllers start. jedy_gazebo.launch.py passes the 2025
+       simulation's start pose instead. -->
+  <xacro:arg name="init_head_joint0" default="0.0"/>
+  <xacro:arg name="init_head_joint1" default="0.0"/>
+  <xacro:arg name="init_rarm_joint0" default="0.0"/>
+  <xacro:arg name="init_rarm_joint1" default="0.0"/>
+  <xacro:arg name="init_rarm_joint2" default="0.0"/>
+  <xacro:arg name="init_rarm_joint3" default="0.0"/>
+  <xacro:arg name="init_rarm_joint4" default="0.0"/>
+  <xacro:arg name="init_rarm_joint5" default="0.0"/>
+  <xacro:arg name="init_rarm_joint6" default="0.0"/>
+  <xacro:arg name="init_larm_joint0" default="0.0"/>
+  <xacro:arg name="init_larm_joint1" default="0.0"/>
+  <xacro:arg name="init_larm_joint2" default="0.0"/>
+  <xacro:arg name="init_larm_joint3" default="0.0"/>
+  <xacro:arg name="init_larm_joint4" default="0.0"/>
+  <xacro:arg name="init_larm_joint5" default="0.0"/>
+  <xacro:arg name="init_larm_joint6" default="0.0"/>
+  <xacro:arg name="init_rarm_gripper_joint" default="0.0"/>
+  <xacro:arg name="init_larm_gripper_joint" default="0.0"/>
+  <xacro:arg name="use_sim" default="false"/> <!-- true | false -->
+  <xacro:arg name="wheels" default="false"/>  <!-- true = drive the mecanum base -->
+  <xacro:arg name="description"
+             default="$(find jedy_description)/urdf/jedy_gz.xacro"/>
+
+  <!-- Declared HERE, ahead of the include, and that placement is the whole
+       mechanism: xacro's <xacro:arg> sets a default only for a name that has
+       none yet, so this false wins over the default="true" that jedy_gz.xacro
+       declares for itself. Without it that file emits its gz_ros2_control
+       <ros2_control> too and the URDF carries two, which ros2_control rejects
+       at load. Verified by expanding this file and counting the blocks. -->
+  <xacro:arg name="gz_control" default="false"/>
+
+  <xacro:include filename="$(arg description)"/>
+
+  <ros2_control name="jedy_fullbody" type="system">
+    <xacro:if value="${'$(arg backend)' == 'mock'}">
+      <hardware>
+        <plugin>mock_components/GenericSystem</plugin>
+        <param name="calculate_dynamics">true</param>
+      </hardware>
+    </xacro:if>
+    <xacro:if value="${'$(arg backend)' == 'actuo'}">
+      <hardware>
+        <plugin>actuo_hardware/ActuoSystem</plugin>
+        <param name="shm_name">jedy_fullbody</param>
+        <param name="use_sim">$(arg use_sim)</param>
+      </hardware>
+    </xacro:if>
+    <!-- Gazebo Harmonic. The joint list below is unchanged, so Gazebo is
+         driven through exactly the interfaces the board offers (position on
+         the 18 limbs, velocity on the wheels) rather than the richer set
+         jedy_gz.xacro's own block declares. -->
+    <xacro:if value="${'$(arg backend)' == 'gazebo'}">
+      <hardware>
+        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      </hardware>
+    </xacro:if>
+
+    <!-- head -->
+    <joint name="head_joint0">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_head_joint0)</param>
+      </state_interface>
+    </joint>
+    <joint name="head_joint1">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_head_joint1)</param>
+      </state_interface>
+    </joint>
+
+    <!-- right arm -->
+    <joint name="rarm_joint0">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_rarm_joint0)</param>
+      </state_interface>
+    </joint>
+    <joint name="rarm_joint1">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_rarm_joint1)</param>
+      </state_interface>
+    </joint>
+    <joint name="rarm_joint2">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_rarm_joint2)</param>
+      </state_interface>
+    </joint>
+    <joint name="rarm_joint3">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_rarm_joint3)</param>
+      </state_interface>
+    </joint>
+    <joint name="rarm_joint4">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_rarm_joint4)</param>
+      </state_interface>
+    </joint>
+    <joint name="rarm_joint5">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_rarm_joint5)</param>
+      </state_interface>
+    </joint>
+    <joint name="rarm_joint6">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_rarm_joint6)</param>
+      </state_interface>
+    </joint>
+
+    <!-- left arm -->
+    <joint name="larm_joint0">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_larm_joint0)</param>
+      </state_interface>
+    </joint>
+    <joint name="larm_joint1">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_larm_joint1)</param>
+      </state_interface>
+    </joint>
+    <joint name="larm_joint2">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_larm_joint2)</param>
+      </state_interface>
+    </joint>
+    <joint name="larm_joint3">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_larm_joint3)</param>
+      </state_interface>
+    </joint>
+    <joint name="larm_joint4">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_larm_joint4)</param>
+      </state_interface>
+    </joint>
+    <joint name="larm_joint5">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_larm_joint5)</param>
+      </state_interface>
+    </joint>
+    <joint name="larm_joint6">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_larm_joint6)</param>
+      </state_interface>
+    </joint>
+
+    <!-- grippers. Only the driven side appears: rarm_mimic_gripper_joint and
+         larm_mimic_gripper_joint carry a URDF <mimic> and have no servo of
+         their own, so they are not interfaces. robot_state_publisher derives
+         them for TF. -->
+    <joint name="rarm_gripper_joint">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_rarm_gripper_joint)</param>
+      </state_interface>
+    </joint>
+    <joint name="larm_gripper_joint">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">$(arg init_larm_gripper_joint)</param>
+      </state_interface>
+    </joint>
+
+    <!-- The mecanum base. Velocity command, and a velocity STATE interface
+         that carries NaN.
+
+         No position: these servos have none to report. The reported angle is a
+         potentiometer that wraps once per wheel revolution and is clamped over
+         roughly a sixth of each turn (see jedy_four_dof_wheels.yaml), so it is
+         neither a joint pose nor differentiable into a speed at the control
+         rate. Publishing 0.0 for it would put a stationary wheel on
+         /joint_states while it spins.
+
+         The velocity interface exists because mecanum_drive_controller claims
+         one per wheel and will not activate without it. It carries NaN, not 0,
+         and that is load-bearing: the controller checks for exactly this and
+         SKIPS its odometry update instead of integrating the number. So this
+         base drives and does not pretend to know where it has driven to.
+         enable_odom_tf is false for the same reason.
+
+         joint_state_broadcaster lists only the 18 position joints for the same
+         reason, so a NaN never reaches /joint_states or, through it, TF.
+
+         Off by default: nothing on this robot can be told to drive until
+         someone asks for it. -->
+    <xacro:if value="${'$(arg wheels)' == 'true'}">
+      <joint name="front_right_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="velocity"/>
+      </joint>
+      <joint name="front_left_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="velocity"/>
+      </joint>
+      <joint name="rear_right_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="velocity"/>
+      </joint>
+      <joint name="rear_left_wheel_joint">
+        <command_interface name="velocity"/>
+        <state_interface name="velocity"/>
+      </joint>
+    </xacro:if>
+  </ros2_control>
+
+  <!-- gz_ros2_control runs the controller manager inside Gazebo. The namespace
+       is the real robot's, and robot_state_publisher in that namespace is where
+       it reads robot_description from. -->
+  <xacro:if value="${'$(arg backend)' == 'gazebo'}">
+    <gazebo>
+      <plugin filename="gz_ros2_control-system"
+              name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+        <parameters>$(arg controllers)</parameters>
+        <ros>
+          <namespace>/jedy_fullbody</namespace>
+        </ros>
+      </plugin>
+      <!-- Servo OFF (jedy_sim/src/jedy_servo_switch.cpp): a joint named on
+           the topic stops following its controller and falls under gravity.
+           jedy_sim_servo serves the real robot's SetServo action over it. -->
+      <plugin filename="jedy_servo_switch" name="jedy_sim::JedyServoSwitch">
+        <topic>/jedy_fullbody/servo/released</topic>
+        <state_topic>/jedy_fullbody/servo/released_state</state_topic>
+      </plugin>
+      <!-- The second finger of each gripper follows the first, as its URDF
+           <mimic> says (jedy_sim/src/jedy_mimic_joint.cpp): DART does not
+           implement mimic constraints, and without this it stayed at 0. -->
+      <plugin filename="jedy_mimic_joint" name="jedy_sim::JedyMimicJoint"/>
+    </gazebo>
+  </xacro:if>
+</robot>
