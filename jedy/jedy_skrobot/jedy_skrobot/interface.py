@@ -60,6 +60,7 @@ written against a stream of zeros would look like it works and do nothing.
 
 import copy
 import math
+import os
 import threading
 import time
 
@@ -944,6 +945,57 @@ class JedyInterface(RobotInterface):
             time.sleep(RECOGNITION_POLL)
         return None
 
+    # -- VLM (Gemini, through the course's AI TA server) ----------------------
+
+    def ask(self, question, images=None, model='vlm-gemini', max_side=640, timeout=60.0):
+        """Ask a vision-language model (Gemini) about camera images.
+
+        The images and the question go to the course's AI TA server (the key
+        of ``ta login``), which passes them to Google's Gemini and keeps a
+        copy (see the consent shown by ``ta login``). The server allows one
+        question per second and two images per question.
+
+        Parameters
+        ----------
+        question : str
+            In Japanese or English.
+        images : numpy.ndarray or list of numpy.ndarray or None
+            RGB ``(height, width, 3)`` uint8 images, e.g. from
+            :meth:`image`. ``None``: the head camera's latest image.
+            ``[]``: the question only, no image.
+        model : str
+            ``vlm-gemini`` (Gemini Flash) or ``vlm-er`` (Gemini Robotics-ER,
+            good at pointing at things in the image).
+        max_side : int
+            Images are shrunk so the longer side is at most this [px]
+            before sending (smaller is faster and cheaper).
+        timeout : float
+            Seconds (wall clock) to wait for the answer.
+
+        Returns
+        -------
+        str
+            The model's answer.
+
+        Raises
+        ------
+        RuntimeError
+            No key (run ``ta login``), the server refused (no consent,
+            more than one question a second, the day's budget used up), or
+            no answer within ``timeout``.
+        """
+        if images is None:
+            images = [self.image()[0]]
+        elif isinstance(images, np.ndarray):
+            images = [images]
+        content = [{'type': 'text', 'text': str(question)}]
+        for img in images:
+            content.append({'type': 'image_url',
+                            'image_url': {'url': _jpeg_data_url(img, max_side)}})
+        base_url, key = _aita_credentials()
+        body = {'model': model, 'messages': [{'role': 'user', 'content': content}]}
+        return _post_chat(base_url, key, body, timeout)
+
     # -- speech (jsk_3rdparty's VOICEVOX and ros_speech_recognition) ----------
 
     def say(self, text, wait=True, speaker='', timeout=60.0):
@@ -1168,6 +1220,69 @@ class JedyInterface(RobotInterface):
                 'bring-up running?)'
                 .format(SERVO_NS))
         return super(JedyInterface, self)._servo(enable, joints, timeout)
+
+AITA_ENV_FILE = os.path.join(
+    os.environ.get('AITA_CONFIG_DIR', os.path.expanduser('~/.config/ai-ta')), 'env')
+
+
+def _aita_credentials():
+    """AI TA server URL and key: AITA_BASE_URL / AITA_KEY, else ``ta login``'s file."""
+    values = {}
+    if os.path.isfile(AITA_ENV_FILE):
+        with open(AITA_ENV_FILE) as f:
+            for line in f:
+                name, sep, value = line.strip().partition('=')
+                if sep:
+                    values[name] = value
+    base_url = os.environ.get('AITA_BASE_URL') or values.get('AITA_BASE_URL')
+    key = os.environ.get('AITA_KEY') or values.get('AITA_KEY')
+    if not base_url or not key:
+        raise RuntimeError(
+            'AI TA のキーがありません ({}). ta login してください'.format(AITA_ENV_FILE))
+    return base_url.rstrip('/'), key
+
+
+def _jpeg_data_url(img, max_side):
+    """RGB uint8 image -> ``data:image/jpeg;base64,...``, longer side <= max_side."""
+    import base64
+    import io
+    from PIL import Image as PILImage
+    arr = np.asarray(img)
+    if arr.ndim != 3 or arr.shape[2] != 3 or arr.dtype != np.uint8:
+        raise ValueError('images must be RGB uint8 (height, width, 3), got {} {}'.format(
+            arr.shape, arr.dtype))
+    pil = PILImage.fromarray(arr)
+    scale = float(max_side) / max(pil.size)
+    if scale < 1.0:
+        pil = pil.resize((max(1, int(pil.width * scale)), max(1, int(pil.height * scale))),
+                         PILImage.BILINEAR)
+    buf = io.BytesIO()
+    pil.save(buf, format='JPEG', quality=85)
+    return 'data:image/jpeg;base64,' + base64.b64encode(buf.getvalue()).decode('ascii')
+
+
+def _post_chat(base_url, key, body, timeout):
+    """POST /v1/chat/completions; the answer text, or RuntimeError with the server's reason."""
+    import json
+    import urllib.error
+    import urllib.request
+    req = urllib.request.Request(
+        base_url + '/v1/chat/completions', data=json.dumps(body).encode('utf-8'),
+        headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            data = json.load(resp)
+    except urllib.error.HTTPError as e:
+        try:
+            err = json.load(e).get('error') or {}
+            reason = err.get('message') if isinstance(err, dict) else str(err)
+        except ValueError:
+            reason = ''
+        raise RuntimeError('ask: HTTP {}: {}'.format(e.code, reason or e.reason))
+    except (urllib.error.URLError, OSError) as e:
+        raise RuntimeError('ask: {} に接続できません ({})'.format(base_url, e))
+    return (data['choices'][0]['message'].get('content') or '').strip()
+
 
 def _decode_image(msg):
     """sensor_msgs/Image to a numpy array, without cv_bridge.

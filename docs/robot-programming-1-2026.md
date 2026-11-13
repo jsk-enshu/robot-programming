@@ -43,7 +43,7 @@
 - 台車を動かす: `ri.go_velocity(vx, vy, vtheta)`
 - 腕と首を動かす: `ri.servo_on()`, `ri.angle_vector(av, time)`, `robot.rarm.inverse_kinematics(coords)`
 - カメラで見る: `ri.image()`, `ri.depth_image()`
-- カメラで認識する: `ri.sees('ペットボトル')`, `ri.what_do_you_see()`, `ri.janken()`
+- カメラで認識する: `ri.sees('ペットボトル')`, `ri.what_do_you_see()`, `ri.janken()`, `ri.ask('質問')`
 - 声でしゃべる・聞く: `ri.say('こんにちは')`, `ri.listen()`
 
 </div>
@@ -655,6 +655,32 @@ $ ros2 run jedy_vision detect_people --pose --face --hands --tilt -25 --save peo
 
 学科 PC で上の `detect_people` を実行したところ．中央が保存した `people.png` (2 倍速)
 :::
+
+### AI に画像について聞く (`ri.ask`)
+
+`ri.ask('質問')` はカメラの画像と質問を AI (Google の Gemini) に送り，答えを文で返す．
+決まった単語を探す `ri.what_do_you_see` と違い，「机の上に何がある?」「人は何をしている?」のような自由な質問ができる．
+
+```{code-block} python
+print(ri.ask('この画像に何が写っていますか? 1 文で'))     # 頭のカメラの今の画像について聞く
+
+img, _ = ri.image()
+print(ri.ask('赤い物はどちら側にありますか? 左か右で答えて', img))   # 自分で撮った画像で聞く
+
+before, _ = ri.image()
+ri.go_velocity(0.0, 0.0, 0.5, duration=1.0)
+after, _ = ri.image()
+print(ri.ask('2 枚の画像で何が変わりましたか?', [before, after]))     # 2 枚まで送れる
+```
+
+- 使う前に `ta login` が要る．`ta login` で「カメラ画像を AI に送る機能」に同意したときだけ使える．
+  送った画像・質問・答えは演習のサーバーに保存される．
+- 1 回に数秒かかるので，台車や腕を止めずに動かし続ける制御には使わない．「次に何をするか」を決めるのに使う．
+  速く繰り返し見たいときは `ri.what_do_you_see` や `ri.gesture` を使う．
+- 問い合わせは 1 秒に 1 回まで，画像は 1 回 2 枚まで．超えると `RuntimeError` になる．1 日に使える量にも上限がある．
+- 答えの形を決めたいときは，質問の中で「はい か いいえ で」「左 か 右 で」のように指定すると，プログラムで扱いやすい．
+- `model='vlm-er'` で Gemini Robotics-ER を使う．画像の中の物の位置を指すのが得意．
+- Gazebo の画像は CG なので，実機のカメラとは答えが変わることがある．
 
 ### VLM に聞いて動く (言葉で目標を言う)
 

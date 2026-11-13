@@ -36,6 +36,7 @@
 | 声で操縦するロボット: 「前」「右」「止まって」で台車を動かし，「手を振って」で腕を振る | 声・台車・腕 | `ri.listen`, `ri.go_velocity` |
 | 案内ロボット: 人が来たらあいさつし，「いいね」をされたらお辞儀する | 認識・声・首 | `ri.wait_until_sees('人')`, `ri.gesture`, `ri.say` |
 | 人について行くロボット | カメラ・台車・首 | `ri.what_do_you_see(['人'])`, `ri.go_velocity` |
+| 実況するロボット: 「何が見える?」と聞かれたら，見えているものを AI に聞いてしゃべる | 声・カメラ (AI) | `ri.listen`, `ri.ask`, `ri.say` |
 
 ### すでにあるデモ
 
@@ -210,6 +211,7 @@ Gazebo に無いもの (人・ペットボトル・手) は，PC の Web カメ�
 | 時間 | `ri.now()` / `ri.sleep(秒)` (シミュレータの時計にも合う) |
 | 画像 / 深度 / 内部パラメータ | `ri.image()` / `ri.depth_image()` / `ri.camera_info()` |
 | 物体を探す | `ri.sees('単語')` / `ri.what_do_you_see(['単語', ...])` / `ri.wait_until_sees('単語', timeout=秒)` |
+| AI に画像について聞く | `ri.ask('質問')` / `ri.ask('質問', [画像1, 画像2])` (`model='vlm-er'`) |
 | ジェスチャ | `ri.gesture()` / `ri.janken()` / `ri.wait_until_gesture('チョキ')` / `ri.wait_until_janken()` |
 | しゃべる / 聞く | `ri.say('文')` (`wait=False`, `speaker='ずんだもん-ノーマル'`) / `ri.listen(timeout=秒)` |
 | モデル: 初期姿勢 / 関節 | `robot.reset_pose()` / `robot.head_joint1.joint_angle(rad)` |
