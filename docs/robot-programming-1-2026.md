@@ -754,6 +754,34 @@ Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは 
 左が Gazebo，右上が頭のカメラの画像，右下が端末．VLM (`vlm-er`) は左に 1 回回ってから前に 5 回進み，
 箱まで 0.31 m で `done` と答えて止まった (7 回の問い合わせで合計 $0.0172)．
 
+ほかの例 (どれも学科 PC の Gazebo の演習室，`vlm-er`，`reasoning low`，3 倍速)：
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-vlm-nav-search-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**探してから近づく：** 「青い箱を探して近づいて」．青い箱はロボットの左後ろにあり，最初は見えない．
+右に 12 回回って (ほぼ一周) 見つけ，前に 4 回進んで 0.35 m で止まった (18 手，1 手 3.3 s (中央値)，$0.043)．
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-vlm-nav-person-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**人のところへ：** `person:=true person_x:=2.0 person_y:=-0.6` で人を置き，「人のところに行って」．
+右に 1 回回って前に進み，0.52 m で 1 度 `done` と答えたが「まだ遠い」と返されて，もう 1 歩進んで止まった (12 手，1 手 5.2 s，$0.033)．
+
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-vlm-nav-switch-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**途中で目標を変える：** 「赤い箱に近づいて」で走り出し，3 手目のあとで右下の端末から
+`ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '緑の箱に近づいて'}"` を送った (緑の箱は `ros2 run ros_gz_sim create` で置いた)．
+赤い箱へ 4 手 (左に 1 回，前に 3 回) 動いたところで新しい目標に切り替わり，右に 3 回回って緑の箱を見つけ，近づいて 0.31 m で止まった (4 + 8 手，$0.029)．
+
+
 ```{code-block} console
 $ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
 $ ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて

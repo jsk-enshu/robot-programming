@@ -100,7 +100,9 @@ to 0-1000 (null if it is not visible): the robot measures the distance there too
 and tells you in the next turn with your previous steps.
 
 Rules: if the target is not in the image, turn to look for it. Turn until the \
-target is near the centre of the image before driving towards it. Do not drive \
+target is roughly in the middle of the image (its point x between 300 and 700), \
+then drive towards it: one turn moves it by more than a third of the image, so do \
+not turn to centre it more exactly than that. Do not drive \
 into walls, furniture or people. For "approach X", say done only when X is about \
 {near:.2f} m away or closer (use the distance measured now). If unsure, take one \
 more forward step.
