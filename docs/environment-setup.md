@@ -62,6 +62,20 @@ $ source ~/.bashrc   # 今開いているターミナルにも読み込む
 ロボット (実機) は自分の PC に USB でつなぎ，ノードはすべて自分の PC の中で動くので，
 同じネットワークにいる他の人のロボットやシミュレータとトピックが混ざらない．
 
+## AI TA の設定
+
+演習では，演習資料をもとに質問に答える AI TA を使う．**環境構築が終わったら，続けて AI TA も設定しておくこと．**
+演習のアンケートで登録した GitHub アカウントが必要である．
+
+```{code-block} console
+$ curl -fsSL https://raw.githubusercontent.com/iory/ai-ta-for-student/main/install.sh | bash
+$ source ~/.bashrc
+$ ta login    # 表示されたコードを https://github.com/login/device に入力して承認する
+$ ta doctor   # 全部 ✓ になればよい
+```
+
+使い方と注意は {doc}`tips/ai-ta` を見ること．
+
 ## 演習開始時のソフトウェア更新
 
 演習の日には，最新のソフトウェアを取得してビルドし直す．

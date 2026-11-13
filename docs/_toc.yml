@@ -61,6 +61,8 @@ parts:
       title: Caps LockをCtrlに変更
     - file: tips/disable-apport
       title: apportエラーレポート無効化
+    - file: tips/ai-ta
+      title: AI TA の使い方
     - file: tips/debugging
       title: デバッグ方法
     - file: tips/terminal-control-keys
