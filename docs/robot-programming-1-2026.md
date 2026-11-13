@@ -571,6 +571,17 @@ if text is not None and '進' in text:
     ri.go_velocity(0.1, 0.0, 0.0, duration=2.0)
 ```
 
+<video width="100%" controls preload="metadata">
+  <source src="fig/jedy-gazebo-voice.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画 (音声あり)：** 上の例を 2 回くり返し，「回」が聞こえたらその場で回るようにしたプログラムを Gazebo で動かしたところ．
+左が Gazebo の Jedy，右がプログラムのターミナル (`print` した認識結果)．
+ロボットの「こんにちは。ジェディです。」のあとに人が「前に進んで」と言うと，「聞こえた文: 前に進んで」と表示され，「前に進みます」と言って前に進む．
+次の「その場で回って」では回る．
+(動画の人の声は VOICEVOX で作り，マイクの代わりに `/audio` トピックへ流したもの．認識は本物の Google 音声認識．)
+
 音声認識の引数の意味:
 
 - `energy_threshold:=300.0 dynamic_energy_threshold:=false`: これ以上の大きさの音を声とみなす値を 300 に固定する．
