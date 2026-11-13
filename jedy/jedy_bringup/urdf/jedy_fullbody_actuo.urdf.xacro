@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Jedy's whole body on the Kondo ARM-H7 board: two 7-DOF arms, two grippers,
+<!-- Jedy's whole body on the Kondo RCB-4mini board: two 7-DOF arms, two grippers,
      a 2-DOF head and the four-wheel mecanum base.
 
      The kinematics come from jedy_description/urdf/jedy_gz.xacro, included by
@@ -14,7 +14,7 @@
      description:=... to load a variant.
 
      THE JOINT ORDER BELOW IS THE SHM CONTRACT. It must stay identical, in
-     order, to `joints:` in jedy_fullbody_kondo.yaml, because actuo_hardware maps
+     order, to `joints:` in jedy_fullbody_rcb4.yaml, because actuo_hardware maps
      the two by index and not by name. That config is GENERATED from this file
      (actuo-kondo-import-rcb4 reads <ros2_control> order), so regenerate rather
      than hand-edit whenever this list changes.

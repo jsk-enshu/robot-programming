@@ -23,8 +23,7 @@ def generate_launch_description():
                                           "not an SDL index."),
         DeclareLaunchArgument("namespace", default_value="/jedy_fullbody"),
         # Everything below defaults to jedy_fullbody's values (what
-        # jedy_fullbody_all.launch.py passes, with the ARM-H7 wheel speeds;
-        # that launch passes the RCB-4mini's for board:=rcb4).
+        # jedy_fullbody_all.launch.py passes).
         DeclareLaunchArgument(
             "head_joints", default_value="head_joint0,head_joint1",
             description="pan joint, then tilt joint. The D-pad drives exactly "
@@ -40,13 +39,11 @@ def generate_launch_description():
                               description="|x| + |y| of a wheel from the base "
                                           "centre"),
         DeclareLaunchArgument(
-            "min_wheel_rad_s", default_value="2.83",
-            description="slowest wheel speed the base honours (its deadband); "
-                        "default: the ARM-H7 base's"),
+            "min_wheel_rad_s", default_value="3.09",
+            description="slowest wheel speed the base honours (its deadband)"),
         DeclareLaunchArgument(
-            "max_wheel_rad_s", default_value="6.85",
-            description="fastest wheel speed (saturation); default: the "
-                        "ARM-H7 base's"),
+            "max_wheel_rad_s", default_value="6.19",
+            description="fastest wheel speed (saturation)"),
         DeclareLaunchArgument(
             "deadzone", default_value="0.10",
             description="the driver's own deadzone. Kept modest because the "

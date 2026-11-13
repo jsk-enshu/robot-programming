@@ -1,7 +1,7 @@
 """Self-collision filter for Jedy, plugged into actuo's real bus servicer.
 
     ros2 run actuo_ros actuo_bus_node --real \\
-        --config .../jedy_fullbody_kondo.yaml --shm-name jedy_fullbody \\
+        --config .../jedy_fullbody_rcb4.yaml --shm-name jedy_fullbody \\
         --command-filter jedy_safety.collision_filter:build
 
 This is the part that knows Jedy has links and where they are, which is exactly

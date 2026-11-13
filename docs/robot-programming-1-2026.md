@@ -108,7 +108,7 @@ $ sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh
 ```
 
 ```{code-block} console
-$ ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4 camera:=true
+$ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
 ```
 
 USB シリアルアダプタが挿さるまで待ってから起動する．サーボは **OFF で起動する**．

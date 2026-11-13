@@ -113,14 +113,13 @@ def parse_args(argv):
     p.add_argument("--wheel-radius", type=float, default=0.02525)
     p.add_argument("--centre-projection", type=float, default=0.094)
     # Measured, and the reason the stick is remapped at all. The defaults are
-    # the ARM-H7 config's (jedy_fullbody_kondo.yaml); jedy_fullbody_all.launch.py
-    # passes the RCB-4mini's for board:=rcb4.
-    p.add_argument("--min-wheel-rad-s", type=float, default=2.83,
-                   help="the deadband, as a wheel speed: 9 command deg at "
-                        "0.0528 rev/s per deg. Below this a wheel does not "
+    # the RCB-4mini config's (jedy_fullbody_rcb4.yaml).
+    p.add_argument("--min-wheel-rad-s", type=float, default=3.09,
+                   help="the deadband, as a wheel speed: 5 command deg at "
+                        "~0.0985 rev/s per deg. Below this a wheel does not "
                         "turn at a predictable speed.")
-    p.add_argument("--max-wheel-rad-s", type=float, default=6.85,
-                   help="top speed, 1.09 rev/s")
+    p.add_argument("--max-wheel-rad-s", type=float, default=6.19,
+                   help="top speed, ~0.98 rev/s (10 command deg)")
     p.add_argument("--slow-scale", type=float, default=0.55,
                    help="R1 factor. Not smaller: the deadband puts a floor "
                         "under how slowly this base can go at all, and a slow "

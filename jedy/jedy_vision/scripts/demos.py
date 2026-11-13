@@ -5,7 +5,7 @@
 """
 
 STAGE = 'ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:=d405'
-REAL = 'ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4 camera:=true'
+REAL = 'ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true'
 
 DEMOS = [
     ('AprilTag', [

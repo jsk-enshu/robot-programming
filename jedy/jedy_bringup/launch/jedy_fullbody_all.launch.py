@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Everything, from nothing running: Jedy's whole body on real hardware.
 
-    ros2 launch jedy_bringup jedy_fullbody_all.launch.py              # ARM-H7
-    ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4  # RCB-4mini
-    ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4 \
-        link:=wifi relay:=192.168.1.50      # RCB-4mini through a UNO R4 WiFi
+    ros2 launch jedy_bringup jedy_fullbody_all.launch.py
+    ros2 launch jedy_bringup jedy_fullbody_all.launch.py \
+        link:=wifi relay:=192.168.1.50      # through a UNO R4 WiFi relay
 
 Starts the bus servicer, ros2_control with all seven controllers, the wheel
 odometry, RViz and the PS4 teleop. Arguments turn pieces off (`rviz:=false`,
@@ -94,7 +93,7 @@ from launch.event_handlers import OnProcessExit
 from launch.events import Shutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import (
-    LaunchConfiguration, PathJoinSubstitution, PythonExpression)
+    LaunchConfiguration, PathJoinSubstitution)
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackagePrefix, FindPackageShare
 
@@ -173,15 +172,12 @@ def _on_port_ready(event, context, stack):
     ]
 
 
-#: Bus config per board. Same joints, same order, same URDF and controllers.
-BOARD_CONFIGS = {
-    "h7": "jedy_fullbody_kondo.yaml",
-    "rcb4": "jedy_fullbody_rcb4.yaml",
-}
+#: The bus config: Jedy's servo board is the Kondo RCB-4mini.
+BUS_CONFIG = "jedy_fullbody_rcb4.yaml"
 
 
 def _config_path(context):
-    """The bus config to run: ``config:=`` if given, else the board's.
+    """The bus config to run: ``config:=`` if given, else :data:`BUS_CONFIG`.
 
     Parameters
     ----------
@@ -195,9 +191,8 @@ def _config_path(context):
     explicit = LaunchConfiguration("config").perform(context)
     if explicit:
         return explicit
-    board = LaunchConfiguration("board").perform(context)
     return os.path.join(get_package_share_directory("jedy_bringup"),
-                        "config", BOARD_CONFIGS[board])
+                        "config", BUS_CONFIG)
 
 
 def _link_args(context):
@@ -220,12 +215,7 @@ def _link_args(context):
     link = LaunchConfiguration("link").perform(context)
     if link == "serial":
         return []
-    board = LaunchConfiguration("board").perform(context)
     relay = LaunchConfiguration("relay").perform(context)
-    if board != "rcb4":
-        raise RuntimeError("link:=wifi is for board:=rcb4 (the relay forwards "
-                           "the RCB-4mini's COM port), not board:={}"
-                           .format(board))
     if not relay:
         raise RuntimeError("link:=wifi needs relay:=HOST[:PORT], the "
                            "relay's address (its sketch prints it on USB "
@@ -414,7 +404,7 @@ def generate_launch_description():
     # parse happens here and jedy_wait_port stays pure stdlib. It is the
     # program that has to work when everything else is broken.
     def setup(context):
-        """What depends on the chosen board: the port wait and the robot.
+        """What depends on the bus config: the port wait and the robot.
 
         Parameters
         ----------
@@ -519,15 +509,17 @@ def generate_launch_description():
                                           "was switched on comes up when "
                                           "someone switches it on."),
 
-        DeclareLaunchArgument("board", default_value="h7",
-                              choices=sorted(BOARD_CONFIGS),
-                              description="the servo board: h7 = Kondo "
-                                          "ARM-H7, rcb4 = Kondo RCB-4mini"),
+        # Only the RCB-4mini is supported; kept so that commands written
+        # with board:=rcb4 still run.
+        DeclareLaunchArgument("board", default_value="rcb4",
+                              choices=["rcb4"],
+                              description="the servo board: the Kondo "
+                                          "RCB-4mini (the only one)"),
         DeclareLaunchArgument("link", default_value="serial",
                               choices=["serial", "wifi"],
                               description="serial = the config's cable; "
                                           "wifi = through a UNO R4 WiFi "
-                                          "relay (board:=rcb4 only)"),
+                                          "relay"),
         DeclareLaunchArgument("relay", default_value="",
                               description="link:=wifi: the relay's "
                                           "HOST[:PORT] (port 9750 default)"),
@@ -544,7 +536,7 @@ def generate_launch_description():
                                           "the wheels"),
         DeclareLaunchArgument("config", default_value="",
                               description="a bus config to use instead of "
-                                          "the board's (e.g. the copy "
+                                          "jedy_fullbody_rcb4.yaml (e.g. the copy "
                                           "actuo-kondo-rcb4-emulator writes)"),
 
         OpaqueFunction(function=setup),
@@ -566,15 +558,12 @@ def generate_launch_description():
                     # |x| + |y| = 0.0435 + 0.0505 for a wheel from the centre.
                     "wheel_radius": "0.02525",
                     "centre_projection": "0.094",
-                    # The usable wheel speed range of the chosen board's
-                    # config (deadband_deg / saturate_deg x the slope), as
-                    # rad/s: RCB-4mini 5..10 deg at ~0.0985 rev/s per deg.
-                    "min_wheel_rad_s": PythonExpression([
-                        "'3.09' if '", LaunchConfiguration("board"),
-                        "' == 'rcb4' else '2.83'"]),
-                    "max_wheel_rad_s": PythonExpression([
-                        "'6.19' if '", LaunchConfiguration("board"),
-                        "' == 'rcb4' else '6.85'"]),
+                    # The usable wheel speed range of the bus config
+                    # (deadband_deg / saturate_deg x the slope), as rad/s:
+                    # RCB-4mini 5..10 deg at ~0.0985 rev/s per deg. These
+                    # are also jedy_joy's defaults.
+                    "min_wheel_rad_s": "3.09",
+                    "max_wheel_rad_s": "6.19",
                 }.items(),
                 condition=IfCondition(LaunchConfiguration("joy"))),
         ], scoped=True),

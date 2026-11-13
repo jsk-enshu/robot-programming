@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Interactive scikit-robot shell for Jedy's whole body (22 joints).
 
-    ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4  # terminal 1
+    ros2 launch jedy_bringup jedy_fullbody_all.launch.py  # terminal 1
     ros2 run jedy_skrobot jedy_interface --limb head                  # terminal 2
 
 ``--robot`` picks the model, the namespace and the limb set together, because

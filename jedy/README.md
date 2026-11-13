@@ -35,14 +35,13 @@ packages under `ros/`), depended on and never modified from here.
 ## Starting it
 
 ```
-ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4
-ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4 camera:=true  # + head D405
+ros2 launch jedy_bringup jedy_fullbody_all.launch.py
+ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true  # + head D405
 ```
 
 That is the whole thing from nothing running, in the `/jedy_fullbody`
 namespace: it waits for the board's serial port, then starts the bus servicer
-(`jedy_fullbody_rcb4.yaml`; the default `board:=h7` uses
-`jedy_fullbody_kondo.yaml`), ros2_control with `jedy_fullbody_controllers.yaml`,
+(`jedy_fullbody_rcb4.yaml`, for the Kondo RCB-4mini), ros2_control with `jedy_fullbody_controllers.yaml`,
 RViz with the servo and diagnostics panels, the wheel odometry and the PS4
 teleop. Turn pieces off with `rviz:=false`, `joy:=false`, `wheels:=false`.
 `camera:=true` adds the head RealSense D405 (`/camera/color`, `/camera/depth`).
@@ -71,8 +70,7 @@ stick already asks for the servos' top speed and `deadband.py` caps there --
 past that one wheel saturates while the others keep theirs, which does not slow
 the base down, it aims it somewhere else. A fast button for the base could only
 work by making the plain stick slower first, which is a worse default than no
-fast button. So the base stays at its top speed unmodified (0.156 m/s on the
-RCB-4mini, 0.173 on the ARM-H7) and R1 scales it by 0.55, and L2 takes the head from 1.0 to 2.0 rad/s. The head's ceiling is `--head-lead`
+fast button. So the base stays at its top speed unmodified (0.156 m/s) and R1 scales it by 0.55, and L2 takes the head from 1.0 to 2.0 rad/s. The head's ceiling is `--head-lead`
 rather than the hardware: the target may not run more than 0.20 rad ahead of
 the measured angle, which at 20 Hz puts the limit at 4.0 rad/s. The node checks
 that pair at startup and says so rather than letting a held D-pad crawl.
@@ -149,9 +147,8 @@ ros2 run actuo_ros actuo_bus_node --real \
 # Controllers, RViz with the servo + /diagnostics panels, wheel odometry.
 ros2 launch jedy_bringup jedy_fullbody.launch.py wheels:=true rviz:=true
 
-# The pad, separately (jedy_fullbody_all.launch.py joy:=false). Its wheel-speed
-# defaults are the ARM-H7's; on the RCB-4mini pass what the all-in-one launch does:
-ros2 launch jedy_teleop jedy_joy.launch.py min_wheel_rad_s:=3.09 max_wheel_rad_s:=6.19
+# The pad, separately (jedy_fullbody_all.launch.py joy:=false).
+ros2 launch jedy_teleop jedy_joy.launch.py
 
 # Torque, without a pad or a panel. It starts OFF for every joint that HAS a
 # pose; the wheels come up driven, because a continuous-rotation servo has no
@@ -195,8 +192,7 @@ not Twist: `teleop_twist_keyboard --ros-args -p stamped:=true` and
 Three things about this base are worth knowing before driving it.
 
 **It has a floor, not just a ceiling.** The wheels do not turn at a predictable
-speed below about 0.078 m/s and are capped at 0.156 on the RCB-4mini (0.071
-and 0.173 on the ARM-H7): the wheel speeds measured on each board times the
+speed below about 0.078 m/s and are capped at 0.156: the wheel speeds measured on the RCB-4mini times the
 CAD's 25.25 mm wheel radius. A twist below that gets a
 stopped wheel and a logged refusal rather than a crawl, and the pad's stick is
 mapped onto that range rather than onto 0..max so its first 40 % is not dead.
@@ -256,7 +252,7 @@ rather than widening the number by hand.
 
 All 22 servos are on the bus: two 7-DOF arms (ids 0-13), two grippers (14/15),
 the 2-DOF head (32/34) and the four wheels (20-23). A board scan on 2026-08-03
-(`actuo-kondo-probe --scan`, ARM-H7) found every one of them present.
+(`actuo-kondo-probe --scan`, on the ARM-H7 board Jedy had then) found every one of them present.
 
 **A servo's ICS id is decided by wiring, not by a dial**: the six UARTs split
 into two groups of three, one giving `2 * n` and the other `2 * n + 1`, `n`

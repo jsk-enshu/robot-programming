@@ -73,7 +73,7 @@ CORNERS = {
 }
 
 #: The order --directions is given in: the wheels' order in the bus config
-#: (jedy_fullbody_kondo.yaml / jedy_fullbody_rcb4.yaml).
+#: (jedy_fullbody_rcb4.yaml).
 WHEEL_JOINTS = ["front_right_wheel_joint", "front_left_wheel_joint",
                 "rear_right_wheel_joint", "rear_left_wheel_joint"]
 

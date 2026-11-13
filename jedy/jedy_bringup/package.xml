@@ -26,8 +26,7 @@
   <exec_depend>jedy_description</exec_depend>
 
   <!-- the driver (actuo's ROS 2 layer): the C++ ros2_control shim, the Python
-       bus servicer that speaks Kondo ICS, the udev rules, the ARM-H7 symbol
-       map, and the RViz servo/diagnostics panels. -->
+       bus servicer that speaks to the Kondo RCB-4mini, the udev rules, and the RViz servo/diagnostics panels. -->
   <exec_depend>actuo_hardware</exec_depend>
   <exec_depend>actuo_ros</exec_depend>
   <exec_depend>actuo_msgs</exec_depend>

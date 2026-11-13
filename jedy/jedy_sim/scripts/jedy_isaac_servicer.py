@@ -183,7 +183,7 @@ def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--shm-name", default="jedy_fullbody")
     p.add_argument("--config", default=share_file(
-        "jedy_bringup", "config", "jedy_fullbody_kondo.yaml"),
+        "jedy_bringup", "config", "jedy_fullbody_rcb4.yaml"),
         help="bus config whose joint order is the shm layout")
     p.add_argument("--controllers", default=share_file(
         "jedy_bringup", "config", "jedy_fullbody_controllers.yaml"))

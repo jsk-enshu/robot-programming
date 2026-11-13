@@ -45,7 +45,7 @@ from skrobot.models.jedy import Jedy as _SkrobotJedy  # noqa: E402
 #:
 #: This order is the contract shared by four places: the ``<ros2_control>``
 #: block in jedy_bringup's jedy_fullbody_actuo.urdf.xacro, ``joints:`` in
-#: jedy_fullbody_kondo.yaml, the shm layout actuo_hardware maps BY INDEX, and the
+#: jedy_fullbody_rcb4.yaml, the shm layout actuo_hardware maps BY INDEX, and the
 #: controller yaml. It is written out here rather than derived so that a
 #: mismatch is a startup error (see check_against_servicer) rather than a
 #: trajectory the controller rejects wholesale at the moment you ask the robot

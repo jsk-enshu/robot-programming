@@ -55,7 +55,7 @@ CMD_STRIDE = 3
 STATE_STRIDE = 2
 
 #: The 18 position joints, in the controller's order. Same list, same order,
-#: as jedy_fullbody_kondo.yaml and the <ros2_control> block of
+#: as jedy_fullbody_rcb4.yaml and the <ros2_control> block of
 #: jedy_fullbody_actuo.urdf.xacro expanded with wheels:=false: that order IS
 #: the shm layout. (With wheels:=true the four wheel joints follow these.)
 JOINTS = ["head_joint0", "head_joint1",

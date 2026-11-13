@@ -1,12 +1,12 @@
-# Jedy's whole body on the Kondo RCB-4mini: the same 22 joints, in the same
-# order, as jedy_fullbody_kondo.yaml (the ARM-H7 config), so the same
-# jedy_fullbody_actuo.urdf.xacro and the same controllers drive it.
+# Jedy's whole body on the Kondo RCB-4mini: 22 joints, in the order
+# jedy_fullbody_actuo.urdf.xacro and the controllers expect (the shm layout).
 #
-#   ros2 launch jedy_bringup jedy_fullbody_all.launch.py board:=rcb4
+#   ros2 launch jedy_bringup jedy_fullbody_all.launch.py
 #
-# Derived from jedy_fullbody_kondo.yaml on 2026-10-26 WITHOUT A BOARD. Every
-# value below that the H7 config did not already carry is marked UNVERIFIED and
-# listed in HUMAN_CHECKLIST.md. What changes from the H7 and why:
+# Derived on 2026-10-26, WITHOUT A BOARD, from the config of the ARM-H7 board
+# Jedy used before (removed 2026-11-13). Every value below that the H7 config
+# did not already carry is marked UNVERIFIED and listed in HUMAN_CHECKLIST.md.
+# What changed from the H7 and why:
 #
 # * bus/transport: kondo_rcb4_bus over kondo_rcb4 (even parity, 1.25 Mbit/s,
 #   switched to from the board's power-up 115200 by the bus itself).

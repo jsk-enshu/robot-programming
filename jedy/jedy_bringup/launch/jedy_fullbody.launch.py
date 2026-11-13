@@ -13,7 +13,7 @@ Real Kondo backend::
 
     ros2 launch jedy_bringup jedy_fullbody.launch.py
     ros2 run actuo_ros actuo_bus_node --real \\
-        --config <share>/jedy_bringup/config/jedy_fullbody_kondo.yaml \\
+        --config <share>/jedy_bringup/config/jedy_fullbody_rcb4.yaml \\
         --shm-name jedy_fullbody --rate 100
 
 Add wheels:=true to both the launch and the URDF expansion to drive the base.
@@ -24,7 +24,7 @@ someone asks for it.
 not start the servicer, so a launch arg for it would be a knob that does
 nothing. 100 Hz matches this stack's controller_manager update_rate
 (jedy_fullbody_controllers.yaml), so one bus cycle maps to one control period on
-a request/response board. It pairs with bus.move_time_ms in the kondo config,
+a request/response board. It pairs with the move bytes in the bus config,
 which must move with it.
 
 The C++ ActuoSystem creates the shared memory segment "jedy_fullbody"; run the
