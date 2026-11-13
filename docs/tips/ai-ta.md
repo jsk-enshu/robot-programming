@@ -13,6 +13,17 @@ AI TA のプログラムは [iory/ai-ta-for-student](https://github.com/iory/ai-
 - インターネット接続
 - GitHub アカウント．**演習のアンケートで登録したもの**を使う．
   AI TA は GitHub のユーザ名で受講者を確かめるので，登録していないアカウントでは使えない．
+- Ubuntu (bash)．
+
+```{note}
+**ROS の環境が無くても試せる．** AI TA は演習資料を読んで答えるので，資料さえ手元にあれば，
+環境構築をしていない PC (TA の PC など) でも質問できる．資料を次の場所に clone してから，下の「設定」の手順を行う．
+
+    $ git clone https://github.com/jsk-enshu/robot-programming ~/robot-programming
+
+AI TA は `~/ros2_ws/src/robot-programming/docs` か `~/robot-programming/docs` にある資料を自動で見つける．
+ROS が無いので，`ta fix` が集めるのはターミナルの画面と Python の Traceback だけになり，Gazebo での確認もできない．
+```
 
 ## 設定
 
