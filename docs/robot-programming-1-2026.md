@@ -293,10 +293,13 @@ ri.servo_on()                                       # 全軸 ON (今の姿勢の
 ri.servo_off()                                      # 全軸 OFF (腕が脱力するので支えること)
 ri.servo_on(joints=['head_joint0', 'head_joint1'])  # 頭だけ ON
 print([j.name for j in robot.joint_list])           # 使える関節名
+ri.servo_on()                                       # 全軸 ON に戻す (次の節は全軸 ON が前提)
 ```
 
 `servo_on()` はまず今の姿勢を送ってから ON にするので，ON にした瞬間に腕が飛ぶことはない．
 サーボを OFF にした関節は脱力し，重力で垂れる．OFF の間も関節角度は読めるので，手で動かした角度も `ri.angle_vector()` で分かる．
+OFF のままの関節には `ri.angle_vector(...)` で角度を送っても動かない (エラーも出ない)．
+腕が送った角度にならないときは，まず `ri.servo_on()` をしたか確かめること．
 
 :::{figure} fig/jedy-gazebo-servo-off.gif
 :align: center
@@ -869,9 +872,12 @@ Gazebo (`box:=true`) で測った 1 手の時間 (2026 年 11 月，各 1 回)�
 ```{code-block} console
 $ ros2 run jedy_skrobot vlm_navigate
 $ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '赤い箱に近づいて'}"
-$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '左を向いて机を探して'}"
+$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '人のところに行って'}"   # person:=true で人を置いたとき
 $ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: 'Approach the red box'}"
 ```
+
+目標には，着く場所が分かる言葉 (「〜に近づいて」) を入れる．`done` は測った距離が `--near` 以下のときだけ受け付けるので，
+「机を探して」「左を見て」のように近づかない目標は終わらず，`--max-steps` 回まで続く．
 
 今の状態は `/vlm_nav/status` (`std_msgs/String`) に出る (`ros2 topic echo /vlm_nav/status`)．
 RViz では，左下の Add から `rviz_2d_overlay_plugins` の `TextOverlay` を足し，Topic を `/vlm_nav/overlay` にすると左上に出る
