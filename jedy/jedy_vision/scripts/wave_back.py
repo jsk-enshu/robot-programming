@@ -37,6 +37,24 @@ SWING_SPEED = 30.0
 MIN_SWING = 1.0
 
 
+def move_time(start, goal):
+    """Seconds for a move from ``start`` to ``goal`` at :data:`SWING_SPEED`.
+
+    Parameters
+    ----------
+    start, goal : numpy.ndarray
+        Angle vectors [rad].
+
+    Returns
+    -------
+    float
+        The largest joint change at SWING_SPEED, and no less than MIN_SWING.
+        Raising the arm from home is 75-145 deg: a fixed 1.5 s was about
+        100 deg/s, too fast for the real arm.
+    """
+    return max(MIN_SWING, np.degrees(np.max(np.abs(goal - start))) / SWING_SPEED)
+
+
 def raised_hand(pose, margin):
     """``'left'`` / ``'right'`` (the person's side) or None."""
     s_l, s_r = pose.point(LEFT_SHOULDER), pose.point(RIGHT_SHOULDER)
@@ -71,17 +89,27 @@ def wave(robot, ri, side, times=3):
             robot.angle_vector(home)
             return
         poses.append(robot.angle_vector().copy())
-    swing = max(MIN_SWING, np.degrees(np.max(np.abs(poses[1] - poses[0]))) / SWING_SPEED)
-    ri.angle_vector(poses[0], 1.5)
-    ri.wait_interpolation()
-    for k in range(2 * times):
-        ri.angle_vector(poses[(k + 1) % 2], swing)
+    swing = move_time(poses[0], poses[1])
+    try:
+        ri.angle_vector(poses[0], move_time(home, poses[0]))
+        ri.wait_interpolation()
+        for k in range(2 * times):
+            ri.angle_vector(poses[(k + 1) % 2], swing)
+            ri.wait_interpolation()
+            robot.angle_vector(ri.angle_vector())
+            print('  wave {}: hand at {} m'.format(k, np.round(arm.end_coords.worldpos(), 3)))
+    except BaseException:
+        # Stopped mid-wave (Ctrl-C, or voice_demo's 止まって): end the swing
+        # in progress here, then go home below. Only here: with no goal
+        # running, a cancel just logs "No active goal to cancel".
+        ri.cancel_angle_vector()
+        raise
+    finally:
+        # The arm must not stay raised, however the wave ended.
+        now = ri.angle_vector()
+        ri.angle_vector(home, move_time(now, home))
         ri.wait_interpolation()
         robot.angle_vector(ri.angle_vector())
-        print('  wave {}: hand at {} m'.format(k, np.round(arm.end_coords.worldpos(), 3)))
-    ri.angle_vector(home, 1.5)
-    ri.wait_interpolation()
-    robot.angle_vector(ri.angle_vector())
 
 
 def main():
@@ -122,4 +150,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('stopped by Ctrl-C')

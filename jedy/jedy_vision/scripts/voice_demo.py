@@ -55,7 +55,8 @@ def normalize(text):
 def main():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.parse_args()
+    # Leave ROS's own arguments (``--ros-args -r ...``) to rclpy.
+    p.parse_args(rclpy.utilities.remove_ros_args()[1:])
 
     rclpy.init()
     node = rclpy.create_node('jedy_voice_demo')
