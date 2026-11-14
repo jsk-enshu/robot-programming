@@ -27,6 +27,7 @@ AI TA は `~/ros2_ws/src/robot-programming/docs` か `~/robot-programming/docs` 
 ROS が無いので，`ta fix` が集めるのはターミナルの画面と Python の Traceback だけになり，Gazebo での確認もできない．
 ```
 
+(ai-ta-setup)=
 ## 設定
 
 ```{code-block} console
@@ -63,6 +64,7 @@ $ ta doctor   # 接続・キー・資料の場所を確認する (全部 ✓ に
 | `ta call [メッセージ]` | 人の TA・教員を呼ぶ．エラーの情報も一緒に届く |
 | `ta context` | `ta fix` が送る内容を表示するだけ (何も送らない) |
 | `ta usage` | 今日の利用額と上限 |
+| `ta uninstall` | AI TA を消す (演習が終わったら．下の「アンインストール」) |
 
 例:
 
@@ -100,5 +102,16 @@ $ ta fix
 
 ## アンインストール
 
-`~/.local/bin/ta`，`~/.local/share/ai-ta`，`~/.config/ai-ta`，`~/.bashrc` に足された ai-ta の行，
-Python のユーザ site-packages (`python3 -m site --user-site`) の `aita_pyhook.py` と `aita-pyhook.pth` を消す．
+**演習の最後の日が終わったら，AI TA を入れた PC (学科 PC も自分の PC も) で次を実行する．**
+消さないと，コマンドが失敗するたびに `[ai-ta] exit N` の 1 行が出続ける．
+
+```{code-block} console
+$ ta uninstall    # 消すものが表示されるので，y を入力する
+```
+
+- `~/.bashrc` に足された ai-ta の行，Python の例外を記録するフック，キー (`~/.config/ai-ta`)，`ta` コマンドなどを消す．
+  元の `~/.bashrc` は `~/.bashrc.ai-ta-backup` に残る．
+- Claude Code は，AI TA のインストールで入ったときだけ一緒に消える．前から入っていたものは残る．
+- `ta version` が 0.2.4 以前のときは `ta uninstall` が無い (AI TA への質問として扱われる)．先に {ref}`設定 <ai-ta-setup>` の `curl ... | bash` で新しくしてから実行する．
+- 消し忘れても，キーの有効期限が過ぎると `[ai-ta] exit N` の表示は止まる．
+- サーバーにある質問と答えの記録は消えない．
