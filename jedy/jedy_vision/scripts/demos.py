@@ -57,6 +57,12 @@ SKROBOT_DEMOS = [
         ('checkpoint_go_forward_imu', '走って回り, 傾いたら止まる',
          'IMU (Gazebo のみ. 実機の RCB-4mini には無い)',
          GAZEBO, None),
+        ('nav2_goal 4.4,-3.6,90 8.3,3.0,180 0,0',
+         '地図の上の目標へ, 机をよけて順に走る (Nav2)',
+         'SLAM で作った地図, 自己位置推定, 経路計画 (Gazebo のみ. 実機には LiDAR が無い)',
+         GAZEBO + ' lidar:=true',
+         '別の端末で ros2 launch jedy_bringup jedy_nav2.launch.py rviz:=true. '
+         'Nav2 は apt で入れる (docs/tips/slam.md)'),
     ]),
 ]
 

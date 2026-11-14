@@ -22,7 +22,7 @@
 ## 課題の条件
 
 - 台車・腕と首・カメラ (画像・認識)・声のうち **2 つ以上**を使い，ロボットが**周りの様子 (人・物・声) に応じて**動くこと．決まった動きを再生するだけのものは不可．
-- まず Gazebo で動かし，そのあと実機で動かすこと (実機が空いていないときは Gazebo だけでもよい．その場合は発表で理由を言う)．
+- まず Gazebo で動かし，そのあと実機で動かすこと (実機が空いていないとき，または SLAM・Nav2 ({doc}`tips/slam`) のように実機に無いセンサを使うときは Gazebo だけでもよい．その場合は発表で理由を言う)．
 - 一人で作っても，2〜3 人で 1 つを作ってもよい．複数人の場合は誰が何を作ったかを発表で言うこと．
 
 ## 作品の例
@@ -58,7 +58,7 @@ print(np.hypot(feet[0], feet[1]))                             # 距離 [m]
 
 1 日目に扱わなかったことも，動くデモがすでにある．作りたいものに近いデモを動かして，中身を読むとよい．
 `ros2 run jedy_vision demos` で下の表のデモの一覧と，それぞれの Gazebo の起動方法が出る．
-中身は，`ros2 run jedy_vision ...` が `jedy/jedy_vision/scripts/`，表の下の 4 つ (`ros2 run jedy_skrobot ...`) が `jedy/jedy_skrobot/scripts/enshu/` にある．
+中身は，`ros2 run jedy_vision ...` が `jedy/jedy_vision/scripts/`，表の下の 5 つ (`ros2 run jedy_skrobot ...`) が `jedy/jedy_skrobot/scripts/enshu/` にある．
 
 Gazebo では，次の「舞台」が jedy_vision のデモに合わせてある (AprilTag の付いた台と立方体，椅子，コップ，人)．
 
@@ -86,6 +86,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:
 | 色の付いた物の 3 次元の位置 | `ros2 run jedy_skrobot color_clusters` | `box:=true` だけ (カメラは既定のまま) | 色で画素を選び，深度画像で 3 次元に戻す |
 | チェッカーボードの位置と向き | `ros2 run jedy_skrobot checkerboard_pose` | `checkerboard:=true` | 既知の模様から姿勢を求める (PnP) |
 | 傾いたら止まる | `ros2 run jedy_skrobot checkpoint_go_forward_imu` | どれでもよい (傾かないと止まらない) | IMU (Gazebo のみ．実機の RCB-4mini には無い) |
+| 地図の上の目標へ机をよけて走る | `ros2 run jedy_skrobot nav2_goal 4.4,-3.6,90 8.3,3.0,180 0,0` | `lidar:=true` と Nav2 ({doc}`tips/slam`) | SLAM による地図作成，自己位置推定，経路計画 (Gazebo のみ．実機には LiDAR が無い) |
 
 - 「舞台」は上のコマンドのこと．「`person:=true` だけ」は `ros2 launch jedy_bringup jedy_gazebo.launch.py person:=true` と起動する．
 - `touch_tag` は台の正面に寄ってから動かす．先に `approach_tag` を動かさないと，手が届かずに終わる．
@@ -95,6 +96,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:
 - `color_clusters` は `camera:=d405` だと，赤い箱 (前に約 1.2 m，左に約 0.5 m) が D405 の深度 (0.5 m まで) の外になり，`0 cluster(s)` と出る．
 - `vlm_navigate` には，AI TA のキーとカメラ画像を送ることへの同意，または自分の Google AI Studio のキー (`GOOGLE_API_KEY`．{ref}`vlm-google-ai-studio`，{doc}`tips/google-ai-studio`) が要る．キーが無くても `--dry-run left,forward,done` で VLM に聞かずに流れだけ試せる．
 - `checkpoint_go_forward_imu` は傾いたときだけ止まる．Gazebo の平らな床ではロボットは傾かないので，止まらずに 30 秒で時間切れになる．
+- `nav2_goal` は SLAM Toolbox と Nav2 を apt で入れ，Gazebo を `lidar:=true` で起動して，別の端末で `ros2 launch jedy_bringup jedy_nav2.launch.py rviz:=true` を起動してから動かす ({doc}`tips/slam`)．地図作りから試すときや，Nav2 の中で何が起きているかは {doc}`tips/slam` と {doc}`tips/path-planning` にある．実機には LiDAR が無いので，SLAM・Nav2 を使う作品は Gazebo だけで発表してよい．
 
 <video width="100%" controls preload="metadata">
   <source src="fig/jedy-gazebo-grasp-tag.mp4" type="video/mp4">
