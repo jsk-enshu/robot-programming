@@ -6,7 +6,7 @@
         link:=wifi relay:=192.168.1.50      # through a UNO R4 WiFi relay
 
 Starts the bus servicer, ros2_control with all seven controllers, the wheel
-odometry, RViz and the PS4 teleop. Arguments turn pieces off (`rviz:=false`,
+odometry, RViz and the PS3 / PS4 teleop. Arguments turn pieces off (`rviz:=false`,
 `joy:=false`, `wheels:=false`).
 
 Nothing starts until the robot is plugged in
@@ -498,7 +498,7 @@ def generate_launch_description():
                               choices=["true", "false"]),
         DeclareLaunchArgument("joy", default_value="true",
                               choices=["true", "false"],
-                              description="PS4 teleop. Harmless with no pad "
+                              description="PS3 / PS4 teleop. Harmless with no pad "
                                           "plugged in: joy_linux opens the "
                                           "device when one appears."),
         # 50, not 100: the RCB-4mini drives its servos every 15 ms (its

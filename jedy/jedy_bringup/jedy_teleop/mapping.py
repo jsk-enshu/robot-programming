@@ -21,6 +21,16 @@ AXIS_RIGHT_X = 3
 AXIS_DPAD_X = 6
 AXIS_DPAD_Y = 7
 
+# A PS3 pad (DualShock 3 / SIXAXIS, kernel hid-sony) has the same first six
+# axes and first thirteen buttons as the PS4 pad, but its D-pad is four
+# BUTTONS, not two axes: sixaxis_keymap maps it to BTN_DPAD_UP/DOWN/LEFT/RIGHT,
+# which joydev numbers after BTN_THUMBR (12). The pad has only six axes, so the
+# PS4 D-pad axes 6 and 7 do not exist on it.
+BUTTON_DPAD_UP = 13
+BUTTON_DPAD_DOWN = 14
+BUTTON_DPAD_LEFT = 15
+BUTTON_DPAD_RIGHT = 16
+
 BUTTON_CROSS = 0
 BUTTON_CIRCLE = 1
 BUTTON_TRIANGLE = 2
@@ -53,4 +63,31 @@ BUTTON_ROLES = {
     BUTTON_L1: ("L1", "DEADMAN -- nothing moves without it"),
     BUTTON_R1: ("R1", "slow mode"),
     BUTTON_L2: ("L2", "head twice as fast (the base has no faster)"),
+    BUTTON_DPAD_UP: ("D-pad up (PS3)", "head tilt"),
+    BUTTON_DPAD_DOWN: ("D-pad down (PS3)", "head tilt"),
+    BUTTON_DPAD_LEFT: ("D-pad left (PS3)", "head pan"),
+    BUTTON_DPAD_RIGHT: ("D-pad right (PS3)", "head pan"),
 }
+
+
+def dpad(msg):
+    """(pan, tilt) from the D-pad of a PS4 or a PS3 pad.
+
+    Parameters
+    ----------
+    msg : sensor_msgs.msg.Joy
+        As joy_linux publishes it.
+
+    Returns
+    -------
+    tuple of float or None
+        +1 / 0 / -1 each, with the PS4's signs: pan + = left, tilt + = up.
+        None when the message has neither D-pad.
+    """
+    if len(msg.axes) > AXIS_DPAD_Y:
+        return msg.axes[AXIS_DPAD_X], msg.axes[AXIS_DPAD_Y]
+    if len(msg.buttons) > BUTTON_DPAD_RIGHT:
+        b = msg.buttons
+        return (float(b[BUTTON_DPAD_LEFT] - b[BUTTON_DPAD_RIGHT]),
+                float(b[BUTTON_DPAD_UP] - b[BUTTON_DPAD_DOWN]))
+    return None

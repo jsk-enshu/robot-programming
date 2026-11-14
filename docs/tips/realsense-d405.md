@@ -1,187 +1,197 @@
-# Intel RealSense Depth Camera D405のセットアップと活用
+# Intel RealSense D405 (頭のカメラ)
 
-## Intel RealSense D405について
+Jedy の頭のカメラは Intel RealSense Depth Camera D405 である．
+カラー画像と距離画像 (深度) を同時に撮れる．PC とは USB でつなぐ．
 
-Intel RealSense Depth Camera D405は，ステレオビジョン方式を採用した深度カメラである．特に近距離での深度測定に優れており，**約7cmから測定可能**という特徴がある．
-
-[公式製品ページ](https://www.intel.co.jp/content/www/jp/ja/products/sku/229218/intel-realsense-depth-camera-d405/specifications.html)
-
-### 主な特徴
-
-- **近距離測定**: 7cm〜50cmの範囲で高精度な深度測定が可能
-- **ステレオビジョン方式**: 2つのカメラを使った三角測量による距離測定
-- **小型・軽量**: ロボットの手先やヘッド部に搭載可能なコンパクト設計
-- **USB接続**: PCに接続するだけで使用可能
-
-## ロボティクスでの活用例
-
-### 大型ロボットでのマニピュレーション
-
-大型のロボットマニピュレータの手先（エンドエフェクタ）にD405を取り付けることで，以下のような利点がある：
-
-- **把持対象物の深度情報取得**: ロボットハンドに近い物体の正確な3D位置を把握
-- **マニピュレーション精度の向上**: 対象物までの距離を正確に測定し，安全で確実な把持を実現
-- **近接作業の支援**: 細かい組み立て作業や精密な位置決めに必要な視覚情報を提供
-
-### 小型ロボット（Jedy）での活用
-
-Jedyのような小型の移動ロボットに搭載した場合：
-
-- **自己の手先（マニピュレータ）の視認**: カメラの視野内にロボット自身のアームや手先が映り，作業状態をリアルタイムで確認可能
-- **近接物体の認識**: ロボットの周辺にある小さな物体や障害物を検出
-- **テーブル上の作業**: 机上の物体をピックアップする際の位置推定に活用
-
-## ステレオカメラの測距原理
-
-### ステレオビジョンとは
-
-ステレオカメラは，人間の両眼視と同じ原理で距離を測定する：
-
-1. **視差（Disparity）の利用**: 2つのカメラで同じ対象を異なる角度から撮影すると，画像上での対象物の位置がずれる．このずれ（視差）が距離に対応する．
-
-2. **三角測量**:
-   - 2つのカメラ間の距離（ベースライン）は既知
-   - 各カメラの画像上での対象物の位置から視差を計算
-   - 視差と幾何学的な関係から，対象物までの距離を算出
-
-3. **計算式**:
-   ```
-   距離（Z）= （ベースライン × 焦点距離）/ 視差
-   ```
-
-   視差が大きい（対象物が近い）ほど距離は短く，視差が小さい（対象物が遠い）ほど距離は長くなる．
-
-### 測距のプロセス
-
-1. **キャリブレーション**: 2つのカメラの位置関係と内部パラメータを事前に校正
-2. **ステレオマッチング**: 左右の画像で同じ特徴点（対応点）を探索
-3. **視差マップの生成**: 画像の各ピクセルについて視差を計算
-4. **深度マップの生成**: 視差から実際の距離（深度）に変換
-
-### 近距離測定の利点
-
-D405が7cmという近距離から測定できる理由：
-
-- **広角レンズの採用**: 視野角が広く，近い物体も画角に収まる
-- **短いベースライン**: カメラ間の距離を最適化し，近距離での視差計算精度を向上
-- **高解像度センサー**: 細かい視差の変化を捉えることができる
-
-## Kinectとの違い
-
-### Intel RealSense D405（ステレオビジョン方式）
-
-- **原理**: 2つのカメラによる三角測量
-- **光源**: 不要（自然光や室内照明で動作）
-- **測定範囲**: 7cm〜50cm（近距離特化）
-- **屋外使用**: 可能（太陽光下でも動作）
-- **利点**: パッシブ方式のため省電力，他のセンサーとの干渉がない
-
-### Kinect（赤外線構造化光方式）
-
-- **原理**: 赤外線パターンを投射し，その歪みから距離を測定
-- **光源**: 赤外線プロジェクタが必要
-- **測定範囲**: 0.5m〜4.5m（中距離向け）
-- **屋外使用**: 困難（太陽光の赤外線が干渉）
-- **利点**: 単眼でも動作，テクスチャのない面でも測定可能
-
-### 使い分け
-
-- **近距離マニピュレーション**: RealSense D405
-- **室内ナビゲーション・全身トラッキング**: Kinect
-- **屋外での深度測定**: RealSense D405（ステレオ方式）
-
-## インストール方法
-
-Ubuntu環境でIntel RealSense D405を使用するには，librealsense2をインストールする必要がある．以下では，パッケージからのインストールとソースからのインストールの2つの方法を説明する．
-
-### パッケージからのインストール（推奨）
-
-最も簡単な方法は，Intel公式のAPTリポジトリからパッケージをインストールすることである：
+この章の端末では，毎回次を実行しておく ({doc}`../robot-programming-1-2026` のとおりに `~/.bashrc` に書いてあれば不要)．
 
 ```{code-block} console
-# 1. GPGキー用のディレクトリを作成
-$ sudo mkdir -p /etc/apt/keyrings
-
-# 2. Intel RealSenseのGPGキーをダウンロード
-$ curl -sSf https://librealsense.intel.com/Debian/librealsense.pgp | sudo tee /etc/apt/keyrings/librealsense.pgp > /dev/null
-
-# 3. APTリポジトリを追加
-$ echo "deb [signed-by=/etc/apt/keyrings/librealsense.pgp] https://librealsense.intel.com/Debian/apt-repo `lsb_release -cs` main" | sudo tee /etc/apt/sources.list.d/librealsense.list
-
-# 4. パッケージリストを更新
-$ sudo apt-get update
-
-# 5. librealsense2-utilsをインストール
-$ sudo apt-get install librealsense2-utils librealsense2-dev
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 ```
 
-### ソースからのインストール
+## D405 について
 
-最新の機能やバグ修正が必要な場合，または特定のビルドオプションを指定したい場合は，ソースからビルドすることができる：
+演習で使う D405 の性質は次のとおりである．
+
+| 項目 | 値 |
+| --- | --- |
+| 深度を測れる距離 | 0.07〜0.5 m くらい．それより遠い所は測れない (`ri.depth_image()` では nan) |
+| 画角 | 横 87° 程度 |
+| 演習での解像度と速さ | 640×480，30 Hz (`jedy_fullbody_all.launch.py` の設定) |
+
+近い物を細かく測るためのカメラなので，**0.5 m より遠い人や物までの距離は測れない**．
+遠い物の距離を使うプログラムは，近づいてから測るように書く ({doc}`../robot-programming-1-2026` の「カメラで見る」)．
+
+[Intel の製品ページ (仕様)](https://www.intel.co.jp/content/www/jp/ja/products/sku/229218/intel-realsense-depth-camera-d405/specifications.html)
+
+### ステレオカメラの測距の原理
+
+D405 は 2 つのカメラ (ステレオカメラ) で距離を測る．人間の両眼と同じ原理である．
+
+1. 2 つのカメラで同じ物を撮ると，2 枚の画像の上で物の位置がずれる．このずれを視差 (disparity) という．
+2. 2 つのカメラの間の距離 (ベースライン) $B$ と焦点距離 $f$ がわかっていれば，視差 $d$ から距離 $Z$ を三角測量で求められる．
+
+$$
+Z = \frac{B f}{d}
+$$
+
+近い物ほど視差が大きい．D405 は近い物を測るように作られているので，近距離では細かく測れるが，遠い物は視差が小さすぎて測れない．
+模様の無い白い壁のように，左右の画像で同じ点を見つけにくい所も測れないことがある．
+
+## インストール
+
+ROS 2 のドライバ (`realsense2_camera`) を apt で入れる ({doc}`../environment-setup` の「初回環境構築」で入れていれば不要)．
 
 ```{code-block} console
-# 1. ソースコード用のディレクトリを作成
-$ mkdir -p ~/src/github.com/IntelRealSense
-$ cd ~/src/github.com/IntelRealSense
-
-# 2. librealsenseリポジトリをクローン
-$ git clone https://github.com/IntelRealSense/librealsense.git
-$ cd librealsense/
-
-# 3. ビルドに必要な依存パッケージをインストール
-$ sudo apt install -y git libssl-dev libusb-1.0-0-dev pkg-config libgtk-3-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev cmake
-
-# 4. udevルールをセットアップ
-$ ./scripts/setup_udev_rules.sh
-
-# 5. ビルドディレクトリを作成してビルド
-$ mkdir build && cd build
-$ cmake ../ -DCMAKE_BUILD_TYPE=release -DBUILD_EXAMPLES=false -DBUILD_GRAPHICAL_EXAMPLES=false
-$ sudo make clean && make && sudo make install
+$ sudo apt install -y ros-jazzy-realsense2-camera
 ```
 
-**ビルドオプションの説明：**
+ライブラリ (librealsense2) も一緒に入る．ソースからビルドする必要は無い．
 
-- `-DCMAKE_BUILD_TYPE=release`: リリースビルド（最適化有効）
-- `-DBUILD_EXAMPLES=false`: サンプルプログラムをビルドしない
-- `-DBUILD_GRAPHICAL_EXAMPLES=false`: GUIサンプルをビルドしない
-
-GUIサンプル（`realsense-viewer`など）が必要な場合は，`-DBUILD_GRAPHICAL_EXAMPLES=true`に変更する．
-
-### インストール確認
-
-カメラを接続して，以下のコマンドで動作確認する：
+D405 を一般ユーザで開けるように，udev ルールを 1 回だけ入れる (apt のパッケージには入っていない)．
+入れたら D405 を挿し直す．
 
 ```{code-block} console
-# RealSenseビューアを起動
-realsense-viewer
+$ sudo curl -fsSL -o /etc/udev/rules.d/99-realsense-libusb.rules \
+    https://raw.githubusercontent.com/IntelRealSense/librealsense/v2.58.4/config/99-realsense-libusb.rules
+$ sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
 
-このビューアで，カラー画像と深度画像がリアルタイムで表示されれば，正常にインストールされている．
+## 実機での起動
 
-## ROSでの使用
-
-ROSからRealSenseカメラを使用する場合は，以下のパッケージをインストールする：
+実機では，ロボットを起動するときに `camera:=true` を付ける．
 
 ```{code-block} console
-sudo apt-get install ros-${ROS_DISTRO}-realsense2-camera
+$ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
 ```
 
-起動方法：
+ドライバが入っていないと，`camera:=true needs the RealSense ROS driver: sudo apt install ros-jazzy-realsense2-camera` と出て止まる．
+
+`camera:=true` は `realsense2_camera_node` を次の設定で起動する (`jedy/jedy_bringup/launch/jedy_fullbody_all.launch.py` の `_camera()`)．
+
+- カラーと深度をどちらも 640×480，30 Hz で出す．
+- `align_depth.enable` は `false` (距離画像をカラー画像に合わせる処理はしない)．
+  D405 のカラー画像は左の深度カメラと同じセンサから作られるので，同じ解像度ならカラーと深度の画素がもともと揃っている．
+  `ri.depth_image()[v, u]` は `ri.image()` の画素 `(u, v)` の距離である．
+- TF は出さない．カメラのフレーム (`camera_link` など) はロボットの URDF から `robot_state_publisher` が出す．
+
+トピックは次のとおりである．ドライバはカラー画像を `/camera/color/image_raw` に出すが，
+Gazebo や `jedy_skrobot` と同じ名前にするため，`/camera/color/image_rect_raw` に名前を変えている．
+
+| トピック | 型 | 中身 |
+| --- | --- | --- |
+| `/camera/color/image_rect_raw` | `sensor_msgs/Image` | カラー画像 |
+| `/camera/color/camera_info` | `sensor_msgs/CameraInfo` | カラー画像の内部パラメータ |
+| `/camera/depth/image_rect_raw` | `sensor_msgs/Image` | 距離画像 (`16UC1`，単位 mm) |
+| `/camera/depth/camera_info` | `sensor_msgs/CameraInfo` | 距離画像の内部パラメータ |
 
 ```{code-block} console
-roslaunch realsense2_camera rs_camera.launch
+$ ros2 topic hz /camera/color/image_rect_raw
+$ ros2 topic echo /camera/color/camera_info --once
 ```
 
-これにより，以下のトピックが配信される：
+### Gazebo のカメラ
 
-- `/camera/color/image_raw`: カラー画像
-- `/camera/depth/image_rect_raw`: 深度画像
-- `/camera/aligned_depth_to_color/image_raw`: カラー画像に位置合わせされた深度画像
-- `/camera/color/camera_info`: カメラキャリブレーション情報
+Gazebo (`jedy_gazebo.launch.py`) の頭のカメラも，同じ名前のトピックに画像を出す
+(`/camera/color/image_rect_raw`，`/camera/color/camera_info`，`/camera/depth/image_rect_raw`)．
+Gazebo のカメラは既定 (`camera:=wide`) では横の画角が 60° で，深度は 10 m まで測れる．
+`camera:=d405` を付けると，D405 と同じ横の画角 87° と深度 0.07〜0.5 m になる．
 
-## 参考情報
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py camera:=d405
+```
 
-- [Intel RealSense 公式ドキュメント](https://www.intelrealsense.com/developers/)
-- [librealsense GitHub](https://github.com/IntelRealSense/librealsense)
-- [ROS RealSense wrapper](https://github.com/IntelRealSense/realsense-ros)
+Gazebo の頭のカメラは 1 秒に 5 枚である (`camera_rate:=5`，既定)．`camera_rate:=30` で実機と同じ 30 Hz になる．
+
+## カメラだけを起動する
+
+ロボットを起動せずにカメラだけを試すときは，`realsense2_camera` の launch ファイルを使う．
+`jedy_fullbody_all.launch.py camera:=true` と同時には起動しない (1 台のカメラを 2 つのドライバが取り合う)．
+
+```{code-block} console
+$ ros2 launch realsense2_camera rs_launch.py
+```
+
+このときのノードは `/camera/camera` (名前空間 `camera`，ノード名 `camera`) になり，トピックにも `/camera/camera/` が付く．
+カラー画像の名前も変えないので，`jedy_fullbody_all.launch.py` のときとは名前が違う．
+
+| トピック | 中身 |
+| --- | --- |
+| `/camera/camera/color/image_raw` | カラー画像 |
+| `/camera/camera/color/camera_info` | カラー画像の内部パラメータ |
+| `/camera/camera/depth/image_rect_raw` | 距離画像 |
+| `/camera/camera/depth/camera_info` | 距離画像の内部パラメータ |
+
+`ri.image()` などは `/camera/color/image_rect_raw` を読むので，この起動のしかたでは `ri` で画像は取れない．
+
+カメラが見つからないと，`No RealSense devices were found!` と出続ける．
+USB ケーブルを挿し直し，次でカメラが見えているかを確かめる．
+
+```{code-block} console
+$ rs-enumerate-devices --compact
+```
+
+`realsense-viewer` を使うと，ROS を使わずにカメラの画像と設定を見られる．
+
+```{code-block} console
+$ realsense-viewer
+```
+
+## 画像を見る
+
+### rqt_image_view
+
+```{code-block} console
+$ ros2 run rqt_image_view rqt_image_view /camera/color/image_rect_raw
+```
+
+左上のメニューで，見るトピックを選び直せる．距離画像 (`/camera/depth/image_rect_raw`) は mm の値のままなので，ほとんど黒く見える．
+
+### RViz
+
+`jedy_fullbody_all.launch.py` は RViz も開く (`rviz:=false` で開かない)．
+画像を見るには，左下の `Add` → `By topic` で `/camera/color/image_rect_raw` の `Image` を選ぶ．
+
+### jedy_skrobot の show_camera
+
+カラー画像と距離画像を並べて表示し続ける．
+
+```{code-block} console
+$ ros2 run jedy_skrobot show_camera
+```
+
+## Python で画像を取る
+
+`ri` で，カラー画像と距離画像を numpy の配列として取れる ({doc}`../robot-programming-1-2026` の「カメラで見る」)．
+
+```{code-block} python
+from jedy_skrobot import connect
+
+robot, ri = connect()
+rgb, stamp = ri.image()            # (480, 640, 3) uint8, RGB
+depth, stamp = ri.depth_image()    # (480, 640) float32 [m]．測れない画素は nan
+K, D = ri.camera_info()            # カメラ行列 3x3 と歪み係数
+print(depth[240, 320])             # 画像の真ん中までの距離 [m]
+```
+
+`ri.depth_image()` は，D405 の mm の値をメートルに直し，測れなかった画素 (値が 0) を nan にして返す．
+実機では 0.5 m より遠い所が nan になる．
+
+台車を動かした後の画像がほしいときは，`newer_than` に時刻を渡すと，その時刻より後に撮った画像を待って返す．
+
+```{code-block} python
+ri.tuck_arms()                                  # 走る前に腕をたたむ
+ri.go_velocity(0.1, 0.0, 0.0, duration=1.0)
+stopped = ri.now()
+rgb, _ = ri.image(newer_than=stopped)          # 止まってから撮った画像
+depth, _ = ri.depth_image(newer_than=stopped)
+```
+
+画素からロボットの座標への変換は {doc}`coordinate_systems` を見よ．
+
+## 参考資料
+
+- [Intel RealSense D405 製品ページ (仕様)](https://www.intel.co.jp/content/www/jp/ja/products/sku/229218/intel-realsense-depth-camera-d405/specifications.html)
+- [realsense-ros (ROS 2 のドライバ)](https://github.com/IntelRealSense/realsense-ros)
+- [librealsense](https://github.com/IntelRealSense/librealsense)

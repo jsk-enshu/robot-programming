@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PS4 pad for Jedy: joy_node plus the teleop node, and nothing else.
+"""PS3 or PS4 pad for Jedy: joy_node plus the teleop node, and nothing else.
 
     ros2 launch jedy_bringup jedy_joy.launch.py
 

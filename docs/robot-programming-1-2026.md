@@ -153,9 +153,9 @@ $ sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh
 $ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
 ```
 
-USB シリアルアダプタが挿さるまで待ってから起動する．サーボは **OFF で起動する**．
+USB シリアルアダプタが挿さるまで待ってから起動する．サーボは **OFF で起動する** (台車の車輪だけは ON で起動するので，初めて動かすときは車輪を床から浮かせておく)．
 `camera:=true` で頭のカメラ (USB でつなぐ RealSense D405) も起動する
-(`sudo apt install -y ros-jazzy-realsense2-camera` が 1 回だけ必要)．
+(`sudo apt install -y ros-jazzy-realsense2-camera` と udev ルール ({doc}`tips/realsense-d405`) が 1 回だけ必要)．
 
 ### 確認
 
@@ -279,7 +279,7 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=tr
 `z` を押すたびに速さが 1 割ずつ下がる (今の速さは画面の `currently: speed ... turn ...` に出る)．
 ただし `z` は旋回も遅くし，実機は 0.83 rad/s 程度より遅い旋回では止まるので，`z` を 2 回以上押すと旋回しなくなる．
 前後・左右だけを下げるなら `x` を使うか，最初から `-p speed:=0.12` を付けて起動する．
-`ros2 launch jedy_bringup keyboard_teleop.launch.py` は同じものを新しい端末の窓で開く．実機では PS4 のジョイスティックでも操縦できる．
+`ros2 launch jedy_bringup keyboard_teleop.launch.py` は同じものを新しい端末の窓で開く．実機では PS3 のコントローラでも操縦できる ({doc}`tips/joystick`)．
 
 :::{figure} fig/jedy-ki-teleop.gif
 :align: center
