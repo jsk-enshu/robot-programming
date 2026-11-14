@@ -75,7 +75,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:
 | タグの位置と向き | `ros2 run jedy_vision tag_pose` | 舞台 | カメラ内部パラメータ，PnP，座標変換 |
 | タグの正面に止まる | `ros2 run jedy_vision approach_tag` | 舞台 | 極座標の姿勢制御，閉ループ |
 | 手で物に触る | `ros2 run jedy_vision touch_tag` | 舞台．先に `approach_tag` | カメラ座標からロボット座標へ，逆運動学，手前で一度止まる経由点 |
-| 物をつかんで持ち上げる | `ros2 run jedy_vision grasp_tag` | 舞台．先に `approach_tag --standoff 0.17` | 複数のタグから物の姿勢を求める，姿勢付きの逆運動学，つかめたかの確認 |
+| 物をつかんで持ち上げる | `ros2 run jedy_vision grasp_tag` | 舞台 (遠くからでも台車で寄る．先に `approach_tag --standoff 0.17` をしておくと確実) | 複数のタグから物の姿勢を求める，姿勢付きの逆運動学，つかめたかの確認 |
 | 画像の人と骨格を調べる | `ros2 run jedy_vision detect_people --pose` | 舞台 | YOLO と MediaPipe．結果を画像に保存する |
 | 首で人を追う | `ros2 run jedy_vision look_at_person` | 舞台 | 首のコントローラだけに指令を送る (追い続けるなら `--keep`) |
 | 人について行く | `ros2 run jedy_vision follow_person` | `person:=true` だけ (`demo:=true` を付けない) | 見え方で台車を動かすフィードバック |
@@ -88,9 +88,10 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:
 | 傾いたら止まる | `ros2 run jedy_skrobot checkpoint_go_forward_imu` | どれでもよい (傾かないと止まらない) | IMU (Gazebo のみ．実機の RCB-4mini には無い) |
 
 - 「舞台」は上のコマンドのこと．「`person:=true` だけ」は `ros2 launch jedy_bringup jedy_gazebo.launch.py person:=true` と起動する．
-- `touch_tag` と `grasp_tag` は，台の正面に寄ってから動かす．先に `approach_tag` (`grasp_tag` には `--standoff 0.17` を付ける) を動かさないと，`touch_tag` は手が届かずに，`grasp_tag` は立方体が見えずに終わる．
+- `touch_tag` は台の正面に寄ってから動かす．先に `approach_tag` を動かさないと，手が届かずに終わる．
+  `grasp_tag` は立方体が見えれば自分で台車を寄せる (舞台を起動した直後から動かして持ち上げられた)．立方体が見えないときは，先に `approach_tag --standoff 0.17` で台の正面に寄っておく．
 - `follow_person` は舞台では人の手前にある台に乗り上げて止まる．
-- `color_clusters` は `camera:=d405` だと，赤い箱 (約 1.2 m 先) が D405 の深度 (0.5 m まで) の外になり，`0 cluster(s)` と出る．
+- `color_clusters` は `camera:=d405` だと，赤い箱 (前に約 1.2 m，左に約 0.5 m) が D405 の深度 (0.5 m まで) の外になり，`0 cluster(s)` と出る．
 - `vlm_navigate` には，AI TA のキーとカメラ画像を送ることへの同意，または自分の Google AI Studio のキー (`GOOGLE_API_KEY`．{ref}`vlm-google-ai-studio`，{doc}`tips/google-ai-studio`) が要る．キーが無くても `--dry-run left,forward,done` で VLM に聞かずに流れだけ試せる．
 - `checkpoint_go_forward_imu` は傾いたときだけ止まる．Gazebo の平らな床ではロボットは傾かないので，止まらずに 30 秒で時間切れになる．
 
