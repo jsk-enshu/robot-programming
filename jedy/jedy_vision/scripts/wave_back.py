@@ -153,4 +153,4 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print('stopped by Ctrl-C (the arm went back)')
+        print('stopped by Ctrl-C')
