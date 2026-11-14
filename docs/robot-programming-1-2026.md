@@ -73,12 +73,18 @@ $ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc
 $ source ~/.bashrc
 ```
 
+`~/.bashrc` を書き換える前に開いたターミナルには，この 2 行は読み込まれていない．`ros2: command not found` などが出たら，
+そのターミナルで `source ~/.bashrc` するか，ターミナルを開き直す．
+
 2 行目は ROS 2 の通信を自分の PC の中だけに閉じる設定である (ロボットは自分の PC に USB でつなぐので，これで他の人のロボットと混ざらない)．
 意味や，複数の PC で通信するときの設定は {doc}`tips/ros-network` を見よ．
 
 ## ロボットの起動
 
 どちらか **1 つだけ** を起動する (同時に起動すると同じ名前のトピックがぶつかる)．
+起動したターミナルはそのままにして，プログラムは別のターミナルで動かす．
+Ctrl-C は押したターミナルのものだけを止める．起動したターミナルで押すとロボット (Gazebo) が止まり，
+プログラムは `wait_until_update_all_joints timeout` などで止まる．そのときは起動し直す．
 
 ### Gazebo シミュレーション
 
@@ -351,6 +357,11 @@ for _ in range(3):
 print(np.rad2deg(robot.angle_vector() - ri.angle_vector()))   # 送った姿勢と実際の姿勢の差 [deg]
 ```
 
+関節には動ける範囲がある (`robot.rarm_joint1.min_angle`，`max_angle` [rad])．範囲を超える角度を入れると範囲の端に切り詰められ，
+`rarm_joint1: 0.5236 rad (30.0 deg) exceeds max 0.5200 rad (29.8 deg); clipped to max. ...` のような警告が出る
+(scikit-robot が古いと `... violate max-angle(0.52)` という形)．
+`joint_angle(..., relative=True)` で今の角度に足したときは，警告なしで切り詰められる．
+
 :::{figure} fig/jedy-fk-head.png
 :align: center
 :name: fig:jedy-fk-head
@@ -401,6 +412,7 @@ Gazebo で右から見たところ: IK の解を 3 秒で送り，`reset_pose` �
 
 `ros2 run jedy_skrobot sample_ik` は同じことをして，実際に手先がどこに着いたかを表示する．
 IK が解けないときは `inverse_kinematics` が `False` を返し，モデルの関節は動かない．
+腕が届くのは base_link から前に 0.25 m ほどまでなので，遠い目標では解けない．
 `ri.angle_vector()` で送る前に PyrenderViewer で解の姿勢を見ておくと，思わぬ姿勢 (腕が体に当たる，床に向かう) に気づける．
 
 ### キーボードで手先を動かす
@@ -687,6 +699,8 @@ if side == '左':
 
 **指さしてもらう．** `ri.point('赤い箱')` は Gemini Robotics-ER (`vlm-er`) に画像の中の位置を聞き，
 画素の位置 `(u, v)` (`u` が右向き，`v` が下向き．`img[v, u]` の画素) を返す．写っていなければ `None`．
+ただし似た物が写っていればそちらを指すことがある (13BC の部屋では，壁の赤い救急箱を「赤い箱」と答えた)．
+言葉は具体的にする (「床に置いた赤い直方体」など)．`ri.ask` や VLM に聞いて動くときの目標も同じである．
 `ri.pixel_position(u, v, depth)` はその画素の距離を距離画像で測り，ロボットの座標系 (base_link: 前が x，左が y，上が z) の位置 [m] にする
 (`ri.detection_position` と同じ計算．距離が測れなければ `None`)．これを逆運動学の目標にすれば，言葉で言った物に手を伸ばせる．
 
@@ -741,7 +755,7 @@ Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは 
   台車や腕を止めずに動かし続ける制御には使わない．「次に何をするか」を決めるのに使う．
   既定では AI はほとんど考えずに答える (`reasoning='none'`)．難しい質問では `reasoning='low'` などにすると答えが良くなることがあるが，遅く高くなる．
   速く繰り返し見たいときは `ri.what_do_you_see` や `ri.gesture` を使う．
-- サーバーに断られると `VlmRefused` (`RuntimeError` の一種) になる．`e.kind` が `'rate'` (速すぎる) なら少し待てばまた使え，
+- サーバーに断られると `VlmRefused` (`RuntimeError` の一種．`from jedy_skrobot import VlmRefused` で使える) になる．`e.kind` が `'rate'` (速すぎる) なら少し待てばまた使え，
   `'budget'` (予算を使い切った)，`'key'` (キーが無い・使えない・同意していない) ならその日・その設定では使えない．
 - `model='vlm-er'` で Gemini Robotics-ER を使う．画像の中の物の位置を指すのが得意．
 - Gazebo の画像は CG なので，実機のカメラとは答えが変わることがある．
