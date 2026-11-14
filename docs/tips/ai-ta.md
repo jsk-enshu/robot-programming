@@ -9,7 +9,7 @@ AI TA のプログラムは [iory/ai-ta-for-student](https://github.com/iory/ai-
 
 ## 必要なもの
 
-- {doc}`../environment-setup` を終えてあること (ROS 2 Jazzy と `~/ros2_ws/src/robot-programming` の演習資料)
+- {doc}`../environment-setup` の `vcs import` まで済んでいること (`~/ros2_ws/src/robot-programming` に演習資料がある．ビルドの前に設定してよい)
 - インターネット接続
 - GitHub アカウント．**演習のアンケートで登録したもの**を使う．
   AI TA は GitHub のユーザ名で受講者を確かめるので，登録していないアカウントでは使えない．
