@@ -974,6 +974,8 @@ class JedyInterface(RobotInterface):
         copy (see the consent shown by ``ta login``). The server allows one
         question per second and two images per question; this method waits
         so that its own questions are at least :data:`VLM_MIN_INTERVAL` apart.
+        With a non-empty ``GOOGLE_API_KEY`` (the student's own key) they go
+        to Google AI Studio directly instead (:func:`vlm_credentials`).
 
         Parameters
         ----------
@@ -1156,14 +1158,19 @@ class JedyInterface(RobotInterface):
         return self._optical_to_base(p, IMAGE_FRAME)
 
     def _vlm_chat(self, model, messages, timeout, reasoning, response_format=None):
-        """One request to the AI TA server; the answer text.
+        """One request to the VLM; the answer text.
 
-        Requests from this ``ri`` are kept :data:`VLM_MIN_INTERVAL` apart.
-        The token limit counts the model's thinking too, so it is large (with
-        200 tokens and some thinking, Robotics-ER used them all and the answer
-        was cut off).
+        It goes to the AI TA server, or to Google AI Studio when the student
+        set ``GOOGLE_API_KEY`` (see :func:`vlm_credentials`). Requests from
+        this ``ri`` are kept :data:`VLM_MIN_INTERVAL` apart. The token limit
+        counts the model's thinking too, so it is large (with 200 tokens and
+        some thinking, Robotics-ER used them all and the answer was cut off).
         """
-        base_url, key = aita_credentials()
+        backend, base_url, key = vlm_credentials()
+        _log_vlm_backend_once(self.get_logger(), backend)
+        if backend == 'google':
+            model = google_vlm_model(model)
+            reasoning = GOOGLE_REASONING_EFFORT.get(reasoning, reasoning)
         body = {'model': model, 'messages': messages,
                 'max_tokens': VLM_MAX_TOKENS, 'reasoning_effort': reasoning}
         if response_format is not None:
@@ -1176,7 +1183,7 @@ class JedyInterface(RobotInterface):
                     time.sleep(wait)
                     self.vlm_last_wait = wait
             self._vlm_sent = time.monotonic()
-        text, cost = _post_chat(base_url, key, body, timeout)
+        text, cost = _post_chat(base_url, key, body, timeout, backend=backend)
         self.vlm_last_latency = time.monotonic() - self._vlm_sent
         self.vlm_last_cost = cost
         self.vlm_total_cost += cost
@@ -1412,9 +1419,29 @@ class JedyInterface(RobotInterface):
 AITA_ENV_FILE = os.path.join(
     os.environ.get('AITA_CONFIG_DIR', os.path.expanduser('~/.config/ai-ta')), 'env')
 
+#: Google AI Studio's OpenAI-compatible API, used instead of the AI TA server
+#: when the student sets GOOGLE_API_KEY (their own free key). The environment
+#: variable JEDY_VLM_GOOGLE_BASE_URL replaces it, for tests with a local server
+#: only. https://ai.google.dev/gemini-api/docs/openai
+GOOGLE_AI_STUDIO_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/openai'
+#: The AI TA server's model names -> Google AI Studio's, each replaceable by
+#: the environment variable next to it (e.g. when a preview model is renamed).
+GOOGLE_VLM_MODELS = {
+    'vlm-gemini': ('gemini-3.8-flash', 'JEDY_VLM_GEMINI_MODEL'),
+    'vlm-er': ('gemini-robotics-er-2-preview', 'JEDY_VLM_ER_MODEL'),
+}
+#: reasoning_effort values Google AI Studio does not take -> the nearest one it
+#: does. It documents minimal / low / medium / high, and thinking cannot be
+#: turned off on Gemini 3 (https://ai.google.dev/gemini-api/docs/openai),
+#: while ``ask`` defaults to the AI TA server's ``'none'``.
+GOOGLE_REASONING_EFFORT = {'none': 'minimal'}
+
+_vlm_backend_logged = False
+
 
 class VlmRefused(RuntimeError):
-    """The AI TA server did not answer a :meth:`JedyInterface.ask` / ``point``.
+    """The VLM (the AI TA server, or Google AI Studio with GOOGLE_API_KEY) did not
+    answer a :meth:`JedyInterface.ask` / ``point``.
 
     Attributes
     ----------
@@ -1457,6 +1484,65 @@ def aita_credentials():
         raise VlmRefused('key', 'AI TA のキーがありません ({} に AITA_BASE_URL / AITA_KEY '
                          'が無い). ta login してください'.format(AITA_ENV_FILE))
     return base_url.rstrip('/'), key
+
+
+def vlm_credentials():
+    """Which VLM backend to use, with its URL and key.
+
+    The student chooses: a non-empty ``GOOGLE_API_KEY`` means their own
+    Google AI Studio key, used directly; otherwise the AI TA server, as
+    :func:`aita_credentials`. An error from one backend never switches to
+    the other.
+
+    Returns
+    -------
+    tuple of str
+        ``(backend, base_url, key)``, backend ``'google'`` or ``'aita'``.
+
+    Raises
+    ------
+    VlmRefused
+        Neither GOOGLE_API_KEY nor an AI TA key (kind ``'key'``).
+    """
+    google_key = os.environ.get('GOOGLE_API_KEY', '').strip()
+    if google_key:
+        base_url = (os.environ.get('JEDY_VLM_GOOGLE_BASE_URL', '').strip()
+                    or GOOGLE_AI_STUDIO_BASE_URL)
+        return 'google', base_url.rstrip('/'), google_key
+    base_url, key = aita_credentials()
+    return 'aita', base_url, key
+
+
+def google_vlm_model(model):
+    """Google AI Studio's name for one of the AI TA server's model names.
+
+    Parameters
+    ----------
+    model : str
+        ``'vlm-gemini'`` or ``'vlm-er'``; any other name is sent unchanged.
+
+    Returns
+    -------
+    str
+        E.g. ``'gemini-3.8-flash'``, or the value of ``JEDY_VLM_GEMINI_MODEL``
+        / ``JEDY_VLM_ER_MODEL`` when set.
+    """
+    if model not in GOOGLE_VLM_MODELS:
+        return model
+    default, env = GOOGLE_VLM_MODELS[model]
+    return os.environ.get(env, '').strip() or default
+
+
+def _log_vlm_backend_once(logger, backend):
+    """Say once per process which VLM backend the questions go to."""
+    global _vlm_backend_logged
+    if _vlm_backend_logged:
+        return
+    _vlm_backend_logged = True
+    if backend == 'google':
+        logger.info('VLM: Google AI Studio (GOOGLE_API_KEY)')
+    else:
+        logger.info('VLM: AI TA server')
 
 
 def _jpeg_data_url(img, max_side):
@@ -1504,8 +1590,8 @@ def _json_from_reply(text):
     return None
 
 
-def _refusal(status, body):
-    """VlmRefused for an HTTP error answer, with the server's message in Japanese."""
+def _error_message(body):
+    """The message in an OpenAI-style JSON error answer, else the body itself."""
     try:
         detail = json.loads(body)
         error = detail.get('error', detail)
@@ -1513,7 +1599,12 @@ def _refusal(status, body):
         message = message or detail.get('detail') or body
     except (ValueError, AttributeError):
         message = body
-    message = str(message).strip()[:500]
+    return str(message).strip()[:500]
+
+
+def _refusal(status, body):
+    """VlmRefused for an HTTP error answer, with the server's message in Japanese."""
+    message = _error_message(body)
     lower = message.lower()
     if '予算' in message or 'budget' in lower:
         return VlmRefused('budget', 'VLM の予算を使い切りました (HTTP {})。サーバーの返事: {}'
@@ -1536,26 +1627,103 @@ def _refusal(status, body):
                       .format(status, message), status)
 
 
-def _post_chat(base_url, key, body, timeout):
-    """POST /v1/chat/completions; ``(answer text, cost in USD)``.
+def _google_refusal(status, body, model):
+    """VlmRefused for an HTTP error answer from Google AI Studio, in Japanese.
 
-    Raises VlmRefused with the server's reason.
+    Parameters
+    ----------
+    status : int
+        The HTTP status.
+    body : str
+        The answer's body (Google sometimes wraps the error in a list).
+    model : str
+        The model asked for, named in the message for a 404.
+
+    Returns
+    -------
+    VlmRefused
+        With the same ``kind`` values as for the AI TA server.
+    """
+    try:
+        detail = json.loads(body)
+        if isinstance(detail, list) and detail:
+            body = json.dumps(detail[0])
+    except ValueError:
+        pass
+    message = _error_message(body)
+    lower = message.lower()
+    tips = 'docs の tips/google-ai-studio を見てください'
+    # An invalid key is a 400 ("API key not valid"); other 400s are the request.
+    if status in (401, 403) or (status == 400 and 'api key' in lower):
+        return VlmRefused('key', 'Google AI Studio がこのキー (GOOGLE_API_KEY) を受け付けません '
+                          '(HTTP {})。キーが正しいか，使える設定か確かめてください ({})。'
+                          'Google の返事: {}'.format(status, tips, message), status)
+    if status == 429:
+        return VlmRefused('rate', 'Google AI Studio の無料枠の回数制限です (HTTP 429)。'
+                          '少し待ってから聞き直してください (1 日の上限なら翌日まで使えません)。'
+                          'Google の返事: {}'.format(message), status)
+    if status == 404:
+        env = [e for name, (_, e) in GOOGLE_VLM_MODELS.items()
+               if google_vlm_model(name) == model]
+        change = ('環境変数 {} で別のモデル名にできます'.format(env[0]) if env
+                  else 'モデル名を確かめてください')
+        return VlmRefused('request', 'モデル {} はこのキーでは使えません (HTTP 404)。'
+                          '{}。Google の返事: {}'.format(model, change, message), status)
+    if status >= 500:
+        return VlmRefused('server', 'Google AI Studio のエラーです (HTTP {}): {}'
+                          .format(status, message), status)
+    return VlmRefused('request', 'Google AI Studio が問い合わせを断りました (HTTP {}): {}'
+                      .format(status, message), status)
+
+
+def _post_chat(base_url, key, body, timeout, backend='aita'):
+    """POST the chat completion; ``(answer text, cost in USD)``.
+
+    Parameters
+    ----------
+    base_url : str
+        The backend's URL, from :func:`vlm_credentials`.
+    key : str
+        Its key, sent as ``Authorization: Bearer``.
+    body : dict
+        The OpenAI-style request.
+    timeout : float
+        Seconds to wait for the answer.
+    backend : str
+        ``'aita'`` (``/v1/chat/completions``, cost from LiteLLM's
+        ``x-litellm-response-cost``) or ``'google'`` (``/chat/completions``,
+        cost 0.0: the student's own key).
+
+    Returns
+    -------
+    tuple
+        ``(text, cost)``.
+
+    Raises
+    ------
+    VlmRefused
+        With the server's reason.
     """
     import socket
     import urllib.error
     import urllib.request
+    path = '/chat/completions' if backend == 'google' else '/v1/chat/completions'
     req = urllib.request.Request(
-        base_url + '/v1/chat/completions', data=json.dumps(body).encode('utf-8'),
+        base_url + path, data=json.dumps(body).encode('utf-8'),
         headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             data = json.load(resp)
-            cost = resp.headers.get('x-litellm-response-cost')
+            cost = resp.headers.get('x-litellm-response-cost') if backend != 'google' else None
     except urllib.error.HTTPError as e:
-        raise _refusal(e.code, e.read().decode('utf-8', errors='replace'))
+        answer = e.read().decode('utf-8', errors='replace')
+        if backend == 'google':
+            raise _google_refusal(e.code, answer, body.get('model'))
+        raise _refusal(e.code, answer)
     except (urllib.error.URLError, socket.timeout, OSError) as e:
-        raise VlmRefused('server', 'AI TA のサーバー ({}) に接続できません ({})'.format(
-            base_url, getattr(e, 'reason', e)))
+        name = 'Google AI Studio' if backend == 'google' else 'AI TA のサーバー'
+        raise VlmRefused('server', '{} ({}) に接続できません ({})'.format(
+            name, base_url, getattr(e, 'reason', e)))
     choice = (data.get('choices') or [{}])[0]
     text = ((choice.get('message') or {}).get('content') or '').strip()
     if not text and choice.get('finish_reason') == 'length':
