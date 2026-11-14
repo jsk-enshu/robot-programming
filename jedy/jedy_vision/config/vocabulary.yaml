@@ -64,6 +64,8 @@
 リュック: backpack
 ボール: ball
 箱: box
+段ボール: cardboard box
+ダンボール: cardboard box
 
 # 色 (Gazebo の赤い箱はこれで見つかる)
 赤いもの: red object
