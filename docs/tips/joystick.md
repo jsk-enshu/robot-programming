@@ -1,296 +1,263 @@
 # ジョイスティックコントローラによる操縦
 
-無線ジョイスティックコントローラを用いた操縦について紹介する．
-本演習では，DualShock 3（PS3コントローラー）やその互換コントローラーを使用してロボットを操作する．
+ジョイスティックコントローラ (ゲームパッド) で Jedy を操縦する方法を紹介する．
+2026 年度の Jedy は **PS4 のコントローラ (DualShock 4)** で操縦する．
+コントローラが無くても，台車はキーボードや `ri.go_velocity()` で動かせる ({doc}`../robot-programming-1-2026` の「台車を動かす」)．
 
-::::{grid} 2
-:gutter: 2
+この章の端末では，毎回次を実行しておく ({doc}`../robot-programming-1-2026` のとおりに `~/.bashrc` に書いてあれば不要)．
 
-:::{grid-item}
-:::{figure} ../fig/ps3joy_battery_chargings.jpg
-:align: center
-:name: fig:ps3joy-battery-charging
+```{code-block} console
+$ source ~/ros2_ws/install/setup.bash
+$ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
+```
 
-PS3ジョイスティックのバッテリー充電
-:::
+## しくみ
 
-:::{grid-item}
-:::{figure} ../fig/ps3joy-controllers.jpg
-:align: center
-:name: fig:ps3joy-controllers
+コントローラの入力は次の 2 つのノードで台車と首の指令になる．
 
-PS3ジョイスティックコントローラ．真ん中の丸いボタンが`Pairing`ボタンである．
-:::
+| ノード | 中身 |
+| --- | --- |
+| `joy_linux_node` (`joy_linux` パッケージ) | `/dev/input/js0` を読み，ボタンとスティックの状態を `/joy` (`sensor_msgs/Joy`) に出す |
+| `jedy_joy` (`jedy_bringup` パッケージ) | `/joy` を読み，台車の速度を `/cmd_vel` (`geometry_msgs/TwistStamped`) に，首の目標を `/jedy_fullbody/head_controller/joint_trajectory` に出す．サーボの ON / OFF もする |
 
-::::
+台車 (`mecanum_drive_controller`) は実機でも Gazebo でも `/cmd_vel` を聞いている．
+キーボード操縦 (`teleop_twist_keyboard`) や `ri.go_velocity()` も同じ `/cmd_vel` に送る．
+このように，操縦する道具が違っても，共通のトピックで台車を動かしている．
 
-## 有線接続での動作確認
+この 2 つのノードは `ros2 launch jedy_bringup jedy_joy.launch.py` で起動する．
 
-Bluetooth接続の前に，まず有線（USB）接続でコントローラーが正常に動作することを確認する．
-これにより，コントローラー自体の動作確認とROS 2との連携テストを行うことができる．
+## 実機での起動
 
-### コントローラーの接続
+実機を起動する `jedy_fullbody_all.launch.py` は，`joy:=true` (既定) で `jedy_joy.launch.py` も起動する．
+コントローラを USB で PC につなげば，それだけで操縦できる．
+コントローラを後から挿しても，`joy_linux_node` が見つけて開く (見つかるまで `Couldn't open joystick /dev/input/js0. Will retry every second.` と出続ける)．
 
-{numref}`fig:ps3joy-battery-charging`のようにDualShockコントローラーをUSBケーブルでPCに接続する．
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
+```
 
-### jstest-gtkでの動作確認
+コントローラが `/dev/input/js0` 以外 (たとえば `/dev/input/js1`) になったときは，`joy:=false` で起動し，別の端末でデバイスを指定して起動する．
 
-`jstest-gtk`を使用してコントローラーのボタンやスティックが正しく認識されているか確認する．
+```{code-block} console
+$ ls /dev/input/js*
+$ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true joy:=false
+$ ros2 launch jedy_bringup jedy_joy.launch.py dev:=/dev/input/js1   # 別の端末で
+```
+
+```{warning}
+`jedy_fullbody_all.launch.py` を起動すると，台車の車輪だけはすぐにサーボが入る．
+L1 を押しながらスティックを倒すと，そのまま走り出す．初めて動かすときは車輪を床から浮かせておく．
+```
+
+## ボタンとスティックの割り当て
+
+`jedy_joy` の割り当ては次のとおりである (`jedy/jedy_bringup/scripts/jedy_joy.py` と `jedy_teleop/mapping.py`)．
+
+| 操作 | 動き |
+| --- | --- |
+| L1 (押し続ける) | デッドマンスイッチ．押していないと台車も首も動かない．離すと台車は止まる |
+| L1 + 左スティック 上下 | 前進・後退 |
+| L1 + 左スティック 左右 | 左右へ横に動く (メカナムホイール) |
+| L1 + 右スティック 左右 | その場で旋回 |
+| L1 + R1 + スティック | ゆっくり動く |
+| L1 + 十字キー 左右 / 上下 | 首を左右に振る / 上下に向ける |
+| L1 + L2 + 十字キー | 首を 2 倍の速さで動かす (台車は速くならない) |
+| L1 + R1 + × を 1 秒押し続ける | 全身を初期姿勢 (`home`) へ 5 秒かけて動かす |
+| ○ | 全身のサーボを OFF (脱力) にする．L1 は要らない |
+| △ | サーボを ON にする |
+
+- 台車の速さはスティックの倒し方で決まる．いちばん倒すと前後 0.16 m/s 程度，R1 を押すと 0.09 m/s 程度．
+  実機の車輪は遅すぎる指令では回らないので，少しだけ倒しても回る速さに広げてある．
+- ○は L1 なしで効く．危ないと思ったら○を押す．
+- △は，手で動かされた腕の目標を今の姿勢に合わせてからサーボを入れる．
+- `/joy` が 0.3 秒来ないと (コントローラが抜けた，電池が切れた)，`jedy_joy` は台車を止め，首を止める．
+
+`/joy` の番号 (`axes[i]`，`buttons[i]`) は次のとおりである (Ubuntu 24.04 のカーネルの場合．`jedy/jedy_bringup/config/ps4.yaml`)．
+
+| 番号 | `axes` | `buttons` |
+| --- | --- | --- |
+| 0 | 左スティック 左右 (左が +) | × |
+| 1 | 左スティック 上下 (上が +) | ○ |
+| 2 | L2 (アナログ) | △ |
+| 3 | 右スティック 左右 (左が +) | □ |
+| 4 | 右スティック 上下 | L1 |
+| 5 | R2 (アナログ) | R1 |
+| 6 | 十字キー 左右 | L2 |
+| 7 | 十字キー 上下 | R2 |
+| 8 | | SHARE |
+| 9 | | OPTIONS |
+| 10 | | PS |
+| 11 | | L3 (左スティック押し込み) |
+| 12 | | R3 (右スティック押し込み) |
+
+番号はコントローラの種類やドライバで変わることがある．
+次で，押したボタンや倒したスティックの番号と，`jedy_joy` がそれを何に使うかを表示できる．
+
+```{code-block} console
+$ ros2 run jedy_bringup jedy_joy_monitor   # 全部の axes と buttons を表示し続ける
+$ ros2 run jedy_bringup jedy_joy_buttons   # 動かしたものだけを 1 行ずつ表示する
+```
+
+## Gazebo での操縦
+
+Gazebo (`jedy_gazebo.launch.py`) はコントローラのノードを起動しない．
+
+### キーボード
+
+{doc}`../robot-programming-1-2026` と同じく，`teleop_twist_keyboard` を使う．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py
+$ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true   # 別の端末で
+```
+
+`stamped:=true` を忘れると時刻なしの `Twist` が送られ，台車は受け取らない．
+キーの意味は {doc}`../robot-programming-1-2026` の表を見よ (`i` 前進，`J` / `L` 横，`j` / `l` 旋回，`k` 止まる)．
+
+### コントローラ
+
+PC にコントローラを USB でつなげば，Gazebo でも同じ割り当てで操縦できる．
+Gazebo を起動した後，別の端末で次を起動する．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_joy.launch.py
+```
+
+Gazebo にもサーボの ON / OFF があるので，○と△も実機と同じに動く．
+
+## 動作の確認
+
+### コントローラが見えているか
+
+まず，コントローラが `/dev/input/js0` として見えているかを確かめる．
+
+```{code-block} console
+$ ls /dev/input/js*
+/dev/input/js0
+```
+
+`jstest-gtk` を使うと，ボタンやスティックの状態を画面で見られる．
 
 ```{code-block} console
 $ sudo apt install jstest-gtk
 $ jstest-gtk
 ```
 
-jstest-gtkのウィンドウが開くと，{numref}`fig:ps3-jstest-gtk-select`のように接続されているコントローラーの一覧が表示される．
+### `/joy` と `/cmd_vel`
 
-:::{figure} ../fig/ps3-jstest-gtk-select.jpg
-:align: center
-:name: fig:ps3-jstest-gtk-select
-
-jstest-gtkの起動画面．接続されているコントローラー一覧が表示される
-:::
-
-コントローラーを選択すると，{numref}`fig:ps3-jstest-gtk`のような画面が表示される．
-各ボタンやスティックを操作すると，画面上で対応する軸やボタンの状態がリアルタイムに更新され，正常に動作していることを確認できる．
-
-:::{figure} ../fig/ps3-jstest-gtk.jpg
-:align: center
-:name: fig:ps3-jstest-gtk
-
-jstest-gtkでのコントローラー動作確認画面．ボタンを押したりスティックを倒すと反応が表示される
-:::
-
-### ROS 2での動作確認
-
-`teleop_twist_joy`パッケージを使用して，コントローラーからの入力がROSトピックとして出力されることを確認する．
-
-```{code-block} console
-$ source ~/ros2_ws/install/setup.bash
-$ ros2 launch jedy_bringup joystick_teleop.launch.py
-```
-
-別のターミナルで`/joy`トピックをモニタする：
+`jedy_joy.launch.py` (または `jedy_fullbody_all.launch.py`) を起動した状態で，別の端末で `/joy` を見る．
 
 ```{code-block} console
 $ ros2 topic echo /joy
+header:
+  ...
+axes:
+- 0.0
+- 1.0
+...
+buttons:
+- 0
+- 0
+- 0
+- 0
+- 1
+...
 ```
 
-コントローラーのボタンやスティックを操作すると，`sensor_msgs/Joy`メッセージが出力される．
-`axes`配列にはスティックの値，`buttons`配列にはボタンの状態（0または1）が格納される．
+`axes` にスティックの値 (-1〜1)，`buttons` にボタンの状態 (0 か 1) が入る．
+上の例は L1 (`buttons[4]`) を押しながら左スティックを上 (`axes[1]`) に倒したところである．
 
-### ロボット操作の確認
-
-DualShock 3コントローラーでロボットを操作する場合，以下の操作方法となる：
-
-- **L1ボタン（enable button）を押しながら**左スティックを操作する
-  - 左スティック縦（上下）：前進・後退
-  - 左スティック横（左右）：回転
-
-L1ボタンを押していない状態では，スティックを倒してもロボットは動作しない（安全機構）．
-
-:::{figure} ../fig/jedy-gazebo-joystick.jpg
-:align: center
-:name: fig:jedy-gazebo-joystick
-
-Gazebo上でL1ボタンを押しながら左スティックを倒すとロボットが動作する様子
-:::
-
-{numref}`fig:jedy-gazebo-joystick`は，Gazebo上でコントローラーを使用してロボットを操作している様子を示している．
-L1ボタンを押しながら左スティックを操作することで，シミュレータ内のロボットを動かすことができる．
-
-メカナムホイールロボットを操作する場合の起動例：
+台車への指令は `/cmd_vel` で見る．
 
 ```{code-block} console
-$ source ~/ros2_ws/install/setup.bash
-$ ros2 launch jedy_bringup joystick_teleop.launch.py
+$ ros2 topic echo /cmd_vel
+header:
+  ...
+twist:
+  linear:
+    x: 0.1562975
+    y: 0.0
+    z: 0.0
+  angular:
+    x: 0.0
+    y: 0.0
+    z: 0.0
 ```
 
-## Bluetooth接続の設定
+`jedy_joy` は L1 を押している間だけ `/cmd_vel` を出す (離したときに止める指令を 1 回出す)．
+L1 を押していなければ何も出ないので，プログラムの `ri.go_velocity()` とぶつからない．
 
-有線接続での動作確認が完了したら，Bluetooth接続の設定を行う．
+## Python で `/joy` を読む
 
-### BluetoothデーモンのClassicBondedOnly設定
+`jedy_skrobot` には `/joy` を読むメソッドは無い．rclpy で `/joy` を subscribe する．
+`ri` は rclpy のノードでもあるので，`ri.create_subscription()` で受け取れる．
+コールバックは `ri` の中の別のスレッドで呼ばれる．
 
-DualShock 3コントローラーをBluetooth接続する際，{numref}`fig:ps3-bluetooth-paring-failed`のようなPIN確認画面が表示されることがある．
-この画面が表示される場合，`/etc/bluetooth/input.conf`で`ClassicBondedOnly`を`false`に設定する必要がある．
+```{code-block} python
+from jedy_skrobot import connect
+from sensor_msgs.msg import Joy
 
-:::{figure} ../fig/ps3-bluetooth-paring-failed.jpg
-:align: center
-:name: fig:ps3-bluetooth-paring-failed
+robot, ri = connect()
+last = {'msg': None}
 
-Bluetoothペアリング時のPIN確認画面．この画面が表示される場合は設定変更が必要
-:::
+
+def on_joy(msg):
+    last['msg'] = msg   # 最後に来た /joy を覚えておく
+
+
+ri.create_subscription(Joy, '/joy', on_joy, 10)
+
+while True:
+    msg = last['msg']
+    if msg is not None and msg.buttons[0] == 1:   # × ボタン
+        print('× が押された')
+        break
+    ri.sleep(0.05)
+```
+
+ファイルに書いたときは，jedy_skrobot の仮想環境の python で実行する．
 
 ```{code-block} console
-$ sudo vim /etc/bluetooth/input.conf
-# もしくは
-$ sudo emacs -nw /etc/bluetooth/input.conf
+$ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_joy.py
 ```
 
-以下のように設定する：
-
-```
-[General]
-ClassicBondedOnly=false
-```
-
-設定後，Bluetoothサービスを再起動する：
-
-```{code-block} console
-$ sudo systemctl daemon-reload
-$ sudo systemctl restart bluetooth
-```
-
-設定内容を確認する：
-
-```{code-block} console
-$ head /etc/bluetooth/input.conf
-# Configuration file for the input service
-
-# This section contains options which are not specific to any
-# particular interface
-[General]
-
-ClassicBondedOnly=false
-# Set idle timeout (in minutes) before the connection will
-# be disconnect (defaults to 0 for no timeout)
-#IdleTimeout=30
-```
-
-### Bluetoothが有効になっているかの確認
-
-ターミナルで以下を実行する：
-
-```{code-block} console
-$ gnome-control-center
-```
-
-「Bluetooth」を選択し，ウィンドウの右上に「ON」と表示されているか確認する．
-「OFF」と表示されている場合は，「OFF」の表示をクリックして「ON」に切り替える．
-
-### コントローラーのペアリング
-
-1. gnome-control-centerのBluetoothウィンドウで，「デバイス」の一覧を確認する
-2. DualShock 3コントローラーのPSボタン（中央のプレステマークのボタン）を長押しして，ペアリングモードにする
-3. USBをPCにさしてコントローラーが検出されたら，{numref}`fig:ps3-bluetooth-paring`のような確認ダイアログが表示される．「Allow」をクリックして接続を許可する
-
-:::{figure} ../fig/ps3-bluetooth-paring.jpg
-:align: center
-:name: fig:ps3-bluetooth-paring
-
-Bluetooth接続確認ダイアログ．「Allow」をクリックして接続を許可する
-:::
-
-接続が成功すると，コントローラーのLEDが点灯する．
-
-### 接続確認
-
-Bluetooth接続後，有線接続時と同様にコントローラーの動作を確認する．
-
-まず，`jstest-gtk`で無線接続されたコントローラーが認識されているか確認する：
-
-```{code-block} console
-$ jstest-gtk
-```
-
-{numref}`fig:ps3-bluetooth-jstest`のように，無線接続されたコントローラーがデバイス一覧に表示されれば，Bluetooth接続が成功している．
-
-:::{figure} ../fig/ps3-bluetooth-jstest.jpg
-:align: center
-:name: fig:ps3-bluetooth-jstest
-
-Bluetooth接続が成功すると，jstest-gtkで無線接続されたコントローラーが認識される
-:::
-
-次に，`joy_linux`ノードを起動する：
+`jedy_joy` が動いていると，L1 + スティックや○ / △はそちらでも効く．
+自分のプログラムでは，`jedy_joy` が使っていないボタン (× だけ，□，SHARE，OPTIONS など) を使うとよい．
+台車まで自分のプログラムで動かしたいときは，`joy:=false` で起動し，`joy_linux_node` だけを起動する．
 
 ```{code-block} console
 $ ros2 run joy_linux joy_linux_node
 ```
 
-以下のようなメッセージが表示され，ジョイスティックが認識されたことが確認できる：
+ロボットを使わず，`/joy` を表示するだけなら rclpy だけで書ける．
 
-```
-[WARN] [timestamp] [joy_node]: Couldn't open joystick force feedback: Bad file descriptor
-[INFO] [timestamp] [joy_node]: Opened joystick: /dev/input/js0. deadzone_: 0.050000.
-```
+```{code-block} python
+import rclpy
+from rclpy.executors import ExternalShutdownException
+from rclpy.node import Node
+from sensor_msgs.msg import Joy
 
-または，`teleop_twist_joy`パッケージを使用して確認する：
 
-```{code-block} console
-$ ros2 launch teleop_twist_joy teleop-launch.py joy_config:='ps3'
-```
+def on_joy(msg):
+    print('axes', [round(a, 2) for a in msg.axes], 'buttons', list(msg.buttons))
 
-別のターミナルで`/joy`トピックを確認：
 
-```{code-block} console
-$ ros2 topic echo /joy
-```
-
-Bluetooth接続でも`/joy`トピックが正常に出力されれば，設定完了である．
-
-## ジョイスティック操縦
-
-ジョイスティックで台車ロボットを操縦する方法について説明する．
-
-jedy_bringup.launch.pyが起動している状態で，ロボットPCの別のターミナルで以下を実行する：
-
-```{code-block} console
-$ source ~/ros2_ws/install/setup.bash
-$ ros2 launch jedy_bringup joystick_teleop.launch.py
+rclpy.init()
+node = Node('my_joy_reader')
+node.create_subscription(Joy, '/joy', on_joy, 10)
+try:
+    rclpy.spin(node)   # Ctrl-C で終わる
+except (KeyboardInterrupt, ExternalShutdownException):
+    pass
 ```
 
-`/dev/input/js0`が見つからず，ジョイスティックが`/dev/input/js1`として認識されている場合は，以下のように指定する：
+## Bluetooth で無線接続する
 
-```{code-block} console
-$ source ~/ros2_ws/install/setup.bash
-$ ros2 launch jedy_bringup joystick_teleop.launch.py joy_dev:=/dev/input/js1
-```
+USB の代わりに Bluetooth でつなぐこともできる．
 
-ジョイスティックコントローラの**L1を押しながら左ジョイスティックを前後左右にすると**，前進後退，旋回を行う．
+1. ターミナルで `gnome-control-center bluetooth` を実行し，Bluetooth を ON にする．
+2. コントローラの SHARE ボタンと PS ボタンを同時に，ライトバーが速く点滅するまで長押しする．
+3. 設定画面のデバイスの一覧に出る「Wireless Controller」を選んでペアリングする．
 
-本プログラムでも，別のターミナルで以下を実行すると，指令速度がトピックとして送られていることが確認できる：
-
-```{code-block} console
-$ ros2 topic echo /cmd_vel
-```
-
-このように，異なる操縦デバイスであっても，共通のトピックを使いロボットの移動行動を実現している．
-
-## ジョイスティックのEusLispサンプル
-
-ジョイスティックに関するトピックである`/joy`をEusLispでsubscribeするサンプルについて紹介する．
-これは次回以降の講義で，アームの操縦プログラムを開発する際に必要となる．
-
-ロボットPCのターミナルで以下を実行する：
-
-```{code-block} console
-$ source ~/ros2_ws/install/setup.bash
-$ ros2 launch jedy_bringup joystick_teleop.launch.py
-```
-
-別のターミナルで以下を実行する：
-
-```{code-block} console
-$ roscd jedyeus/euslisp
-$ roseus joy-sample.l
-```
-
-circle-buttonに応答するサンプルプログラムが起動する．Enterで終了する．
-
-EusLisp REPLで以下のコマンドを実行すると，全ボタンの状態を表示できる：
-
-```{code-block} lisp
-;; 全ボタンの状態を表示
-irteusgl$ (sample-ps3joy)
-
-;; :circle-buttonの他に，ジョイスティック・十字キー・ボタンに対応したメソッド一覧を表示
-irteusgl$ (send *joy* :axis-names)
-irteusgl$ (send *joy* :button-names)
-```
-
-EusLispでps3joyの値がとれて表示されているのがわかる．
-あとは，この値をEusLisp上で何らかの処理と対応付ければ，ジョイスティックに応じてロボットが動くプログラムが作れる．
-
-どのボタンの値がとれるかは，`(send *joy* :button-names)`や`(send *joy* :axis-names)`で調べたり，`(sample-ps3joy)`関数の出力を見ながら調べるとよい．
+つながると，USB のときと同じく `/dev/input/js0` ができる．`ls /dev/input/js*` と `ros2 topic echo /joy` で確かめる．
+Bluetooth では，ボタンの番号が USB のときと同じかを `ros2 run jedy_bringup jedy_joy_monitor` で確かめてから走らせること．
