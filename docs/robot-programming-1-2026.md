@@ -83,9 +83,15 @@ $ source ~/.bashrc
 
 どちらか **1 つだけ** を起動する (同時に起動すると同じ名前のトピックがぶつかる)．
 起動したターミナルはそのままにして，プログラムは別のターミナルで動かす．
-Ctrl-C は押したターミナルのものだけを止める．起動したターミナルで押すとロボット (Gazebo) が止まり，
-プログラムは `wait_until_update_all_joints timeout (... s): no message on /jedy_fullbody/joint_states for ... s. Is the robot or the simulator running?`
-のようなメッセージを出して止まる．そのときは起動し直す．
+Ctrl-C は押したターミナルのものだけを止める．起動したターミナルで押すとロボット (Gazebo) が止まる．
+プログラムはエラーで止まるとは限らない:
+
+- `ri.angle_vector()` は `wait_until_update_all_joints timeout (... s): no message on /jedy_fullbody/joint_states for ... s. Is the robot or the simulator running?`
+  と警告して，最後に受け取った (古い) 角度を返す．
+- `ri.wait_interpolation()` は 30 秒待ってから `... the clock has not moved for 30.0 s (is the simulator running and publishing /clock?)` のエラーで止まる．
+- 新しく `connect()` すると，ロボットが起動するまで (最大 120 秒) 何も表示せずに待つ．
+
+そうなったら，プログラムを Ctrl-C で止め，ロボットを起動し直してから，プログラムも起動し直す．
 
 ### Gazebo シミュレーション
 
@@ -304,6 +310,9 @@ ri.servo_on()                                       # 全軸 ON に戻す (次�
 ```
 
 `servo_on()` はまず今の姿勢を送ってから ON にするので，ON にした瞬間に腕が飛ぶことはない．
+上をまとめて実行すると，OFF で腕が落ちている途中に ON にするので，
+`servo_on attempt 1/3 refused, re-syncing once the joints are at rest: refusing: enabling would throw the robot ...` という警告が出る．
+腕が止まるのを待ってやり直しているだけで，そのあと ON になれば問題ない．
 サーボを OFF にした関節は脱力し，重力で垂れる．OFF の間も関節角度は読めるので，手で動かした角度も `ri.angle_vector()` で分かる．
 OFF のままの関節には `ri.angle_vector(...)` で角度を送っても動かない (エラーも出ない)．
 腕が送った角度にならないときは，まず `ri.servo_on()` をしたか確かめること．
@@ -454,6 +463,11 @@ Jedy の関節は 5 つのコントローラ (`head_controller`, `right_arm_cont
 `controller_type` を付けるとそのコントローラの関節だけを送り，`wait_interpolation(名前)` でそれだけを待つ．
 
 ```{code-block} python
+robot.reset_pose()
+robot.head_joint1.joint_angle(np.deg2rad(20.0))                # 首を 20° 下に
+target = robot.rarm.end_coords.copy_worldcoords()
+target.translate([0.04, 0.0, 0.04], wrt='world')               # 右手を前に 4 cm，上に 4 cm
+robot.rarm.inverse_kinematics(target, rotation_axis=False)
 # 頭 (2 秒) と右腕 (4 秒) を同時に．どちらも相手を待たず，相手の動きを止めない
 ri.angle_vector(robot.angle_vector(), 4.0, controller_type='right_arm_controller')
 ri.angle_vector(robot.angle_vector(), 2.0, controller_type='head_controller')
@@ -488,6 +502,8 @@ print(depth[240, 320])         # 画像の真ん中までの距離 [m]
 
 Gazebo で起動した直後の頭のカメラの画像 (左に赤い箱)
 :::
+
+台車の節で動いたあとは，向きが変わって箱が写っていないことがある．この図と同じ画像にするには，ロボットを起動し直す．
 
 画像は numpy の配列なので，matplotlib で表示したり，OpenCV や自分の Python のプログラムにそのまま渡したりできる．
 
@@ -548,6 +564,9 @@ D405 (実機の頭のカメラ) の深度は 0.07〜0.5 m くらいしか測れ�
 ```{code-block} console
 $ ros2 launch jedy_vision recognition.launch.py
 ```
+
+起動した直後の 1 回目は `no image on /camera/color/image_rect_raw yet` で失敗することがある (カメラの画像がまだ届いていない)．
+数秒待ってからもう一度呼ぶ．
 
 ```{code-block} python
 # 物体: 言葉で指定して探す
@@ -619,7 +638,12 @@ Gazebo では `tags:=true` で，64 mm のタグ (36h11，id 0〜9) を貼った
 (各タグはロボットの方を向いている．`demo:=true` とは一緒に使わない)．
 
 ```{code-block} console
-$ ros2 launch jedy_bringup jedy_gazebo.launch.py tags:=true
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py tags:=true    # ターミナル 1: 起動したままにする
+```
+
+別のターミナルで (上のブロックとまとめて貼ると，Gazebo を止めたときに下のコマンドが勝手に動き出す):
+
+```{code-block} console
 $ ros2 run jedy_vision tag_pose --size 0.064 --tilt 10            # 見えているタグの位置 (base_link) を表示し，RViz にも出す
 $ ros2 run jedy_vision approach_tag --id 2 --size 0.064 --tilt 10 --standoff 0.3   # タグ 2 の正面 0.3 m まで走る
 ```
@@ -650,8 +674,11 @@ Gazebo では `person:=true` で人のモデルを置ける (`person_x`, `person
 顔の枠と 478 点のメッシュ，手の 21 点を見つけて，描いた画像を保存する．
 
 ```{code-block} console
-$ ros2 launch jedy_bringup jedy_gazebo.launch.py person:=true person_x:=1.6 person_y:=0.0
-$ ros2 run jedy_vision detect_people --pose --face --hands --tilt -25 --save people.png
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py person:=true person_x:=1.6 person_y:=0.0   # ターミナル 1
+```
+
+```{code-block} console
+$ ros2 run jedy_vision detect_people --pose --face --hands --tilt -25 --save people.png      # 別のターミナルで
 ```
 
 頭のカメラは床から 0.4 m ほどなので，立っている人の顔を見るには首を上に向ける (`--tilt -25`: 負が上)．
@@ -807,8 +834,11 @@ Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは 
 
 
 ```{code-block} console
-$ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
-$ ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true    # ターミナル 1
+```
+
+```{code-block} console
+$ ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて        # 別のターミナルで
 ```
 
 1 回の手順は次のとおり．
@@ -971,7 +1001,7 @@ if text is not None and '進' in text:
   周りの雑音を声と間違えるなら上げ，声を拾わないなら下げる．
 - `tts_action_names:="[robotsound_jp]"`: ロボットが `ri.say()` でしゃべっている間は認識を止める (自分の声を認識しないため)．
 
-声の名前は `~/.ros/voicevox/speakers.json` にある．**名前を間違えるとエラーにならず，何もしゃべらない**ので注意．
+声の名前は `~/.ros/voicevox/speakers.json` にある．**名前を間違えてもエラーにならず，既定の声でしゃべる**ので注意 (声が変わらなければ名前を確かめる)．
 コマンドでは `ros2 topic pub --once /robotsound_jp/text std_msgs/msg/String "{data: 'こんにちは'}"` でしゃべり，
 `ros2 topic echo /speech_to_text` で認識結果を見られる．
 
