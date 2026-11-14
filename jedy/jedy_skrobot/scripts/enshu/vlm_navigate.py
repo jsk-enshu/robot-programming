@@ -4,7 +4,8 @@
 The 2026 version of jedy_bringup/scripts/robocrew_image_to_cmd_vel.py
 (2025: langchain, Google AI Studio and a GOOGLE_API_KEY). Here the camera
 image and the goal go to the course's VLM gateway (ri.ask) with the AI TA's key
-(``ta login``), and the model answers with one small move::
+(``ta login``), or straight to Google AI Studio with the student's own
+GOOGLE_API_KEY when that is set, and the model answers with one small move::
 
     ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて
     ros2 run jedy_skrobot vlm_navigate               # wait for a goal on the topic
@@ -48,7 +49,7 @@ from std_msgs.msg import String
 
 from jedy_skrobot import connect
 from jedy_skrobot import VlmRefused
-from jedy_skrobot.interface import aita_credentials
+from jedy_skrobot.interface import vlm_credentials
 
 #: The AI TA server's models that take images.
 MODELS = ('vlm-er', 'vlm-gemini')
@@ -373,7 +374,7 @@ def main():
         print('[dry-run] VLM には聞かず，台本 {} のとおりに動きます'.format(script))
     else:
         try:
-            aita_credentials()   # the key, before anything moves
+            vlm_credentials()   # the key (AI TA or GOOGLE_API_KEY), before anything moves
         except VlmRefused as exc:
             raise SystemExit(str(exc))
     first = ' '.join(args.goal) or None

@@ -30,3 +30,15 @@ Google AI Studioのキー作成ダイアログ
 6. 作成されたキーの右側にある「Copy API Key」ボタンをクリックして，APIキーをコピーする．
 
 7. コピーしたAPIキーを安全な場所に保存する．
+
+## 演習 (2026) の VLM で使う
+
+ロボットプログラミング演習 1 日目の `ri.ask`，`ri.point`，`vlm_navigate` は，AI TA の代わりに自分のキーでも使える．
+プログラムを動かすターミナルで次を実行する (毎回打たないなら `~/.bashrc` に書く)．
+
+```{code-block} console
+$ export GOOGLE_API_KEY=発行したキー
+```
+
+設定すると，VLM には AI TA のキーは使わず，Google AI Studio に直接送る．
+使えるモデルや無料枠の制限は {ref}`vlm-google-ai-studio` を見ること．

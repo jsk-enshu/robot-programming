@@ -790,6 +790,7 @@ Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは 
 - 使う前に `ta login` が要る (キーは AI TA と同じ．API キーを取ったり `.env` を書いたりしなくてよい)．
   `ta login` で「カメラ画像を AI に送る機能」に同意したときだけ使える．
   「ta login で同意したキーだけで使えます」と断られたら，`ta login` をやり直して同意するか選ぶ．
+  AI TA を使わない人，画像を送ることに同意しない人は，{ref}`vlm-google-ai-studio` のとおり自分の Google AI Studio のキーで同じ関数を使える．
 - **送った画像・質問・答えは演習のサーバーに保存され，演習の教員・TA が見る．** 人の顔や個人の物が写らないように向けること．
 - 1 人あたり **1 秒に 1 回**まで (`ri.ask` は自分で 1.1 秒あけて送る)，**1 日 $2** まで，1 回に画像 2 枚まで．
   1 回 $0.001〜0.003 ほど．この分は AI TA と同じキーの 1 日の上限にも数えられる (`ta usage` に出る額は AI TA との合計)．
@@ -801,6 +802,31 @@ Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは 
   `'budget'` (予算を使い切った)，`'key'` (キーが無い・使えない・同意していない) ならその日・その設定では使えない．
 - `model='vlm-er'` で Gemini Robotics-ER を使う．画像の中の物の位置を指すのが得意．
 - Gazebo の画像は CG なので，実機のカメラとは答えが変わることがある．
+
+(vlm-google-ai-studio)=
+#### 自分の Google AI Studio のキーで使う
+
+AI TA を使わない人，カメラ画像を AI TA のサーバーに送ることに同意しない人は，
+自分の Google AI Studio の API キー (無料) で `ri.ask`，`ri.point`，`vlm_navigate` をそのまま使える．
+キーの発行は {doc}`tips/google-ai-studio` を見る．発行したら，ロボットのプログラムを動かすターミナルで次を実行する
+(毎回打たないなら `~/.bashrc` に書く)．
+
+```{code-block} console
+$ export GOOGLE_API_KEY=発行したキー
+```
+
+- `GOOGLE_API_KEY` が空でなければ，質問と画像は Google AI Studio に直接送られ，VLM には AI TA のキーは使わない
+  (演習のサーバーには送られず，保存もされない)．最初の 1 回に `VLM: Google AI Studio (GOOGLE_API_KEY)` と表示される．
+  AI TA に戻すときは `unset GOOGLE_API_KEY` する．エラーになっても，もう一方へ勝手に切り替わることはない．
+- `ri.ask` (`model='vlm-gemini'`) は `gemini-3.8-flash` を使う．無料枠で使える．
+- `ri.point` と `model='vlm-er'` は Gemini Robotics-ER (`gemini-robotics-er-2-preview`) を使う．
+  プレビュー版なので，無料枠では使えない，または回数がすぐ上限になることがある (演習の前に確かめられていない)．
+  使えないとき (HTTP 404 など) は，`ri.ask` を `model='vlm-gemini'` で使うか，
+  使えるモデル名を `export JEDY_VLM_ER_MODEL=...` (`vlm-gemini` は `JEDY_VLM_GEMINI_MODEL`) で指定する．
+- 無料枠は回数に制限がある．超えると `VlmRefused` の `e.kind` が `'rate'` になる．少し待てばまた使えるが，1 日の上限ならその日はもう使えない．
+  キーが違う・使えないときは `'key'` になる．
+- 金額は 0 として数える (`ri.vlm_total_cost` は増えない．AI TA の 1 日 $2 の上限とも関係ない)．
+- `reasoning='none'` (既定) は，Google では `'minimal'` として送る (Gemini 3 は考えるのを止められないため)．
 
 ### VLM に聞いて動く (言葉で目標を言う)
 
@@ -913,6 +939,8 @@ Gazebo (`box:=true`) で測った 1 手の時間 (2026 年 11 月，各 1 回)�
 | `vlm-gemini` (`none`) | 7 手 | 5.5 s | 0.2 s | 3.7 s | 1.5 s | $0.013 |
 
 1 手に 1 秒より長くかかるので，サーバーの「1 秒に 1 回」の制限で待つことは無かった．
+`GOOGLE_API_KEY` を設定していれば，`vlm_navigate` も自分の Google AI Studio のキーで動く ({ref}`vlm-google-ai-studio`)．
+既定の `--model vlm-er` が無料枠で使えないときは `--model vlm-gemini` にする．
 
 答えを待っている間はロボットは動かない．`done` か，`--max-steps` 回 (既定 30) か，Ctrl-C で終わり，どの場合も台車を止める．
 端末には 1 手ごとに `[何回目/最大] 動き 理由 (目標までの距離, 答えまでの秒数, その回の金額, 合計の金額)` が出る．
