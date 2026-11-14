@@ -171,6 +171,9 @@ JEFY のサーボは 1.25 Mbps のままでよいので，`--baudrate` は付け
 別の通信速度で使うサーボのときだけ，`--baudrate 115200` などを付ける．
 ```
 
+通信速度（ボーレート）を送る側と受ける側で合わせる理由は，夏学期の{doc}`../micon-programming`のシリアル通信の節（{numref}`fig:baudrate`）を参照すること．
+ICS も同じで，サーボと RCB-4mini（JEFY では 1.25 Mbps）の通信速度がそろっていないと通信できない．
+
 ### Windows の場合
 
 Windows では，近藤科学の ICS3.5/3.6 Manager ソフトウェア[^ics-manager]と，アダプターのドライバ（KO Driver）を使う．

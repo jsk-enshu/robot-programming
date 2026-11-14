@@ -14,6 +14,9 @@ Ubuntu 24.04 に ROS 2 Jazzy が入っていることを前提とする．入っ
 $ sudo apt update
 $ sudo apt upgrade -y   # 入っている ROS 2 を新しくする (古いとビルドが止まる)
 $ sudo apt install -y python3-colcon-common-extensions python3-vcstool python3-rosdep ros-jazzy-realsense2-camera byobu
+$ sudo curl -fsSL -o /etc/udev/rules.d/99-realsense-libusb.rules \
+    https://raw.githubusercontent.com/IntelRealSense/librealsense/v2.58.4/config/99-realsense-libusb.rules   # 頭のカメラ (D405) を開けるようにする
+$ sudo udevadm control --reload-rules && sudo udevadm trigger
 $ curl -LsSf https://astral.sh/uv/install.sh | sh   # Python の仮想環境を作る uv (1 回だけ)
 $ source $HOME/.local/bin/env
 $ mkdir -p ~/ros2_ws/src

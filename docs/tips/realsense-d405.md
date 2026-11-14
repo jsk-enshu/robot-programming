@@ -49,6 +49,15 @@ $ sudo apt install -y ros-jazzy-realsense2-camera
 
 ライブラリ (librealsense2) も一緒に入る．ソースからビルドする必要は無い．
 
+D405 を一般ユーザで開けるように，udev ルールを 1 回だけ入れる (apt のパッケージには入っていない)．
+入れたら D405 を挿し直す．
+
+```{code-block} console
+$ sudo curl -fsSL -o /etc/udev/rules.d/99-realsense-libusb.rules \
+    https://raw.githubusercontent.com/IntelRealSense/librealsense/v2.58.4/config/99-realsense-libusb.rules
+$ sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
 ## 実機での起動
 
 実機では，ロボットを起動するときに `camera:=true` を付ける．
