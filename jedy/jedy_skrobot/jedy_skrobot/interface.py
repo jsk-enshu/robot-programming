@@ -237,9 +237,19 @@ class JedyInterface(RobotInterface):
         Passed to :class:`~actuo_ros.robot_interface.RobotInterface`.
     """
 
+    #: How many interfaces this process has made: the second ``connect()``
+    #: in one ipython gets ``jedy_skrobot_2`` and so on, since two nodes of
+    #: one name share a rosout publisher and rcl warns "Publisher already
+    #: registered" (the program still works, but students take it for an error).
+    _count = 0
+
     def __init__(self, robot, controller_joints, use_sim_time=False,
                  **kwargs):
-        kwargs.setdefault('node_name', 'jedy_skrobot')
+        JedyInterface._count += 1
+        default_name = 'jedy_skrobot'
+        if JedyInterface._count > 1:
+            default_name = 'jedy_skrobot_{}'.format(JedyInterface._count)
+        kwargs.setdefault('node_name', default_name)
         super(JedyInterface, self).__init__(robot, controller_joints, **kwargs)
         if use_sim_time:
             self.set_parameters([Parameter('use_sim_time', value=True)])

@@ -66,16 +66,18 @@ def find_box(rgb, ranges=RED, min_area=100):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--turn', type=float, default=0.3,
+    p.add_argument('--turn', type=float, default=1.0,
                    help='largest turning speed [rad/s]')
     p.add_argument('--timeout', type=float, default=30.0,
                    help='stop after this many seconds (robot clock)')
-    p.add_argument('--min-turn', type=float, default=0.1,
-                   help='slowest turn that is sent [rad/s]: below it a base '
-                        'on real wheels does not move at all')
-    p.add_argument('--tolerance', type=float, default=0.05,
+    p.add_argument('--min-turn', type=float, default=0.83,
+                   help='slowest turn that is sent [rad/s]: the real base '
+                        'does not turn below about 0.83 rad/s')
+    p.add_argument('--tolerance', type=float, default=0.15,
                    help='how far from the middle counts as centred (1 = the '
-                        'edge of the picture)')
+                        'edge of the picture); at --min-turn the base turns '
+                        'a few degrees per loop, so too small a band makes '
+                        'it swing past the box and back')
     p.add_argument('--max-age', type=float, default=1.0,
                    help='ignore a detection older than this [s]')
     p.add_argument('--until-centered', action='store_true',
@@ -131,8 +133,11 @@ def main():
                 if not hinted and ri.now() - start > NO_BOX_HINT_S:
                     hinted = True
                     print('hint: {:.0f} 秒間, 赤い箱が一度も見えていません. '
-                          'Gazebo は box:=true '
-                          'で起動しましたか? 実機ならカメラの前に赤い物を置いてください.'
+                          'このプログラムは見えない箱を探して回りはしません. '
+                          '箱が画面の外にある (台車を動かしたあと) なら, '
+                          'teleop で箱の方に向けるか Gazebo を起動し直す. '
+                          'Gazebo は box:=true で起動しましたか? '
+                          '実機ならカメラの前に赤い物を置いてください.'
                           .format(NO_BOX_HINT_S))
             if box is not None:
                 hinted = True  # seen once: later losses are real tracking
