@@ -176,7 +176,7 @@ $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy
 undefined reference to `class_loader::impl::AbstractMetaObjectBase::~AbstractMetaObjectBase()'
 undefined reference to methods in libimage_transport.so
 ...
-make[2]: *** [opencv_apps/nodelet/libopencv_apps] Error 1
+...
 ```
 
 ### 原因

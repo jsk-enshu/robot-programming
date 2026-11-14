@@ -28,6 +28,8 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 | `camera_rate:=30` | 頭のカメラを1秒に30枚にする（既定は5，PCが重くなる） |
 | `gui:=false` | Gazeboの画面を出さない（ロボットは動く） |
 | `render_sensors:=false` | カメラを止める（GPUの無いPC向け） |
+| `rviz:=true` | RVizも起動する |
+| `clock_every:=1` | `/clock`をシミュレーションの全ステップ（200 Hz）で出す（既定は4ステップに1回．{doc}`use-sim-time`） |
 | `world:=empty` | 演習室を置かず，何も無い床にする |
 
 使い方は{doc}`../robot-programming-1-2026` の「Gazebo シミュレーション」にもある．
@@ -35,6 +37,16 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 
 ```{code-block} console
 $ ros2 launch jedy_bringup jedy_gazebo.launch.py --show-args
+```
+
+### Gazeboが終わらずに残ったとき
+
+Ctrl-Cで止めたのに`gz sim server`が残り，次の起動が「すでに起動している」と止まることがある（模擬で5回に1回あった）．
+残っているかを確かめ，残っていたら強制終了する．
+
+```{code-block} console
+$ pgrep -af "gz sim"
+$ pkill -9 -f "gz sim"
 ```
 
 (gazebo-robot-reset)=

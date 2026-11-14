@@ -739,7 +739,7 @@ if side == '左':
 
 左腕が届くのは，base_link から前に 0.25 m ほど，左右は 0.05〜0.1 m (左腕の前)，高さ 0.1〜0.2 m ほどである．
 `box:=true` の赤い箱は前に 1.1〜1.2 m，左に 0.43〜0.48 m にあるので，
-下のコードをそのまま実行すると「IK が解けない」で終わる．先に `p` を表示して，台車で箱を左腕の前に持ってくる．
+下のコードをそのまま実行すると「IK が解けない」で終わる．先に下のコードを 1 回実行して箱の位置 `p` を求め (IK は解けずに終わる)，次のコードで台車を動かして箱を左腕の前に持ってくる．
 
 ```{code-block} python
 import time
@@ -1008,6 +1008,7 @@ $ colcon build --symlink-install --packages-up-to voicevox
 $ source ~/ros2_ws/install/setup.bash
 ```
 
+ビルドの前から開いていたほかのターミナルでも `source ~/.bashrc` を実行する (しないと `Package 'voicevox' not found` になる)．
 ロボットとは別のターミナルで，それぞれ起動しておく．
 
 ```{code-block} console

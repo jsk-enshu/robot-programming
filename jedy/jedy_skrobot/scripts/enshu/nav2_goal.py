@@ -122,28 +122,38 @@ def main():
     navigator.waitUntilNav2Active(localizer='robot_localization')
     wait_for_localization(navigator)
 
-    for x, y, yaw in args.goals:
-        start = time.monotonic()
-        sim_start = ri.now()
-        navigator.goToPose(make_pose(navigator, x, y, yaw))
-        last_print = 0.0
-        feedback = None
-        while not navigator.isTaskComplete():
-            feedback = navigator.getFeedback() or feedback
-            if feedback is not None and time.monotonic() - last_print > 2.0:
-                last_print = time.monotonic()
-                print('  remaining {:.2f} m'.format(feedback.distance_remaining))
-        result = navigator.getResult()
-        here = feedback.current_pose.pose.position if feedback else None
-        print('goal ({:.2f}, {:.2f}, {:.0f} deg): {}  {:.1f} s (robot clock {:.1f} s){}'.format(
-            x, y, yaw, result.name, time.monotonic() - start, ri.now() - sim_start,
-            '' if here is None else
-            ', last pose ({:.2f}, {:.2f})'.format(here.x, here.y)))
-        if result != TaskResult.SUCCEEDED:
-            break
+    # Ctrl-C must stop the robot: a Nav2 goal runs in Nav2, not here, so
+    # leaving this loop alone lets the robot drive on to the goal. Cancel it.
+    try:
+        for x, y, yaw in args.goals:
+            start = time.monotonic()
+            sim_start = ri.now()
+            navigator.goToPose(make_pose(navigator, x, y, yaw))
+            last_print = 0.0
+            feedback = None
+            while not navigator.isTaskComplete():
+                feedback = navigator.getFeedback() or feedback
+                if feedback is not None and time.monotonic() - last_print > 2.0:
+                    last_print = time.monotonic()
+                    print('  remaining {:.2f} m'.format(feedback.distance_remaining))
+            result = navigator.getResult()
+            here = feedback.current_pose.pose.position if feedback else None
+            print('goal ({:.2f}, {:.2f}, {:.0f} deg): {}  {:.1f} s (robot clock {:.1f} s){}'.format(
+                x, y, yaw, result.name, time.monotonic() - start, ri.now() - sim_start,
+                '' if here is None else
+                ', last pose ({:.2f}, {:.2f})'.format(here.x, here.y)))
+            if result != TaskResult.SUCCEEDED:
+                break
+    except BaseException:
+        navigator.cancelTask()
+        ri.stop()
+        raise
 
     navigator.destroy_node()
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('stopped by Ctrl-C (the Nav2 goal was cancelled)')

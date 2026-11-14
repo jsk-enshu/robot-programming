@@ -207,6 +207,7 @@ Gazebo に無いもの (ペットボトル・手のジェスチャ・手を挙�
   0.4 秒の振りは Gazebo でも関節の速さの上限を超え，`Time has been changed from 0.4 to 0.71 due to joint velocity limit` と出て伸ばされた)
 - **止め方**: Ctrl-C で止まるか．Ctrl-C で止まるのはプログラムで，`finally` の `ri.stop()` が台車を止める．
   送ってある腕の動きは止まらず，目標の姿勢まで動いてそこに残る．腕もその場で止めるなら，`finally` に `ri.cancel_angle_vector()` を書く (Gazebo で確かめた)．
+  Nav2 ({doc}`tips/slam`) で走らせているときは，Ctrl-C でプログラムが終わってもロボットは目標へ走り続ける．`except` で `navigator.cancelTask()` を呼ぶ (`nav2_goal` はそうしている)．
   それでも止まらないときに背面のスイッチでサーボの電源を切れる人がそばにいるか (切ると腕は重力で垂れるので支える)
 
 </div>
