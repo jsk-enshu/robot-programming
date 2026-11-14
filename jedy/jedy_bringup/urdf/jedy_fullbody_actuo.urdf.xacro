@@ -69,6 +69,16 @@
   <xacro:arg name="init_larm_gripper_joint" default="0.0"/>
   <xacro:arg name="use_sim" default="false"/> <!-- true | false -->
   <xacro:arg name="wheels" default="false"/>  <!-- true = drive the mecanum base -->
+  <!-- gazebo only: true = a 2-D LiDAR (/scan) and odom -> base_link, for
+       SLAM and Nav2 (see the block at the end). -->
+  <xacro:arg name="lidar" default="false"/>
+  <!-- One beam per degree all round (a typical low-cost 2-D LiDAR's
+       count), 0.2-12 m. The minimum range is what keeps the robot itself out
+       of /scan: base_laser sits in the body's plane, and in Gazebo the base,
+       wheels and arms (spawn pose and ri.tuck_arms() pose both) came back at
+       0.05-0.17 m from it; a beam nearer than the minimum reads inf. -->
+  <xacro:property name="lidar_samples" value="360"/>
+  <xacro:property name="lidar_min_range" value="0.2"/>
   <xacro:arg name="description"
              default="$(find jedy_description)/urdf/jedy_gz.xacro"/>
 
@@ -291,5 +301,64 @@
            implement mimic constraints, and without this it stayed at 0. -->
       <plugin filename="jedy_mimic_joint" name="jedy_sim::JedyMimicJoint"/>
     </gazebo>
+
+    <!-- lidar:=true (jedy_gazebo.launch.py lidar:=true), for SLAM and Nav2
+         (docs/tips/slam.md). SIMULATION ONLY: the real Jedy has no LiDAR and
+         no odom frame. Off by default, so the exercises' robot is unchanged.
+         Two things, both needed by slam_toolbox, AMCL and Nav2:
+
+         * A 2-D LiDAR on base_laser (base_link + 0.1 m forward, 0.116 m above
+           the floor), bridged to /scan (sensor_msgs/LaserScan, frame_id
+           base_laser). gpu_lidar is drawn by the Sensors system, so it needs
+           render_sensors:=true like the head camera.
+         * odom -> base_link on /tf and nav_msgs/Odometry on /odom, from the
+           model's pose in Gazebo: odometry without wheel slip or drift. The
+           controller's own /jedy_fullbody/mecanum_drive_controller/odometry
+           is not used: it integrates the commanded wheel speeds, and in
+           Gazebo a half turn at 1.0 rad/s came out 0.44 rad more than the
+           robot really turned (2.98 against 2.54 rad). -->
+    <xacro:if value="${'$(arg lidar)' == 'true'}">
+      <gazebo reference="base_laser">
+        <sensor name="lidar" type="gpu_lidar">
+          <always_on>true</always_on>
+          <update_rate>10</update_rate>
+          <visualize>false</visualize>
+          <topic>scan</topic>
+          <gz_frame_id>base_laser</gz_frame_id>
+          <lidar>
+            <scan>
+              <horizontal>
+                <samples>${lidar_samples}</samples>
+                <resolution>1</resolution>
+                <!-- [-180, 179] deg: +180 would repeat -180's beam. -->
+                <min_angle>${-pi}</min_angle>
+                <max_angle>${pi - 2 * pi / lidar_samples}</max_angle>
+              </horizontal>
+            </scan>
+            <range>
+              <min>${lidar_min_range}</min>
+              <max>12.0</max>
+              <resolution>0.01</resolution>
+            </range>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.01</stddev>
+            </noise>
+          </lidar>
+        </sensor>
+      </gazebo>
+      <gazebo>
+        <plugin filename="gz-sim-odometry-publisher-system"
+                name="gz::sim::systems::OdometryPublisher">
+          <odom_frame>odom</odom_frame>
+          <robot_base_frame>base_link</robot_base_frame>
+          <odom_topic>/odom</odom_topic>
+          <tf_topic>/odom/tf</tf_topic>
+          <odom_publish_frequency>50</odom_publish_frequency>
+          <dimensions>2</dimensions>
+        </plugin>
+      </gazebo>
+    </xacro:if>
   </xacro:if>
 </robot>

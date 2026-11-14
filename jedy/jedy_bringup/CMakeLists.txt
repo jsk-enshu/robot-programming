@@ -9,7 +9,7 @@ find_package(gz_plugin_vendor REQUIRED)
 find_package(gz-plugin REQUIRED COMPONENTS register)
 
 install(
-  DIRECTORY launch config urdf rviz worlds
+  DIRECTORY launch config urdf rviz worlds maps
   DESTINATION share/${PROJECT_NAME}
 )
 
