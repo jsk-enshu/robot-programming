@@ -792,8 +792,8 @@ Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは 
   「ta login で同意したキーだけで使えます」と断られたら，`ta login` をやり直して同意するか選ぶ．
   AI TA を使わない人，画像を送ることに同意しない人は，{ref}`vlm-google-ai-studio` のとおり自分の Google AI Studio のキーで同じ関数を使える．
 - **送った画像・質問・答えは演習のサーバーに保存され，演習の教員・TA が見る．** 人の顔や個人の物が写らないように向けること．
-- 1 人あたり **1 秒に 1 回**まで (`ri.ask` は自分で 1.1 秒あけて送る)，**1 日 $2** まで，1 回に画像 2 枚まで．
-  1 回 $0.001〜0.003 ほど．この分は AI TA と同じキーの 1 日の上限にも数えられる (`ta usage` に出る額は AI TA との合計)．
+- 1 人あたり **1 秒に 1 回**まで (`ri.ask` は自分で 1.1 秒あけて送る)，1 回に画像 2 枚まで．
+  1 回 $0.001〜0.003 ほど．
 - 1 回に `vlm-er` で 1.3 秒，`vlm-gemini` で 2.7 秒ほどかかる (Gazebo の画像 1 枚，12 回の中央値．まれに 20 秒以上かかった)．
   台車や腕を止めずに動かし続ける制御には使わない．「次に何をするか」を決めるのに使う．
   既定では AI はほとんど考えずに答える (`reasoning='none'`)．難しい質問では `reasoning='low'` などにすると答えが良くなることがあるが，遅く高くなる．
@@ -806,8 +806,8 @@ Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは 
 (vlm-google-ai-studio)=
 #### 自分の Google AI Studio のキーで使う
 
-AI TA を使わない人，カメラ画像を AI TA のサーバーに送ることに同意しない人は，
-自分の Google AI Studio の API キー (無料) で `ri.ask`，`ri.point`，`vlm_navigate` をそのまま使える．
+AI TA に登録したくない人，カメラ画像を AI TA 経由で送ることに同意しない人は，
+自分の Google AI Studio の API キー (無料) で `ri.ask`，`ri.point`，`vlm_navigate` をそのまま使ってよい．
 キーの発行は {doc}`tips/google-ai-studio` を見る．発行したら，ロボットのプログラムを動かすターミナルで次を実行する
 (毎回打たないなら `~/.bashrc` に書く)．
 
@@ -819,13 +819,19 @@ $ export GOOGLE_API_KEY=発行したキー
   (演習のサーバーには送られず，保存もされない)．最初の 1 回に `VLM: Google AI Studio (GOOGLE_API_KEY)` と表示される．
   AI TA に戻すときは `unset GOOGLE_API_KEY` する．エラーになっても，もう一方へ勝手に切り替わることはない．
 - `ri.ask` (`model='vlm-gemini'`) は `gemini-3.8-flash` を使う．無料枠で使える．
-- `ri.point` と `model='vlm-er'` は Gemini Robotics-ER (`gemini-robotics-er-2-preview`) を使う．
-  プレビュー版なので，無料枠では使えない，または回数がすぐ上限になることがある (演習の前に確かめられていない)．
-  使えないとき (HTTP 404 など) は，`ri.ask` を `model='vlm-gemini'` で使うか，
+  無料枠は混んでいると HTTP 503 (high demand) で断られたり，答えが返らずに時間切れになったりする (2026 年 11 月に何度か起きた)．少し時間をおいてやり直す．
+- `ri.point` と `model='vlm-er'` は Gemini Robotics-ER (`gemini-robotics-er-2-preview`) を使う．これも無料枠で使える
+  (2026 年 11 月に確かめた．Gazebo の赤い箱の画像で，AI TA 経由と同じ `[545, 138]` を答えた)．
+  プレビュー版なので，名前が変わって使えなくなったとき (HTTP 404 など) は，`ri.ask` を `model='vlm-gemini'` で使うか，
   使えるモデル名を `export JEDY_VLM_ER_MODEL=...` (`vlm-gemini` は `JEDY_VLM_GEMINI_MODEL`) で指定する．
-- 無料枠は回数に制限がある．超えると `VlmRefused` の `e.kind` が `'rate'` になる．少し待てばまた使えるが，1 日の上限ならその日はもう使えない．
+- 無料枠は回数に制限がある．`ri.ask` (`gemini-3.8-flash`) と `ri.point` (Robotics-ER) は，それぞれ **1 分に 5 回，1 日に 20 回**まで．
+  上限はキーごとではなく Google のプロジェクトごとで (キーを作り直しても増えない)，1 日の回数は太平洋時間の 0 時 (日本時間の 17 時，夏時間のあいだは 16 時) に戻る．
+  エラーで答えが返らなかった問い合わせも回数に数えられる．使った回数は Google AI Studio の「レート制限」で見られる．
+  超えると `VlmRefused` の `e.kind` が `'rate'` になる．1 分の上限なら少し待てばまた使えるが，1 日の上限ならその日はもう使えない．
   キーが違う・使えないときは `'key'` になる．
-- 金額は 0 として数える (`ri.vlm_total_cost` は増えない．AI TA の 1 日 $2 の上限とも関係ない)．
+- `vlm_navigate` は 1 回の実行で数回〜10 回ほど問い合わせるので，無料枠では回数に気をつける．
+- 無料枠で送った画像・質問は，Google の製品の改善に使われる．人の顔や個人の物が写らないように向けること．
+- 金額は 0 として数える (`ri.vlm_total_cost` は増えない)．
 - `reasoning='none'` (既定) は，Google では `'minimal'` として送る (Gemini 3 は考えるのを止められないため)．
 
 ### VLM に聞いて動く (言葉で目標を言う)
