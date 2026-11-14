@@ -293,10 +293,13 @@ ri.servo_on()                                       # 全軸 ON (今の姿勢の
 ri.servo_off()                                      # 全軸 OFF (腕が脱力するので支えること)
 ri.servo_on(joints=['head_joint0', 'head_joint1'])  # 頭だけ ON
 print([j.name for j in robot.joint_list])           # 使える関節名
+ri.servo_on()                                       # 全軸 ON に戻す (次の節は全軸 ON が前提)
 ```
 
 `servo_on()` はまず今の姿勢を送ってから ON にするので，ON にした瞬間に腕が飛ぶことはない．
 サーボを OFF にした関節は脱力し，重力で垂れる．OFF の間も関節角度は読めるので，手で動かした角度も `ri.angle_vector()` で分かる．
+OFF のままの関節には `ri.angle_vector(...)` で角度を送っても動かない (エラーも出ない)．
+腕が送った角度にならないときは，まず `ri.servo_on()` をしたか確かめること．
 
 :::{figure} fig/jedy-gazebo-servo-off.gif
 :align: center
