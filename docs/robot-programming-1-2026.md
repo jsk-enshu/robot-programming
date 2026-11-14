@@ -223,6 +223,7 @@ viewer.redraw()                         # モデルを変えたら redraw() で�
 
 `viewer.redraw()` を呼ばないと画面は変わらない．`viewer.save_image('pose.png')` で今の画面を保存できる．
 
+(base-velocity)=
 ## 台車を動かす
 
 ```{code-block} python
@@ -345,6 +346,7 @@ RViz (`ros2 launch jedy_bringup jedy_gazebo.launch.py rviz:=true`)．左が Serv
 `connect()` の時点で「応答していないサーボがあります」というエラーが出る (`ri.missing_servos()` で `{関節名: 理由}` が得られる)．
 プログラムの誤りではないので，コードを直す前にケーブルと電源を確認しよう (抜き差しは TA を呼んでから)．
 
+(joint-angle-motion)=
 ### 関節角度で動かす (順運動学)
 
 ```{code-block} python
