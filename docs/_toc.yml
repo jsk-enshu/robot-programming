@@ -26,17 +26,17 @@ parts:
     - file: environment-setup
       title: 環境構築
   - caption: 1日目
-    numbered: true
+    numbered: 2  # 章(h1) + 節(h2) まで．h3 (課題など) には番号を付けない
     chapters:
     - file: robot-programming-1-2026
       title: 双腕移動台車ロボットを用いた認識操作プログラミング
   - caption: 2日目
-    numbered: true
+    numbered: 2  # 章(h1) + 節(h2) まで．h3 (課題など) には番号を付けない
     chapters:
     - file: robot-programming-2-2026
       title: ロボットの全身行動プログラミング
   - caption: 3日目
-    numbered: true
+    numbered: 2  # 章(h1) + 節(h2) まで．h3 (課題など) には番号を付けない
     chapters:
     - file: robot-programming-3-2026
       title: メカトロボットの製作とプログラミング
