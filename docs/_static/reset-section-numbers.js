@@ -81,7 +81,8 @@
         });
 
         // 右サイドバー（ページ内目次）の番号だけを更新
-        const pageToc = document.querySelector('.bd-toc-nav.page-toc');
+        // pydata-sphinx-theme 0.15 以降は nav#pst-page-toc-nav.page-toc（bd-toc-nav クラスは付かない）
+        const pageToc = document.querySelector('nav.page-toc, .bd-toc-nav.page-toc');
         if (!pageToc) {
             console.log('Page TOC not found');
             return;
