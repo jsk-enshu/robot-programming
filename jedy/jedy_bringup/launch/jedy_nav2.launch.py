@@ -15,13 +15,41 @@ needs lidar:=true (/scan, odom -> base_link); the real Jedy has neither.
 
 import os
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import (
+    PackageNotFoundError, get_package_share_directory)
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+
+
+#: slam_toolbox and Nav2 are not dependencies of jedy_bringup (the tips page
+#: is optional and they are large), so say how to get them.
+INSTALL = ("sudo apt install -y ros-jazzy-slam-toolbox ros-jazzy-nav2-bringup "
+           "ros-jazzy-nav2-simple-commander")
+
+
+def required_share(package):
+    """Share directory of ``package``, or a RuntimeError saying how to install it.
+
+    Parameters
+    ----------
+    package : str
+        A ROS package name.
+
+    Returns
+    -------
+    str
+    """
+    try:
+        return get_package_share_directory(package)
+    except PackageNotFoundError:
+        raise RuntimeError(
+            "{} is not installed. SLAM and Nav2 are optional "
+            "(docs/tips/slam.md); install them first:\n  {}".format(
+                package, INSTALL)) from None
 
 
 def generate_launch_description():
@@ -34,7 +62,7 @@ def generate_launch_description():
         navigator, ...) and optionally RViz.
     """
     bringup = get_package_share_directory("jedy_bringup")
-    nav2_bringup = get_package_share_directory("nav2_bringup")
+    nav2_bringup = required_share("nav2_bringup")
     use_sim_time = LaunchConfiguration("use_sim_time")
 
     nav2 = IncludeLaunchDescription(
@@ -46,6 +74,7 @@ def generate_launch_description():
             "use_sim_time": use_sim_time,
             "slam": "False",
             "autostart": "true",
+            "use_composition": LaunchConfiguration("use_composition"),
         }.items(),
     )
 
@@ -69,6 +98,14 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "use_sim_time", default_value="true",
             description="Gazebo's /clock"),
+        # False: one process per Nav2 server. With nav2_bringup's default
+        # (True, all servers in one component container) the launch hung
+        # loading the composed nodes on a machine without
+        # ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST.
+        DeclareLaunchArgument(
+            "use_composition", default_value="False",
+            choices=["True", "False"],
+            description="run the Nav2 servers in one component container"),
         DeclareLaunchArgument(
             "rviz", default_value="false", choices=["true", "false"],
             description="RViz with the map, costmaps, plan and goal tools"),

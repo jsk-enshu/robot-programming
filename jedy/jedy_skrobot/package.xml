@@ -41,8 +41,11 @@
   <exec_depend>speech_recognition_msgs</exec_depend>
   <exec_depend>jedy_description</exec_depend>
   <exec_depend>jedy_bringup</exec_depend>
-  <!-- scripts/enshu/nav2_goal.py: BasicNavigator -->
-  <exec_depend>nav2_simple_commander</exec_depend>
+  <!-- scripts/enshu/nav2_goal.py: waits for map -> base_link -->
+  <exec_depend>tf2_ros</exec_depend>
+  <!-- scripts/enshu/nav2_goal.py needs nav2_simple_commander, deliberately
+       not declared (docs/tips/slam.md installs Nav2 for that optional page;
+       jedy_bringup/package.xml says why). -->
 
   <export>
     <build_type>ament_cmake</build_type>

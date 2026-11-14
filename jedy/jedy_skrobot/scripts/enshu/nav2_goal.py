@@ -20,10 +20,45 @@ import argparse
 import math
 import time
 
+import rclpy
 from geometry_msgs.msg import PoseStamped
-from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
+from rclpy.time import Time
+from tf2_ros import Buffer, TransformListener
 
 from jedy_skrobot import connect
+
+try:
+    from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
+except ImportError:
+    # Nav2 is not a dependency of jedy_skrobot: docs/tips/slam.md installs it.
+    raise SystemExit(
+        'nav2_simple_commander is not installed. Install SLAM and Nav2 first '
+        '(docs/tips/slam.md):\n  sudo apt install -y ros-jazzy-slam-toolbox '
+        'ros-jazzy-nav2-bringup ros-jazzy-nav2-simple-commander')
+
+
+def wait_for_localization(navigator, timeout=60.0):
+    """Block until map -> base_link exists, i.e. AMCL is localizing.
+
+    ``waitUntilNav2Active(localizer='robot_localization')`` waits for
+    bt_navigator only; AMCL can still be starting, and a goal sent before
+    map -> odom exists fails at once ("Robot pose is not available").
+
+    Parameters
+    ----------
+    navigator : BasicNavigator
+        The node to listen for TF on.
+    timeout : float
+        Seconds (wall clock) before giving up.
+    """
+    buffer = Buffer()
+    listener = TransformListener(buffer, navigator)  # noqa: F841 (keeps it alive)
+    deadline = time.monotonic() + timeout
+    while not buffer.can_transform('map', 'base_link', Time()):
+        if time.monotonic() > deadline:
+            raise SystemExit('no map -> base_link after {:.0f} s: is AMCL '
+                             '(jedy_nav2.launch.py) running?'.format(timeout))
+        rclpy.spin_once(navigator, timeout_sec=0.1)
 
 
 def make_pose(navigator, x, y, yaw_deg):
@@ -85,6 +120,7 @@ def main():
     # jedy_nav2.launch.py starts AMCL at (0, 0, 0) itself (nav2_params.yaml);
     # after moving the robot by hand, use RViz's "2D Pose Estimate".
     navigator.waitUntilNav2Active(localizer='robot_localization')
+    wait_for_localization(navigator)
 
     for x, y, yaw in args.goals:
         start = time.monotonic()

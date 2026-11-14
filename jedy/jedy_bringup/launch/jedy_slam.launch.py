@@ -18,13 +18,41 @@ initial pose assumes.
 
 import os
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import (
+    PackageNotFoundError, get_package_share_directory)
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+
+
+#: slam_toolbox and Nav2 are not dependencies of jedy_bringup (the tips page
+#: is optional and they are large), so say how to get them.
+INSTALL = ("sudo apt install -y ros-jazzy-slam-toolbox ros-jazzy-nav2-bringup "
+           "ros-jazzy-nav2-simple-commander")
+
+
+def required_share(package):
+    """Share directory of ``package``, or a RuntimeError saying how to install it.
+
+    Parameters
+    ----------
+    package : str
+        A ROS package name.
+
+    Returns
+    -------
+    str
+    """
+    try:
+        return get_package_share_directory(package)
+    except PackageNotFoundError:
+        raise RuntimeError(
+            "{} is not installed. SLAM and Nav2 are optional "
+            "(docs/tips/slam.md); install them first:\n  {}".format(
+                package, INSTALL)) from None
 
 
 def generate_launch_description():
@@ -36,7 +64,7 @@ def generate_launch_description():
         slam_toolbox, configured and activated, and optionally RViz.
     """
     bringup = get_package_share_directory("jedy_bringup")
-    slam_toolbox = get_package_share_directory("slam_toolbox")
+    slam_toolbox = required_share("slam_toolbox")
     use_sim_time = LaunchConfiguration("use_sim_time")
 
     slam = IncludeLaunchDescription(

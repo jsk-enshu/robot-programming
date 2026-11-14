@@ -89,17 +89,16 @@
        otherwise only ros-jazzy-desktop brings it, which rosdep does not
        guarantee. -->
   <exec_depend>teleop_twist_keyboard</exec_depend>
-  <!-- SLAM and Nav2 in Gazebo (docs/tips/slam.md): jedy_slam.launch.py,
-       jedy_nav2.launch.py, map_saver_cli. nav2_bringup brings navigation2
-       (AMCL, MPPI, ...), its RViz panels come with nav2_rviz_plugins. The
-       LiDAR's odom TF is a tf2_msgs/TFMessage through ros_gz_bridge. -->
-  <exec_depend>slam_toolbox</exec_depend>
-  <exec_depend>nav2_bringup</exec_depend>
-  <exec_depend>nav2_map_server</exec_depend>
-  <exec_depend>nav2_amcl</exec_depend>
-  <exec_depend>nav2_mppi_controller</exec_depend>
-  <exec_depend>nav2_rviz_plugins</exec_depend>
+  <!-- jedy_gazebo.launch.py lidar:=true: the odom -> base_link TF comes
+       through ros_gz_bridge as a tf2_msgs/TFMessage. -->
   <exec_depend>tf2_msgs</exec_depend>
+  <!-- NOT declared on purpose: slam_toolbox and Nav2 (nav2_bringup,
+       nav2_simple_commander), used only by jedy_slam.launch.py,
+       jedy_nav2.launch.py and jedy_skrobot's nav2_goal for the optional
+       simulation tips page docs/tips/slam.md. Declared, every student's
+       day-1 rosdep install pulled them: 114 packages, 529 MB on a
+       desktop-full install. The page installs them with one apt line, and
+       the launch files say so when they are missing. -->
 
   <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>python3-pytest</test_depend>
