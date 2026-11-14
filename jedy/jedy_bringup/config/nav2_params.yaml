@@ -74,7 +74,12 @@ bt_navigator:
     robot_base_frame: base_link
     odom_topic: /odom
     bt_loop_duration: 10
-    default_server_timeout: 20
+    # [ms] for a server (planner, controller, ...) to accept a goal. The
+    # stock 20 ms ran out once in Gazebo on a loaded PC with
+    # use_composition:=False (servers in separate processes): "Timed out
+    # while waiting for action server to acknowledge goal request for
+    # compute_path_to_pose", and the goal failed.
+    default_server_timeout: 200
     wait_for_service_timeout: 1000
     action_server_result_timeout: 900.0
     navigators: ["navigate_to_pose", "navigate_through_poses"]
