@@ -1179,8 +1179,8 @@ class JedyInterface(RobotInterface):
         backend, base_url, key = vlm_credentials()
         _log_vlm_backend_once(self.get_logger(), backend)
         if backend == 'google':
+            reasoning = GOOGLE_REASONING_EFFORT.get(model, {}).get(reasoning, reasoning)
             model = google_vlm_model(model)
-            reasoning = GOOGLE_REASONING_EFFORT.get(reasoning, reasoning)
         body = {'model': model, 'messages': messages,
                 'max_tokens': VLM_MAX_TOKENS, 'reasoning_effort': reasoning}
         if response_format is not None:
@@ -1440,11 +1440,18 @@ GOOGLE_VLM_MODELS = {
     'vlm-gemini': ('gemini-3.8-flash', 'JEDY_VLM_GEMINI_MODEL'),
     'vlm-er': ('gemini-robotics-er-2-preview', 'JEDY_VLM_ER_MODEL'),
 }
-#: reasoning_effort values Google AI Studio does not take -> the nearest one it
-#: does. It documents minimal / low / medium / high, and thinking cannot be
-#: turned off on Gemini 3 (https://ai.google.dev/gemini-api/docs/openai),
-#: while ``ask`` defaults to the AI TA server's ``'none'``.
-GOOGLE_REASONING_EFFORT = {'none': 'minimal'}
+#: Per model (the AI TA server's name): reasoning_effort values Google AI
+#: Studio does not take -> the nearest one it does. Thinking cannot be turned
+#: off on Gemini 3 (https://ai.google.dev/gemini-api/docs/openai), while
+#: ``ask`` / ``point`` default to the AI TA server's ``'none'``. Checked on
+#: 2026-11-14 with a free-tier key: gemini-3.8-flash answers 400 "Thinking
+#: level MINIMAL is not supported for this model", so it gets 'low';
+#: gemini-robotics-er-2-preview takes 'minimal' (200, the same point as
+#: through the AI TA server).
+GOOGLE_REASONING_EFFORT = {
+    'vlm-gemini': {'none': 'low', 'minimal': 'low'},
+    'vlm-er': {'none': 'minimal'},
+}
 
 _vlm_backend_logged = False
 
