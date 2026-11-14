@@ -56,7 +56,8 @@ def masks(rgb, hue, saturation, value):
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--hue', type=int, nargs=2, default=[170, 10],
                    metavar=('LO', 'HI'))
     p.add_argument('--saturation', type=int, default=120)
