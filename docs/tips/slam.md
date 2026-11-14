@@ -108,6 +108,14 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=tr
 たとえば机の島の間の中央の通路（出現位置から左へ0.4 m）を奥へ21 m進んで戻る（約43 m，0.15 m/sで約5分）と，下の図のように部屋全体の地図ができる．
 机の脚や壁はLiDARの高さ（床から0.116 m）で見えているものだけが地図に入る．
 
+<video width="100%" controls preload="metadata">
+  <source src="../fig/jedy-slam-room13bc.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画（8倍速）：** 中央の通路を奥へ21 m進んで戻りながら地図を作ったところ．
+左がGazebo（ロボットを後ろから追うカメラ），右がRVizの地図とLiDARの点（赤）．
+
 :::{figure} ../fig/jedy-slam-room13bc.png
 :align: center
 :name: fig:jedy-slam-room13bc
@@ -199,6 +207,14 @@ $ ros2 run jedy_skrobot nav2_goal 4.4,-3.6,90 8.3,3.0,180 0,0
 goal (4.40, -3.60, 90 deg): SUCCEEDED  32.2 s (robot clock 32.2 s), last pose (4.39, -3.59)
 ...
 ```
+
+<video width="100%" controls preload="metadata">
+  <source src="../fig/jedy-nav2-room13bc.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画（8倍速）：** 上のコマンドで3つの目標へ順に走ったところ．
+右のRVizのピンクがコストマップ（障害物の周りの通りたくない所），線が計画された経路．
 
 上の例（机の島をよけて部屋の手前の左右を回る）では，Gazebo上の本当の位置と目標の差は位置で0.02〜0.08 m，向きで約11°だった．
 目標の許容誤差（`nav2_params.yaml`の`general_goal_checker`）が位置0.15 m，向き0.2 rad（11.5°）なので，ロボットは向きが許容範囲に入ったところで止まる．
