@@ -142,7 +142,7 @@ $ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
 
 USB シリアルアダプタが挿さるまで待ってから起動する．サーボは **OFF で起動する**．
 `camera:=true` で頭のカメラ (USB でつなぐ RealSense D405) も起動する
-(`sudo apt install ros-jazzy-realsense2-camera` が 1 回だけ必要)．
+(`sudo apt install -y ros-jazzy-realsense2-camera` が 1 回だけ必要)．
 
 ### 確認
 
