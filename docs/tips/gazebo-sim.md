@@ -24,6 +24,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py
 | `checkerboard:=true` | チェッカーボードを置く |
 | `lidar:=true` | LiDARと`/odom`を足す（{doc}`slam`用） |
 | `camera:=d405` | 頭のカメラを実機のD405と同じ画角・距離にする |
+| `sounds:=true` | 台車や関節が動いている間，モーターの音を PC のスピーカーから出す |
 | `camera_rate:=30` | 頭のカメラを1秒に30枚にする（既定は5，PCが重くなる） |
 | `gui:=false` | Gazeboの画面を出さない（ロボットは動く） |
 | `render_sensors:=false` | カメラを止める（GPUの無いPC向け） |

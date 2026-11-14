@@ -3,7 +3,9 @@
 
     ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:=d405
     ros2 launch voicevox voicevox_texttospeech.launch.xml     # speaker
-    ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP  # listener
+    ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP \\
+        launch_sound_play:=false energy_threshold:=300.0 \\
+        dynamic_energy_threshold:=false tts_action_names:="[robotsound_jp]"  # listener
     ros2 run jedy_vision voice_demo
 
 What it understands (keywords; read ``COMMANDS`` and add your own):

@@ -25,7 +25,7 @@ from skrobot.coordinates import Coordinates
 
 from jedy_skrobot import connect
 from jedy_vision import (LEFT_ELBOW, LEFT_SHOULDER, LEFT_WRIST, RIGHT_ELBOW,
-                         RIGHT_SHOULDER, RIGHT_WRIST, PoseEstimator)
+                         RIGHT_SHOULDER, RIGHT_WRIST, PoseEstimator, set_head)
 
 #: Distance from the robot's shoulder to the hand target at full stretch [m]
 #: (the arm is about 0.28 m from shoulder to hand).
@@ -78,10 +78,17 @@ def main():
     p.add_argument('--image', help='take the pose from this image file')
     p.add_argument('--time', type=float, default=1.5, help='seconds per motion')
     p.add_argument('--timeout', type=float, default=60.0, help='[s], robot clock')
+    p.add_argument('--tilt', type=float, default=0.0,
+                   help='head tilt, down [deg]; level sees a standing person')
     args = p.parse_args()
 
     robot, ri = connect()
     ri.servo_on()
+    if not args.image:
+        # A demo before this one may have left the head looking down at a
+        # tag; the person would then be out of view and this would only say
+        # "no person pose in view".
+        set_head(robot, ri, 0.0, args.tilt)
     with PoseEstimator() as estimator:
         mimic(robot, ri, estimator, args)
 
@@ -141,4 +148,7 @@ def mimic(robot, ri, estimator, args):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('stopped by Ctrl-C')
