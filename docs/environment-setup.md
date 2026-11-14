@@ -12,8 +12,8 @@ Ubuntu 24.04 に ROS 2 Jazzy が入っていることを前提とする．入っ
 
 ```{code-block} console
 $ sudo apt update
-$ sudo apt upgrade   # 入っている ROS 2 を新しくする (古いとビルドが止まる)
-$ sudo apt install python3-vcstool python3-rosdep ros-jazzy-realsense2-camera byobu
+$ sudo apt upgrade -y   # 入っている ROS 2 を新しくする (古いとビルドが止まる)
+$ sudo apt install -y python3-vcstool python3-rosdep ros-jazzy-realsense2-camera byobu
 $ curl -LsSf https://astral.sh/uv/install.sh | sh   # Python の仮想環境を作る uv (1 回だけ)
 $ source $HOME/.local/bin/env
 $ mkdir -p ~/ros2_ws/src
