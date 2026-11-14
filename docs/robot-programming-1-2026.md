@@ -832,7 +832,7 @@ $ export GOOGLE_API_KEY=発行したキー
 - `vlm_navigate` は 1 回の実行で数回〜10 回ほど問い合わせるので，無料枠では回数に気をつける．
 - 無料枠で送った画像・質問は，Google の製品の改善に使われる．人の顔や個人の物が写らないように向けること．
 - 金額は 0 として数える (`ri.vlm_total_cost` は増えない)．
-- `reasoning='none'` (既定) は，Google では `'minimal'` として送る (Gemini 3 は考えるのを止められないため)．
+- `reasoning='none'` (既定) は，Google では `ri.ask` (gemini-3.8-flash) は `'low'`，`ri.point` (Robotics-ER) は `'minimal'` として送る (Gemini 3 は考えるのを止められず，gemini-3.8-flash は `'minimal'` も受け付けないため)．
 
 ### VLM に聞いて動く (言葉で目標を言う)
 

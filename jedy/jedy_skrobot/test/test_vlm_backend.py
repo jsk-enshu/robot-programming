@@ -221,3 +221,13 @@ def test_google_error_does_not_switch_to_aita(env, server):
         JedyInterface._vlm_chat(_fake_ri(), 'vlm-gemini', messages, 10.0, 'none')
     assert [r['path'] for r in server.requests] == ['/v1beta/openai/chat/completions']
     assert interface.vlm_credentials()[0] == 'google'
+
+
+def test_google_flash_reasoning_none_is_low(env, server):
+    # gemini-3.8-flash answers 400 "Thinking level MINIMAL is not supported"
+    # (free-tier key, 2026-11-14), so ask's default 'none' goes as 'low'.
+    _use_google(env, server)
+    _, messages = _image_messages()
+    for given in ('none', 'minimal'):
+        JedyInterface._vlm_chat(_fake_ri(), 'vlm-gemini', messages, 10.0, given)
+        assert server.requests[-1]['body']['reasoning_effort'] == 'low'
