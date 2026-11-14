@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Drive Jedy from a PS4 pad: the base, the head, and torque on and off.
+"""Drive Jedy from a PS3 or PS4 pad: the base, the head, and torque on and off.
 
     ros2 launch jedy_bringup jedy_joy.launch.py
 
@@ -7,7 +7,8 @@
                        the base within one command period.
     left stick         drive: up/down = forward/back, left/right = strafe
     right stick left/right   turn
-    D-pad              head: left/right = pan, up/down = tilt
+    D-pad              head: left/right = pan, up/down = tilt (PS4: axes 6/7,
+                       PS3: buttons 13-16; jedy_teleop.mapping.dpad)
     L2 (hold)          head at twice its rate. It does nothing for the base,
                        which already drives at its top speed unmodified
     R1 (hold) + stick  slow mode, as slow as this base can go
@@ -90,8 +91,8 @@ from jedy_teleop.deadband import scale_to_usable  # noqa: E402
 from jedy_teleop.mapping import BUTTON_CROSS  # noqa: E402
 
 from jedy_teleop.mapping import (  # noqa: E402
-    AXIS_DPAD_X, AXIS_DPAD_Y, AXIS_LEFT_X, AXIS_LEFT_Y, AXIS_RIGHT_X,
-    BUTTON_CIRCLE, BUTTON_L1, BUTTON_L2, BUTTON_R1, BUTTON_TRIANGLE)
+    AXIS_LEFT_X, AXIS_LEFT_Y, AXIS_RIGHT_X,
+    BUTTON_CIRCLE, BUTTON_L1, BUTTON_L2, BUTTON_R1, BUTTON_TRIANGLE, dpad)
 
 #: Fallback head joints, used only when --head-joints is not given: Jedy's
 #: pan and tilt joints, as jedy_fullbody_all.launch.py passes them.
@@ -516,9 +517,10 @@ def main(argv=None):
         The action is still the right thing for a MOVE, which is why the
         re-sync above uses it: there the reply is the point.
         """
-        if len(msg.axes) <= AXIS_DPAD_Y:
+        pad = dpad(msg)
+        if pad is None:
             return
-        pan, tilt = msg.axes[AXIS_DPAD_X], msg.axes[AXIS_DPAD_Y]
+        pan, tilt = pad
         if pan == 0.0 and tilt == 0.0:
             # Forget the running target so the next nudge starts from where the
             # head actually IS. Holding it would let the commanded pose drift

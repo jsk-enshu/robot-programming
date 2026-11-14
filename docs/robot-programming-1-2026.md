@@ -279,7 +279,7 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=tr
 `z` を押すたびに速さが 1 割ずつ下がる (今の速さは画面の `currently: speed ... turn ...` に出る)．
 ただし `z` は旋回も遅くし，実機は 0.83 rad/s 程度より遅い旋回では止まるので，`z` を 2 回以上押すと旋回しなくなる．
 前後・左右だけを下げるなら `x` を使うか，最初から `-p speed:=0.12` を付けて起動する．
-`ros2 launch jedy_bringup keyboard_teleop.launch.py` は同じものを新しい端末の窓で開く．実機では PS4 のジョイスティックでも操縦できる．
+`ros2 launch jedy_bringup keyboard_teleop.launch.py` は同じものを新しい端末の窓で開く．実機では PS3 のコントローラでも操縦できる ({doc}`tips/joystick`)．
 
 :::{figure} fig/jedy-ki-teleop.gif
 :align: center

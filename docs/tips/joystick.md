@@ -1,7 +1,7 @@
 # ジョイスティックコントローラによる操縦
 
 ジョイスティックコントローラ (ゲームパッド) で Jedy を操縦する方法を紹介する．
-2026 年度の Jedy は **PS4 のコントローラ (DualShock 4)** で操縦する．
+2026 年度の Jedy は，2025 年度と同じ **PS3 のコントローラ (DUALSHOCK 3)** で操縦する (PS4 のコントローラ (DUALSHOCK 4) でも同じ割り当てで動く)．
 コントローラは USB ケーブルでつないでも，Bluetooth で無線でつないでもよい (下の「Bluetooth で無線接続する」)．
 コントローラが無くても，台車はキーボードや `ri.go_velocity()` で動かせる ({doc}`../robot-programming-1-2026` の「台車を動かす」)．
 
@@ -73,23 +73,28 @@ L1 を押しながらスティックを倒すと，そのまま走り出す．�
 - △は，手で動かされた腕の目標を今の姿勢に合わせてからサーボを入れる．
 - `/joy` が 0.3 秒来ないと (コントローラが抜けた，電池が切れた)，`jedy_joy` は台車を止め，首を止める．
 
-`/joy` の番号 (`axes[i]`，`buttons[i]`) は次のとおりである (Ubuntu 24.04 のカーネルの場合．`jedy/jedy_bringup/config/ps4.yaml`)．
+`/joy` の番号 (`axes[i]`，`buttons[i]`) は次のとおりである (Ubuntu 24.04 のカーネル 6.8 の hid-sony ドライバの場合)．
+PS3 と PS4 で違うのは十字キーだけで，PS3 ではボタン (13〜16)，PS4 では軸 (6，7) になる．`jedy_joy` はどちらも読む．
 
-| 番号 | `axes` | `buttons` |
-| --- | --- | --- |
-| 0 | 左スティック 左右 (左が +) | × |
-| 1 | 左スティック 上下 (上が +) | ○ |
-| 2 | L2 (アナログ) | △ |
-| 3 | 右スティック 左右 (左が +) | □ |
-| 4 | 右スティック 上下 | L1 |
-| 5 | R2 (アナログ) | R1 |
-| 6 | 十字キー 左右 | L2 |
-| 7 | 十字キー 上下 | R2 |
-| 8 | | SHARE |
-| 9 | | OPTIONS |
-| 10 | | PS |
-| 11 | | L3 (左スティック押し込み) |
-| 12 | | R3 (右スティック押し込み) |
+| 番号 | `axes` | `buttons` (PS3) | `buttons` (PS4) |
+| --- | --- | --- | --- |
+| 0 | 左スティック 左右 (左が +) | × | × |
+| 1 | 左スティック 上下 (上が +) | ○ | ○ |
+| 2 | L2 (アナログ) | △ | △ |
+| 3 | 右スティック 左右 (左が +) | □ | □ |
+| 4 | 右スティック 上下 | L1 | L1 |
+| 5 | R2 (アナログ) | R1 | R1 |
+| 6 | (PS4 のみ) 十字キー 左右 | L2 | L2 |
+| 7 | (PS4 のみ) 十字キー 上下 | R2 | R2 |
+| 8 | | SELECT | SHARE |
+| 9 | | START | OPTIONS |
+| 10 | | PS | PS |
+| 11 | | L3 (左スティック押し込み) | L3 |
+| 12 | | R3 (右スティック押し込み) | R3 |
+| 13 | | 十字キー 上 | |
+| 14 | | 十字キー 下 | |
+| 15 | | 十字キー 左 | |
+| 16 | | 十字キー 右 | |
 
 番号はコントローラの種類やドライバで変わることがある．
 次で，押したボタンや倒したスティックの番号と，`jedy_joy` がそれを何に使うかを表示できる．
@@ -254,11 +259,42 @@ except (KeyboardInterrupt, ExternalShutdownException):
 
 ## Bluetooth で無線接続する
 
-USB の代わりに Bluetooth でつなぐこともできる．
+USB の代わりに Bluetooth でつなぐこともできる．PS3 のコントローラは，最初に一度 USB でつないでペアリングする．
+
+### ClassicBondedOnly の設定 (1 回だけ)
+
+PS3 のコントローラは Ubuntu の既定の設定では Bluetooth でつながらず，{numref}`fig:ps3-bluetooth-paring-failed` のような PIN の確認画面が出る．
+`/etc/bluetooth/input.conf` の `[General]` に `ClassicBondedOnly=false` を書き，Bluetooth を再起動する．
+
+:::{figure} ../fig/ps3-bluetooth-paring-failed.jpg
+:align: center
+:name: fig:ps3-bluetooth-paring-failed
+
+この PIN の確認画面が出るときは，ClassicBondedOnly の設定が要る
+:::
+
+```{code-block} console
+$ sudoedit /etc/bluetooth/input.conf     # [General] の下に ClassicBondedOnly=false を書く
+$ grep ClassicBondedOnly /etc/bluetooth/input.conf
+ClassicBondedOnly=false
+$ sudo systemctl restart bluetooth
+```
+
+### ペアリング
 
 1. ターミナルで `gnome-control-center bluetooth` を実行し，Bluetooth を ON にする．
-2. コントローラの SHARE ボタンと PS ボタンを同時に，ライトバーが速く点滅するまで長押しする．
-3. 設定画面のデバイスの一覧に出る「Wireless Controller」を選んでペアリングする．
+2. コントローラを USB で PC につなぎ，PS ボタン (中央のボタン) を押す．
+3. {numref}`fig:ps3-bluetooth-paring` のような確認が出たら「Allow」を押す．
+4. USB を抜き，もう一度 PS ボタンを押す．LED が点灯すれば Bluetooth でつながっている．
+
+:::{figure} ../fig/ps3-bluetooth-paring.jpg
+:align: center
+:name: fig:ps3-bluetooth-paring
+
+Bluetooth の接続の確認．「Allow」を押す
+:::
+
+PS4 のコントローラは，SHARE ボタンと PS ボタンを同時に，ライトバーが速く点滅するまで長押しし，設定画面のデバイスの一覧に出る「Wireless Controller」を選んでペアリングする．
 
 つながると，USB のときと同じく `/dev/input/js0` ができる．`ls /dev/input/js*` と `ros2 topic echo /joy` で確かめる．
 Bluetooth では，ボタンの番号が USB のときと同じかを `ros2 run jedy_bringup jedy_joy_monitor` で確かめてから走らせること．
