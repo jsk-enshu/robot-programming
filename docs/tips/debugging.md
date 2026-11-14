@@ -218,10 +218,10 @@ print(f"x = {x}")
 print("関数Aを実行します")
 ```
 
-**例（ROS）：**
+**例（ROS 2，rclpyのノードの中）：**
 ```python
-rospy.loginfo(f"センサ値: {sensor_value}")
-rospy.logwarn(f"閾値を超えました: {value}")
+node.get_logger().info(f"センサ値: {sensor_value}")
+node.get_logger().warn(f"閾値を超えました: {value}")
 ```
 
 ### 2. ログの活用

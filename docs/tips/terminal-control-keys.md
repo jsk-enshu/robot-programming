@@ -15,11 +15,12 @@ UNIXやLinuxのターミナルでは特定のキーボードショートカッ�
 
 **使用例：**
 ```{code-block} console
-$ roscore
-# roscoreが起動中．..
+$ ros2 run demo_nodes_cpp talker
+[INFO] [1794679593.313136615] [talker]: Publishing: 'Hello World: 1'
+[INFO] [1794679594.313126815] [talker]: Publishing: 'Hello World: 2'
 # Ctrl+Cを押す
 ^C  # ← Ctrl+Cを押した表示
-[roscore] killing on exit
+[INFO] [1794679594.944451285] [rclcpp]: signal_handler(SIGINT/SIGTERM)
 ```
 
 **よく使う場面：**
@@ -41,11 +42,11 @@ $ roscore
 
 **使用例：**
 ```{code-block} console
-$ roscore
-# roscoreが起動中．..
+$ ros2 run demo_nodes_cpp talker
+# talkerが起動中．..
 # Ctrl+Zを押す
 ^Z  # ← Ctrl+Zを押した表示
-[1]+  Stopped                 roscore
+[1]+  Stopped                 ros2 run demo_nodes_cpp talker
 
 # プロンプトが戻ってくる
 $
@@ -54,7 +55,7 @@ $
 **停止したプログラムの確認：**
 ```{code-block} console
 $ jobs
-[1]+  Stopped                 roscore
+[1]+  Stopped                 ros2 run demo_nodes_cpp talker
 ```
 
 **プログラムの再開方法：**
@@ -255,9 +256,9 @@ UNIXシェルにおける「ジョブ」とはシェルから起動されたプ�
 **jobs: ジョブ一覧の表示**
 ```{code-block} console
 $ jobs
-[1]   Running                 roscore &
+[1]   Running                 ros2 run demo_nodes_cpp talker &
 [2]-  Stopped                 vim test.txt
-[3]+  Stopped                 rosrun rviz rviz
+[3]+  Stopped                 rviz2
 ```
 
 表示の意味：
@@ -290,7 +291,7 @@ $ kill %2     # ジョブ番号2を終了
 コマンドの最後に`&`を付けるとバックグラウンドで起動する：
 
 ```{code-block} console
-$ roscore &
+$ ros2 run demo_nodes_cpp talker &
 [1] 12345
 $ # プロンプトがすぐに戻ってくる
 ```
@@ -300,29 +301,29 @@ $ # プロンプトがすぐに戻ってくる
 ### 例1: ROSノードの操作
 
 ```{code-block} console
-# roscoreを起動
-$ roscore
-# ... roscoreが実行中 ...
+# talkerを起動
+$ ros2 run demo_nodes_cpp talker
+# ... talkerが実行中 ...
 
 # Ctrl+Zで一時停止
 ^Z
-[1]+  Stopped                 roscore
+[1]+  Stopped                 ros2 run demo_nodes_cpp talker
 
 # 別のコマンドを実行
-$ rostopic list
+$ ros2 topic list
 
-# roscoreをバックグラウンドで再開
+# talkerをバックグラウンドで再開
 $ bg
-[1]+ roscore &
+[1]+ ros2 run demo_nodes_cpp talker &
 
 # 別のノードを起動
-$ rosrun rviz rviz
-# ... rvizが実行中 ...
+$ rviz2
+# ... rviz2が実行中 ...
 
-# Ctrl+Cでrvizを終了
+# Ctrl+Cでrviz2を終了
 ^C
 
-# roscoreも終了
+# talkerも終了
 $ fg
 # Ctrl+C
 ^C

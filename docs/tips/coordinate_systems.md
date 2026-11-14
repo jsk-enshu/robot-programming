@@ -55,7 +55,8 @@ OpenCVなどのコンピュータビジョンライブラリでは，ピンホ�
 3. カメラ座標系からロボットのworld座標系への変換を計算する
 4. 変換後の座標を使ってロボットの動作を計画する
 
-この座標変換の詳細については，演習資料の[Checkerboard認識と座標変換のセクション](../robot-programming-1-2025.md#checkerboard認識)を参照すること．
+Jedyでは`ri.detection_position()`がこの変換をしてロボットの座標で位置を返す（{doc}`../robot-programming-1-2026` の「カメラで認識する」）．
+変換の中身は，{doc}`../robot-programming-2-2026` の「すでにあるデモ」の`checkerboard_pose`，`tag_pose`，`touch_tag`のプログラムを読むとよい．
 
 ## まとめ
 

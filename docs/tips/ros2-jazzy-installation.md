@@ -65,9 +65,10 @@ sudo dpkg -i /tmp/ros2-apt-source.deb
 
 このパッケージの新しいバージョンがROS リポジトリにリリースされると，リポジトリ設定が自動的に更新される．
 
-### 開発ツールのインストール（オプション）
+### 開発ツールのインストール
 
-ROSパッケージをビルドする場合や開発を行う場合は，開発ツールもインストールする：
+ROSパッケージをビルドするための開発ツール（`colcon`，`rosdep`，`vcstool`など）をインストールする．
+本演習ではワークスペースを`colcon build`でビルドするので，必ず入れること：
 
 ```{code-block} console
 sudo apt update && sudo apt install ros-dev-tools
@@ -89,9 +90,10 @@ ROS 2パッケージは頻繁に更新されるUbuntuシステム上でビルド
 sudo apt upgrade
 ```
 
-### Desktop Install（推奨）
+### Desktop Install（本演習ではこれを使う）
 
-ROS，RViz，デモ，チュートリアルを含む完全なデスクトップ環境をインストールする：
+ROS，RViz，デモ，チュートリアルを含む完全なデスクトップ環境をインストールする．
+本演習ではRVizなどのGUIを使うので，こちらを入れる：
 
 ```{code-block} console
 sudo apt install ros-jazzy-desktop
@@ -99,7 +101,7 @@ sudo apt install ros-jazzy-desktop
 
 ### ROS-Base Install（最小構成）
 
-通信ライブラリ，メッセージパッケージ，コマンドラインツールのみをインストールする．GUIツールは含まれない：
+通信ライブラリ，メッセージパッケージ，コマンドラインツールのみをインストールする．GUIツール（RVizなど）は含まれないので，本演習には向かない：
 
 ```{code-block} console
 sudo apt install ros-jazzy-ros-base
@@ -118,12 +120,19 @@ source /opt/ros/jazzy/setup.bash
 ROS 2が正しくインストールされているか確認するには，以下のコマンドを実行する：
 
 ```{code-block} console
-# ROS 2のバージョン確認
-ros2 --version
-
-# 利用可能なパッケージの確認
-ros2 pkg list
+$ printenv ROS_DISTRO    # sourceしたROS 2のディストリビューション
+jazzy
+$ ros2 pkg list | head   # 利用可能なパッケージの確認
 ```
+
+2つのターミナルで次を実行し，送ったメッセージが受け取れていれば通信もできている（Ctrl-Cで止める）．
+
+```{code-block} console
+$ ros2 run demo_nodes_cpp talker
+$ ros2 run demo_nodes_py listener
+```
+
+続きは{doc}`../environment-setup`の「初回環境構築」へ進む．
 
 ## 参考情報
 

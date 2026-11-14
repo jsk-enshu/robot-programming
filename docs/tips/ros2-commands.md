@@ -31,8 +31,8 @@ $ ros2 run demo_nodes_cpp listener
 # 使用法
 $ ros2 launch <package_name> <launch_file>
 
-# 例：MoveIt2のデモを起動
-$ ros2 launch moveit2_tutorials demo.launch.py
+# 例：JedyのGazeboシミュレーションを起動
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py
 ```
 
 詳細は[Launch Tutorial](https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Launch/Launch-Main.html)を参照すること．
@@ -48,11 +48,11 @@ $ ros2 node list
 # ノードの詳細情報を表示（購読・出版しているトピックなど）
 $ ros2 node info <node_name>
 
-# ライフサイクル管理に対応したノードを終了
+# ライフサイクルノード（Nav2やslam_toolboxのノードなど）の状態を変える
 $ ros2 lifecycle set <node_name> shutdown
 ```
 
-通常のノードはCtrl+Cで終了することも可能である．
+`ros2 lifecycle`はライフサイクルノードにだけ効く．通常のノードは，起動したターミナルでCtrl+Cを押して終了する．
 
 ### ros2 topic
 
