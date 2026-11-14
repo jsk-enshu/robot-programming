@@ -73,12 +73,18 @@ $ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc
 $ source ~/.bashrc
 ```
 
+`~/.bashrc` を書き換える前に開いたターミナルには，この 2 行は読み込まれていない．`ros2: command not found` などが出たら，
+そのターミナルで `source ~/.bashrc` するか，ターミナルを開き直す．
+
 2 行目は ROS 2 の通信を自分の PC の中だけに閉じる設定である (ロボットは自分の PC に USB でつなぐので，これで他の人のロボットと混ざらない)．
 意味や，複数の PC で通信するときの設定は {doc}`tips/ros-network` を見よ．
 
 ## ロボットの起動
 
 どちらか **1 つだけ** を起動する (同時に起動すると同じ名前のトピックがぶつかる)．
+起動したターミナルはそのままにして，プログラムは別のターミナルで動かす．
+Ctrl-C は押したターミナルのものだけを止める．起動したターミナルで押すとロボット (Gazebo) が止まり，
+プログラムは `wait_until_update_all_joints timeout` などで止まる．そのときは起動し直す．
 
 ### Gazebo シミュレーション
 
@@ -142,7 +148,7 @@ $ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
 
 USB シリアルアダプタが挿さるまで待ってから起動する．サーボは **OFF で起動する**．
 `camera:=true` で頭のカメラ (USB でつなぐ RealSense D405) も起動する
-(`sudo apt install ros-jazzy-realsense2-camera` が 1 回だけ必要)．
+(`sudo apt install -y ros-jazzy-realsense2-camera` が 1 回だけ必要)．
 
 ### 確認
 
@@ -293,10 +299,13 @@ ri.servo_on()                                       # 全軸 ON (今の姿勢の
 ri.servo_off()                                      # 全軸 OFF (腕が脱力するので支えること)
 ri.servo_on(joints=['head_joint0', 'head_joint1'])  # 頭だけ ON
 print([j.name for j in robot.joint_list])           # 使える関節名
+ri.servo_on()                                       # 全軸 ON に戻す (次の節は全軸 ON が前提)
 ```
 
 `servo_on()` はまず今の姿勢を送ってから ON にするので，ON にした瞬間に腕が飛ぶことはない．
 サーボを OFF にした関節は脱力し，重力で垂れる．OFF の間も関節角度は読めるので，手で動かした角度も `ri.angle_vector()` で分かる．
+OFF のままの関節には `ri.angle_vector(...)` で角度を送っても動かない (エラーも出ない)．
+腕が送った角度にならないときは，まず `ri.servo_on()` をしたか確かめること．
 
 :::{figure} fig/jedy-gazebo-servo-off.gif
 :align: center
@@ -348,6 +357,11 @@ for _ in range(3):
 print(np.rad2deg(robot.angle_vector() - ri.angle_vector()))   # 送った姿勢と実際の姿勢の差 [deg]
 ```
 
+関節には動ける範囲がある (`robot.rarm_joint1.min_angle`，`max_angle` [rad])．範囲を超える角度を入れると範囲の端に切り詰められ，
+`rarm_joint1: 0.5236 rad (30.0 deg) exceeds max 0.5200 rad (29.8 deg); clipped to max. ...` のような警告が出る
+(scikit-robot が古いと `... violate max-angle(0.52)` という形)．
+`joint_angle(..., relative=True)` で今の角度に足したときは，警告なしで切り詰められる．
+
 :::{figure} fig/jedy-fk-head.png
 :align: center
 :name: fig:jedy-fk-head
@@ -398,6 +412,7 @@ Gazebo で右から見たところ: IK の解を 3 秒で送り，`reset_pose` �
 
 `ros2 run jedy_skrobot sample_ik` は同じことをして，実際に手先がどこに着いたかを表示する．
 IK が解けないときは `inverse_kinematics` が `False` を返し，モデルの関節は動かない．
+腕が届くのは base_link から前に 0.25 m ほどまでなので，遠い目標では解けない．
 `ri.angle_vector()` で送る前に PyrenderViewer で解の姿勢を見ておくと，思わぬ姿勢 (腕が体に当たる，床に向かう) に気づける．
 
 ### キーボードで手先を動かす
@@ -684,8 +699,14 @@ if side == '左':
 
 **指さしてもらう．** `ri.point('赤い箱')` は Gemini Robotics-ER (`vlm-er`) に画像の中の位置を聞き，
 画素の位置 `(u, v)` (`u` が右向き，`v` が下向き．`img[v, u]` の画素) を返す．写っていなければ `None`．
+ただし似た物が写っていればそちらを指すことがある (13BC の部屋では，壁の赤い救急箱を「赤い箱」と答えた)．
+言葉は具体的にする (「床に置いた赤い直方体」など)．`ri.ask` や VLM に聞いて動くときの目標も同じである．
 `ri.pixel_position(u, v, depth)` はその画素の距離を距離画像で測り，ロボットの座標系 (base_link: 前が x，左が y，上が z) の位置 [m] にする
 (`ri.detection_position` と同じ計算．距離が測れなければ `None`)．これを逆運動学の目標にすれば，言葉で言った物に手を伸ばせる．
+
+腕が届くのは base_link から前に 0.25 m ほどまでである．`box:=true` の赤い箱は 1.1〜1.2 m 先にあるので，
+下のコードをそのまま実行すると「IK が解けない」で終わる．先に `p` を表示して，箱の 0.3 m ほど手前まで台車で寄ってからもう一度実行する．
+例えば `p` の x が 1.12 m なら，`ri.go_velocity(0.12, 0.0, 0.0, duration=(1.12 - 0.3) / 0.12)` で約 0.8 m 前に出る．
 
 ```{code-block} python
 import numpy as np
@@ -734,7 +755,7 @@ Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは 
   台車や腕を止めずに動かし続ける制御には使わない．「次に何をするか」を決めるのに使う．
   既定では AI はほとんど考えずに答える (`reasoning='none'`)．難しい質問では `reasoning='low'` などにすると答えが良くなることがあるが，遅く高くなる．
   速く繰り返し見たいときは `ri.what_do_you_see` や `ri.gesture` を使う．
-- サーバーに断られると `VlmRefused` (`RuntimeError` の一種) になる．`e.kind` が `'rate'` (速すぎる) なら少し待てばまた使え，
+- サーバーに断られると `VlmRefused` (`RuntimeError` の一種．`from jedy_skrobot import VlmRefused` で使える) になる．`e.kind` が `'rate'` (速すぎる) なら少し待てばまた使え，
   `'budget'` (予算を使い切った)，`'key'` (キーが無い・使えない・同意していない) ならその日・その設定では使えない．
 - `model='vlm-er'` で Gemini Robotics-ER を使う．画像の中の物の位置を指すのが得意．
 - Gazebo の画像は CG なので，実機のカメラとは答えが変わることがある．
@@ -865,9 +886,12 @@ Gazebo (`box:=true`) で測った 1 手の時間 (2026 年 11 月，各 1 回)�
 ```{code-block} console
 $ ros2 run jedy_skrobot vlm_navigate
 $ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '赤い箱に近づいて'}"
-$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '左を向いて机を探して'}"
+$ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: '人のところに行って'}"   # person:=true で人を置いたとき
 $ ros2 topic pub --once /vlm_nav/prompt std_msgs/msg/String "{data: 'Approach the red box'}"
 ```
+
+目標には，着く場所が分かる言葉 (「〜に近づいて」) を入れる．`done` は測った距離が `--near` 以下のときだけ受け付けるので，
+「机を探して」「左を見て」のように近づかない目標は終わらず，`--max-steps` 回まで続く．
 
 今の状態は `/vlm_nav/status` (`std_msgs/String`) に出る (`ros2 topic echo /vlm_nav/status`)．
 RViz では，左下の Add から `rviz_2d_overlay_plugins` の `TextOverlay` を足し，Topic を `/vlm_nav/overlay` にすると左上に出る

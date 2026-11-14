@@ -9,7 +9,7 @@ AI TA のプログラムは [iory/ai-ta-for-student](https://github.com/iory/ai-
 
 ## 必要なもの
 
-- {doc}`../environment-setup` を終えてあること (ROS 2 Jazzy と `~/ros2_ws/src/robot-programming` の演習資料)
+- {doc}`../environment-setup` の `vcs import` まで済んでいること (`~/ros2_ws/src/robot-programming` に演習資料がある．ビルドの前に設定してよい)
 - インターネット接続
 - GitHub アカウント．**演習のアンケートで登録したもの**を使う．
   AI TA は GitHub のユーザ名で受講者を確かめるので，登録していないアカウントでは使えない．
@@ -72,6 +72,8 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py   # ここでエラーが出た
 $ ta fix
 ```
 
+- 質問に `$` や `!` を含めるときは `'...'` (シングルクォート) で囲む．`"..."` の中では bash が `$1` などを置き換えてしまい，
+  AI TA に届く文が変わる (`ta "上限 $10 は?"` は「上限 0 は?」になる)．
 - コマンドが失敗すると `[ai-ta] exit N — "ta fix" で…` という 1 行が出る．`AITA_QUIET=1` で消せる．
 - AI TA がコマンドを実行したりファイルを書き換えたりするときは，毎回確認を求められる．内容を読んでから許可すること．
   ただし，`~/enshu` の中のファイルの書き換えと，資料を読むだけのコマンドは確認なしで行う．
