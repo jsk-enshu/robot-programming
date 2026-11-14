@@ -32,7 +32,7 @@ $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/
 $ curl -fsSL https://raw.githubusercontent.com/iory/ai-ta-for-student/main/install.sh | bash
 $ source ~/.bashrc
 $ ta login    # 表示されたコードを https://github.com/login/device に入力して承認する
-$ ta doctor   # 全部 ✓ になればよい
+$ ta doctor   # ✓ と - だけで ✗ が無ければよい
 ```
 
 作業は byobu ({doc}`tips/byobu`) の中のターミナルで行うとよい．`ta fix` がターミナルの画面も AI TA に渡せる．
