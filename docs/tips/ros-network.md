@@ -1,6 +1,6 @@
-# ROS/ROS 2ネットワーク設定
+# ROS 2ネットワーク設定
 
-このページでは，ROS 1とROS 2におけるネットワーク設定の方法について説明する．
+このページでは，ROS 2（Jazzy）のネットワーク設定の方法について説明する．
 
 ## ROS 2ネットワーク設定
 
@@ -23,7 +23,7 @@ $ source ~/.bashrc
 
 この設定により，ROS 2の通信がローカルホストのみに制限され，他の受講者との通信干渉を防ぐことができる．
 
-> **注意:** ROS 2 Jazzy以前では`ROS_LOCALHOST_ONLY=1`が使用されていたが，Jazzyで非推奨となり削除された．代わりに`ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST`を使用すること．詳細は[Improved Dynamic Discovery](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Improved-Dynamic-Discovery.html)を参照．
+> **注意:** ROS 2 Jazzy以前では`ROS_LOCALHOST_ONLY=1`が使用されていたが，Jazzyで非推奨になった（まだ効くが，将来のバージョンで削除される）．代わりに`ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST`を使用すること．詳細は[Improved Dynamic Discovery](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Improved-Dynamic-Discovery.html)を参照．
 
 ### 設定の確認
 
@@ -89,23 +89,25 @@ $ echo $ROS_DOMAIN_ID          # 確認
 
 ##### 基本的な確認項目
 
-1. **`ROS_DOMAIN_ID`が実機と一致しているか確認：**
+1. **すべてのターミナルで設定が同じか確認：**
 
-   ```{code-block} console
-   $ echo $ROS_DOMAIN_ID
-   ```
-
-2. **ネットワーク接続を確認：**
-
-   ```{code-block} console
-   $ ping <ロボットPCのIPアドレス>
-   ```
-
-3. **`ROS_AUTOMATIC_DISCOVERY_RANGE`を確認：**
+   ノードを起動したターミナルと`ros2 topic list`を実行したターミナルで，次の2つが同じ値（または両方とも未設定）になっているかを確かめる．
+   `~/.bashrc`に書く前に開いたターミナルには設定が入っていない．
 
    ```{code-block} console
    $ echo $ROS_AUTOMATIC_DISCOVERY_RANGE
+   $ echo $ROS_DOMAIN_ID
    ```
+
+2. **（ネットワーク越しに通信する構成のとき）相手のPCとのネットワーク接続を確認：**
+
+   ```{code-block} console
+   $ ping <相手のPCのIPアドレス>
+   ```
+
+3. **（ネットワーク越しに通信する構成のとき）`ROS_AUTOMATIC_DISCOVERY_RANGE`が`LOCALHOST`になっていないか確認：**
+
+   `LOCALHOST`のままでは相手のPCのノードは見えない．上の「実機と通信するとき」のとおり`SUBNET`にする．
 
 4. **ROS 2デーモンの再起動：**
 
@@ -211,131 +213,7 @@ $ echo $CYCLONEDDS_URI
 
    上記「基本的な確認項目」の4を参照．
 
-## ROS 1ネットワーク設定
+## 参考資料
 
-ROS 1では，複数のPC間で通信を行うために以下の環境変数を設定する必要がある．
-
-### 基本的な環境変数
-
-#### ROS_MASTER_URI
-
-ROSマスターが動作しているPCのアドレスとポート番号を指定する．
-
-```{code-block} console
-$ export ROS_MASTER_URI=http://192.168.1.100:11311
-```
-
-- デフォルトは`http://localhost:11311`
-- 同一PC内でのみ通信する場合はデフォルトのまま
-
-#### ROS_IP
-
-自分のPCのIPアドレスを指定する．
-
-```{code-block} console
-$ export ROS_IP=192.168.1.101
-```
-
-#### ROS_HOSTNAME
-
-自分のPCのホスト名を指定する（`ROS_IP`の代わりに使用可能）．
-
-```{code-block} console
-$ export ROS_HOSTNAME=my-robot
-```
-
-> **注意:** `ROS_IP`と`ROS_HOSTNAME`は同時に設定しないこと．どちらか一方のみを使用する．
-
-### 設定例
-
-**マスターPC（192.168.1.100）の場合:**
-
-```{code-block} console
-$ export ROS_MASTER_URI=http://192.168.1.100:11311
-$ export ROS_IP=192.168.1.100
-```
-
-**クライアントPC（192.168.1.101）の場合:**
-
-```{code-block} console
-$ export ROS_MASTER_URI=http://192.168.1.100:11311
-$ export ROS_IP=192.168.1.101
-```
-
-### bashrcへの追加
-
-永続化する場合は，`~/.bashrc`に追加する:
-
-```{code-block} console
-$ echo 'export ROS_MASTER_URI=http://192.168.1.100:11311' >> ~/.bashrc
-$ echo 'export ROS_IP=192.168.1.101' >> ~/.bashrc
-$ source ~/.bashrc
-```
-
-### IPアドレスの確認方法
-
-自分のPCのIPアドレスを確認するには以下のコマンドを使用する:
-
-```{code-block} console
-$ hostname -I
-```
-
-または
-
-```{code-block} console
-$ ip addr show
-```
-
-### トラブルシューティング
-
-#### ノードが見えない場合
-
-1. **ネットワーク接続の確認:**
-
-```{code-block} console
-$ ping 192.168.1.100
-```
-
-2. **環境変数の確認:**
-
-```{code-block} console
-$ echo $ROS_MASTER_URI
-$ echo $ROS_IP
-```
-
-3. **ファイアウォールの確認:**
-
-ファイアウォールがROSの通信をブロックしている可能性がある．一時的に無効化して確認する:
-
-```{code-block} console
-$ sudo ufw disable
-```
-
-4. **マスターへの接続確認:**
-
-```{code-block} console
-$ rosnode list
-```
-
-マスターに接続できていれば，ノード一覧が表示される．
-
-5. **`rossetip`コマンドが見つからない場合:**
-
-もし`rossetip`コマンドが見つからない場合は，以下のコマンドで`ros-one-jsk-tools`をインストールし作業環境を再設定する．
-
-```{code-block} console
-$ sudo apt install ros-one-jsk-tools
-$ source ~/ros_ws/devel/setup.bash
-```
-
-これにより`rossetip`コマンドが使用可能となるため，再度`rossetip`と`rossetmaster`を実行した上で`rostopic list`で通信が行われるかを確認する．
-
-`rostopic list`をしても期待するトピックが見つからない場合は，ネットワークが`Jedy`と同じネットワークに接続されているかを確認し，IPアドレスの打ち間違いなどがないかを確認する．
-
-> **注意:** `rossetip`の詳細については，[複数PCの接続設定](multi-pc.md)を参照のこと．
-
-### 参考資料
-
-詳細は公式ドキュメントを参照:
-- [ROS Network Setup](https://wiki.ros.org/ROS/NetworkSetup)
 - [ROS 2 Improved Dynamic Discovery](https://docs.ros.org/en/jazzy/Tutorials/Advanced/Improved-Dynamic-Discovery.html)
+- [ROS_DOMAIN_ID](https://docs.ros.org/en/jazzy/Concepts/Intermediate/About-Domain-ID.html)

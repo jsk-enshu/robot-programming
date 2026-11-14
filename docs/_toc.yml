@@ -18,6 +18,10 @@ parts:
       title: Arduino IDEのシリアルモニタ
     - file: tips/arduino-builtin-led
       title: ArduinoのLED_BUILTIN
+    - file: tips/arduino-upload
+      title: Arduinoプログラム書き込み（Seeeduino Nano）
+    - file: tips/bootloader
+      title: ブートローダ書き込み
   - caption: 冬学期演習（2026年度） 事前準備
     numbered: false
     chapters:
@@ -54,6 +58,43 @@ parts:
         title: 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
       - file: robot-programming-2-2025
         title: 3日目 ロボットの全身行動プログラミング
+    - file: tips-2025
+      title: 2025年度 Tips・付録
+      sections:
+      - file: tips/ros-one-installation
+        title: ROS-Oインストール
+      - file: tips/ros1-ros2-coexistence
+        title: ROS 1とROS 2の混在環境
+      - file: tips/ros1-bridge
+        title: ROS 1 Bridge
+      - file: tips/ros1-commands
+        title: ROS 1コマンド
+      - file: tips/rosemacs
+        title: rosemacs利用
+      - file: tips/ssh
+        title: SSH接続
+      - file: tips/multi-pc
+        title: 複数PCの接続
+      - file: tips/jedy-bringup-launch
+        title: jedy_bringup.launch.py構成
+      - file: tips/python-to-euslisp
+        title: PythonプログラマのためのEusLisp
+      - file: tips/roseus-workflow
+        title: roseus効率的な作業方法
+      - file: tips/irtviewer
+        title: irtviewer操作方法
+      - file: tips/euslisp-ik
+        title: Euslispの逆運動学
+      - file: tips/realtime-ik
+        title: リアルタイムIK操縦
+      - file: tips/usb-cam
+        title: usb_camモーションキャプチャ
+      - file: tips/arduino-errors
+        title: Arduino IDEエラー対処
+      - file: tips/rosserial-troubleshooting
+        title: rosserialトラブルシューティング
+      - file: tips/dynamixel
+        title: Dynamixel制御
   - caption: Tips・付録（共通）
     numbered: false
     chapters:
@@ -63,90 +104,54 @@ parts:
       title: apportエラーレポート無効化
     - file: tips/ai-ta
       title: AI TA の使い方
+    - file: tips/google-ai-studio
+      title: Google AI Studio APIキーの発行
     - file: tips/debugging
       title: デバッグ方法
     - file: tips/terminal-control-keys
       title: ターミナルの制御キー
     - file: tips/troubleshooting
       title: トラブルシューティング
-    - file: tips/ros-one-installation
-      title: ROS-Oインストール
     - file: tips/ros2-jazzy-installation
       title: ROS 2 Jazzyインストール
-    - file: tips/ros1-ros2-coexistence
-      title: ROS 1とROS 2の混在環境
-    - file: tips/ros1-bridge
-      title: ROS 1 Bridge
-    - file: tips/use-sim-time
-      title: use_sim_timeパラメータ
-    - file: tips/ros1-commands
-      title: ROS 1コマンド
     - file: tips/ros2-commands
       title: ROS 2コマンド
+    - file: tips/use-sim-time
+      title: use_sim_timeパラメータ
+    - file: tips/ros-network
+      title: ROS 2ネットワーク設定
+    - file: tips/byobu
+      title: tmux・byobu利用
     - file: tips/euslisp-to-skrobot
       title: EusLispとscikit-robotの対応
+    - file: tips/ping
+      title: Ping接続確認
+    - file: tips/utokyo-wifi
+      title: UTokyo-WiFi設定
+    - file: tips/bluetooth
+      title: Bluetooth確認
   - caption: Tips・付録（1日目）
     numbered: false
     chapters:
     - file: tips/robot-operation
       title: 実機の使用方法
-    - file: tips/ping
-      title: Ping接続確認
-    - file: tips/ssh
-      title: SSH接続
     - file: tips/joystick
       title: ジョイスティック操縦
     - file: tips/realsense-d405
       title: Intel RealSense D405カメラ
     - file: tips/coordinate_systems
       title: ロボットとカメラの座標系
+    - file: tips/gazebo-sim
+      title: Gazeboシミュレーション
+  - caption: Tips・付録（2日目）
+    numbered: false
+    chapters:
     - file: tips/slam
       title: SLAM・地図作成
     - file: tips/path-planning
       title: 経路計画
-    - file: tips/multi-pc
-      title: 複数PCの接続
-    - file: tips/byobu
-      title: tmux・byobu利用
-    - file: tips/utokyo-wifi
-      title: UTokyo-WiFi設定
-    - file: tips/ros-network
-      title: ROS/ROS 2ネットワーク設定
-    - file: tips/jedy-bringup-launch
-      title: jedy_bringup.launch.py構成
-    - file: tips/rosemacs
-      title: rosemacs利用
-    - file: tips/bluetooth
-      title: Bluetooth確認
-  - caption: Tips・付録（2日目）
-    numbered: false
-    chapters:
-    - file: tips/python-to-euslisp
-      title: PythonプログラマのためのEusLisp
-    - file: tips/roseus-workflow
-      title: roseus効率的な作業方法
-    - file: tips/irtviewer
-      title: irtviewer操作方法
-    - file: tips/euslisp-ik
-      title: Euslispの逆運動学
-    - file: tips/gazebo-sim
-      title: Gazeboシミュレーション
-    - file: tips/realtime-ik
-      title: リアルタイムIK操縦
-    - file: tips/usb-cam
-      title: usb_camモーションキャプチャ
   - caption: Tips・付録（3日目）
     numbered: false
     chapters:
-    - file: tips/arduino-upload
-      title: Arduinoプログラム書き込み（Seeeduino Nano）
-    - file: tips/arduino-errors
-      title: Arduino IDEエラー対処
-    - file: tips/bootloader
-      title: ブートローダ書き込み
-    - file: tips/rosserial-troubleshooting
-      title: rosserialトラブルシューティング
     - file: tips/kondo-servo
       title: 近藤サーボ（KRS）制御
-    - file: tips/dynamixel
-      title: Dynamixel制御
