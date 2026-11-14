@@ -127,9 +127,14 @@ def main():
                 reason = 'reached'
                 break
             if rho < args.tolerance:   # there: only turn to face the tag
-                turn = min(abs(goal_heading), MAX_BURST)
-                ri.go_velocity(0.0, 0.0, math.copysign(args.min_turn, goal_heading),
-                               duration=turn / args.min_turn)
+                # Not ``turn``: that name is the function above, still
+                # needed if the tag is lost after this burst.
+                burst = math.copysign(min(abs(goal_heading), MAX_BURST), goal_heading)
+                ri.go_velocity(0.0, 0.0, math.copysign(args.min_turn, burst),
+                               duration=abs(burst) / args.min_turn)
+                # The robot has turned by ``burst``: if the tag is lost now,
+                # the blind finish must not turn by it again.
+                last = (rho, alpha - burst, goal_heading - burst, backwards)
                 ri.sleep(0.3)  # let it settle before the next look
                 continue
             else:
