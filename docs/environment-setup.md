@@ -12,16 +12,38 @@ Ubuntu 24.04 に ROS 2 Jazzy が入っていることを前提とする．入っ
 
 ```{code-block} console
 $ sudo apt update
-$ sudo apt upgrade   # 入っている ROS 2 を新しくする (古いとビルドが止まる)
-$ sudo apt install python3-vcstool python3-rosdep ros-jazzy-realsense2-camera byobu
+$ sudo apt upgrade -y   # 入っている ROS 2 を新しくする (古いとビルドが止まる)
+$ sudo apt install -y python3-vcstool python3-rosdep ros-jazzy-realsense2-camera byobu
 $ curl -LsSf https://astral.sh/uv/install.sh | sh   # Python の仮想環境を作る uv (1 回だけ)
 $ source $HOME/.local/bin/env
 $ mkdir -p ~/ros2_ws/src
 $ cd ~/ros2_ws/src
 $ source /opt/ros/jazzy/setup.bash
 $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
-$ rosdep update
+```
+
+### AI TA の設定
+
+演習では，演習資料をもとに質問に答える AI TA を使う．AI TA は上の `vcs import` で取ってきた演習資料を読むので，
+**ここで設定しておくと，この後のビルドでエラーが出たときに `ta fix` で聞ける．**
+演習のアンケートで登録した GitHub アカウントが必要である．
+
+```{code-block} console
+$ curl -fsSL https://raw.githubusercontent.com/iory/ai-ta-for-student/main/install.sh | bash
+$ source ~/.bashrc
+$ ta login    # 表示されたコードを https://github.com/login/device に入力して承認する
+$ ta doctor   # 全部 ✓ になればよい
+```
+
+作業は byobu ({doc}`tips/byobu`) の中のターミナルで行うとよい．`ta fix` がターミナルの画面も AI TA に渡せる．
+
+使い方と注意は {doc}`tips/ai-ta` を見ること．
+
+### ビルド
+
+```{code-block} console
 $ cd ~/ros2_ws/
+$ rosdep update
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
 $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
 ```
@@ -65,22 +87,6 @@ $ source ~/.bashrc   # 今開いているターミナルにも読み込む
 `ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` は，ROS 2 の通信を自分の PC の中だけに閉じる設定である．
 ロボット (実機) は自分の PC に USB でつなぎ，ノードはすべて自分の PC の中で動くので，
 同じネットワークにいる他の人のロボットやシミュレータとトピックが混ざらない．
-
-## AI TA の設定
-
-演習では，演習資料をもとに質問に答える AI TA を使う．**環境構築が終わったら，続けて AI TA も設定しておくこと．**
-演習のアンケートで登録した GitHub アカウントが必要である．
-
-```{code-block} console
-$ curl -fsSL https://raw.githubusercontent.com/iory/ai-ta-for-student/main/install.sh | bash
-$ source ~/.bashrc
-$ ta login    # 表示されたコードを https://github.com/login/device に入力して承認する
-$ ta doctor   # 全部 ✓ になればよい
-```
-
-作業は byobu ({doc}`tips/byobu`) の中のターミナルで行うとよい．`ta fix` がターミナルの画面も AI TA に渡せる．
-
-使い方と注意は {doc}`tips/ai-ta` を見ること．
 
 ## 演習開始時のソフトウェア更新
 
