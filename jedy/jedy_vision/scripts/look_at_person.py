@@ -45,35 +45,41 @@ def main():
     fx, fy, cx0, cy0 = K[0, 0], K[1, 1], K[0, 2], K[1, 2]
     pan, tilt = robot.head_joint0, robot.head_joint1
     start = ri.now()
-    while ri.now() - start < args.timeout:
-        rgb, stamp = ri.image(newer_than=ri.now() - 0.05)
-        people = detector.detect(rgb)
-        if not people:
-            print('nobody in view')
-            ri.sleep(args.time)
-            continue
-        x1, y1, x2, y2 = people[0].box
-        u, v = 0.5 * (x1 + x2), y1 + args.aim * (y2 - y1)
-        # Right of centre -> turn right (pan is counter-clockwise positive);
-        # below centre -> look down (tilt is positive nose-down).
-        d_pan = -math.atan((u - cx0) / fx)
-        d_tilt = math.atan((v - cy0) / fy)
-        robot.angle_vector(ri.angle_vector())
-        print('pan {:+6.1f} deg tilt {:+6.1f} deg | off by {:+5.1f} / {:+5.1f} deg'.format(
-            math.degrees(pan.joint_angle()), math.degrees(tilt.joint_angle()),
-            math.degrees(d_pan), math.degrees(d_tilt)))
-        if (not args.keep and abs(math.degrees(d_pan)) < args.settle
-                and abs(math.degrees(d_tilt)) < args.settle):
-            print('looking at the person')
-            return
-        pan.joint_angle(float(np.clip(pan.joint_angle() + args.gain * d_pan,
-                                      pan.min_angle, pan.max_angle)))
-        tilt.joint_angle(float(np.clip(tilt.joint_angle() + args.gain * d_tilt,
-                                       tilt.min_angle, tilt.max_angle)))
-        ri.angle_vector(robot.angle_vector(), args.time,
-                        controller_type='head_controller')
-        ri.wait_interpolation('head_controller')
-    print('timeout')
+    reason = 'timeout'
+    try:
+        while ri.now() - start < args.timeout:
+            rgb, stamp = ri.image(newer_than=ri.now() - 0.05)
+            people = detector.detect(rgb)
+            if not people:
+                print('nobody in view')
+                ri.sleep(args.time)
+                continue
+            x1, y1, x2, y2 = people[0].box
+            u, v = 0.5 * (x1 + x2), y1 + args.aim * (y2 - y1)
+            # Right of centre -> turn right (pan is counter-clockwise positive);
+            # below centre -> look down (tilt is positive nose-down).
+            d_pan = -math.atan((u - cx0) / fx)
+            d_tilt = math.atan((v - cy0) / fy)
+            robot.angle_vector(ri.angle_vector())
+            print('pan {:+6.1f} deg tilt {:+6.1f} deg | off by {:+5.1f} / {:+5.1f} deg'.format(
+                math.degrees(pan.joint_angle()), math.degrees(tilt.joint_angle()),
+                math.degrees(d_pan), math.degrees(d_tilt)))
+            if (not args.keep and abs(math.degrees(d_pan)) < args.settle
+                    and abs(math.degrees(d_tilt)) < args.settle):
+                reason = 'settled'
+                break
+            pan.joint_angle(float(np.clip(pan.joint_angle() + args.gain * d_pan,
+                                          pan.min_angle, pan.max_angle)))
+            tilt.joint_angle(float(np.clip(tilt.joint_angle() + args.gain * d_tilt,
+                                           tilt.min_angle, tilt.max_angle)))
+            ri.angle_vector(robot.angle_vector(), args.time,
+                            controller_type='head_controller')
+            ri.wait_interpolation('head_controller')
+    except KeyboardInterrupt:
+        reason = 'Ctrl-C'
+        # The head stops where it is, not at the last target.
+        ri.cancel_angle_vector(controller_type='head_controller')
+    print('looking at the person' if reason == 'settled' else 'stopped by ' + reason)
 
 
 if __name__ == '__main__':

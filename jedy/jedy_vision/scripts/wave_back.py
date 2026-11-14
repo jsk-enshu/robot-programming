@@ -21,9 +21,38 @@ from jedy_skrobot import connect
 from jedy_vision import (LEFT_SHOULDER, LEFT_WRIST, RIGHT_SHOULDER, RIGHT_WRIST,
                          PoseEstimator, say)
 
-#: Hand positions relative to the shoulder for the wave [m] (reachable from
-#: the reset pose, checked with the Jedy model); y mirrored for larm.
-WAVE_POINTS = [(0.0, -0.10, 0.20), (0.0, 0.0, 0.17)]
+#: Hand positions relative to the shoulder for the wave [m]: raised in front
+#: and moved sideways; y mirrored for larm. The first is solved from the reset
+#: pose, the second from the first, so one swing is a small joint change (Jedy
+#: model: at most 15 deg, every joint 28 deg or more inside its limits). The
+#: old points (0, -0.10, 0.20) and (0, 0, 0.17), each solved from the reset
+#: pose, had IK answers 268 deg apart: the arm swung round through the bottom
+#: instead of waving.
+WAVE_POINTS = [(0.15, -0.10, 0.20), (0.15, 0.0, 0.20)]
+#: One swing takes the largest joint change at this speed [deg/s], and no
+#: less than MIN_SWING [s]. 0.4 s was faster than the joint speed limit
+#: ("Time has been changed" every swing) and the hand did not reach the
+#: points in Gazebo.
+SWING_SPEED = 30.0
+MIN_SWING = 1.0
+
+
+def move_time(start, goal):
+    """Seconds for a move from ``start`` to ``goal`` at :data:`SWING_SPEED`.
+
+    Parameters
+    ----------
+    start, goal : numpy.ndarray
+        Angle vectors [rad].
+
+    Returns
+    -------
+    float
+        The largest joint change at SWING_SPEED, and no less than MIN_SWING.
+        Raising the arm from home is 75-145 deg: a fixed 1.5 s was about
+        100 deg/s, too fast for the real arm.
+    """
+    return max(MIN_SWING, np.degrees(np.max(np.abs(goal - start))) / SWING_SPEED)
 
 
 def raised_hand(pose, margin):
@@ -46,14 +75,12 @@ def wave(robot, ri, side, times=3):
     robot.reset_pose()
     seed = {j.name: j.joint_angle() for j in arm.joint_list}
     robot.angle_vector(home)
-    for j in arm.joint_list:
+    for j in arm.joint_list:  # the first point from the reset pose (IK is local)
         j.joint_angle(seed[j.name])
     poses = []
-    for dx, dy, dz in WAVE_POINTS:
+    for dx, dy, dz in WAVE_POINTS:  # the next one from the last answer
         if side == 'larm':
             dy = -dy
-        for j in arm.joint_list:  # every point from the reset pose (IK is local)
-            j.joint_angle(seed[j.name])
         target = arm.link_list[0].worldpos() + np.array([dx, dy, dz])
         ok = arm.inverse_kinematics(Coordinates(pos=target), rotation_axis=False,
                                     warn_if_fail=False)
@@ -62,16 +89,27 @@ def wave(robot, ri, side, times=3):
             robot.angle_vector(home)
             return
         poses.append(robot.angle_vector().copy())
-    ri.angle_vector(poses[0], 1.5)
-    ri.wait_interpolation()
-    for k in range(2 * times):
-        ri.angle_vector(poses[(k + 1) % 2], 0.4)
+    swing = move_time(poses[0], poses[1])
+    try:
+        ri.angle_vector(poses[0], move_time(home, poses[0]))
+        ri.wait_interpolation()
+        for k in range(2 * times):
+            ri.angle_vector(poses[(k + 1) % 2], swing)
+            ri.wait_interpolation()
+            robot.angle_vector(ri.angle_vector())
+            print('  wave {}: hand at {} m'.format(k, np.round(arm.end_coords.worldpos(), 3)))
+    except BaseException:
+        # Stopped mid-wave (Ctrl-C, or voice_demo's 止まって): end the swing
+        # in progress here, then go home below. Only here: with no goal
+        # running, a cancel just logs "No active goal to cancel".
+        ri.cancel_angle_vector()
+        raise
+    finally:
+        # The arm must not stay raised, however the wave ended.
+        now = ri.angle_vector()
+        ri.angle_vector(home, move_time(now, home))
         ri.wait_interpolation()
         robot.angle_vector(ri.angle_vector())
-        print('  wave {}: hand at {} m'.format(k, np.round(arm.end_coords.worldpos(), 3)))
-    ri.angle_vector(home, 1.5)
-    ri.wait_interpolation()
-    robot.angle_vector(ri.angle_vector())
 
 
 def main():
@@ -112,4 +150,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('stopped by Ctrl-C')

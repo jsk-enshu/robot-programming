@@ -19,6 +19,7 @@ One demo runs at a time, as a separate ``ros2 run`` process (exactly what
 you would type), stopped with Ctrl-C (SIGINT) like you would.
 """
 
+import argparse
 import os
 import re
 import signal
@@ -52,6 +53,11 @@ def normalize(text):
 
 
 def main():
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    # Leave ROS's own arguments (``--ros-args -r ...``) to rclpy.
+    p.parse_args(rclpy.utilities.remove_ros_args()[1:])
+
     rclpy.init()
     node = rclpy.create_node('jedy_voice_demo')
     running = {'proc': None, 'name': None}

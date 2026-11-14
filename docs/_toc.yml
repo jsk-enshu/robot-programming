@@ -26,17 +26,17 @@ parts:
     - file: environment-setup
       title: 環境構築
   - caption: 1日目
-    numbered: true
+    numbered: 2  # 章(h1) + 節(h2) まで．h3 (課題など) には番号を付けない
     chapters:
     - file: robot-programming-1-2026
       title: 双腕移動台車ロボットを用いた認識操作プログラミング
   - caption: 2日目
-    numbered: true
+    numbered: 2  # 章(h1) + 節(h2) まで．h3 (課題など) には番号を付けない
     chapters:
     - file: robot-programming-2-2026
       title: ロボットの全身行動プログラミング
   - caption: 3日目
-    numbered: true
+    numbered: 2  # 章(h1) + 節(h2) まで．h3 (課題など) には番号を付けない
     chapters:
     - file: robot-programming-3-2026
       title: メカトロボットの製作とプログラミング
@@ -88,21 +88,6 @@ parts:
   - caption: Tips・付録（1日目）
     numbered: false
     chapters:
-    - file: tips/arduino-upload
-      title: Arduinoプログラム書き込み（Seeeduino Nano）
-    - file: tips/arduino-errors
-      title: Arduino IDEエラー対処
-    - file: tips/bootloader
-      title: ブートローダ書き込み
-    - file: tips/rosserial-troubleshooting
-      title: rosserialトラブルシューティング
-    - file: tips/kondo-servo
-      title: 近藤サーボ（KRS）制御
-    - file: tips/dynamixel
-      title: Dynamixel制御
-  - caption: Tips・付録（2日目）
-    numbered: false
-    chapters:
     - file: tips/robot-operation
       title: 実機の使用方法
     - file: tips/ping
@@ -133,7 +118,7 @@ parts:
       title: rosemacs利用
     - file: tips/bluetooth
       title: Bluetooth確認
-  - caption: Tips・付録（3日目）
+  - caption: Tips・付録（2日目）
     numbered: false
     chapters:
     - file: tips/python-to-euslisp
@@ -150,3 +135,18 @@ parts:
       title: リアルタイムIK操縦
     - file: tips/usb-cam
       title: usb_camモーションキャプチャ
+  - caption: Tips・付録（3日目）
+    numbered: false
+    chapters:
+    - file: tips/arduino-upload
+      title: Arduinoプログラム書き込み（Seeeduino Nano）
+    - file: tips/arduino-errors
+      title: Arduino IDEエラー対処
+    - file: tips/bootloader
+      title: ブートローダ書き込み
+    - file: tips/rosserial-troubleshooting
+      title: rosserialトラブルシューティング
+    - file: tips/kondo-servo
+      title: 近藤サーボ（KRS）制御
+    - file: tips/dynamixel
+      title: Dynamixel制御

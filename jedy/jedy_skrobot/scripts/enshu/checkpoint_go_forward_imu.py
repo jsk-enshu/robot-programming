@@ -19,7 +19,8 @@ from jedy_skrobot import connect
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--speed', type=float, default=0.1, help='[m/s]')
     p.add_argument('--turn', type=float, default=0.1, help='[rad/s]')
     p.add_argument('--threshold', type=float, default=30.0,
