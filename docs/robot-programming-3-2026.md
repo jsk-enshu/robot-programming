@@ -40,10 +40,13 @@
 
 - KRS-3302 ICS ×8，ホーン，ネジ
 - 近藤科学 RCB-4mini（サーボをまとめる基板）
-- Arduino UNO R4 WiFi
 - 胴体・脚・蓋の 3D プリント部品
 - Dual USB アダプター HS（サーボの ID を振るときに使う）
 - 電源（ROBO パワーセル E タイプ と充電器，または近藤科学の AC アダプター）
+
+Arduino UNO R4 WiFi は TA からは配らない．各自が持っているものを使うこと．
+
+以下の手順では `uv` を使う．入っていなければ {doc}`environment-setup` の「初回環境構築」にある `curl -LsSf https://astral.sh/uv/install.sh | sh` で入れておくこと．
 
 <div class="screen">
 
@@ -143,7 +146,9 @@ IMU（慣性計測装置）で胴体の傾きと回転の速さを測り，そ�
 IMU なしの方策と比べて，歩いている途中や止まっているときに胴体を横から軽く押すと，どう違うかを確かめてみよう．
 
 さらに余裕があれば，KRS 専用の方策を自分で学習し直してみよう．
-タスクは `KrsQuad-Walk` で，mjlab 版で学習するため NVIDIA GPU が必要である（手元にない場合は TA に相談すること）．
+タスクは `KrsQuad-Walk` で，mjlab 版で学習するため NVIDIA GPU が必要である．
+手元に GPU がなければ，課題2の Google Colab（無料枠の T4）で学習してみるとよい．
+Colab のノートブックは `ArduinoQuad-Walk` 用なので，学習と書き出しのセルのタスク名を `KrsQuad-Walk` に変え，書き出しには `--name krs_quad_policy` を付ける．
 手順は [code/13_quadruped/rl/README.md](https://github.com/iory/build-your-own-arduino-rtos/blob/main/code/13_quadruped/rl/README.md) の「KRS 版（KrsQuad-*）」にある．
 
 <div class="screen">
