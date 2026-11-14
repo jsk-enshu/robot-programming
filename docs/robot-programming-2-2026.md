@@ -57,8 +57,8 @@ print(np.hypot(feet[0], feet[1]))                             # 距離 [m]
 ### すでにあるデモ
 
 1 日目に扱わなかったことも，動くデモがすでにある．作りたいものに近いデモを動かして，中身を読むとよい．
-`ros2 run jedy_vision demos` で jedy_vision のデモの一覧と起動方法が出る (中身は `jedy/jedy_vision/scripts/`)．
-表の下の 4 つ (`ros2 run jedy_skrobot ...`) は jedy_skrobot のデモで，この一覧には出ない (中身は `jedy/jedy_skrobot/scripts/enshu/`)．
+`ros2 run jedy_vision demos` で下の表のデモの一覧と，それぞれの Gazebo の起動方法が出る．
+中身は，`ros2 run jedy_vision ...` が `jedy/jedy_vision/scripts/`，表の下の 4 つ (`ros2 run jedy_skrobot ...`) が `jedy/jedy_skrobot/scripts/enshu/` にある．
 
 Gazebo では，次の「舞台」が jedy_vision のデモに合わせてある (AprilTag の付いた台と立方体，椅子，コップ，人)．
 
