@@ -822,10 +822,12 @@ def solve_ik(robot, arm, point, extra_seeds=(), rotation=None):
         for j in joints:
             j.joint_angle(seed.get(j.name, current[j.name]))
         if rotation is None:
-            ok = arm.inverse_kinematics(Coordinates(pos=point), rotation_axis=False)
+            # The next seed is tried on failure: no warning for each one.
+            ok = arm.inverse_kinematics(Coordinates(pos=point), rotation_axis=False,
+                                        warn_if_fail=False)
         else:
             ok = arm.inverse_kinematics(Coordinates(pos=point, rot=rotation),
-                                        rotation_axis=True)
+                                        rotation_axis=True, warn_if_fail=False)
         if ok is not False and ok is not None:
             return True
     for j in joints:

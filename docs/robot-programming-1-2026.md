@@ -84,7 +84,8 @@ $ source ~/.bashrc
 どちらか **1 つだけ** を起動する (同時に起動すると同じ名前のトピックがぶつかる)．
 起動したターミナルはそのままにして，プログラムは別のターミナルで動かす．
 Ctrl-C は押したターミナルのものだけを止める．起動したターミナルで押すとロボット (Gazebo) が止まり，
-プログラムは `wait_until_update_all_joints timeout` などで止まる．そのときは起動し直す．
+プログラムは `wait_until_update_all_joints timeout (... s): no message on /jedy_fullbody/joint_states for ... s. Is the robot or the simulator running?`
+のようなメッセージを出して止まる．そのときは起動し直す．
 
 ### Gazebo シミュレーション
 
@@ -411,7 +412,9 @@ Gazebo で右から見たところ: IK の解を 3 秒で送り，`reset_pose` �
 :::
 
 `ros2 run jedy_skrobot sample_ik` は同じことをして，実際に手先がどこに着いたかを表示する．
-IK が解けないときは `inverse_kinematics` が `False` を返し，モデルの関節は動かない．
+IK が解けないときは `inverse_kinematics` が `False` を返し，モデルの関節は動かない (元の角度に戻る)．
+そのとき `inverse_kinematics failed after 50 iterations: rarm_end_coords: position error 1.2639 m (threshold 0.0010 m), ... joint angles were reverted to the initial pose.`
+のような警告が出る．`position error` が目標までの残りの距離である．
 腕が届くのは base_link から前に 0.25 m ほどまでなので，遠い目標では解けない．
 `ri.angle_vector()` で送る前に PyrenderViewer で解の姿勢を見ておくと，思わぬ姿勢 (腕が体に当たる，床に向かう) に気づける．
 
