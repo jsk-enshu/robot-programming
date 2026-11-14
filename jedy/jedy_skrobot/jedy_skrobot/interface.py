@@ -1196,7 +1196,8 @@ class JedyInterface(RobotInterface):
         speaker : str
             A VOICEVOX voice by name, e.g. ``ずんだもん-ノーマル`` (the names
             are in ``~/.ros/voicevox/speakers.json``); empty: the default.
-            A name it does not know is not an error: nothing is said.
+            A name it does not know is not an error: VOICEVOX says it
+            in the default voice.
         timeout : float
             Seconds (wall clock) to wait with ``wait``.
 
