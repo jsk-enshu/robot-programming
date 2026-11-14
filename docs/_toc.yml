@@ -143,6 +143,10 @@ parts:
       title: ロボットとカメラの座標系
     - file: tips/gazebo-sim
       title: Gazeboシミュレーション
+    - file: tips/skrobot-workflow
+      title: scikit-robotでの対話的な作業
+    - file: tips/skrobot-ik
+      title: scikit-robotの逆運動学
   - caption: Tips・付録（2日目）
     numbered: false
     chapters:
