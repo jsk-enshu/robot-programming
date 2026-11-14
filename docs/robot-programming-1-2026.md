@@ -728,15 +728,27 @@ if side == '左':
 ```
 
 **指さしてもらう．** `ri.point('赤い箱')` は Gemini Robotics-ER (`vlm-er`) に画像の中の位置を聞き，
-画素の位置 `(u, v)` (`u` が右向き，`v` が下向き．`img[v, u]` の画素) を返す．写っていなければ `None`．
+画素の位置 `(u, v)` (`u` が右向き，`v` が下向き) を返す．写っていなければ `None`．
+`u`, `v` は小数なので，画像の画素を見るときは `img[int(v), int(u)]` とする．
 ただし似た物が写っていればそちらを指すことがある (13BC の部屋では，壁の赤い救急箱を「赤い箱」と答えた)．
 言葉は具体的にする (「床に置いた赤い直方体」など)．`ri.ask` や VLM に聞いて動くときの目標も同じである．
 `ri.pixel_position(u, v, depth)` はその画素の距離を距離画像で測り，ロボットの座標系 (base_link: 前が x，左が y，上が z) の位置 [m] にする
 (`ri.detection_position` と同じ計算．距離が測れなければ `None`)．これを逆運動学の目標にすれば，言葉で言った物に手を伸ばせる．
 
-腕が届くのは base_link から前に 0.25 m ほどまでである．`box:=true` の赤い箱は 1.1〜1.2 m 先にあるので，
-下のコードをそのまま実行すると「IK が解けない」で終わる．先に `p` を表示して，箱の 0.3 m ほど手前まで台車で寄ってからもう一度実行する．
-例えば `p` の x が 1.12 m なら，`ri.go_velocity(0.12, 0.0, 0.0, duration=(1.12 - 0.3) / 0.12)` で約 0.8 m 前に出る．
+左腕が届くのは，base_link から前に 0.25 m ほど，左右は 0.05〜0.1 m (左腕の前)，高さ 0.1〜0.2 m ほどである．
+`box:=true` の赤い箱は前に 1.1〜1.2 m，左に 0.43〜0.48 m にあるので，
+下のコードをそのまま実行すると「IK が解けない」で終わる．先に `p` を表示して，台車で箱を左腕の前に持ってくる．
+
+```{code-block} python
+import time
+ri.go_velocity(0.0, 0.12, 0.0, duration=(p[1] - 0.10) / 0.12)   # 左へ: 箱が y = 0.1 m に来るまで
+ri.go_velocity(0.12, 0.0, 0.0, duration=(p[0] - 0.25) / 0.12)   # 前へ: 箱の手前の面が x = 0.25 m に来るまで
+time.sleep(3.0)   # 止まってからの画像を待つ (止まる前の画像で測ると位置がずれる)
+```
+
+前にまっすぐ出るだけだと，箱は横に残ってカメラに写らなくなる (`ri.point` が `None`)．
+寄ったら下のコードをもう一度実行する (`ri.point` から測り直す)．Gazebo では，この手順で箱の手前の面が x = 0.27 m，y = 0.09 m に来て，
+経由点・目標とも IK が解け，手先は目標から 1 mm 以内に着いた．
 
 ```{code-block} python
 import numpy as np
@@ -749,10 +761,10 @@ if uv is not None:
     p = ri.pixel_position(uv[0], uv[1], depth)   # [x, y, z] [m] か None
     print('赤い箱は', p)
     if p is not None:
-        robot.angle_vector(ri.angle_vector())
+        robot.reset_pose()                                        # 初期姿勢から解く (今の姿勢からだと解けないことがある)
         target = p - np.array([0.03, 0.0, 0.0])                   # 3 cm 手前
         # 一度 上・手前 (経由点) に出してから近づける．いきなり近づけると腕が台の角に引っかかった
-        for goal in (target + np.array([-0.03, 0.0, 0.04]), target):
+        for goal in (target + np.array([-0.03, 0.0, 0.02]), target):
             if robot.larm.inverse_kinematics(Coordinates(pos=goal), rotation_axis=False) is False:
                 print('IK が解けない', goal)
                 break
@@ -763,7 +775,7 @@ if uv is not None:
 Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは `[{"point": [545, 138], "label": "赤い箱"}]` で
 ([縦, 横] を 0〜1000 にした値)，`ri.point` は 640×480 の画像の画素 (88, 262) を返した．箱の赤い領域の中心 (87, 262) とほぼ同じである．
 `ri.pixel_position` は [1.123, 0.475, 0.137] m で，箱の手前の面 (x = 1.125 m) から 2 mm だった．
-腕が届くのは base_link から前に 0.25 m ほどまでなので，手を伸ばすときは物の近くまで台車で寄っておく．
+腕が届くのは base_link から前に 0.25 m ほどまでなので，手を伸ばすときは上のように物を腕の前まで台車で寄せておく．
 
 <video width="100%" controls preload="metadata">
   <source src="fig/jedy-ri-ask-2026.mp4" type="video/mp4">
