@@ -14,8 +14,15 @@ faces are in view, each one gives the cube's centre and orientation
    robot (a 7-joint arm: position AND orientation, 6 constraints);
 2. it stops 5 cm short, opens, moves straight in, and closes;
 3. it lifts the cube, and checks that it did -- the gripper stopped on the
-   cube instead of closing on nothing, and the camera sees the cube higher;
-4. it puts the cube back and lets go.
+   cube instead of closing on nothing, and, if the camera can see the cube
+   past the hand (it usually cannot), that the cube is higher;
+4. it puts the cube back where it was picked up, lets go, backs off and
+   looks again to check that the cube is there.
+
+Closing, the fingers squeeze the cube out towards their tips (see
+HELD_AT). Put down at the grasp pose, it ended up 1.5-2.5 cm further away
+every run (Gazebo), and fell off the back of the stand on the second or
+third. So the hand puts it down that much nearer.
 
 If the arm cannot do all that from where the robot stands, the base drives
 straight towards or away from the cube (forward/backward only) until it can.
@@ -27,8 +34,8 @@ import math
 import numpy as np
 
 from jedy_skrobot import connect
-from jedy_vision import (ARMS_CLEAR, TAG_CUBE_TAG, TagDetector, cube_pose, say,
-                         set_head, solve_ik)
+from jedy_vision import (ARMS_CLEAR, TAG_CUBE_EDGE, TAG_CUBE_TAG, TagDetector,
+                         cube_pose, say, set_head, solve_ik)
 
 #: Where the cube's centre should be ahead of base_link for the hand to reach
 #: it, slide in and lift with the hand level [m]. Narrow: IK over a grid at
@@ -82,6 +89,19 @@ BACK_OFF = 0.05
 #: point above failed for some cube positions 3 mm apart (model, from
 #: ARMS_CLEAR); lower heights are tried if the full one does not trace.
 ABOVE = 0.06
+#: [m] How far beyond end_coords, along the approach, the held cube's centre
+#: ends up. The fingers stop on the cube still 0.05-0.08 rad open (not
+#: parallel) and squeeze it out towards their tips: in Gazebo (ground
+#: truth) it moved 11-12 mm further away as they closed and another 2-6 mm
+#: as it was lifted, and once put down it was 3-13 mm (mean 9 mm, 5 runs)
+#: beyond where the hand put it. The hand therefore puts it down this much
+#: nearer. The camera cannot measure it in each run instead: with the
+#: fingers closed the hand hides every tag but the top one, which was then
+#: 9-16 mm off.
+HELD_AT = 0.009
+#: [m] A cube seen more than this far from where it was picked, after being
+#: put down, does not count as put back.
+PLACE_TOLERANCE = 0.02
 
 
 def look(ri, robot, K, detector, frames=3):
@@ -152,12 +172,15 @@ def plan(robot, arm, cube, pre_back, lift_up, start):
         ``'above'``, ``'pre'``: angle vectors; ``'down'`` (from 'above' to
         'pre'), ``'in'``, ``'up'``: lists of angle vectors (straight lines
         down, in to the cube and up from it); ``'targets'``: the hand
-        positions ``'above'``, ``'pre'``, ``'grasp'``, ``'lift'``.
+        positions ``'above'``, ``'pre'``, ``'grasp'``, ``'lift'`` and
+        ``'place'`` (to put the held cube down where it was: see HELD_AT);
+        ``'rotation'``: the hand's rotation throughout.
     """
     R = grasp_frame(cube)
     grasp = cube.position + DEPTH * R[:, 0] + np.array([0.0, 0.0, GRASP_UP])
     targets = {'grasp': grasp, 'pre': grasp - pre_back * R[:, 0],
-               'lift': grasp + np.array([0.0, 0.0, lift_up])}
+               'lift': grasp + np.array([0.0, 0.0, lift_up]),
+               'place': grasp - (DEPTH + HELD_AT) * R[:, 0]}
     found = None
     for rot in (R, R.dot(np.diag([1.0, -1.0, -1.0]))):
         robot.angle_vector(start)
@@ -185,9 +208,49 @@ def plan(robot, arm, cube, pre_back, lift_up, start):
         if path_up is None:
             continue
         found = {'above': above, 'down': path_down, 'pre': pre, 'in': path_in,
-                 'up': path_up, 'targets': targets}
+                 'up': path_up, 'targets': targets, 'rotation': rot}
         break
     robot.angle_vector(start)
+    return found
+
+
+def plan_put_down(robot, arm, poses):
+    """Arm motions to put the held cube down where it was picked up.
+
+    From the lift pose: across to above the place, straight down to it and,
+    once the fingers are open, straight back out to the 'pre' pose (the
+    place is on the line the hand came in along, short of the grasp pose),
+    all with the hand's grasp rotation. From 'pre' the hand goes up along
+    the plan's own path.
+
+    Parameters
+    ----------
+    robot : skrobot.models.urdf.RobotModelFromURDF
+        The robot model; left as it was.
+    arm : skrobot.model.RobotModel
+        The arm holding the cube.
+    poses : dict
+        The grasp plan (:func:`plan`).
+
+    Returns
+    -------
+    dict or None
+        ``'across'``, ``'down'``, ``'back'``: lists of angle vectors. None
+        if a straight line fails.
+    """
+    rot, targets = poses['rotation'], poses['targets']
+    over = targets['place'] + (targets['lift'] - targets['grasp'])
+    saved = robot.angle_vector().copy()
+    robot.angle_vector(poses['up'][-1])
+    found = {}
+    for name, start, goal in (('across', targets['lift'], over),
+                              ('down', over, targets['place']),
+                              ('back', targets['place'], targets['pre'])):
+        found[name] = straight(robot, arm, start, goal, rot, STEP)
+        if found[name] is None:
+            found = None
+            break
+    robot.angle_vector(saved)
     return found
 
 
@@ -375,12 +438,17 @@ def main():
         print('cube now at {} m: {:+.3f} m higher than before'.format(
             np.round(after.position, 3), rise))
         lifted = holding and rise > args.lift / 2
+        how = 'gripper angle and camera'
     else:
-        print('cube not in view now (the hand may be hiding it)')
+        # The usual case: the lifted hand is between the camera and the cube.
+        print('cube not in view now (the hand hides it): "lifted" is judged from '
+              'the gripper angle alone -- the fingers stopped on something -- not '
+              'from seeing the cube higher')
         lifted = holding
+        how = 'gripper angle only'
     if lifted:
         say(ri, '持てたのだ')
-        print('LIFTED')
+        print('LIFTED ({})'.format(how))
     else:
         say(ri, '持てなかったのだ')
         angle = gripper.joint_angle()
@@ -392,13 +460,49 @@ def main():
             why = ' (the gripper did not close: blocked?)'
         print('NOT LIFTED: gripper {:+.2f} rad{}'.format(angle, why))
     ri.sleep(1.0)
-    move_arm(poses['up'][::-1][1:] + [poses['in'][-1]], 2.0)   # put it back down
-    move_gripper(args.open)
-    move_arm(poses['in'][::-1][1:] + [poses['pre']], 2.0)
+    put = plan_put_down(robot, arm, poses)
+    if put is None:
+        print('IK: no straight path to put the cube down where it was: putting it '
+              'down at the grasp pose, {:.0f} mm further away'.format(
+                  1000 * (DEPTH + HELD_AT)))
+        put = {'down': poses['up'][::-1][1:] + [poses['in'][-1]],
+               'back': poses['in'][::-1][1:] + [poses['pre']]}
+        place = poses['targets']['grasp']
+    else:
+        move_arm(put['across'], 1.0)
+        place = poses['targets']['place']
+    move_arm(put['down'], 2.0, 'put down', place)
+    move_gripper(args.open)   # let go only once the arm has stopped
+    move_arm(put['back'], 2.0)
     move_gripper(0.0)   # before folding back, for the same reason
     move_arm(poses['down'][::-1][1:] + [poses['above']], 1.5)   # up, clear of the cube
     move_arm(home, args.time)
-    if not lifted:
+    # Is the cube back where it was? From here the camera sees it as it did
+    # at the start (the hand is out of the way).
+    placed = look(ri, robot, K, detector, frames=10)
+    if placed is None:
+        put_back = False
+        print('NOT PUT BACK: the cube is not in view after putting it down -- it may '
+              'have fallen off the stand')
+    else:
+        off = placed.position - centre
+        print('cube now at {} m, {:.1f} mm from where it was picked up {}'.format(
+            np.round(placed.position, 3), 1000 * np.linalg.norm(off),
+            np.round(1000 * off, 1)))
+        put_back = np.linalg.norm(off) <= PLACE_TOLERANCE
+        if put_back:
+            print('PUT BACK')
+        elif off[2] < -TAG_CUBE_EDGE / 2:
+            print('NOT PUT BACK: the cube is {:.0f} mm lower -- it fell off the stand'
+                  .format(-1000 * off[2]))
+        else:
+            print('NOT PUT BACK: more than {:.0f} mm from where it was picked up'
+                  .format(1000 * PLACE_TOLERANCE))
+    if lifted and put_back:
+        say(ri, '元の場所に置いたのだ')
+    elif lifted:
+        say(ri, '元の場所に置けなかったのだ')
+    if not (lifted and put_back):
         raise SystemExit(1)
 
 
