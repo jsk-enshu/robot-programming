@@ -206,6 +206,7 @@ def test_no_key_at_all(env):
     with pytest.raises(VlmRefused) as info:
         interface.vlm_credentials()
     assert info.value.kind == 'key' and 'ta login' in str(info.value)
+    assert 'GOOGLE_API_KEY' in str(info.value)   # the student's own key, too
     with pytest.raises(VlmRefused):
         interface.aita_credentials()   # the old name still works
 

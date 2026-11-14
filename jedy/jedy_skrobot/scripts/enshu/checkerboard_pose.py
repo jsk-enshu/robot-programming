@@ -28,7 +28,8 @@ from jedy_skrobot import connect
 
 
 def main():
-    p = argparse.ArgumentParser(description=__doc__)
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--corners', type=int, nargs=2, default=[7, 4],
                    metavar=('COLS', 'ROWS'), help='inner corners')
     p.add_argument('--square', type=float, default=0.04,

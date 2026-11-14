@@ -749,9 +749,11 @@ def cube_pose(tags, edge=TAG_CUBE_EDGE):
 #: hands 0.12 m above the floor and 0.17 m ahead -- the height of the demo
 #: stand and its cube, so they ran into it 2 cm short of approach_tag's 0.20 m
 #: standoff, and from the head camera the fingertips hid the stand's tag. Here
-#: the hands are 0.22 m up and 0.145 m out to each side (model FK), above the
-#: cube and outside the stand's 0.14 m width.
-ARMS_CLEAR = {'joint0': 45.0, 'joint1': 30.0, 'joint2': 0.0, 'joint3': -130.0,
+#: the hands are 0.22 m up and 0.144 m out to each side (model FK), above the
+#: cube and outside the stand's 0.14 m width. joint1 is 29 deg, not 30: the
+#: right arm's limit is 29.8 deg (jedy_fullbody.urdf), and 30 was clipped
+#: with a warning on every tuck.
+ARMS_CLEAR = {'joint0': 45.0, 'joint1': 29.0, 'joint2': 0.0, 'joint3': -130.0,
               'joint4': 0.0, 'joint5': -45.0, 'joint6': 0.0}
 
 

@@ -1024,9 +1024,10 @@ class JedyInterface(RobotInterface):
         Raises
         ------
         VlmRefused
-            (a RuntimeError) No key (run ``ta login``), or the server refused
-            (no consent, more than one question a second, the day's budget
-            used up), or no answer within ``timeout``. ``kind`` says which.
+            (a RuntimeError) No key (run ``ta login``, or set your own
+            GOOGLE_API_KEY), or the server refused (no consent, more than one
+            question a second, the day's budget used up), or no answer within
+            ``timeout``. ``kind`` says which.
         RuntimeError
             With ``choices``: the answer was not one of them, twice.
         """
@@ -1519,14 +1520,20 @@ def vlm_credentials():
     Raises
     ------
     VlmRefused
-        Neither GOOGLE_API_KEY nor an AI TA key (kind ``'key'``).
+        Neither GOOGLE_API_KEY nor an AI TA key (kind ``'key'``); the
+        message names both ways to get one.
     """
     google_key = os.environ.get('GOOGLE_API_KEY', '').strip()
     if google_key:
         base_url = (os.environ.get('JEDY_VLM_GOOGLE_BASE_URL', '').strip()
                     or GOOGLE_AI_STUDIO_BASE_URL)
         return 'google', base_url.rstrip('/'), google_key
-    base_url, key = aita_credentials()
+    try:
+        base_url, key = aita_credentials()
+    except VlmRefused as exc:
+        raise VlmRefused('key', '{}. または自分の Google AI Studio のキーを '
+                         'export GOOGLE_API_KEY=発行したキー で設定してください '
+                         '(docs の tips/google-ai-studio)'.format(exc)) from None
     return 'aita', base_url, key
 
 
