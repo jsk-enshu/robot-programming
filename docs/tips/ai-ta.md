@@ -22,6 +22,8 @@ AI TA のプログラムは [iory/ai-ta-for-student](https://github.com/iory/ai-
     $ git clone https://github.com/jsk-enshu/robot-programming ~/robot-programming
 
 AI TA は `~/ros2_ws/src/robot-programming/docs` か `~/robot-programming/docs` にある資料を自動で見つける．
+資料は 200 MB ほどあるので，`git clone --depth 1 ...` にすると速い．
+教員からキーのファイルを受け取った TA は，`ta login` の代わりに `ta setup <キーのファイル>` でも設定できる．
 ROS が無いので，`ta fix` が集めるのはターミナルの画面と Python の Traceback だけになり，Gazebo での確認もできない．
 ```
 
@@ -38,7 +40,13 @@ $ ta doctor   # 接続・キー・資料の場所を確認する (全部 ✓ に
   中身を見てから入れたいときは `git clone https://github.com/iory/ai-ta-for-student` して `./install.sh` を実行しても同じ．
 - `ta login` は GitHub のアカウントで本人確認をして，自分専用のキーを受け取る．
   「登録されていない」と言われたら，アンケートで登録した GitHub アカウントでログインしているか確かめ，それでも駄目なら TA に伝える．
-- 初めて `ta` を起動したフォルダでは「このフォルダを信頼するか」と聞かれるので **Yes, I trust this folder** を選ぶ．
+- `ta login` の途中で，2 つの同意を `y` / `n` で聞かれる．Enter だけを押すと「同意しない」になる．
+  - AI TA の記録 (下の「記録について」) への同意: **必須**．同意しないとキーを受け取れない．
+  - カメラ画像を AI (Gemini) に送る機能への同意: 任意．同意すると {doc}`../robot-programming-1-2026` の `ri.ask` などが使える．同意しなくても AI TA は使える．
+  答えを変えたいときは `ta login` をやり直す．
+- ホーム (`~`) の外のフォルダで初めて `ta` を起動すると「このフォルダを信頼するか」と聞かれる．
+  最初は **No, exit** が選ばれているので，矢印キーで **Yes, I trust this folder** を選んでから Enter を押す (Enter だけだと終わる)．
+  ホームとその中のフォルダでは聞かれない．
 - `ta: command not found` と出るときは `~/.local/bin` が PATH に入っていない．
   `echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc` をしてから `source ~/.bashrc` する．
 - 演習資料が見つからないと言われたら，`AITA_DOCS=~/ros2_ws/src/robot-programming/docs` のように場所を指定する．
@@ -79,11 +87,14 @@ $ ta fix
   確かめてから答え，実行のたびに内容を読んでから許可すること．
 - 焦げたにおい・煙・発熱・けがなど危ないときは，AI に聞く前にロボットの電源を切り，`ta call` か近くの TA を呼ぶ．
 - AI の答えは間違えることがある．資料と食い違うときや，おかしいと思ったときは TA に聞く．
-- 1 日に使える額には上限がある (`ta usage` で確認できる)．上限に達すると，その日はそれ以上使えない．
+- 1 日に使える額には上限がある．上限の額と今日の利用額は `ta usage` で分かる (AI TA とカメラ画像の AI の合計)．
+  カメラ画像の AI の分は，そのうち 1 日 $2 まで．上限に達すると，その日はそれ以上使えない．1 回の質問は $0.05 ほど．
 
 ## 記録について
 
-- 質問と AI TA の答えは記録され，教員と TA が見る (演習の改善と，困っている人を見つけるため)．
+- 質問と AI TA の答えは記録され，教員と TA が見る (演習の改善と，困っている人を見つけるため)．成績には使わない．
+  AI TA に貼った画像と，`ri.ask` などで送ったカメラ画像も保存される．
+- 保存の期間や，消してほしいものがあるときは，教員に聞く．
 - `ta fix` / `ta call` で送る前に，キーやパスワードらしい文字列は伏せ字にする．
 - キーは `~/.config/ai-ta/env` にある．人に見せたり，ファイルやチャットに貼ったりしない．
 
