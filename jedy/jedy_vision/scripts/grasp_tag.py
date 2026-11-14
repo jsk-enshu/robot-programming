@@ -99,6 +99,10 @@ ABOVE = 0.06
 #: fingers closed the hand hides every tag but the top one, which was then
 #: 9-16 mm off.
 HELD_AT = 0.009
+#: [m] Seen again from the pre pose this much further from the first
+#: estimate, the cube was knocked on the way there (once in Gazebo: the
+#: swing to 'above' stopped 13 mm short against it and tipped it over).
+KNOCKED = 0.015
 #: [m] A cube seen more than this far from where it was picked, after being
 #: put down, does not count as put back.
 PLACE_TOLERANCE = 0.02
@@ -310,6 +314,14 @@ def main():
     args = p.parse_args()
 
     robot, ri = connect()
+    try:
+        grasp(args, robot, ri)
+    finally:
+        ri.stop()   # the base, also on Ctrl-C while drive_into_reach drives it
+
+
+def grasp(args, robot, ri):
+    """Everything :func:`main` does once connected (see the module docstring)."""
     ri.servo_on()
     K, _ = ri.camera_info()
     set_head(robot, ri, 0.0, args.tilt)
@@ -340,6 +352,10 @@ def main():
     arm_ctrl = '{}_arm_controller'.format('left' if side == 'larm' else 'right')
     grip_ctrl = '{}_gripper_controller'.format('left' if side == 'larm' else 'right')
     centre = cube.position
+    # The reference for the check after putting the cube down, which looks
+    # from ``home`` again: an estimate from here, so that the camera's error
+    # (5-9 mm along the line of sight in Gazebo) is the same in both.
+    seen_from_home = cube.position
     home = robot.angle_vector().copy()
     poses = plan(robot, arm, cube, args.pre, args.lift, home)
     if poses is None:
@@ -409,6 +425,10 @@ def main():
     else:
         shift = np.linalg.norm(again.position - cube.position)
         print('cube seen again, {:.1f} mm from the first estimate'.format(1000 * shift))
+        if shift > KNOCKED:
+            print('  the cube has moved: the arm probably hit it on the way to the pre '
+                  'pose (see "above" above). It is put back where it is now, not where '
+                  'it was at the start.')
         if shift > 0.005:
             # From where the arm is now; failing that, from where it started
             # (the plan from the pre pose found no straight path in 1 of 8
@@ -419,6 +439,9 @@ def main():
                 say(ri, '届かないのだ')
                 raise SystemExit('IK: the cube is at {} m now, out of reach'.format(
                     np.round(again.position, 3)))
+            # The cube moved (or the robot did): move the reference along,
+            # but keep it an estimate from home.
+            seen_from_home = seen_from_home + (again.position - cube.position)
             poses, cube, centre = replanned, again, again.position
             move_arm(poses['pre'], 1.5, 'pre (again)', poses['targets']['pre'])
     move_arm(poses['in'], 2.0, 'in to the cube', poses['targets']['grasp'])
@@ -485,7 +508,7 @@ def main():
         print('NOT PUT BACK: the cube is not in view after putting it down -- it may '
               'have fallen off the stand')
     else:
-        off = placed.position - centre
+        off = placed.position - seen_from_home
         print('cube now at {} m, {:.1f} mm from where it was picked up {}'.format(
             np.round(placed.position, 3), 1000 * np.linalg.norm(off),
             np.round(1000 * off, 1)))
