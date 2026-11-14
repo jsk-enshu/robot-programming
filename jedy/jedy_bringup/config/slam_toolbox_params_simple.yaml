@@ -1,23 +1,43 @@
+# slam_toolbox (async, mapping) for Jedy in Gazebo: jedy_slam.launch.py.
+#
+# Inputs, from `jedy_gazebo.launch.py lidar:=true`:
+#   /scan   sensor_msgs/LaserScan, frame base_laser, 360 beams, 0.2-12 m, 10 Hz
+#   TF      odom -> base_link (Gazebo's OdometryPublisher)
+# Output: /map and the map -> odom TF.
+#
+# Based on slam_toolbox's config/mapper_params_online_async.yaml (Jazzy,
+# 2.8.x). What differs, and why:
+#   base_frame         base_link: Jedy has no base_footprint (the stock
+#                      default), and the old `base_link_frame` key here was
+#                      not a slam_toolbox parameter, so it was ignored.
+#   max_laser_range    12.0: the simulated LiDAR's range.
+#   minimum_travel_*   0.2 m / 0.2 rad: the base is slow (0.078-0.156 m/s on
+#                      the real robot), so 0.5 m between scans was ~5 s.
 slam_toolbox:
   ros__parameters:
+    # Plugin params
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: SCHUR_JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+    ceres_loss_function: None
+
     # ROS Parameters
-    use_sim_time: true
     odom_frame: odom
     map_frame: map
-    base_link_frame: base_link
+    base_frame: base_link
     scan_topic: /scan
-    odom_topic: /mecanum_drive_controller/odometry
-
-    # Mode
+    use_map_saver: true
     mode: mapping
 
-    # Basic settings
-    debug_logging: true
+    debug_logging: false
     throttle_scans: 1
     transform_publish_period: 0.02
-    map_update_interval: 5.0
+    map_update_interval: 2.0
     resolution: 0.05
-    max_laser_range: 20.0
+    min_laser_range: 0.2
+    max_laser_range: 12.0
     minimum_time_interval: 0.5
     transform_timeout: 0.2
     tf_buffer_duration: 30.0
@@ -27,8 +47,9 @@ slam_toolbox:
     # General Parameters
     use_scan_matching: true
     use_scan_barycenter: true
-    minimum_travel_distance: 0.5
-    minimum_travel_heading: 0.5
+    minimum_travel_distance: 0.2
+    minimum_travel_heading: 0.2
+    check_min_dist_and_heading_precisely: false
     scan_buffer_size: 10
     scan_buffer_maximum_scan_distance: 10.0
     link_match_minimum_response_fine: 0.1
@@ -60,3 +81,5 @@ slam_toolbox:
     minimum_angle_penalty: 0.9
     minimum_distance_penalty: 0.5
     use_response_expansion: true
+    min_pass_through: 2
+    occupancy_threshold: 0.1

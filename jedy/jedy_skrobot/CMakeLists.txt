@@ -35,6 +35,8 @@ ament_uv_install_python_scripts(
     scripts/enshu/show_camera.py
     # Asks the course's VLM (ri.ask, through the AI TA server) which way to go.
     scripts/enshu/vlm_navigate.py
+    # Nav2 goals from a program (docs/tips/slam.md; Gazebo lidar:=true).
+    scripts/enshu/nav2_goal.py
     # Steady motions, e.g. to record the robot's sounds for the simulator.
     scripts/tools/drive_steady.py
     scripts/tools/swing_joint.py

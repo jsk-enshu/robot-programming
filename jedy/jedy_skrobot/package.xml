@@ -41,6 +41,8 @@
   <exec_depend>speech_recognition_msgs</exec_depend>
   <exec_depend>jedy_description</exec_depend>
   <exec_depend>jedy_bringup</exec_depend>
+  <!-- scripts/enshu/nav2_goal.py: BasicNavigator -->
+  <exec_depend>nav2_simple_commander</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

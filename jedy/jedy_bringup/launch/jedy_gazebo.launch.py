@@ -9,6 +9,7 @@
     ros2 launch jedy_bringup jedy_gazebo.launch.py tags:=true  # 10 AprilTags around
     ros2 launch jedy_bringup jedy_gazebo.launch.py world:=empty   # no room, an endless floor
     ros2 launch jedy_bringup jedy_gazebo.launch.py legacy:=false  # no 2025 names, no ball
+    ros2 launch jedy_bringup jedy_gazebo.launch.py lidar:=true  # /scan + odom, for SLAM/Nav2
 
 By default the robot stands in Room 13BC, the exercise room
 (room13bc_description), at its jedy_spot.
@@ -36,8 +37,11 @@ What the simulator has that the board does not, and the other way round:
   falls under gravity and joint_states shows where it fell.
 * The head's RGB-D camera needs rendering. render_sensors:=false drops it
   (and the Sensors system) for machines with no usable GL; the IMU still runs.
-  There is no LiDAR: the exercises do not use one, and rendering it slowed
-  the simulation.
+  There is no LiDAR by default: the exercises do not use one, and rendering
+  it slowed the simulation. lidar:=true adds one for SLAM and Nav2
+  (docs/tips/slam.md): /scan (sensor_msgs/LaserScan, frame base_laser), plus
+  /odom and the odom -> base_link TF from the model's pose in Gazebo. The
+  real robot has neither a LiDAR nor an odom frame.
 
 legacy:=true (the default) also serves the 2025 names, for the robot system
 lecture and other programs written for the 2025 simulation: jedy_legacy_bridge
@@ -680,6 +684,7 @@ def generate_launch_description():
             " wheels:=", wheels,
             " camera_model:=", LaunchConfiguration("camera"),
             " camera_rate:=", LaunchConfiguration("camera_rate"),
+            " lidar:=", LaunchConfiguration("lidar"),
             " controllers:=", controllers,
         ] + [" init_%s:=%r" % item for item in START_POSE.items()]),
             value_type=str)
@@ -761,6 +766,23 @@ def generate_launch_description():
             ("/camera/depth_image", "/camera/depth/image_rect_raw"),
         ],
         condition=IfCondition(render),
+        output="screen",
+    )
+
+    # lidar:=true: the LiDAR and the odometry that jedy_fullbody_actuo.urdf.xacro
+    # adds, for slam_toolbox / AMCL / Nav2. Gazebo publishes the odom ->
+    # base_link transform on its own topic, which goes to /tf here.
+    lidar_bridge = Node(
+        package="ros_gz_bridge", executable="parameter_bridge",
+        name="lidar_bridge",
+        arguments=[
+            "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
+            "/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry",
+            "/odom/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V",
+        ],
+        remappings=[("/odom/tf", "/tf")],
+        parameters=[use_sim_time],
+        condition=IfCondition(LaunchConfiguration("lidar")),
         output="screen",
     )
 
@@ -1008,6 +1030,12 @@ def generate_launch_description():
                                           "rendering it is most of Gazebo's "
                                           "CPU (5 Hz: 77%, 30 Hz: 123% on "
                                           "one PC)"),
+        DeclareLaunchArgument("lidar", default_value="false",
+                              choices=["true", "false"],
+                              description="a 2-D LiDAR (/scan) and odom -> "
+                                          "base_link, for SLAM and Nav2 "
+                                          "(simulation only; needs "
+                                          "render_sensors:=true)"),
         DeclareLaunchArgument("person", default_value="false",
                               choices=["true", "false"],
                               description="a person for the jedy_vision "
@@ -1038,7 +1066,7 @@ def generate_launch_description():
         gazebo, OpaqueFunction(function=room_nodes),
         OpaqueFunction(function=room_tag_nodes),
         robot_state_pub, joint_state_pub, spawn, bridge, clock_bridge, clock_drop,
-        render_bridge, box, ball, checkerboard, person, *demo_nodes,
+        render_bridge, lidar_bridge, box, ball, checkerboard, person, *demo_nodes,
         *controller_nodes, servo, presence, sound_play, sim_sounds,
         legacy_bridge, rviz,
     ])

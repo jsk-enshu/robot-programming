@@ -1,59 +1,74 @@
+"""Build a 2-D map with slam_toolbox (online, async), in Gazebo.
+
+    ros2 launch jedy_bringup jedy_gazebo.launch.py lidar:=true   # first
+    ros2 launch jedy_bringup jedy_slam.launch.py rviz:=true
+    ros2 run nav2_map_server map_saver_cli -f ~/room13bc_map     # when done
+
+Needs /scan and the odom -> base_link TF, which jedy_gazebo.launch.py
+publishes with lidar:=true only. The real Jedy has neither (no LiDAR, no
+odom frame), so this is for the simulator. docs/tips/slam.md walks through it.
+
+slam_toolbox is a lifecycle node on Jazzy (2.8.x): it does nothing until it
+is configured and activated. slam_toolbox's own online_async_launch.py does
+both as soon as the node is up (autostart:=true), so this includes it rather
+than starting the node itself. Started from the spawn pose, the map's origin
+is where the robot was spawned, which is what jedy_nav2.launch.py's AMCL
+initial pose assumes.
+"""
+
 import os
 
 from ament_index_python.packages import get_package_share_directory
-
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, TimerAction, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    # Get package directory
-    pkg_jedy_bringup = get_package_share_directory('jedy_bringup')
+    """Build the launch description.
 
-    # Launch arguments
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-    slam_params_file = LaunchConfiguration(
-        'slam_params_file',
-        default=os.path.join(pkg_jedy_bringup, 'config', 'slam_toolbox_params_simple.yaml'))
+    Returns
+    -------
+    launch.LaunchDescription
+        slam_toolbox, configured and activated, and optionally RViz.
+    """
+    bringup = get_package_share_directory("jedy_bringup")
+    slam_toolbox = get_package_share_directory("slam_toolbox")
+    use_sim_time = LaunchConfiguration("use_sim_time")
 
-    # SLAM Toolbox node
-    slam_toolbox_node = Node(
-        package='slam_toolbox',
-        executable='async_slam_toolbox_node',
-        name='slam_toolbox',
-        output='screen',
-        parameters=[
-            slam_params_file,
-            {'use_sim_time': use_sim_time}
-        ]
+    slam = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(slam_toolbox, "launch", "online_async_launch.py")),
+        launch_arguments={
+            "slam_params_file": LaunchConfiguration("slam_params_file"),
+            "use_sim_time": use_sim_time,
+            "autostart": "true",
+        }.items(),
     )
 
-    # Auto-activation node (delayed to ensure node is ready)
-    activate_slam = TimerAction(
-        period=2.0,
-        actions=[
-            Node(
-                package='jedy_bringup',
-                executable='activate_slam_node.py',
-                name='slam_activator',
-                output='screen',
-                parameters=[{'use_sim_time': use_sim_time}]
-            )
-        ]
+    rviz = Node(
+        package="rviz2", executable="rviz2", name="rviz2",
+        arguments=["-d", os.path.join(bringup, "rviz", "jedy_nav.rviz")],
+        parameters=[{"use_sim_time": use_sim_time}],
+        condition=IfCondition(LaunchConfiguration("rviz")),
+        output="screen",
     )
 
     return LaunchDescription([
         DeclareLaunchArgument(
-            'use_sim_time',
-            default_value='true',
-            description='Use simulation time'),
+            "use_sim_time", default_value="true",
+            description="Gazebo's /clock; the simulator is the only "
+                        "supported source of /scan"),
         DeclareLaunchArgument(
-            'slam_params_file',
-            default_value=slam_params_file,
-            description='Full path to the SLAM Toolbox parameters file'),
-        slam_toolbox_node,
-        activate_slam,
+            "slam_params_file",
+            default_value=os.path.join(bringup, "config",
+                                       "slam_toolbox_params_simple.yaml"),
+            description="slam_toolbox parameters"),
+        DeclareLaunchArgument(
+            "rviz", default_value="false", choices=["true", "false"],
+            description="RViz with the map, the scan and the robot"),
+        slam, rviz,
     ])
