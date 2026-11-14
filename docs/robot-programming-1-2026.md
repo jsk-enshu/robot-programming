@@ -690,6 +690,10 @@ if side == '左':
 `ri.pixel_position(u, v, depth)` はその画素の距離を距離画像で測り，ロボットの座標系 (base_link: 前が x，左が y，上が z) の位置 [m] にする
 (`ri.detection_position` と同じ計算．距離が測れなければ `None`)．これを逆運動学の目標にすれば，言葉で言った物に手を伸ばせる．
 
+腕が届くのは base_link から前に 0.25 m ほどまでである．`box:=true` の赤い箱は 1.1〜1.2 m 先にあるので，
+下のコードをそのまま実行すると「IK が解けない」で終わる．先に `p` を表示して，箱の 0.3 m ほど手前まで台車で寄ってからもう一度実行する．
+例えば `p` の x が 1.12 m なら，`ri.go_velocity(0.12, 0.0, 0.0, duration=(1.12 - 0.3) / 0.12)` で約 0.8 m 前に出る．
+
 ```{code-block} python
 import numpy as np
 from skrobot.coordinates import Coordinates
