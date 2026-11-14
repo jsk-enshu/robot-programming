@@ -35,29 +35,64 @@
 | 物を探すロボット: 「ペットボトルを探して」と言われたら旋回して探し，見つけたら近づいて指さす | 声・認識・台車・腕 | `ri.listen`, `ri.what_do_you_see`, `ri.go_velocity`, `inverse_kinematics` |
 | 声で操縦するロボット: 「前」「右」「止まって」で台車を動かし，「手を振って」で腕を振る | 声・台車・腕 | `ri.listen`, `ri.go_velocity` |
 | 案内ロボット: 人が来たらあいさつし，「いいね」をされたらお辞儀する | 認識・声・首 | `ri.wait_until_sees('人')`, `ri.gesture`, `ri.say` |
-| 人について行くロボット | カメラ・台車・首 | `ri.what_do_you_see(['人'])`, `ri.go_velocity` |
+| 人について行くロボット | カメラ・台車・首 | `ri.what_do_you_see(['人'])`, `ri.go_velocity` (人までの距離は下の注意) |
 | 実況するロボット: 「何が見える?」と聞かれたら，見えているものを AI に聞いてしゃべる | 声・カメラ (AI) | `ri.listen`, `ri.ask`, `ri.say` |
+
+:::{note}
+実機の D405 は 0.5 m くらいより遠くの深度を測れない．そのため，それより遠い人や物には `ri.detection_position()` が None を返す．
+`follow_person` (`jedy/jedy_vision/scripts/follow_person.py`) は，深度が無いとき，人の枠の下端 (足元) の画素と床の交点から距離を求める．
+足元が画像の外なら，枠の上端を床から 1.6 m (頭) とみなして求める．
+自分のプログラムでも，次のように足元の床の点を求められる (Gazebo の 3.5 m 先の人で 3.43 m と出た)．
+
+```{code-block} python
+from jedy_vision import FLOOR_Z, pixel_on_floor
+K, _ = ri.camera_info()
+x1, y1, x2, y2 = ri.what_do_you_see(['人'])[0].box
+robot.angle_vector(ri.angle_vector())
+feet = pixel_on_floor(robot, K, (x1 + x2) / 2, y2, FLOOR_Z)   # base_link [m] か None
+print(np.hypot(feet[0], feet[1]))                             # 距離 [m]
+```
+:::
 
 ### すでにあるデモ
 
 1 日目に扱わなかったことも，動くデモがすでにある．作りたいものに近いデモを動かして，中身を読むとよい．
-`ros2 run jedy_vision demos` で一覧と起動方法が出る (中身は `jedy/jedy_vision/scripts/` と `jedy/jedy_skrobot/scripts/enshu/`)．
-Gazebo では `jedy_gazebo.launch.py demo:=true person:=true camera:=d405` がこれらのデモの舞台になる．
+`ros2 run jedy_vision demos` で jedy_vision のデモの一覧と起動方法が出る (中身は `jedy/jedy_vision/scripts/`)．
+表の下の 4 つ (`ros2 run jedy_skrobot ...`) は jedy_skrobot のデモで，この一覧には出ない (中身は `jedy/jedy_skrobot/scripts/enshu/`)．
 
-| したいこと | 起動するもの | 中身 (1 日目に出てこない話題) |
-| --- | --- | --- |
-| 物を探して近づき，指さす | `ros2 run jedy_vision find_object cup` | 見回して探す，床との交点で距離を推定する |
-| 手で物に触る | `ros2 run jedy_vision touch_tag` | カメラ座標からロボット座標へ，逆運動学，手前で一度止まる経由点 |
-| 物をつかんで持ち上げる | `ros2 run jedy_vision grasp_tag` (遠くからでも台車で寄る) | 複数のタグから物の姿勢を求める，姿勢付きの逆運動学，つかめたかの確認 |
-| 首で人を追う | `ros2 run jedy_vision look_at_person` | 首のコントローラだけに指令を送る |
-| 人について行く | `ros2 run jedy_vision follow_person` | 見え方で台車を動かすフィードバック |
-| 人の腕のまねをする | `ros2 run jedy_vision mimic_arms` | 姿勢推定の結果から逆運動学で腕の姿勢を作る |
-| 手を挙げた人に手を振り返す | `ros2 run jedy_vision wave_back` | 姿勢から合図を判定し，動作を作る |
-| 声でデモを切り替える | `ros2 run jedy_vision voice_demo` | 音声認識の結果で行動を選ぶ |
-| 言葉で言った目標へ走る | `ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて` | カメラの画像を VLM に送って次の一手を決める ({ref}`day-recognition-manipulation` の「VLM に聞いて動く」) |
-| 色の付いた物の 3 次元の位置 | `ros2 run jedy_skrobot color_clusters` | 色で画素を選び，深度画像で 3 次元に戻す |
-| チェッカーボードの位置と向き | `ros2 run jedy_skrobot checkerboard_pose` | 既知の模様から姿勢を求める (PnP) |
-| 傾いたら止まる | `ros2 run jedy_skrobot checkpoint_go_forward_imu` | IMU (Gazebo のみ．実機の RCB-4mini には無い) |
+Gazebo では，次の「舞台」が jedy_vision のデモに合わせてある (AprilTag の付いた台と立方体，椅子，コップ，人)．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:=d405
+```
+
+ほかのデモは，表の「Gazebo」の列のとおりに引数を変えて Gazebo を起動する．
+ロボットや物を動かしたデモのあとは，Gazebo を起動し直すと元の配置に戻る．
+
+| したいこと | 起動するもの | Gazebo | 中身 (1 日目に出てこない話題) |
+| --- | --- | --- | --- |
+| 物を探して近づき，指さす | `ros2 run jedy_vision find_object cup` | 舞台 | 見回して探す，床との交点で距離を推定する |
+| タグの位置と向き | `ros2 run jedy_vision tag_pose` | 舞台 | カメラ内部パラメータ，PnP，座標変換 |
+| タグの正面に止まる | `ros2 run jedy_vision approach_tag` | 舞台 | 極座標の姿勢制御，閉ループ |
+| 手で物に触る | `ros2 run jedy_vision touch_tag` | 舞台．先に `approach_tag` | カメラ座標からロボット座標へ，逆運動学，手前で一度止まる経由点 |
+| 物をつかんで持ち上げる | `ros2 run jedy_vision grasp_tag` | 舞台．先に `approach_tag --standoff 0.17` | 複数のタグから物の姿勢を求める，姿勢付きの逆運動学，つかめたかの確認 |
+| 画像の人と骨格を調べる | `ros2 run jedy_vision detect_people --pose` | 舞台 | YOLO と MediaPipe．結果を画像に保存する |
+| 首で人を追う | `ros2 run jedy_vision look_at_person` | 舞台 | 首のコントローラだけに指令を送る (追い続けるなら `--keep`) |
+| 人について行く | `ros2 run jedy_vision follow_person` | `person:=true` だけ (`demo:=true` を付けない) | 見え方で台車を動かすフィードバック |
+| 人の腕のまねをする | `ros2 run jedy_vision mimic_arms` | 舞台 | 姿勢推定の結果から逆運動学で腕の姿勢を作る |
+| 手を挙げた人に手を振り返す | `ros2 run jedy_vision wave_back` | 舞台 | 姿勢から合図を判定し，動作を作る |
+| 声でデモを切り替える | `ros2 run jedy_vision voice_demo` | 舞台と声のノード | 音声認識の結果で行動を選ぶ |
+| 言葉で言った目標へ走る | `ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて` | 舞台に `box:=true` を足す．VLM のキー | カメラの画像を VLM に送って次の一手を決める ({ref}`day-recognition-manipulation` の「VLM に聞いて動く」) |
+| 色の付いた物の 3 次元の位置 | `ros2 run jedy_skrobot color_clusters` | `box:=true` だけ (カメラは既定のまま) | 色で画素を選び，深度画像で 3 次元に戻す |
+| チェッカーボードの位置と向き | `ros2 run jedy_skrobot checkerboard_pose` | `checkerboard:=true` | 既知の模様から姿勢を求める (PnP) |
+| 傾いたら止まる | `ros2 run jedy_skrobot checkpoint_go_forward_imu` | どれでもよい (傾かないと止まらない) | IMU (Gazebo のみ．実機の RCB-4mini には無い) |
+
+- 「舞台」は上のコマンドのこと．「`person:=true` だけ」は `ros2 launch jedy_bringup jedy_gazebo.launch.py person:=true` と起動する．
+- `touch_tag` と `grasp_tag` は，台の正面に寄ってから動かす．先に `approach_tag` (`grasp_tag` には `--standoff 0.17` を付ける) を動かさないと，`touch_tag` は手が届かずに，`grasp_tag` は立方体が見えずに終わる．
+- `follow_person` は舞台では人の手前にある台に乗り上げて止まる．
+- `color_clusters` は `camera:=d405` だと，赤い箱 (約 1.2 m 先) が D405 の深度 (0.5 m まで) の外になり，`0 cluster(s)` と出る．
+- `vlm_navigate` には，AI TA のキーとカメラ画像を送ることへの同意，または自分の Google AI Studio のキー (`GOOGLE_API_KEY`．{ref}`vlm-google-ai-studio`，{doc}`tips/google-ai-studio`) が要る．キーが無くても `--dry-run left,forward,done` で VLM に聞かずに流れだけ試せる．
+- `checkpoint_go_forward_imu` は傾いたときだけ止まる．Gazebo の平らな床ではロボットは傾かないので，止まらずに 30 秒で時間切れになる．
 
 <video width="100%" controls preload="metadata">
   <source src="fig/jedy-gazebo-grasp-tag.mp4" type="video/mp4">
@@ -97,6 +132,11 @@ Gazebo では `jedy_gazebo.launch.py demo:=true person:=true camera:=d405` が�
 $ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_robot.py
 ```
 
+この Python (jedy_skrobot の venv) には YOLO (`ultralytics`) が入っていない．
+そのため，デモの `ObjectDetector` や `PersonDetector` を自分のプログラムで使うと `ModuleNotFoundError: No module named 'ultralytics'` になる．
+物や人を探すときは，認識のノード (下の表) を起動して `ri.what_do_you_see` や `ri.sees` を使う．
+`jedy_vision` のうち YOLO を使わない関数 (`pixel_on_floor` など) は，この Python でも import できる．
+
 ロボット (Gazebo / 実機) に加えて，使う道具のノードを別のターミナルで起動しておく．
 
 | 使う道具 | 起動するもの |
@@ -128,6 +168,10 @@ finally:
     ri.say('おわります')
 ```
 
+声を使わないときは，`while` の中の `ri.listen` から `break` までを `ri.what_do_you_see` などに置き換え，`ri.say` の 2 行を消す．
+VOICEVOX を起動していないと `ri.say` は `RuntimeError` になり，`finally` の中の `ri.say` も同じエラーを出す (エラーが 2 つ重なって出る)．
+`ri.listen` も，音声認識を起動していないと `RuntimeError` になる．
+
 ```{tip}
 - **小さく作って動かす**: 全部書いてから動かすのではなく，1 つの動作 (例: 手を読むだけ) ごとに動かして確かめる．
 - **関数に分ける**: `def cheer():` (喜ぶ動き)，`def find(word):` (探す) のように動作を関数にすると，組み合わせや直しが楽になる．
@@ -141,7 +185,10 @@ finally:
 :label: ex_sim_2026
 
 作ったプログラムを Gazebo で最後まで動かし，その様子 (画面) を保存せよ．
-Gazebo に無いもの (人・ペットボトル・手) は，PC の Web カメラやマイクで代わりに試してよい (認識のノードを `image_topic:=/image_raw` で起動する)．
+Gazebo の画面は，Ubuntu の PrtSc キー (GNOME のスクリーンショット) で保存する．ロボットが写っていなければ，左の Entity Tree で jedy を右クリックして「Move to」を選ぶ．
+頭のカメラの画像は `ros2 run jedy_skrobot show_camera --once --save ~/enshu/camera.png` で保存できる．
+人は `person:=true` で Gazebo に出せ，舞台 (`demo:=true`) にはコップがある．
+Gazebo に無いもの (ペットボトル・手のジェスチャ・手を挙げる人・声) は，PC の Web カメラやマイクで代わりに試してよい (認識のノードを `image_topic:=/image_raw` で起動する)．
 ```
 
 ## 実機で動かす
@@ -151,9 +198,12 @@ Gazebo に無いもの (人・ペットボトル・手) は，PC の Web カメ�
 <div class="screen">
 
 - Gazebo で最後まで動いたか
-- **台車**: 速さは前後・左右 0.078〜0.156 m/s，旋回 0.83〜1.66 rad/s の範囲か (遅すぎると動かない)．走る前に `ri.tuck_arms()` で腕をたたんだか．周りに人や机が無いか
-- **腕**: 自分の体や台車にぶつかる姿勢を送っていないか (Gazebo やモデルで確かめる)．速すぎないか (`ri.angle_vector(av, 時間)` の時間を短くしすぎない)
-- **止め方**: Ctrl-C で止まるか．止まらないときに背面のスイッチでサーボの電源を切れる人がそばにいるか
+- **台車**: 速さは前後・左右 0.078〜0.156 m/s，旋回 0.83〜1.66 rad/s の範囲か (遅すぎると動かない．{ref}`base-velocity`)．走る前に `ri.tuck_arms()` で腕をたたんだか．周りに人や机が無いか
+- **腕**: 自分の体や台車にぶつかる姿勢を送っていないか (Gazebo やモデルで確かめる)．速すぎないか (`ri.angle_vector(av, 時間)` の時間は，{ref}`joint-angle-motion` の例のように 1 回の振りに 1〜2 秒以上かける．
+  0.4 秒の振りは Gazebo でも関節の速さの上限を超え，`Time has been changed from 0.4 to 0.71 due to joint velocity limit` と出て伸ばされた)
+- **止め方**: Ctrl-C で止まるか．Ctrl-C で止まるのはプログラムで，`finally` の `ri.stop()` が台車を止める．
+  送ってある腕の動きは止まらず，目標の姿勢まで動いてそこに残る．腕もその場で止めるなら，`finally` に `ri.cancel_angle_vector()` を書く (Gazebo で確かめた)．
+  それでも止まらないときに背面のスイッチでサーボの電源を切れる人がそばにいるか (切ると腕は重力で垂れるので支える)
 
 </div>
 
@@ -211,6 +261,7 @@ Gazebo に無いもの (人・ペットボトル・手) は，PC の Web カメ�
 | 時間 | `ri.now()` / `ri.sleep(秒)` (シミュレータの時計にも合う) |
 | 画像 / 深度 / 内部パラメータ | `ri.image()` / `ri.depth_image()` / `ri.camera_info()` |
 | 物体を探す | `ri.sees('単語')` / `ri.what_do_you_see(['単語', ...])` / `ri.wait_until_sees('単語', timeout=秒)` |
+| 見つけた物の 3D 位置 (base_link) | `ri.detection_position(d)` [m] か None (D405 は 0.5 m より遠いと None．上の「作品の例」の注意) |
 | AI に画像について聞く | `ri.ask('質問')` / `ri.ask('質問', [画像1, 画像2])` (`model='vlm-er'`) |
 | AI に選ばせる / 指さしてもらう | `ri.ask('質問', choices=['左', '右'])` / `ri.point('赤い箱')` → `(u, v)` か None |
 | 画素の 3D 位置 (base_link) | `ri.pixel_position(u, v, depth)` [m] か None |
