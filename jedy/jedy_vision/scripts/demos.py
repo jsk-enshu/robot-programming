@@ -71,7 +71,10 @@ def main():
     print('Gazebo の舞台:  ' + STAGE + '  (jedy_vision のデモ)')
     print('実機 (D405):    ' + REAL)
     print('声を使うなら:   ros2 launch voicevox voicevox_texttospeech.launch.xml')
-    print('                ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP\n')
+    print('                ros2 launch ros_speech_recognition speech_recognition.launch.xml '
+          'language:=ja-JP '
+          'launch_sound_play:=false energy_threshold:=300.0 dynamic_energy_threshold:=false '
+          'tts_action_names:="[robotsound_jp]"\n')
     for group, items in DEMOS:
         print('[{}]'.format(group))
         for cmd, what, learn in items:

@@ -44,57 +44,6 @@ parts:
     chapters:
     - file: robot-programming-3-2026
       title: メカトロボットの製作とプログラミング
-  - caption: 過去年度の資料
-    numbered: false
-    chapters:
-    - file: winter-overview-2025
-      title: 2025年度 冬学期演習
-      sections:
-      - file: environment-setup-2025
-        title: 環境構築
-      - file: robot-programming-3-2025
-        title: 1日目 メカトロボットの製作とプログラミング
-      - file: robot-programming-1-2025
-        title: 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
-      - file: robot-programming-2-2025
-        title: 3日目 ロボットの全身行動プログラミング
-    - file: tips-2025
-      title: 2025年度 Tips・付録
-      sections:
-      - file: tips/ros-one-installation
-        title: ROS-Oインストール
-      - file: tips/ros1-ros2-coexistence
-        title: ROS 1とROS 2の混在環境
-      - file: tips/ros1-bridge
-        title: ROS 1 Bridge
-      - file: tips/ros1-commands
-        title: ROS 1コマンド
-      - file: tips/rosemacs
-        title: rosemacs利用
-      - file: tips/ssh
-        title: SSH接続
-      - file: tips/multi-pc
-        title: 複数PCの接続
-      - file: tips/jedy-bringup-launch
-        title: jedy_bringup.launch.py構成
-      - file: tips/python-to-euslisp
-        title: PythonプログラマのためのEusLisp
-      - file: tips/roseus-workflow
-        title: roseus効率的な作業方法
-      - file: tips/irtviewer
-        title: irtviewer操作方法
-      - file: tips/euslisp-ik
-        title: Euslispの逆運動学
-      - file: tips/realtime-ik
-        title: リアルタイムIK操縦
-      - file: tips/usb-cam
-        title: usb_camモーションキャプチャ
-      - file: tips/arduino-errors
-        title: Arduino IDEエラー対処
-      - file: tips/rosserial-troubleshooting
-        title: rosserialトラブルシューティング
-      - file: tips/dynamixel
-        title: Dynamixel制御
   - caption: Tips・付録（共通）
     numbered: false
     chapters:
@@ -159,3 +108,54 @@ parts:
     chapters:
     - file: tips/kondo-servo
       title: 近藤サーボ（KRS）制御
+  - caption: 過去年度の資料
+    numbered: false
+    chapters:
+    - file: winter-overview-2025
+      title: 2025年度 冬学期演習
+      sections:
+      - file: environment-setup-2025
+        title: 環境構築
+      - file: robot-programming-3-2025
+        title: 1日目 メカトロボットの製作とプログラミング
+      - file: robot-programming-1-2025
+        title: 2日目 双腕移動台車ロボットを用いた認識操作プログラミング
+      - file: robot-programming-2-2025
+        title: 3日目 ロボットの全身行動プログラミング
+    - file: tips-2025
+      title: 2025年度 Tips・付録
+      sections:
+      - file: tips/ros-one-installation
+        title: ROS-Oインストール
+      - file: tips/ros1-ros2-coexistence
+        title: ROS 1とROS 2の混在環境
+      - file: tips/ros1-bridge
+        title: ROS 1 Bridge
+      - file: tips/ros1-commands
+        title: ROS 1コマンド
+      - file: tips/rosemacs
+        title: rosemacs利用
+      - file: tips/ssh
+        title: SSH接続
+      - file: tips/multi-pc
+        title: 複数PCの接続
+      - file: tips/jedy-bringup-launch
+        title: jedy_bringup.launch.py構成
+      - file: tips/python-to-euslisp
+        title: PythonプログラマのためのEusLisp
+      - file: tips/roseus-workflow
+        title: roseus効率的な作業方法
+      - file: tips/irtviewer
+        title: irtviewer操作方法
+      - file: tips/euslisp-ik
+        title: Euslispの逆運動学
+      - file: tips/realtime-ik
+        title: リアルタイムIK操縦
+      - file: tips/usb-cam
+        title: usb_camモーションキャプチャ
+      - file: tips/arduino-errors
+        title: Arduino IDEエラー対処
+      - file: tips/rosserial-troubleshooting
+        title: rosserialトラブルシューティング
+      - file: tips/dynamixel
+        title: Dynamixel制御

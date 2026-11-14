@@ -588,7 +588,7 @@ def main(argv=None):
                 args.head_rate * args.head_boost, args.head_lead, args.rate,
                 ceiling))
     node.get_logger().info(
-        "PS4 teleop ready. HOLD L1 to drive; left stick translates, right "
+        "PS3/PS4 teleop ready. HOLD L1 to drive; left stick translates, right "
         "stick turns, D-pad moves the head. The base runs at its top speed "
         "{:.2f} m/s unmodified, R1 slows it to {:.2f}, and L2 does not make "
         "it faster -- there is no faster. L2 speeds the HEAD up, {:.1f} to "

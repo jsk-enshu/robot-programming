@@ -133,6 +133,10 @@ def main():
     if not ri.has_camera():
         raise SystemExit('no head camera image')
     start, streak, last_wave = ri.now(), 0, -1e9
+    # The Gazebo person never raises a hand, so say what this is waiting for
+    # instead of sitting silent; --test shows the wave without a person.
+    print('waiting up to {:.0f} s for a raised hand (wrist above the shoulder); '
+          'Ctrl-C to stop, --test to wave once without a person'.format(args.timeout))
     with PoseEstimator() as estimator:
         while ri.now() - start < args.timeout:
             rgb, _ = ri.image(newer_than=ri.now() - 0.05)
@@ -147,6 +151,7 @@ def main():
                 wave(robot, ri, 'rarm' if side == 'left' else 'larm')
                 last_wave, streak = ri.now(), 0
             ri.sleep(0.05)
+    print('--timeout {:.0f} s reached; done'.format(args.timeout))
 
 
 if __name__ == '__main__':

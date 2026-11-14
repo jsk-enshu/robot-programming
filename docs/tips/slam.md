@@ -204,7 +204,7 @@ RVizでNav2 Goalを置いたところ．地図の上に障害物の周りのコ�
 
 ```{code-block} console
 $ ros2 run jedy_skrobot nav2_goal 4.4,-3.6,90 8.3,3.0,180 0,0
-goal (4.40, -3.60, 90 deg): SUCCEEDED  32.2 s (robot clock 32.2 s), last pose (4.39, -3.59)
+goal (4.40, -3.60, 90 deg): SUCCEEDED  53.3 s (robot clock 53.3 s), last pose (4.39, -3.59)
 ...
 ```
 

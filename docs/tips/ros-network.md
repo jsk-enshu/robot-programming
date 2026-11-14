@@ -14,7 +14,8 @@
 $ export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST
 ```
 
-**bashrcに追加して永続化する場合:**
+{doc}`../environment-setup`の手順どおりにしていれば，この行はすでに`~/.bashrc`に書いてある（`grep ROS_AUTOMATIC ~/.bashrc`で確かめられる）．
+書いていない場合だけ，次で追加する（2回実行すると同じ行が2回書かれる）．
 
 ```{code-block} console
 $ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc
@@ -150,6 +151,12 @@ DDSは通信の検出（Discovery）やデータ交換にUDPポート（場合�
 
 ```{code-block} console
 $ sudo ufw disable
+```
+
+試し終わったら，必ずファイアウォールを元に戻す．
+
+```{code-block} console
+$ sudo ufw enable
 ```
 
 **対策：**

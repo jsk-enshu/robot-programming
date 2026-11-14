@@ -148,6 +148,12 @@
 
 **バージョン管理の例：**
 ```{code-block} console
+# 最初に1回だけ：名前とメールアドレスを設定し，作業フォルダをGitで管理する
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+cd ~/enshu
+git init
+
 # 動作を確認したらcommit
 git add .
 git commit -m "LED点滅動作確認"

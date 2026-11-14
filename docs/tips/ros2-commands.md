@@ -91,8 +91,12 @@ $ ros2 service type <service_name>
 $ ros2 service call <service_name> <service_type> <data>
 
 # 例：2つの整数を加算するサービスを呼び出す
+$ ros2 run demo_nodes_cpp add_two_ints_server   # 別の端末でサーバを起動しておく
 $ ros2 service call /add_two_ints \
   example_interfaces/srv/AddTwoInts "{a: 1, b: 2}"
+...
+response:
+example_interfaces.srv.AddTwoInts_Response(sum=3)
 ```
 
 ### ros2 interface
@@ -147,6 +151,7 @@ $ ros2 param get <node_name> <param_name>
 $ ros2 param set <node_name> <param_name> <value>
 
 # 例：teleop_turtleノードのパラメータを操作
+$ ros2 run turtlesim turtle_teleop_key   # 別の端末でノードを起動しておく
 $ ros2 param get /teleop_turtle scale_linear
 $ ros2 param set /teleop_turtle scale_linear 3.0
 ```
@@ -171,8 +176,8 @@ $ ros2 bag play <bag_file>
 # バッグファイルの情報を表示
 $ ros2 bag info <bag_file>
 
-# 例：cmd_velトピックを記録して再生
-$ ros2 bag record /turtle1/cmd_vel
+# 例：cmd_velトピックをmy_bagに記録して（Ctrl-Cで止める）再生
+$ ros2 bag record -o my_bag /turtle1/cmd_vel
 $ ros2 bag play my_bag
 $ ros2 bag info my_bag
 ```

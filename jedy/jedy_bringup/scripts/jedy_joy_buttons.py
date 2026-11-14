@@ -9,25 +9,24 @@ silently does something else, which on a robot that can drive away is the worst
 kind of wrong.
 """
 
+import os
 import sys
 
-import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Joy
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-#: What jedy_joy.py currently assumes. Printed beside whatever is pressed so
-#: the two can be compared without opening the file.
-ASSUMED = {
-    "axis 0": "left stick X (strafe)",
-    "axis 1": "left stick Y (forward)",
-    "axis 3": "right stick X (turn)",
-    "axis 6": "D-pad X (head pan)",
-    "axis 7": "D-pad Y (head tilt)",
-    "button 1": "CIRCLE -- release torque",
-    "button 2": "TRIANGLE -- torque on",
-    "button 4": "L1 -- deadman",
-    "button 5": "R1 -- slow",
-}
+import rclpy  # noqa: E402
+from rclpy.node import Node  # noqa: E402
+from sensor_msgs.msg import Joy  # noqa: E402
+
+from jedy_teleop.mapping import AXIS_ROLES, BUTTON_ROLES  # noqa: E402
+
+#: What jedy_joy.py assumes, read from the same jedy_teleop.mapping it uses,
+#: so this list cannot drift from the node. Printed beside whatever is pressed.
+ASSUMED = {}
+ASSUMED.update({"axis {}".format(i): "{} ({})".format(*r)
+                for i, r in AXIS_ROLES.items()})
+ASSUMED.update({"button {}".format(i): "{} -- {}".format(*r)
+                for i, r in BUTTON_ROLES.items()})
 
 
 def main(argv=None):
