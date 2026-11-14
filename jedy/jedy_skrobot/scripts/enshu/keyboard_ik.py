@@ -161,7 +161,8 @@ def main():
                         solved = robot.look_at(Coordinates(pos=goal))
                     else:
                         solved = getattr(robot, arm).inverse_kinematics(
-                            Coordinates(pos=goal), rotation_axis=False)
+                            Coordinates(pos=goal), rotation_axis=False,
+                            warn_if_fail=False)
                     if solved is False or solved is None:
                         robot.angle_vector(before)
                         print('IK failed: target stays at {} m (try another key)'

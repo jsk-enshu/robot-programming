@@ -55,7 +55,8 @@ def wave(robot, ri, side, times=3):
         for j in arm.joint_list:  # every point from the reset pose (IK is local)
             j.joint_angle(seed[j.name])
         target = arm.link_list[0].worldpos() + np.array([dx, dy, dz])
-        ok = arm.inverse_kinematics(Coordinates(pos=target), rotation_axis=False)
+        ok = arm.inverse_kinematics(Coordinates(pos=target), rotation_axis=False,
+                                    warn_if_fail=False)
         if ok is False or ok is None:
             print('cannot wave there (IK)')
             robot.angle_vector(home)

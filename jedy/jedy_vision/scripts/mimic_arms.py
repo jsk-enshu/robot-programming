@@ -119,7 +119,8 @@ def mimic(robot, ri, estimator, args):
                 print('{}: that arm of the person is not visible, keep it'.format(name))
                 continue
             target = hand_target(arm, *measured)
-            solved = arm.inverse_kinematics(Coordinates(pos=target), rotation_axis=False)
+            solved = arm.inverse_kinematics(Coordinates(pos=target), rotation_axis=False,
+                                            warn_if_fail=False)
             if solved is False or solved is None:
                 print('{}: IK did not converge for {} m, keep it'.format(
                     name, np.round(target, 3)))

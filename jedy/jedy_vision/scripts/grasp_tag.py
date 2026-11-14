@@ -127,7 +127,8 @@ def straight(robot, arm, start, goal, rotation, step):
     for k in range(1, n + 1):
         before = np.array([j.joint_angle() for j in arm.joint_list])
         point = start + (goal - start) * k / float(n)
-        ok = arm.inverse_kinematics(Coordinates(pos=point, rot=rotation), rotation_axis=True)
+        ok = arm.inverse_kinematics(Coordinates(pos=point, rot=rotation), rotation_axis=True,
+                                    warn_if_fail=False)
         if ok is False or ok is None:
             return None
         after = np.array([j.joint_angle() for j in arm.joint_list])
