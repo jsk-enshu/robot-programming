@@ -9,7 +9,7 @@ STAGE = GAZEBO + ' demo:=true person:=true camera:=d405'
 REAL = 'ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true'
 
 #: Groups of (command after ``ros2 run jedy_vision``, what it does, what it
-#: teaches); all run on STAGE.
+#: teaches); all run on STAGE unless ``what`` says otherwise.
 
 DEMOS = [
     ('AprilTag', [
@@ -29,9 +29,11 @@ DEMOS = [
     ('人', [
         ('detect_people --pose', 'いまの画像の人と骨格を画像に保存', 'YOLO, MediaPipe'),
         ('look_at_person', '首で人を追う', 'コントローラ単位の指令'),
-        ('follow_person', '人の方へ回って近づき 1 m で止まる', '視覚フィードバック'),
+        ('follow_person', '人の方へ回って近づき 1 m で止まる (Gazebo は person:=true だけ. 舞台では台に乗り上げる)',
+         '視覚フィードバック'),
         ('mimic_arms', '人の腕を鏡のようにまねる', '姿勢推定→逆運動学'),
-        ('wave_back', '手を挙げた人に手を振り返して「こんにちは」', '姿勢の判定, 動作の生成'),
+        ('wave_back', '手を挙げた人に手を振り返して「こんにちは」 (Gazebo の人は手を挙げないので --test で動作だけ)',
+         '姿勢の判定, 動作の生成'),
     ]),
     ('声 (VOICEVOX と音声認識)', [
         ('voice_demo', '「コップを探して」「ついてきて」「止まって」で上のデモを切り替え',
@@ -95,4 +97,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        # Ctrl-C: one line instead of a traceback; 130 = stopped by SIGINT
+        print('stopped by Ctrl-C')
+        raise SystemExit(130)

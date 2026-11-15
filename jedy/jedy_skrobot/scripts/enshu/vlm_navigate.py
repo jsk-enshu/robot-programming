@@ -515,4 +515,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        # Ctrl-C: one line instead of a traceback; 130 = stopped by SIGINT
+        print('stopped by Ctrl-C')
+        raise SystemExit(130)

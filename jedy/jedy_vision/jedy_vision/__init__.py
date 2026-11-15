@@ -768,6 +768,9 @@ def set_head(robot, ri, pan_deg=0.0, tilt_deg=0.0, seconds=1.0):
     robot.angle_vector(ri.angle_vector())
 
 
+#: Seconds say() waits for the /robotsound_jp action server (VOICEVOX).
+SAY_SERVER_TIMEOUT = 5.0
+
 def say(node, text):
     """Say ``text`` with VOICEVOX (the same voice as ``ri.say``), without waiting.
 
@@ -791,8 +794,11 @@ def say(node, text):
     if not hasattr(node, '_jedy_say_client'):
         node._jedy_say_client = ActionClient(node, SoundRequestAction, '/robotsound_jp')
     client = node._jedy_say_client
-    if not client.wait_for_server(timeout_sec=1.0):
-        print('say (VOICEVOX が起動していないので声は出ない):', text)
+    # 1 s was too short on a loaded PC: VOICEVOX was running and it still
+    # said it was not (1 run in 3, mock student). Only the first call waits.
+    if not client.wait_for_server(timeout_sec=SAY_SERVER_TIMEOUT):
+        print('say (/robotsound_jp が {:.0f} 秒で見つからないので声は出ない. '
+              'VOICEVOX は起動していますか):'.format(SAY_SERVER_TIMEOUT), text)
         return
     goal = SoundRequestAction.Goal()
     goal.sound_request.sound = SoundRequest.SAY
