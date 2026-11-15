@@ -92,6 +92,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:
 - `touch_tag` は台の正面に寄ってから動かす．先に `approach_tag` を動かさないと，手が届かずに終わる．
   `grasp_tag` は立方体が見えれば自分で台車を寄せる (舞台を起動した直後から動かして持ち上げられた)．立方体が見えないときは，先に `approach_tag --standoff 0.17` で台の正面に寄っておく．
   実機では，つかんで 1 秒たつとグリッパが弱く握り直す．つかんだ物が落ちるときは {ref}`jedy-gripper-hold-relax` を見る．
+- ほかの人の Jedy と組むと，1 台を手で動かして何台もの Jedy にその動きをまねさせることができる ({doc}`tips/jedy-teach-follow`)．実機だけのデモである．
   置いた立方体は元の位置から 2 cm ほどずれたり回ったりすることがあり，続けて動かすと届かない・落ちることがある．最後に元の位置に戻せたかを `PUT BACK` / `NOT PUT BACK` で表示するので，`NOT PUT BACK` や続けて動かすときは Gazebo を起動し直す．
 - `follow_person` は舞台では人の手前にある台に乗り上げて止まる．
 - `color_clusters` は `camera:=d405` だと，赤い箱 (前に約 1.2 m，左に約 0.5 m) が D405 の深度 (0.5 m まで) の外になり，`0 cluster(s)` と出る．

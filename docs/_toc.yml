@@ -103,6 +103,8 @@ parts:
       title: SLAM・地図作成
     - file: tips/path-planning
       title: 経路計画
+    - file: tips/jedy-teach-follow
+      title: 複数のJedyで動きをまねる（教示）
   - caption: Tips・付録（3日目）
     numbered: false
     chapters:
