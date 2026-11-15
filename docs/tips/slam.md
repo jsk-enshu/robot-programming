@@ -125,6 +125,12 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=tr
 
 :::{note}
 Gazeboシミュレーション中にロボットが倒れてしまった場合は，{doc}`gazebo-sim` の「ロボットが倒れた場合の復帰方法」を参照すること．
+Nav2を動かしているときにロボットを原点へ戻したら，AMCLの推定位置は戻らないので，RVizの「2D Pose Estimate」で原点を教えるか，次を実行する．
+
+```{code-block} console
+$ ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped \
+  "{header: {frame_id: map}, pose: {pose: {orientation: {w: 1.0}}}}"
+```
 :::
 
 ### 地図の保存
@@ -163,11 +169,13 @@ $ ros2 launch jedy_bringup jedy_nav2.launch.py map:=$HOME/room13bc_map.yaml rviz
 ```
 
 `map:=`を省くと，`jedy_bringup`に入っている演習室の地図（`jedy_bringup/maps/room13bc.yaml`，上と同じ手順で作ったもの，{numref}`fig:jedy-slam-room13bc`）を使う．SLAMを飛ばしてNav2だけ試すときはこちらを使えばよい．
-この地図はGazeboを`lidar:=true`だけ付けて起動したときのもので，赤いボールが入っている．`box:=true`などで置くものを変えると部屋は地図と少し違ってくる．Nav2のコストマップはLiDARで見えたものも障害物にするが，その組み合わせは試していない．
+この地図はGazeboを`lidar:=true`だけ付けて起動したときのもので，赤いボールが入っている．`box:=true`などで置くものを変えると部屋は地図と少し違ってくる．Nav2のコストマップはLiDARで見えたものも障害物にするので，`lidar:=true box:=true`で起動しても`nav2_goal`の目標3つに着いた．
 
 ```{code-block} console
 $ ros2 launch jedy_bringup jedy_nav2.launch.py rviz:=true
 ```
+
+起動のログが`Configuring velocity_smoother`などで1分以上止まったままのときは，Ctrl-Cで止めてもう一度起動する（SLAMを止めた直後に1回あり，起動し直すと8秒で動いた）．
 
 このlaunchファイルはnav2_bringupの`bringup_launch.py`を`jedy_bringup/config/nav2_params.yaml`で起動する．主な設定は次の通り．
 
@@ -204,7 +212,7 @@ RVizでNav2 Goalを置いたところ．地図の上に障害物の周りのコ�
 
 ```{code-block} console
 $ ros2 run jedy_skrobot nav2_goal 4.4,-3.6,90 8.3,3.0,180 0,0
-goal (4.40, -3.60, 90 deg): SUCCEEDED  32.2 s (robot clock 32.2 s), last pose (4.39, -3.59)
+goal (4.40, -3.60, 90 deg): SUCCEEDED  53.3 s (robot clock 53.3 s), last pose (4.39, -3.59)
 ...
 ```
 
@@ -238,10 +246,17 @@ goal.pose.position.y = 0.4
 goal.pose.orientation.w = 1.0       # 向き 0 度
 
 navigator.goToPose(goal)
-while not navigator.isTaskComplete():
-    feedback = navigator.getFeedback()  # feedback.distance_remaining など
+try:
+    while not navigator.isTaskComplete():
+        feedback = navigator.getFeedback()  # feedback.distance_remaining など
+except BaseException:
+    navigator.cancelTask()          # Ctrl-C で止めたら目標も取り消す
+    raise
 print(navigator.getResult() == TaskResult.SUCCEEDED)
 ```
+
+**目標を送るとロボットを動かしているのは Nav2 なので，Ctrl-C でプログラムを止めても，目標を取り消さないとロボットは目標まで走り続ける．**
+上のように `navigator.cancelTask()` を呼ぶ (`nav2_goal` も Ctrl-C で取り消す)．
 
 `waitUntilNav2Active()`は，引数を省くとAMCLの初期位置として(0, 0, 0)を送ってしまい，ロボットが原点にいないと自己位置がずれる．
 ここではAMCLの初期位置はlaunch側で与えているので，`localizer='robot_localization'`として初期位置を送らないようにしている．

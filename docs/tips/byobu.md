@@ -96,7 +96,7 @@ $ tmux new -s enshu
 $ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
 # Ctrl+b c で新しいウィンドウを作り，そこで自分のプログラムを動かす
 $ cd ~/enshu
-$ ipython
+$ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/ipython
 # Ctrl+b n / Ctrl+b p でウィンドウを切り替える
 ```
 

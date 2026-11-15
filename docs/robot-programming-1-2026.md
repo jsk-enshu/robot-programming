@@ -100,7 +100,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py box:=true
 ```
 
 `box:=true` でカメラの演習に使う赤い箱をロボットの左前に置く．
-`gui:=false` で画面なし，`render_sensors:=false` で GPU の無い PC 向け (カメラなし)．
+`gui:=false` で画面なし，`render_sensors:=false` で GPU の無い PC 向け (カメラなし)．`sounds:=true` で，台車や関節が動いている間，実機に似たモーターの音を PC のスピーカーから出す．
 頭のカメラは PC の負担を減らすため 1 秒に 5 枚 (`camera_rate:=5`，既定) にしてある．速い動きを追いたいときは `camera_rate:=30` (実機の D405 は 30 Hz)．
 ロボットは演習室 (13BC) の机の手前に置かれる (`world:=empty` で何も無い床)．
 
@@ -620,7 +620,7 @@ Gazebo (`box:=true`) で `ri.what_do_you_see(['赤いもの'])` を呼んだと�
 
 ```{note}
 **Gazebo の赤い箱は「箱」では見つからない．** 模様の無い単色の CG の箱は，検出器には箱に見えない
-(実測の確からしさ: box 0.02, block 0.15, **red object 0.75**)．`ri.sees('赤いもの')` で探す．
+(実測の確からしさ: box 0.02, block 0.15, **red object 0.5〜0.8** (PC によって違う))．`ri.sees('赤いもの')` で探す．
 ```
 
 ```{note}
@@ -739,7 +739,7 @@ if side == '左':
 
 左腕が届くのは，base_link から前に 0.25 m ほど，左右は 0.05〜0.1 m (左腕の前)，高さ 0.1〜0.2 m ほどである．
 `box:=true` の赤い箱は前に 1.1〜1.2 m，左に 0.43〜0.48 m にあるので，
-下のコードをそのまま実行すると「IK が解けない」で終わる．先に `p` を表示して，台車で箱を左腕の前に持ってくる．
+下のコードをそのまま実行すると「IK が解けない」で終わる．先に下のコードを 1 回実行して箱の位置 `p` を求め (IK は解けずに終わる)，次のコードで台車を動かして箱を左腕の前に持ってくる．
 
 ```{code-block} python
 import time
@@ -1008,6 +1008,7 @@ $ colcon build --symlink-install --packages-up-to voicevox
 $ source ~/ros2_ws/install/setup.bash
 ```
 
+ビルドの前から開いていたほかのターミナルでも `source ~/.bashrc` を実行する (しないと `Package 'voicevox' not found` になる)．
 ロボットとは別のターミナルで，それぞれ起動しておく．
 
 ```{code-block} console
@@ -1021,7 +1022,7 @@ $ ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-
 
 ```{code-block} python
 ri.say('こんにちは。ジェディです。')          # しゃべり終わるまで待つ (1 文数秒)
-ri.say('しゃべりながら動きます', wait=False)   # しゃべり始めたらすぐ戻る
+ri.say('しゃべりながら動きます', wait=False)   # すぐ戻る (声が出るのはその 1 秒ほど後)
 ri.say('こんにちは', speaker='ずんだもん-ノーマル')   # 声を変える
 
 text = ri.listen(timeout=10.0)                # 次に聞こえた文．10 秒聞こえなければ None
@@ -1054,10 +1055,18 @@ if text is not None and '進' in text:
 `ros2 topic echo /speech_to_text` で認識結果を見られる．
 
 ```{note}
+**声が出ないとき**
+- PC のスピーカーがミュートや音量 0 になっていないか (ミュートの PC があった): `wpctl status` の `Sinks:` で，使うスピーカーに `MUTED` が付いていたら
+  `wpctl set-mute @DEFAULT_AUDIO_SINK@ 0` と `wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.8`
+- VOICEVOX を起動して最初の 1 回は声が出るまで 10 秒ほどかかる．2 回目からは 1〜3 秒
+```
+
+```{note}
 **何も認識されないとき**
 - PC のマイクがミュートになっていないか: `wpctl status` の `Sources:` で，使うマイクに `MUTED` が付いていたら
   `wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0` と `wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 0.8`
-- `ros2 topic hz /audio` でマイクの音が来ているか (約 100 Hz)
+- `ros2 topic hz /audio` でマイクの音が来ているか (PC によって 75〜100 Hz)
+- 声が小さいと `energy_threshold` に届かず，聞こえなかったことになる．マイクに近づいて話すか，マイクの音量を上げる (`wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1.0`)
 - インターネットが使えないときは `engine:=Vosk` で PC の中だけで認識できる (精度は落ちる)
 ```
 

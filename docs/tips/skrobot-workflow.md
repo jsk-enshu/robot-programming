@@ -146,6 +146,7 @@ robot.angle_vector(ri.angle_vector())
 origin = Axis(axis_radius=0.004, axis_length=0.15)            # base_link の原点の座標軸
 viewer.add(origin)
 
+robot.reset_pose()                                            # 初期姿勢から (前の節で腕を動かしていても同じ目標になる)
 hand = Axis(axis_radius=0.003, axis_length=0.06)              # 手先の座標軸
 hand.newcoords(robot.rarm.end_coords.copy_worldcoords())
 robot.rarm.end_coords.assoc(hand)                             # 手先にくっつける (腕と一緒に動く)

@@ -769,16 +769,37 @@ def set_head(robot, ri, pan_deg=0.0, tilt_deg=0.0, seconds=1.0):
 
 
 def say(node, text):
-    """Publish ``text`` to /robotsound_jp/text, without waiting.
+    """Say ``text`` with VOICEVOX (the same voice as ``ri.say``), without waiting.
 
-    VOICEVOX says it (the same voice as ``ri.say``), if running::
+    Sends a goal to the ``/robotsound_jp`` action, as ``ri.say`` does, not a
+    message on the ``/robotsound_jp/text`` topic: the speech recogniser
+    (``tts_action_names:="[robotsound_jp]"``) ignores what it hears only while
+    that action is running, so a program that both speaks and listens (for
+    example ``voice_demo``) would otherwise hear itself. Needs::
 
         ros2 launch voicevox voicevox_texttospeech.launch.xml
+
+    Parameters
+    ----------
+    node : rclpy.node.Node
+        Any node, spun by the caller (``ri`` is one), so the goal is sent.
+    text : str
     """
-    from std_msgs.msg import String
-    if not hasattr(node, '_jedy_say_pub'):
-        node._jedy_say_pub = node.create_publisher(String, '/robotsound_jp/text', 10)
-    node._jedy_say_pub.publish(String(data=text))
+    from rclpy.action import ActionClient
+    from sound_play_msgs.action import SoundRequest as SoundRequestAction
+    from sound_play_msgs.msg import SoundRequest
+    if not hasattr(node, '_jedy_say_client'):
+        node._jedy_say_client = ActionClient(node, SoundRequestAction, '/robotsound_jp')
+    client = node._jedy_say_client
+    if not client.wait_for_server(timeout_sec=1.0):
+        print('say (VOICEVOX が起動していないので声は出ない):', text)
+        return
+    goal = SoundRequestAction.Goal()
+    goal.sound_request.sound = SoundRequest.SAY
+    goal.sound_request.command = SoundRequest.PLAY_ONCE
+    goal.sound_request.volume = 1.0
+    goal.sound_request.arg = text
+    client.send_goal_async(goal)
     print('say:', text)
 
 

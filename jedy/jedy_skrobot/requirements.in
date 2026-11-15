@@ -1,7 +1,13 @@
-# scikit-robot from its git main branch: this package
-# subclasses actuo_ros' RobotInterface, which subclasses skrobot's ros2
-# interface. Two different scikit-robots would be two different base classes.
-scikit-robot @ git+https://github.com/iory/scikit-robot.git@main
+# scikit-robot from git, pinned to a main commit: this package subclasses
+# actuo_ros' RobotInterface, which subclasses skrobot's ros2 interface. Two
+# different scikit-robots would be two different base classes.
+#
+# Pinned, not @main: ament_uv_virtualenv re-resolves only when this file
+# changes, and uv's cache answers @main with the commit it saw first, so with
+# @main a student's `vcs pull && colcon build` never gets a newer scikit-robot
+# (seen on a department PC: still 0.4.18). Bumping the hash here is what
+# updates every workspace on its next build.
+scikit-robot @ git+https://github.com/iory/scikit-robot.git@0f61eca1f4b8c68dce7229614ec92b75c8bd3d54
 
 # The interactive shell. Falls back to `code.interact` if absent, but the
 # history and completion are the point.

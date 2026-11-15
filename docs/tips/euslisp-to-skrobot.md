@@ -10,7 +10,7 @@
 | `(send *ri* :angle-vector (send *jedy* :angle-vector) 3000)` [ms] | `ri.angle_vector(robot.angle_vector(), 3.0)` [s] |
 | `(send *ri* :wait-interpolation)` | `ri.wait_interpolation()` |
 | `(send *ri* :state :potentio-vector)` | `ri.angle_vector()` |
-| `(send *ri* :go-velocity 100 0 0)` [mm/s, deg/s] | `ri.go_velocity(0.1, 0.0, 0.0)` [m/s, rad/s] |
+| `(send *ri* :go-velocity 0.1 0 0)` [m/s, rad/s] | `ri.go_velocity(0.1, 0.0, 0.0)` [m/s, rad/s] |
 | `(send *ri* :servo-on :names (list "head_joint0"))` | `ri.servo_on(joints=['head_joint0'])` |
 | `(send *jedy* :rarm :inverse-kinematics c)` | `robot.rarm.inverse_kinematics(c)` |
 

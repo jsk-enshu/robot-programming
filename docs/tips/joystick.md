@@ -193,6 +193,19 @@ twist:
 `jedy_joy` は L1 を押している間だけ `/cmd_vel` を出す (離したときに止める指令を 1 回出す)．
 L1 を押していなければ何も出ないので，プログラムの `ri.go_velocity()` とぶつからない．
 
+### コントローラが無いときに試す
+
+コントローラが無くても，`/joy` を自分で出せば `jedy_joy` の動きを Gazebo で試せる．
+PS3 の形 (`axes` が 6 個，`buttons` が 17 個) で，L1 (`buttons[4]`) を押して左スティックを上 (`axes[1]`) に倒した状態を 1 秒に 20 回出す例：
+
+```{code-block} console
+$ ros2 topic pub -r 20 /joy sensor_msgs/msg/Joy \
+  "{axes: [0, 1.0, 0, 0, 0, 0], buttons: [0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0]}"
+```
+
+ロボットが前に走り，`/cmd_vel` に `x: 0.1562975` が出る．Ctrl-C で止めると，`/joy` が来なくなって 0.3 秒で台車が止まる．
+十字キーの左 (`buttons[15]`) を 1 にすると首が左を向く．
+
 ## Python で `/joy` を読む
 
 `jedy_skrobot` には `/joy` を読むメソッドは無い．rclpy で `/joy` を subscribe する．

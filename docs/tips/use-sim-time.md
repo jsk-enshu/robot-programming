@@ -57,7 +57,8 @@ $ ros2 topic hz /clock
 average rate: 24.741
 ```
 
-`ros2 topic hz` は PC の時計で測るので，シミュレータが実時間より遅いと 50 Hz より少なく出る (上は実時間の約半分の速さで動いていたとき)．
+`ros2 topic hz` は PC の時計で測るので，シミュレータが実時間より遅いと 50 Hz より少なく出る (上は既定の `clock_every:=4` で，実時間の約半分の速さで動いていたとき)．
+上の `clock_every:=1` で起動したときは，200 Hz に近い値 (またはそれより少ない値) になる．
 
 `jedy_gazebo.launch.py` が起動するロボットのノード (`robot_state_publisher`，`controller_manager` など) は，すべて `use_sim_time` が `true` になっている．
 
