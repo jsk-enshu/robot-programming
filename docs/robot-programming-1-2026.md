@@ -1017,7 +1017,7 @@ $ ros2 launch voicevox voicevox_texttospeech.launch.xml
 
 ```{code-block} console
 $ ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP launch_sound_play:=false \
-    energy_threshold:=300.0 dynamic_energy_threshold:=false tts_action_names:="[robotsound_jp]"
+    energy_threshold:=300.0 dynamic_energy_threshold:=false tts_action_names:="[robotsound_jp]" tts_tolerance:=3.0
 ```
 
 ```{code-block} python
@@ -1049,6 +1049,9 @@ if text is not None and '進' in text:
   固定しないと起動時の周りの音に合わせて自動で上がり (ノート PC の内蔵マイクでは 746 になった)，普通に話しても拾わなくなることがある．
   周りの雑音を声と間違えるなら上げ，声を拾わないなら下げる．
 - `tts_action_names:="[robotsound_jp]"`: ロボットが `ri.say()` でしゃべっている間は認識を止める (自分の声を認識しないため)．
+- `tts_tolerance:=3.0`: しゃべり終わってからも 3 秒は認識を止めておく (既定は 1 秒)．
+  認識は 1 つの文を聞き終わってから (声が 0.8 秒途切れてから) 止めるかどうかを決めるので，1 秒では間に合わず，ロボットが自分の声に答え続けることがある (重い PC で起きた)．
+  そのかわり，ロボットがしゃべり終わってから 3 秒以内に話しかけた声は聞こえない．
 
 声の名前は `~/.ros/voicevox/speakers.json` にある．**名前を間違えてもエラーにならず，既定の声でしゃべる**ので注意 (声が変わらなければ名前を確かめる)．
 コマンドでは `ros2 topic pub --once /robotsound_jp/text std_msgs/msg/String "{data: 'こんにちは'}"` でしゃべり，
