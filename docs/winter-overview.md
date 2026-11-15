@@ -6,6 +6,48 @@
 
 過去年度の資料は{doc}`2025年度版<winter-overview-2025>`など，左のサイドバーの「過去年度の資料」から参照できる．
 
+### この演習で身につけてほしいこと
+
+**ロボットを学ぶためにロボットをやるのではなく，自分が解決したいことにロボットを使えるようになってほしい．**
+
+コンピュータを使っていろいろな問題を解くのと同じように，ロボットは**現実の世界に働きかけるための道具**の 1 つである．
+特別なものだと思わなくてよい．コンピュータが画面の中の情報を扱うのに対して，ロボットは物を動かし，運び，触れることができる．
+ロボット系の研究室に進まない人にも，「この問題はロボットを使えば解けるかもしれない」という選択肢を持っていてほしい．たとえば：
+
+- **家事**：皿洗いや片付けなど，毎日の手間のかかる作業
+- **実験の自動化**：細胞培養のピペット操作のような，正確さと根気が要る作業
+- **友達・パートナー**：一緒にいて，話しかけたり反応したりしてくれる存在
+- **AI アバター**：遠くにいる人や AI が，現実のロボットを自分の体として使い，現実の世界で行動する (映画『サロゲート』のように)
+- **表現**：音楽に合わせて踊る (下の「作品例：Jedy のダンス」)
+
+<video width="100%" controls muted preload="metadata" poster="fig/robot-use-dishwash.jpg">
+  <source src="fig/robot-use-dishwash.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 家事の例．台所の壁に付けた 3 本の腕が，蛇口のレバーを操作し，皿やマグカップを洗ってかごに立てる (シミュレーション，2 倍速)．
+
+<video width="100%" controls muted preload="metadata" poster="fig/robot-use-lab-automation.jpg">
+  <source src="fig/robot-use-lab-automation.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 実験の自動化の例．実験用のキャビネットの中で，腕がピペットやプレートを扱う (シミュレーション，2 倍速)．
+
+<video width="360" autoplay loop muted playsinline preload="metadata" poster="fig/robot-use-companion.jpg">
+  <source src="fig/robot-use-companion.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 友達・パートナーとしてのロボットの例．ぬいぐるみの姿で，腕を動かして反応する．
+
+#### AI をどんどん使う
+
+この演習では AI TA ({doc}`tips/ai-ta`) が使える．分からないことを聞く，コードの案を出してもらう，エラーの直し方を一緒に考える，と遠慮なく使ってほしい．
+ただし任せきりにはせず，AI の答えを実機や画面で確かめながら，**自分で理解して進める**こと．
+これからは，プログラムを一から書く力そのものより，「何をしたいか」を決め，「本当にそうなったか」を確かめる力が大事になる．
+AI と一緒に実機のプログラムを作った例 (失敗も含めて) を {doc}`tips/ai-robot-programming` にまとめてある．
+
 ### 双腕移動台車ロボット（Jedy）
 
 ```{figure} fig/jedy.png
@@ -43,6 +85,22 @@ name: fig:jedy-dance
 ---
 曲に合わせて踊る Jedy（[Jedy Dance](https://iory.github.io/jedy-dance/) の画面）
 ```
+
+### 自分でロボットを作る：四脚ロボット JEFY
+
+{ref}`3日目 <day-mechatronics>`の発展課題では，Arduino UNO R4 WiFi と近藤科学の KRS サーボで組む四脚ロボット **JEFY**（JSK Educational Four-legged walkY robot）を題材に，ロボットを一から作って歩かせるところまでを体験できる．
+
+- **組み立てる**：部品を受け取り，自分で組み立てて配線し，Arduino から歩かせる
+- **強化学習で歩き方を学習させる**：物理シミュレータ MuJoCo の中で，歩き方 (方策) を強化学習 (PPO) で学習する．実機がなくても取り組める
+- **学習したニューラルネットワークを Arduino の中で動かす**：学習した方策を Arduino UNO R4 WiFi に書き込み，センサの値からサーボへの指令をマイコンの中で計算して実機を歩かせる
+- **その先へ**：IMU を付ける，CAD (SolidWorks) から URDF を作る，自分のオリジナルロボットを作る
+
+<video width="100%" controls muted preload="metadata" poster="fig/krs-quad-walk-2026-poster.jpg">
+  <source src="fig/krs-quad-walk-2026.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 四脚ロボット JEFY．バッテリー 1 本だけで，ケーブルをつながずに歩いている．
 
 ## 演習情報
 
