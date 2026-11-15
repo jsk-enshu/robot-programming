@@ -52,9 +52,11 @@ $ ta doctor   # ✓ と - だけで ✗ が無ければよい
 $ cd ~/ros2_ws/
 $ rosdep update
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
+$ source /opt/ros/jazzy/setup.bash
 $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
 ```
 
+- `rosdep install` の後の `source /opt/ros/jazzy/setup.bash` は省かない．`rosdep install` で入った Gazebo のパッケージ (`ros-jazzy-gz-*-vendor`) は，`source` し直すまでビルドから見えない ({ref}`troubleshooting-gz-sim8`)．
 - `sudo apt upgrade` を省くと，入っている ROS 2 が古いままになる．`rosdep install` は足りないパッケージを入れるだけで，入っているものは新しくしない．
   古い ROS 2 Jazzy では `speech_recognition_msgs` のビルドが `Unknown CMake command "rosidl_auto_generate_interfaces"` で止まる．
 - `--packages-up-to` の後に並べた，演習に使うパッケージ (ロボットとシミュレータ，`robot, ri`，カメラの認識，音声認識) とそれが使うものだけをビルドする．
@@ -106,6 +108,7 @@ $ vcs pull
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
+$ source /opt/ros/jazzy/setup.bash
 $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
 ```
 
