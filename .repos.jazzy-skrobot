@@ -17,10 +17,15 @@ repositories:
   # 音声: VOICEVOX での発話 (voicevox) と音声認識 (ros_speech_recognition)。
   # どちらも jsk_ros1_ros2_compat (jsk_common) と speech_recognition_msgs
   # (jsk_common_msgs) を使う。
+  # 2026 年度の演習用ブランチ: master に，ロボットがしゃべっている途中に
+  # 始まった文を認識しない修正
+  # (https://github.com/jsk-ros-pkg/jsk_3rdparty/pull/590) を足したもの。
+  # URL は変えない (変えると，もう clone してある人の vcs import が
+  # 「Path already exists and contains a different repository」で切り替わらない)。
   jsk_3rdparty:
     type: git
     url: https://github.com/jsk-ros-pkg/jsk_3rdparty.git
-    version: master
+    version: enshu-2026
   jsk_common:
     type: git
     url: https://github.com/jsk-ros-pkg/jsk_common.git
@@ -33,11 +38,11 @@ repositories:
   # (https://github.com/ros-drivers/audio_common/pull/290) と，しゃべっている
   # 途中に次のゴールが来たときの状態遷移エラーの修正
   # (https://github.com/ros-drivers/audio_common/pull/291) 入り。
-  # 取り込まれたら ros-drivers/audio_common の ros2 に戻す。
+  # 2026 年度の演習用ブランチ (この 2 つを ros-drivers/audio_common の ros2 に足したもの)。
   audio_common:
     type: git
     url: https://github.com/iory/audio_common.git
-    version: sound-play-preempt
+    version: enshu-2026
   # The robot system lecture (2025 material, jedy_gazebo.launch.py legacy:=true):
   # ros2 launch opencv_apps camshift.launch.py / face_detection.launch.py, and
   # jedy_bringup's track_box_to_cmd_vel_*.py read /camshift/track_box.
