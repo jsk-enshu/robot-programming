@@ -2,29 +2,72 @@
 
 本ページでは，双腕移動台車ロボットJedyの実機を使用する際の基本的な操作方法について説明する．
 
-## サーボバッテリーの接続と電源ON
+## サーボ制御基板 (RCB-4mini)
 
-実機を動かすには，まずサーボ制御基板にバッテリーを接続し，電源をONにする必要がある．
+2026 年度から，Jedy のサーボ制御基板は近藤科学の [RCB-4mini](https://kondo-robot.com/product/rcb4_mini) になった．
+ロボットの胴体の中にあり，頭・両腕・グリッパ・車輪のサーボ 22 個はすべてここにつながっている．
+PC とは USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) でつなぐ．
 
-### バッテリーの接続手順
-
-1. **バッテリーの接続**：サーボバッテリーの白いVH2ピンコネクタをサーボ制御基板のVH2ピンに接続する
-2. **電源ON**：ロボット背面にあるサーボ制御基板のスイッチを押すと，青いLEDが点灯し，数秒後にブザー音が鳴る
-
-```{figure} ../fig/how_to_switch_on_jedy_servo.png
+::::{grid} 2
+:::{grid-item}
+```{figure} ../fig/jedy-rcb4mini-board.jpg
 ---
-name: fig:how_to_switch_on_jedy_servo
+name: fig:jedy-rcb4mini-board
 ---
-サーボ制御基板の電源ON方法
+RCB-4mini
+```
+:::
+:::{grid-item}
+```{figure} ../fig/jedy-rcb4mini-in-body.jpg
+---
+name: fig:jedy-rcb4mini-in-body
+---
+胴体に付けた RCB-4mini (右上の基板) と電源スイッチ (下の黒いスイッチ)
+```
+:::
+::::
+
+## 電源の入れ方
+
+電源は **安定化電源を 7.4 V に設定して** 使う．バッテリーで動かすこともできる．
+
+:::{danger}
+**安定化電源の出力を ON にする前に，必ず電圧が 7.4 V になっていることを確かめること．**
+
+前に使った人の設定が残っていて，電圧が高いまま出力を ON にすると，サーボを壊すおそれがある
+(RCB-4mini 自体の電源電圧は 6〜12 V だが，つながっているサーボに合わせて 7.4 V にする)．
+電圧を変えるのは出力が OFF の間だけにし，表示が 7.4 V になっていることを目で確かめてから ON にする．
+:::
+
+### 安定化電源で動かす
+
+1. 安定化電源の出力が OFF になっていることを確かめる．
+2. 電圧を **7.4 V** に設定し，表示が 7.4 V になっていることを確かめる．
+3. 安定化電源をロボットの電源コネクタにつなぐ．
+4. 安定化電源の出力を ON にする．
+5. ロボットの電源スイッチを ON にする．RCB-4mini の LED が **3 回点滅** すれば起動している (下の動画)．
+
+<video width="360" controls muted preload="metadata" poster="../fig/jedy-rcb4mini-power-on.jpg">
+  <source src="../fig/jedy-rcb4mini-power-on.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 電源を入れたところ．RCB-4mini (右上の基板) の LED が最初に 3 回点滅する．
+
+### バッテリーで動かす
+
+1. サーボバッテリーの白い VH2 ピンコネクタを，ロボットの電源コネクタにつなぐ．
+2. ロボットの電源スイッチを ON にする．RCB-4mini の LED が 3 回点滅すれば起動している．
+
+```{figure} ../fig/jedy-power-connector-switch.png
+---
+name: fig:jedy-power-connector-switch
+---
+電源をつなぐ VH2 ピンコネクタと電源スイッチの位置 (バッテリーで動かすとき)
 ```
 
-### 電源ONの確認
-
-電源が正しくONになると，以下のような状態になる：
-
-- 青いLEDが点灯する
-- 数秒後にブザー音（ビープ音）が鳴る
-- サーボモータに電力が供給される
+起動しない (LED が点滅しない) ときは，安定化電源の出力が ON か，電圧が 7.4 V か，バッテリーが充電されているか，コネクタが挿さっているかを確かめる．
+基板は起動したのに PC から動かせないときは，下の「起動できないとき」を見る．
 
 ## サーボバッテリーの充電方法
 
@@ -82,7 +125,7 @@ name: fig:how_to_charge_battery
 
 ### 起動
 
-1. 電源を入れる (上の「サーボバッテリーの接続と電源ON」)．
+1. 電源を入れる (上の「電源の入れ方」)．
 2. USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) と頭のカメラ (D405) の USB を PC に挿す．
 3. 起動する．
 
@@ -103,6 +146,28 @@ Configured and activated mecanum_drive_controller
 ```{code-block} console
 $ ros2 control list_controllers -c /jedy_fullbody/controller_manager
 ```
+
+(jedy-real-rviz-check)=
+### RViz で関節角度が正しいか確かめる
+
+上の launch を起動すると RViz も開く (開かないようにするには `rviz:=false`)．
+3D の画面のロボットのモデルは，実機の関節角度 (サーボが測った角度) で描かれる．
+左の **Servo パネル**では関節ごとにトルクの ON/OFF ができ (ALL ON / ALL OFF もある)，
+`pointcloud:=true` を付けて起動すると頭のカメラの点群も 3D の画面に出る．
+
+**最初に，トルクが OFF のまま (起動した直後はすべて OFF) Jedy の首や腕を手でゆっくり動かしてみよう．**
+RViz のモデルが実機と同じ姿勢になり，同じ向きに動けば，組み立てと設定は正しい．
+
+```{figure} ../fig/jedy-real-rviz-torque-off.jpg
+---
+name: fig:jedy-real-rviz-torque-off
+---
+トルク OFF のまま首を下に向け，両腕を下ろしたところ．左：Servo パネル (すべて OFF)，中：RViz のモデル (後ろから見ている)，右：実機 (前から見ている)
+```
+
+モデルと実機の姿勢が違うとき (関節の向きが逆，角度がずれている，動かした関節と別の関節が動く) は，組み立てを間違えている．
+{doc}`jedy-assembly` を見ながら，ドライバーでネジを外して組み立て直そう．
+組み立て直すときは，launch を Ctrl-C で止め，電源を切ってから行う．
 
 ### 最初に `ri.servo_on()` する
 
