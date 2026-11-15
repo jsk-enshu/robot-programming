@@ -89,7 +89,7 @@ Ctrl-C は押したターミナルのものだけを止める．起動したタ�
 - `ri.angle_vector()` は `wait_until_update_all_joints timeout (... s): no message on /jedy_fullbody/joint_states for ... s. Is the robot or the simulator running?`
   と警告して，最後に受け取った (古い) 角度を返す．
 - `ri.wait_interpolation()` は 30 秒待ってから `... the clock has not moved for 30.0 s (is the simulator running and publishing /clock?)` のエラーで止まる．
-- 新しく `connect()` すると，ロボットが起動するまで (最大 120 秒) 何も表示せずに待つ．
+- 新しく `connect()` すると，ロボットが起動するまで (最大 120 秒) 待つ．5 秒たつと `waiting for the Jedy controllers (20 s of 120 s): {...}` のように，何を待っているかを 15 秒ごとに表示する．
 
 そうなったら，プログラムを Ctrl-C で止め，ロボットを起動し直してから，プログラムも起動し直す．
 Gazebo は動いているのに待ち続けるときは，コントローラが起動しきっていないことがある (重い PC で起きた)．
