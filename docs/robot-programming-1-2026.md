@@ -158,6 +158,7 @@ $ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
 USB シリアルアダプタが挿さるまで待ってから起動する．サーボは **OFF で起動する** (台車の車輪だけは ON で起動するので，初めて動かすときは車輪を床から浮かせておく)．
 `camera:=true` で頭のカメラ (USB でつなぐ RealSense D405) も起動する
 (`sudo apt install -y ros-jazzy-realsense2-camera` と udev ルール ({doc}`tips/realsense-d405`) が 1 回だけ必要)．
+実機で動かしたところの動画，Gazebo と違うところ，起動できないときの直し方は {ref}`jedy-real-run` にある．
 
 ### 確認
 
@@ -554,7 +555,7 @@ if len(xs) > 0:
 中身を読んでみよう (`jedy/jedy_skrobot/scripts/enshu/track_box.py`)．
 
 ```{note}
-D405 (実機の頭のカメラ) の深度は 0.07〜0.5 m くらいしか測れない．それより遠い物までの距離は nan になる．
+D405 (実機の頭のカメラ) の深度が得意なのは 0.07〜0.5 m くらいである．それより遠い所は nan になるか，精度の保証されない値 (数 m〜数十 m) が入る．
 ```
 
 ## カメラで認識する
@@ -600,7 +601,7 @@ for d in ri.what_do_you_see(['赤いもの']):
     print(d.label, d.score, p)
 ```
 
-距離が測れるのはカメラの測れる範囲だけである (実機の D405 は 0.07〜0.5 m．遠い物は `None` になる)．
+距離を信じてよいのはカメラの得意な範囲だけである (実機の D405 は 0.07〜0.5 m．遠い物は `None` になるか，精度の保証されない値が返る)．
 首を動かした後に聞くと，その時の首の角度で計算するので，聞いてから首を動かすこと．
 
 :::{figure} fig/jedy-gazebo-detection-red-object.png

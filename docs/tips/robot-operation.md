@@ -59,6 +59,130 @@ name: fig:how_to_charge_battery
 充電器の詳細な仕様や使用方法については，[BX-32MH充電器マニュアル（PDF）](https://kondo-robot.com/w/wp-content/uploads/BX-32MH-Manual.pdf)を参照のこと．
 :::
 
+(jedy-real-run)=
+## 実機を起動して動かす
+
+1 日目の資料のプログラムは，Gazebo と同じものが実機でもそのまま動く．
+下の動画は，{doc}`../robot-programming-1-2026` の「腕と首を動かす」と「台車を動かす」のコードを，実機でそのまま実行したところである．
+
+<video width="100%" controls preload="metadata" poster="../fig/jedy-real-arm.jpg">
+  <source src="../fig/jedy-real-arm.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 「腕と首を動かす」のコードを実機で実行したところ (実時間)．
+`ri.servo_on()` のあと，頭だけ OFF / ON，`reset_pose` へ 3 秒，首を回して傾け，うなずきを 3 回，逆運動学で右手を前・上へ 3 cm，頭 (2 秒) と右腕 (4 秒) を同時に動かす．
+
+<video width="100%" controls preload="metadata" poster="../fig/jedy-real-base.jpg">
+  <source src="../fig/jedy-real-base.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** `ri.tuck_arms()` のあと，`ri.go_velocity()` で前・後ろ・右・左に 0.1 m/s で 2 秒ずつ，その場で左・右に 1.0 rad/s で 1.5 秒ずつ動かしたところ (実時間)．
+
+### 起動
+
+1. 電源を入れる (上の「サーボバッテリーの接続と電源ON」)．
+2. USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) と頭のカメラ (D405) の USB を PC に挿す．
+3. 起動する．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
+```
+
+起動できたかは，ログに次の行が出たかで分かる．
+
+```{code-block} text
+[actuo_bus_node] created shm 'jedy_fullbody' (22 joints); servicing at 30.0 Hz
+...
+Configured and activated mecanum_drive_controller
+```
+
+コントローラがそろっているかは別のターミナルで確かめる (7 つが `active` になる)．
+
+```{code-block} console
+$ ros2 control list_controllers -c /jedy_fullbody/controller_manager
+```
+
+### 最初に `ri.servo_on()` する
+
+**実機はサーボ OFF で起動する** (台車の車輪だけは ON)．OFF の関節に角度を送っても動かず，エラーも出ない．
+腕や首が動かないときは，まず `ri.servo_on()` をしたか確かめる．
+`ros2 run jedy_vision tag_pose --tilt 25` のように首を動かすコマンドも，サーボが OFF だと首が下を向かず，タグが見えない (`no tag in view`)．
+
+```{code-block} python
+from jedy_skrobot import connect
+robot, ri = connect()
+ri.servo_on()       # 今の姿勢のまま固まる (腕が飛ぶことはない)
+```
+
+### Gazebo と違うところ
+
+実機で 1 日目の資料を通したときに見つかった違いである．
+
+| | Gazebo | 実機 |
+| --- | --- | --- |
+| 起動したときのサーボ | ON | **OFF** (車輪だけ ON) |
+| `ri.servo_off()` | 腕が垂れる | 腕が**床や体に落ちる**．支える人がいるときだけ使う |
+| `connect()` の警告 | 出ない | サーボ OFF で腕が垂れていると `rarm_joint2: ... exceeds max ...; clipped to max` が出る．脱力した腕がモデルの関節の範囲の外にあるだけで，害はない |
+| `reset_pose` を送ったときの誤差 | ほぼ 0 | 両腕の `joint3` が重力で 8° ほど下がる．ほかの関節は 1° 以内 |
+| 逆運動学で動かした手先 | 目標どおり | 目標から 5〜7 mm (3 cm 前・3 cm 上の目標で測った) |
+| 台車の速さ | どの速さでも動く | 前後・左右 0.078〜0.156 m/s，旋回 0.83〜1.66 rad/s 程度．遅すぎると止まる |
+
+```{note}
+**実機の深度は 0.5 m より遠くても値が入る．** 部屋の中を写した `ri.depth_image()` で nan だったのは 5% ほどで，
+残りには 0.47〜37 m の値が入っていた．`ri.detection_position(d)` も遠い物で `None` にならず，3 m 先の椅子で 3.03 m を返した．
+D405 が得意なのは 0.07〜0.5 m なので，それより遠い値の精度は保証されない．遠い物の位置を使うときは，近づいてから測り直す．
+```
+
+頭のカメラは床から低いので，床に置いた物を見るには首を下に向ける (下の写真は `head_joint1` が 20°)．
+
+```{figure} ../fig/jedy-real-detect-cube.jpg
+---
+name: fig:jedy-real-detect-cube
+---
+実機で `ri.what_do_you_see(["rubik's cube"])` を呼んだときの `/object_detection/image`．
+床のルービックキューブ 2 つが見つかり，`ri.detection_position(d)` は [0.58, 0.09, −0.07] と [0.41, −0.29, −0.07] (m)．
+床の AprilTag (64 mm) は `tag_pose --size 0.064 --tilt 25` で 0.5〜0.7 m 先に見つかる
+```
+
+```{note}
+`approach_tag` はタグが立っていて，ロボットの方を向いていることを前提にしている (タグの面から `--standoff` だけ手前を目標にする)．
+**床に寝かせたタグには使わない．** 目標がタグの真上になり，タグに乗り上げる向きに走る．
+```
+
+### 起動できないとき
+
+エラーが出ても **launch は終わらない**．そのあと `waiting for service /jedy_fullbody/controller_manager/list_controllers` などが流れ続けるので，
+起動しないときはログを上にさかのぼって `ABORT:` で始まる行を探す．
+
+| ログに出ること | 原因と直し方 |
+| --- | --- |
+| `` `/dev/actuo_kondo_rcb4mini` を待っています `` | USB シリアルアダプタが挿さっていない，または udev ルールが入っていない ({doc}`../robot-programming-1-2026` の「実機 (RCB-4mini)」) |
+| `ABORT: board answers at none of 625000, 115200, 625000, 1250000 bit/s` | アダプタの先の制御基板が答えない．電源が入っているか，アダプタの LED が緑か (シリアルモード)，ケーブルが挿さっているかを確かめる．アダプタを挿し直すと直ることがある |
+| `ABORT: Configured servos did not answer: head_joint1 (id 34)` | その関節のサーボが答えない．**そのサーボのケーブル**を確かめる．電源を入れ直しても直らなかったときは，ケーブルを替えて直った |
+| `segment 'jedy_fullbody' not ready within 10.0s` | 上の 2 つのどれかで actuo が止まった結果．その前の `ABORT:` を見る |
+| `No RealSense devices were found!` / `Frames didn't arrived within 5 seconds` | 頭のカメラ (D405) の USB が抜けている．首まわりのケーブルを触ったあとに抜けることがある．挿し直すと戻る |
+
+ケーブルを抜き差しするときは TA を呼び，launch を Ctrl-C で止めてから行う．
+
+### 終わるとき
+
+サーボを OFF にすると腕が落ちるので，**先に腕を下ろした姿勢に戻してから** OFF にする．
+起動した直後 (サーボ OFF で腕が垂れている) の姿勢を覚えておき，最後にそこへ戻すとよい．
+
+```{code-block} python
+robot, ri = connect()
+rest = ri.angle_vector().copy()   # 起動直後の，腕を下ろした姿勢
+ri.servo_on()
+# ... ここで動かす ...
+ri.angle_vector(rest, 4.0)        # 4 秒かけて下ろした姿勢へ
+ri.wait_interpolation()
+ri.servo_off()
+```
+
+そのあと launch を Ctrl-C で止め，電源を切る．
+
 (jedy-gripper-hold-relax)=
 ## グリッパでつかんだ物が落ちるとき
 
