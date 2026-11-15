@@ -18,7 +18,8 @@ $ sudo curl -fsSL -o /etc/udev/rules.d/99-realsense-libusb.rules \
     https://raw.githubusercontent.com/IntelRealSense/librealsense/v2.58.4/config/99-realsense-libusb.rules   # 頭のカメラ (D405) を開けるようにする
 $ sudo udevadm control --reload-rules && sudo udevadm trigger
 $ curl -LsSf https://astral.sh/uv/install.sh | sh   # Python の仮想環境を作る uv (1 回だけ)
-$ source $HOME/.local/bin/env
+$ export PATH="$HOME/.local/bin:$PATH"   # 今のターミナルで uv を使えるようにする
+$ uv --version
 $ mkdir -p ~/ros2_ws/src
 $ cd ~/ros2_ws/src
 $ source /opt/ros/jazzy/setup.bash
@@ -110,7 +111,11 @@ $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy
 ### `colcon build` が「`uv` not found on PATH」で失敗する
 
 uv が入っていないか，PATH に無い．上の手順の `curl -LsSf https://astral.sh/uv/install.sh | sh` と
-`source $HOME/.local/bin/env` を実行してから，もう一度 `colcon build` する．
+`export PATH="$HOME/.local/bin:$PATH"` を実行し，`uv --version` で版が表示されることを確かめてから，もう一度 `colcon build` する．
+
+uv のインストーラが最後に `source $HOME/.local/bin/env` を実行するように表示することがあるが，実行しなくてよい (上の `export` と同じことをする)．
+`~/.local/bin` がもともと PATH に入っている PC (Ubuntu はログイン時に `~/.local/bin` があれば PATH に入れる) では `env` ファイルは作られないので，
+`source` すると「そのようなファイルやディレクトリはありません」と出る．
 
 ### `apt upgrade` の後のビルドが `No rule to make target '/opt/ros/jazzy/lib/...'` で止まる
 
