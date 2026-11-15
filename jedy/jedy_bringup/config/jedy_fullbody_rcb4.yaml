@@ -8,8 +8,9 @@
 # did not already carry is marked UNVERIFIED and listed in HUMAN_CHECKLIST.md.
 # What changed from the H7 and why:
 #
-# * bus/transport: kondo_rcb4_bus over kondo_rcb4 (even parity, 1.25 Mbit/s,
-#   switched to from the board's power-up 115200 by the bus itself).
+# * bus/transport: kondo_rcb4_bus over kondo_rcb4 (even parity, 625000 bit/s,
+#   switched to from the board's power-up rate by the bus itself). Not 1.25
+#   Mbit/s, which some RCB-4mini boards do not hold: see `bitrate` below.
 # * ids: the H7 numbers are kept. On the RCB-4mini a servo answers on ICS
 #   number 2 x ID + port (port 0 = SIO1-4, 1 = SIO5-8), the same even/odd split
 #   the H7's two port groups give, so these numbers hold IF the right arm and
@@ -35,7 +36,13 @@ bus:
     # actuo_ros' 99-actuo-kondo-symlink.rules:
     #   sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh
     channel: /dev/actuo_kondo_rcb4mini
-    bitrate: 1250000
+    # 625000, not 1.25 M (measured 2026-11-15, actuo_bus_node through this
+    # launch): one board lost 721 replies at 1.25 M and stopped answering
+    # twice while its arm was moved by hand, then lost none at 625000; at
+    # 1.25 M another lost 1-5 in 1024 ROM reads and a third 459 in 1024 (rcb4
+    # rcb4/protocol/references.md [25]). Reading the 22 servos takes longer
+    # here, so jedy_fullbody_all.launch.py runs the loop at 30 Hz.
+    bitrate: 625000
 
 joints:
   - name: head_joint0
