@@ -66,6 +66,7 @@ import copy
 import json
 import math
 import os
+import re
 import threading
 import time
 
@@ -142,6 +143,9 @@ CONTROLLERS = ['head_controller', 'right_arm_controller', 'left_arm_controller',
 #: Seconds to wait for them to become active. Gazebo spawns them tens of
 #: seconds after the launch starts.
 CONTROLLER_TIMEOUT = 120.0
+#: Seconds before ``connect`` says what it is waiting for, and how often after.
+CONTROLLER_NOTE_AFTER = 5.0
+CONTROLLER_NOTE_EVERY = 15.0
 
 #: The mecanum wheels. Not in any trajectory controller, so actuo_ros'
 #: servo_on() does not know them; see JedyInterface.servo_on.
@@ -1098,7 +1102,7 @@ class JedyInterface(RobotInterface):
         if system:
             messages.insert(0, {'role': 'system', 'content': str(system)})
         if choices is None:
-            return _strip_fence(self._vlm_chat(model, messages, timeout, reasoning))
+            return _prose_answer(self._vlm_chat(model, messages, timeout, reasoning))
         schema = {'type': 'json_schema', 'json_schema': {
             'name': 'answer', 'strict': True, 'schema': {
                 'type': 'object',
@@ -1646,6 +1650,23 @@ def _strip_fence(text):
     return text
 
 
+def _prose_answer(text):
+    """The sentence answer of ``ask``, without code blocks after it.
+
+    Gemini sometimes appends a ```json block of boxes ("[{"name": ..., "box":
+    [...]}]") to a plain-sentence answer; ``ask`` is documented to return the
+    sentence. A reply that is only a code block (the question asked for JSON
+    or code) is kept, without its fence.
+    """
+    text = text.strip()
+    prose = re.sub(r'```.*?(```|$)', '', text, flags=re.S).strip()
+    if not prose:
+        return _strip_fence(text)
+    if text.startswith('```'):
+        return text
+    return text.split('```', 1)[0].strip()
+
+
 def _json_from_reply(text):
     """The JSON in a model's reply (often in a code fence), or None."""
     text = _strip_fence(text)
@@ -1913,9 +1934,22 @@ def _wait_for_controllers(namespace, timeout=CONTROLLER_TIMEOUT):
     try:
         client = node.create_client(
             ListControllers, namespace + '/controller_manager/list_controllers')
-        deadline = time.monotonic() + timeout
+        start = time.monotonic()
+        deadline = start + timeout
+        next_note = start + CONTROLLER_NOTE_AFTER
         state = {}
         while time.monotonic() < deadline:
+            if time.monotonic() >= next_note:
+                # A silent wait looked like a hang: a mock student's AI TA
+                # "fixed" it by editing this file to fail after 10 s.
+                node.get_logger().info(
+                    'waiting for the Jedy controllers ({:.0f} s of {:.0f} s): {}. '
+                    'Gazebo or the real-robot launch must be running; Gazebo '
+                    'starts them 20-60 s after the launch.'.format(
+                        time.monotonic() - start, timeout,
+                        {c: state.get(c, 'not loaded') for c in CONTROLLERS}
+                        if state else 'no controller_manager yet'))
+                next_note += CONTROLLER_NOTE_EVERY
             if client.wait_for_service(timeout_sec=1.0):
                 future = client.call_async(ListControllers.Request())
                 rclpy.spin_until_future_complete(node, future, timeout_sec=5.0)

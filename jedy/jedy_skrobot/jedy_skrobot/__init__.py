@@ -24,10 +24,22 @@ all three: the simulators serve the real robot's switch, and a released joint
 falls under gravity there too.
 """
 
-from jedy_skrobot.interface import BoardNotAnswering
-from jedy_skrobot.interface import connect
-from jedy_skrobot.interface import JedyInterface
-from jedy_skrobot.interface import NAMESPACE
-from jedy_skrobot.interface import VlmRefused
+try:
+    from jedy_skrobot.interface import BoardNotAnswering
+    from jedy_skrobot.interface import connect
+    from jedy_skrobot.interface import JedyInterface
+    from jedy_skrobot.interface import NAMESPACE
+    from jedy_skrobot.interface import VlmRefused
+except ModuleNotFoundError as e:
+    # scikit-robot and the other dependencies live in the package's own venv,
+    # not in the system python3 (a mock student ran `python3 my.py` and the
+    # bare "No module named 'skrobot'" did not say what to do).
+    if e.name is None or e.name.split('.')[0] in ('rclpy', 'jedy_skrobot'):
+        raise
+    raise ModuleNotFoundError(
+        "{}. jedy_skrobot runs on its own venv's python, not python3: "
+        "$(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python "
+        "<your program>.py (see the day-2 docs, プログラムの置き場所と実行)".format(e),
+        name=e.name) from e
 
 __all__ = ['BoardNotAnswering', 'JedyInterface', 'NAMESPACE', 'VlmRefused', 'connect']

@@ -301,6 +301,9 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=tr
 2. `teleop_twist_keyboard` で，`z` や `x` で速さを下げてから，`i` (前進)・`J` / `L` (横)・`j` / `l` (旋回) で同じ四角形を描いてみよう．
 ```
 
+四角形になったかは Gazebo の画面で見て確かめる．ロボットが小さくて見にくいときは，左の Entity Tree で jedy を右クリックして「Follow」を選ぶと，視点がロボットを追う．
+台車のオドメトリ (`/jedy_fullbody/mecanum_drive_controller/odometry`．車輪の回転から計算した位置) は，Gazebo では送った速度どおりのきれいな四角形になる．実際にどう動いたかは，画面で見る．
+
 ## 腕と首を動かす
 
 ### サーボの ON/OFF
