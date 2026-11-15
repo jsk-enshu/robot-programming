@@ -116,6 +116,32 @@ Visualization Manager:
         Durability Policy: Volatile
         Reliability Policy: Reliable
       Namespaces: {}
+    # The head camera's point cloud (camera:=true pointcloud:=true; Gazebo
+    # with pointcloud:=true). Draws nothing without it. Best Effort takes the
+    # RealSense driver's sensor-data QoS as well as reliable publishers.
+    - Class: rviz_default_plugins/PointCloud2
+      Name: camera points
+      Enabled: true
+      Topic:
+        Value: /camera/depth/color/points
+        Depth: 1
+        Durability Policy: Volatile
+        Reliability Policy: Best Effort
+      Color Transformer: RGB8
+      Style: Points
+      Size (Pixels): 2
+      Decay Time: 0
+      Position Transformer: XYZ
+    # The head camera's own image (camera:=true, or Gazebo).
+    - Class: rviz_default_plugins/Image
+      Name: camera (image)
+      Enabled: true
+      Topic:
+        Value: /camera/color/image_rect_raw
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
     # The same detections drawn on the head camera's image. Docked on the
     # right: under the three left panels a 1040 px window leaves it 0 px tall,
     # and rviz2 then dies ("failed to create drawable", SIGSEGV in

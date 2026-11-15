@@ -178,7 +178,13 @@ joints:
       plugin: kondo_ics
       id: 14
       velocity: 1       # UNVERIFIED move byte; see the header
-      direction: -1
+      # +1, as the left gripper: jedy_gz.xacro mirrors the two gripper joints'
+      # axes (-x right, +x left), so one angle opens or closes both hands the
+      # same way. With -1 (the value carried over from 2025) the right hand
+      # moved opposite to its model, checked by eye on two Jedys
+      # (2026-11-15): it closed at +22.6 deg where the left closes at -22.3,
+      # and its -28.6 limit then stopped it opening.
+      direction: 1
       offset_deg: 0.0
       position_limit_deg: [-28.64789, 89.954374]
       # A gripper closed on an object (or on itself) cannot reach its command
@@ -187,10 +193,12 @@ joints:
       # more than 3 deg short of it, the bus holds it 2 deg past where it is
       # instead (lighter); a new command ends it. Raise squeeze_deg for a
       # firmer grip (error_deg must stay larger than squeeze_deg).
-      # Measured 2026-11-15 on an RCB-4mini at 7.4 V: this gripper closes on
-      # nothing at +22.6 deg; pushing there drew ~0.9 A more than idle, the
-      # relaxed hold ~0.05 A, and it held an object (closed at -6.7 deg)
-      # without opening for 18 s. See docs/tips/robot-operation.md.
+      # Measured 2026-11-15 on an RCB-4mini at 7.4 V (then with direction -1;
+      # the angles below are given with the sign of direction 1): this
+      # gripper closes on nothing at -22.6 deg, only ~6 deg from its -28.6
+      # limit; pushing there drew ~0.9 A more than idle, the relaxed hold
+      # ~0.05 A, and it held an object (closed at +6.7 deg) without opening
+      # for 18 s. See docs/tips/robot-operation.md.
       hold_relax: {error_deg: 3.0, seconds: 1.0, squeeze_deg: 2.0}
   - name: larm_gripper_joint
     actuator:
@@ -200,8 +208,8 @@ joints:
       direction: 1
       offset_deg: 0.0
       position_limit_deg: [-28.64789, 89.954374]
-      # As rarm_gripper_joint, mirrored: it closes toward negative angles and
-      # stops on nothing at about -22.3 deg, only ~6 deg from its -28.6 limit.
+      # As rarm_gripper_joint: it closes toward negative angles and stops on
+      # nothing at about -22.3 deg, only ~6 deg from its -28.6 limit.
       # The fullest close therefore leaves the gripper ~6 deg short; keep
       # error_deg below that, or the hold is never relaxed here.
       hold_relax: {error_deg: 3.0, seconds: 1.0, squeeze_deg: 2.0}

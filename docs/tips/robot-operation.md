@@ -223,8 +223,8 @@ $ ros2 topic echo /diagnostics | grep -A1 "bus/hold_relax"
 | `error_deg` | 指令からこれ以上離れていたら握り直す [deg] | **`squeeze_deg` より大きくする** (同じか小さいと actuo が起動時にエラーにする) |
 | `seconds` | 指令が何秒変わらなかったら握り直すか [s] | 長くすると全力で握る時間が延びる |
 
-- 左手 (`larm_gripper_joint`) は閉じる向きが負の角度で，何もつかまずに閉じると約 −22° で止まる．
-  閉じる側の可動範囲 (`position_limit_deg` の −28.6°) までは約 6° しかないので，`error_deg` を 6 以上にすると左手は握り直さなくなる (全力で握り続けて熱くなる)．
+- グリッパは左右とも閉じる向きが負の角度で，何もつかまずに閉じると約 −22° で止まる．
+  閉じる側の可動範囲 (`position_limit_deg` の −28.6°) までは約 6° しかないので，`error_deg` を 6 以上にすると握り直さなくなる (全力で握り続けて熱くなる)．
 - 握り直さないようにするには，その関節の `hold_relax:` の行を消す．全力で握り続けるので，長くつかんだままにしない．
 - 変えたら `ros2 launch jedy_bringup jedy_fullbody_all.launch.py` を Ctrl-C で止めて起動し直す．
   `colcon build --symlink-install` でビルドしていれば，ビルドし直さなくてよい．
