@@ -46,7 +46,8 @@ COMMANDS = [
     (r'(持って|もって|つかんで|掴んで)', '箱を持つのだ', ['grasp_tag']),
     (r'手を(振|ふ)', '手を振るのだ', ['wave_back', '--test']),
 ]
-STOP = r'(止ま|とま|ストップ|やめ)'
+# 止 alone too: Google's recogniser often returns just 「止」 for 「止まって」.
+STOP = r'(止|とま|ストップ|やめ)'
 
 
 def normalize(text):
