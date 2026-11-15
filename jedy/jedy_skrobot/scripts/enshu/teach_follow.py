@@ -75,8 +75,51 @@ def send(robot, ri, pose, duration, parts):
         ri.angle_vector(av, duration, controller_type=PARTS[p])
 
 
+class Streamer:
+    """Stream poses to the follower's trajectory controllers.
+
+    Each pose goes out as a two-point trajectory, from the pose sent last to
+    the new one in one period, on the controllers' ``joint_trajectory``
+    topics, so one segment ends where the next starts and the follower moves
+    at a steady speed between poses. Positions only: a goal velocity of zero
+    made it stop at every pose, which was visibly jerky; and segments longer
+    than the period were cut off by the next one, which jumped the command
+    forward. Not through ``ri.angle_vector()``: that starts every trajectory
+    at the MEASURED pose, so a joint that sags behind its command (an arm
+    under gravity) was pulled back to where it sagged to ten times a second
+    and never reached the leader (measured: a shoulder 30 deg short for 10 s).
+    """
+
+    def __init__(self, ri, namespace, parts, start):
+        from trajectory_msgs.msg import JointTrajectory
+        self.parts = parts
+        self.joints = {p: ri.joints_of(PARTS[p]) for p in parts}
+        self.pubs = {p: ri.create_publisher(
+            JointTrajectory, '{}/{}/joint_trajectory'.format(
+                namespace.rstrip('/'), PARTS[p]), 10) for p in parts}
+        self.last = dict(start)
+
+    def send(self, pose, duration):
+        from builtin_interfaces.msg import Duration
+        from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+        for p in self.parts:
+            names = self.joints[p]
+            msg = JointTrajectory(joint_names=names)
+            msg.points = [
+                JointTrajectoryPoint(positions=[self.last[n] for n in names],
+                                     time_from_start=Duration(sec=0, nanosec=0)),
+                JointTrajectoryPoint(positions=[pose[n] for n in names],
+                                     time_from_start=Duration(
+                                         sec=int(duration),
+                                         nanosec=int((duration % 1) * 1e9))),
+            ]
+            self.pubs[p].publish(msg)
+        self.last.update(pose)
+
+
 def follow(args, parts):
     from jedy_skrobot import connect
+    from jedy_skrobot.interface import BoardNotAnswering
     leader_robot, leader = connect(namespace=args.leader)
     follower_robot, follower = connect(namespace=args.follower)
     names = joints_of(follower, parts)
@@ -93,6 +136,7 @@ def follow(args, parts):
     send(follower_robot, follower, pose, args.approach, parts)
     for p in parts:
         follower.wait_interpolation(PARTS[p])
+    streamer = Streamer(follower, args.follower, parts, pose)
 
     recorded = []
     print('following. Enter: record the pose{}, q: quit'.format(
@@ -101,10 +145,26 @@ def follow(args, parts):
     old = termios.tcgetattr(sys.stdin)
     tty.setcbreak(sys.stdin.fileno())
     try:
+        paused = False
         while True:
             start = time.monotonic()
-            pose = pose_of(leader_robot, leader, names)
-            send(follower_robot, follower, pose, args.lead, parts)
+            try:
+                # Raises while the leader's board does not answer: its
+                # joint_states keep coming then, frozen at the last pose read.
+                pose = pose_of(leader_robot, leader, names)
+            except BoardNotAnswering:
+                # The follower holds the last pose it was sent.
+                if not paused:
+                    print('the leader stopped answering: the follower holds '
+                          'its pose until it answers again')
+                    paused = True
+                if read_key(0.1) == 'q':
+                    break
+                continue
+            if paused:
+                print('the leader answers again: following')
+                paused = False
+            streamer.send(pose, period)
             key = read_key(max(0.0, period - (time.monotonic() - start)))
             if key == 'q':
                 break
@@ -151,11 +211,9 @@ def main():
     parser.add_argument('--approach', type=float, default=5.0,
                         help='seconds for the follower\'s first move to the '
                              'leader\'s pose')
-    parser.add_argument('--rate', type=float, default=10.0,
-                        help='poses sent to the follower per second')
-    parser.add_argument('--lead', type=float, default=0.3,
-                        help='seconds each sent pose takes to reach; longer '
-                             'is smoother and lags more')
+    parser.add_argument('--rate', type=float, default=25.0,
+                        help='poses sent to the follower per second; the '
+                             'follower lags the leader by about one period')
     parser.add_argument('--record', default=None,
                         help='YAML file the Enter key appends poses to')
     parser.add_argument('--play', default=None,

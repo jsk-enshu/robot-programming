@@ -45,7 +45,11 @@ power is cut) is read from the servo switch's ``/diagnostics`` status
 for :data:`BOARD_DIAG_TIMEOUT` (the switch is busy reconnecting), ``ri`` says
 so once in the terminal, and ``angle_vector``, ``servo_on`` and driving raise
 :class:`BoardNotAnswering` with what to do. Without this a program kept
-reading the last angles from before the stop and saw nothing wrong.
+reading the last angles from before the stop and saw nothing wrong. A robot
+started under its own namespace (two robots on one PC) is judged by its own
+``<namespace>/actuo_bus_servicer/servo/state`` instead, stopping for
+:data:`BOARD_STATE_TIMEOUT`: every switch publishes the same ``/diagnostics``
+status, which cannot say which robot stopped.
 
 Servos that do not answer (a cable out, a board unpowered) are read from the
 servo switch's ``/actuo_bus_servicer/servo/state``: :meth:`JedyInterface.missing_servos`
@@ -205,6 +209,13 @@ BOARD_DIAG_NAME = 'actuo_bus_servicer: bus/link'
 #: board having stopped: the switch publishes it about once a second, and not
 #: at all while it is reconnecting to a silent board.
 BOARD_DIAG_TIMEOUT = 3.0
+#: Seconds without the servo switch's state that count as the board having
+#: stopped, on a robot under its own namespace (two robots on one PC). There
+#: every switch publishes the same BOARD_DIAG_NAME on /diagnostics, so that
+#: status cannot tell which robot stopped; the state is the robot's own topic
+#: and comes about 25 times a second while the board answers, and not at all
+#: while the switch reconnects to a silent board.
+BOARD_STATE_TIMEOUT = 1.0
 #: DiagnosticStatus.ERROR.
 _DIAG_ERROR = 2
 
@@ -303,9 +314,15 @@ class JedyInterface(RobotInterface):
         self._board_status = None      # (monotonic time, level, message)
         self._slow_warn_time = -1e9
         self._board_reported = None    # the reason last reported, or None
+        self._servo_state_time = None  # monotonic time of the last state
+        #: Judge the board by its own servo state (see BOARD_STATE_TIMEOUT)
+        #: rather than /diagnostics: a robot under its own namespace.
+        self._board_by_state = (self._servo_client is not None
+                                and self._servo_ns != SERVO_NS)
         if self._servo_client is not None:
-            self.create_subscription(DiagnosticArray, '/diagnostics',
-                                     self._on_diagnostics, 10)
+            if not self._board_by_state:
+                self.create_subscription(DiagnosticArray, '/diagnostics',
+                                         self._on_diagnostics, 10)
             self.create_timer(1.0, self._watch_board)
         self._recognition_clients = {}
         self._say_client = None
@@ -436,6 +453,15 @@ class JedyInterface(RobotInterface):
         """
         with self._lock:
             status = self._board_status
+            state_time = self._servo_state_time
+        if self._board_by_state:
+            if state_time is None:
+                return None
+            age = time.monotonic() - state_time
+            if age > BOARD_STATE_TIMEOUT:
+                return 'サーボの制御プロセス ({}) から {:.1f} 秒状態が届かない'.format(
+                    self._servo_ns, age)
+            return None
         if status is None:
             return None
         stamp, level, message = status
@@ -1323,6 +1349,7 @@ class JedyInterface(RobotInterface):
     def _on_servo_state(self, msg):
         with self._lock:
             self._servo_state = msg
+            self._servo_state_time = time.monotonic()
         self._servo_state_seen.set()
 
     def missing_servos(self, timeout=SERVO_STATE_TIMEOUT):
