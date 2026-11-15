@@ -93,6 +93,28 @@ NAMESPACE = '/jedy_fullbody'
 #: Gazebo serve the same action here.
 SERVO_NS = '/actuo_bus_servicer'
 
+
+def servo_namespace(namespace=NAMESPACE):
+    """Where the servo switch of the robot under ``namespace`` is.
+
+    :data:`SERVO_NS` for the default robot; under its namespace for a robot
+    started with ``jedy_fullbody_all.launch.py namespace:=...`` (two robots on
+    one PC).
+
+    Parameters
+    ----------
+    namespace : str
+        The bring-up's namespace, e.g. ``/jedy_leader``.
+
+    Returns
+    -------
+    str
+    """
+    name = namespace.strip('/')
+    if name == NAMESPACE.strip('/'):
+        return SERVO_NS
+    return '/' + name + SERVO_NS
+
 CMD_VEL_TOPIC = '/cmd_vel'
 IMU_TOPIC = '/imu'
 #: The head camera, under the RealSense driver's names so the real robot's
@@ -302,7 +324,7 @@ class JedyInterface(RobotInterface):
         if self._servo_client is not None:
             from actuo_msgs.msg import ServoState
             self.create_subscription(
-                ServoState, SERVO_NS + '/servo/state', self._on_servo_state,
+                ServoState, self._servo_ns + '/servo/state', self._on_servo_state,
                 QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL))
 
     # -- time -----------------------------------------------------------------
@@ -1329,7 +1351,7 @@ class JedyInterface(RobotInterface):
         if not self._servo_state_seen.wait(timeout):
             raise RuntimeError(
                 'no {}/servo/state within {} s: the servo switch is up but '
-                'does not say which servos answer'.format(SERVO_NS, timeout))
+                'does not say which servos answer'.format(self._servo_ns, timeout))
         with self._lock:
             msg = self._servo_state
         return {j.name: (j.absence_reason or 'not answering')
@@ -1838,7 +1860,7 @@ def _probe(namespace, servo_timeout=SERVO_PROBE_TIMEOUT):
         use_sim_time = (value.type == ParameterType.PARAMETER_BOOL
                         and value.bool_value)
 
-        client = ActionClient(node, SetServo, SERVO_NS + '/servo/set')
+        client = ActionClient(node, SetServo, servo_namespace(namespace) + '/servo/set')
         deadline = time.monotonic() + servo_timeout
         has_servo = False
         while time.monotonic() < deadline:
@@ -1890,7 +1912,8 @@ def connect(namespace=NAMESPACE, load_meshes=False):
     Parameters
     ----------
     namespace : str
-        The bring-up's namespace; every Jedy launch uses ``/jedy_fullbody``.
+        The bring-up's namespace: ``/jedy_fullbody`` unless the robot was
+        started with ``jedy_fullbody_all.launch.py namespace:=...``.
     load_meshes : bool
         Load the meshes, which only a viewer needs.
 
@@ -1913,7 +1936,7 @@ def connect(namespace=NAMESPACE, load_meshes=False):
     _wait_for_controllers(namespace)
     use_sim_time, has_servo = _probe(namespace)
     robot, ri = _actuo_connect(
-        servo_ns=SERVO_NS if has_servo else None,
+        servo_ns=servo_namespace(namespace) if has_servo else None,
         load_meshes=load_meshes,
         model_class=Jedy,
         namespace=namespace,

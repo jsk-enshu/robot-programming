@@ -30,10 +30,20 @@ which must move with it.
 The C++ ActuoSystem creates the shared memory segment "jedy_fullbody"; run the
 matching backend servicer alongside. The two hand each other that segment, so if
 you restart one, restart both.
+
+Two robots on one PC: namespace:=<name> (default jedy_fullbody) puts this
+stack under /<name> and names the segment <name> as well, so a second robot
+started with another namespace shares nothing with the first. Its TF frames
+get the prefix <name>/ (frame_prefix), so the two robots' links do not fight
+over one TF tree, and its base listens on /<name>/cmd_vel. The default keeps
+every name as it was.
 """
 
+import os
+import tempfile
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.conditions import IfCondition
 from launch.substitutions import (
     Command, LaunchConfiguration, PathJoinSubstitution)
@@ -44,19 +54,72 @@ from launch_ros.substitutions import FindPackageShare
 NAMESPACE = "jedy_fullbody"
 
 
-def generate_launch_description():
-    """Build the launch description.
+def namespace_of(context):
+    """The ``namespace:=`` argument, without slashes (default NAMESPACE).
+
+    Parameters
+    ----------
+    context : launch.LaunchContext
 
     Returns
     -------
-    launch.LaunchDescription
-        controller_manager, the state publishers, and one spawner per
-        controller.
+    str
     """
+    return context.launch_configurations.get("namespace", NAMESPACE).strip("/") or NAMESPACE
+
+
+def controllers_for(namespace, path):
+    """jedy_fullbody_controllers.yaml for ``namespace``.
+
+    The file keys its parameters by the full node name (``/jedy_fullbody:``),
+    so a stack under another namespace would load none of them. For the
+    default namespace the file itself; otherwise a copy with the top-level
+    key renamed.
+
+    Parameters
+    ----------
+    namespace : str
+        Without slashes.
+    path : str
+        The installed jedy_fullbody_controllers.yaml.
+
+    Returns
+    -------
+    str
+        Path of the params file to load.
+    """
+    if namespace == NAMESPACE:
+        return path
+    with open(path) as f:
+        text = f.read()
+    key = "/{}:".format(NAMESPACE)
+    if text.count("\n" + key) + text.startswith(key) != 1:
+        raise RuntimeError("{} has no single top-level {} key".format(path, key))
+    text = text.replace(key, "/{}:".format(namespace), 1)
+    out = tempfile.NamedTemporaryFile("w", prefix="{}_controllers_".format(namespace),
+                                      suffix=".yaml", delete=False)
+    with out:
+        out.write(text)
+    return out.name
+
+
+def _nodes(context):
+    """controller_manager, the state publishers and the spawners for one robot.
+
+    Parameters
+    ----------
+    context : launch.LaunchContext
+
+    Returns
+    -------
+    list of launch.Action
+    """
+    namespace = namespace_of(context)
+    default = namespace == NAMESPACE
     pkg = FindPackageShare("jedy_bringup")
     urdf = PathJoinSubstitution([pkg, "urdf", "jedy_fullbody_actuo.urdf.xacro"])
-    controllers = PathJoinSubstitution(
-        [pkg, "config", "jedy_fullbody_controllers.yaml"])
+    controllers = controllers_for(namespace, PathJoinSubstitution(
+        [pkg, "config", "jedy_fullbody_controllers.yaml"]).perform(context))
     rviz_config = PathJoinSubstitution([pkg, "rviz", "jedy_fullbody.rviz"])
 
     wheels = LaunchConfiguration("wheels")
@@ -69,6 +132,7 @@ def generate_launch_description():
             " backend:=", LaunchConfiguration("backend"),
             " use_sim:=", LaunchConfiguration("use_sim"),
             " wheels:=", wheels,
+            " shm_name:=", namespace,
         ]), value_type=str)
     }
 
@@ -83,7 +147,7 @@ def generate_launch_description():
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        namespace=NAMESPACE,
+        namespace=namespace,
         parameters=[robot_description, controllers, update_rate],
         output="screen",
     )
@@ -96,29 +160,29 @@ def generate_launch_description():
     # consumes for full TF.
     #
     # IT RUNS IN ITS OWN SUB-NAMESPACE, and that is the only reason it works.
-    # The obvious construction is to leave it in NAMESPACE and remap its output
-    # with `joint_states:=<NAMESPACE>/joint_states_full`. That remap is not
+    # The obvious construction is to leave it in namespace and remap its output
+    # with `joint_states:=<namespace>/joint_states_full`. That remap is not
     # output-only: a remap rule matches by RESOLVED name, and this node's
-    # source_list subscription to "<NAMESPACE>/joint_states" resolves to the
+    # source_list subscription to "<namespace>/joint_states" resolves to the
     # same name as its publisher. So the rule catches the subscription too, the
     # node subscribes to its own output instead of the broadcaster's, and it
     # publishes a robot frozen at the zero pose forever. Nothing errors:
     # /joint_states carries the real measurement the whole time, TF quietly
     # disagrees with it, and RViz shows a robot that never moves.
     #
-    # Diagnosed by `ros2 topic info <NAMESPACE>/joint_states --verbose`
+    # Diagnosed by `ros2 topic info <namespace>/joint_states --verbose`
     # reporting "Subscription count: 0" while the broadcaster published.
     #
-    # A sub-namespace resolves the publisher to <NAMESPACE>/state_merge/
+    # A sub-namespace resolves the publisher to <namespace>/state_merge/
     # joint_states, leaves the absolute source_list name alone, and needs no
     # remap rule on this node at all.
-    merged_topic = "/%s/state_merge/joint_states" % NAMESPACE
+    merged_topic = "/%s/state_merge/joint_states" % namespace
     joint_state_pub = Node(
         package="joint_state_publisher",
         executable="joint_state_publisher",
-        namespace="%s/state_merge" % NAMESPACE,
+        namespace="%s/state_merge" % namespace,
         parameters=[
-            {"source_list": ["/%s/joint_states" % NAMESPACE], "rate": 30},
+            {"source_list": ["/%s/joint_states" % namespace], "rate": 30},
         ],
         # This node takes the URDF from the robot_description TOPIC, not from a
         # parameter of that name, and the sub-namespace above puts the topic it
@@ -127,14 +191,17 @@ def generate_launch_description():
         # "Waiting for robot_description to be published" and never emits a
         # single message. Remapping the input is safe where remapping the
         # output was not: no publisher of this node resolves to that name.
-        remappings=[("robot_description", "/%s/robot_description" % NAMESPACE)],
+        remappings=[("robot_description", "/%s/robot_description" % namespace)],
         output="screen",
     )
     robot_state_pub = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
-        namespace=NAMESPACE,
-        parameters=[robot_description],
+        namespace=namespace,
+        # A second robot's links would otherwise publish the same TF frames
+        # as the first one's.
+        parameters=[robot_description,
+                    {"frame_prefix": "" if default else namespace + "/"}],
         remappings=[("joint_states", merged_topic)],
         output="screen",
     )
@@ -144,7 +211,7 @@ def generate_launch_description():
         # load_controller on a loaded PC; the spawner then retries, gets
         # "already loaded" and exits, leaving the controller unconfigured.
         return Node(package="controller_manager", executable="spawner",
-                    arguments=[name, "-c", "/%s/controller_manager" % NAMESPACE,
+                    arguments=[name, "-c", "/%s/controller_manager" % namespace,
                                "--service-call-timeout", "60",
                                *extra],
                     condition=condition,
@@ -173,8 +240,9 @@ def generate_launch_description():
                     # `ros2 topic pub ... geometry_msgs/Twist` will silently
                     # not connect.
                     "--controller-ros-args",
-                    "-r /%s/mecanum_drive_controller/reference:=/cmd_vel"
-                    % NAMESPACE,
+                    "-r /%s/mecanum_drive_controller/reference:=%s"
+                    % (namespace, "/cmd_vel" if default
+                       else "/%s/cmd_vel" % namespace),
                 ]),
     ]
 
@@ -184,7 +252,7 @@ def generate_launch_description():
     # and the controller correctly skips its integration.
     odometry = Node(
         package="jedy_bringup", executable="jedy_wheel_odometry",
-        namespace=NAMESPACE,
+        namespace=namespace,
         condition=IfCondition(wheels),
         output="screen",
     )
@@ -193,11 +261,13 @@ def generate_launch_description():
     # reason (actuo_presence_markers, fed by /actuo_bus_servicer/servo/state).
     # Without it, an unplugged servo leaves its link drawn where it was, which
     # looks exactly like a healthy robot standing still.
+    # Only for the default namespace: it watches /actuo_bus_servicer, which a
+    # robot under another namespace does not have (its servicer is under it).
     presence = Node(
         package="actuo_ros", executable="actuo_presence_markers",
-        remappings=[("robot_description", "/%s/robot_description" % NAMESPACE)],
+        remappings=[("robot_description", "/%s/robot_description" % namespace)],
         output="screen",
-    )
+    ) if default else None
 
     rviz = Node(
         package="rviz2", executable="rviz2", name="rviz2",
@@ -206,7 +276,25 @@ def generate_launch_description():
         output="screen",
     )
 
+    return [n for n in (control_node, robot_state_pub, joint_state_pub,
+                        *controller_nodes, odometry, presence, rviz)
+            if n is not None]
+
+
+def generate_launch_description():
+    """Build the launch description.
+
+    Returns
+    -------
+    launch.LaunchDescription
+        controller_manager, the state publishers, and one spawner per
+        controller.
+    """
     return LaunchDescription([
+        DeclareLaunchArgument("namespace", default_value=NAMESPACE,
+                              description="the robot's namespace; another "
+                                          "one runs a second robot on this "
+                                          "PC (see the module docstring)"),
         DeclareLaunchArgument("rviz", default_value="false",
                               description="launch RViz2 with the Jedy config"),
         DeclareLaunchArgument("update_rate", default_value="100",
@@ -225,6 +313,5 @@ def generate_launch_description():
                               choices=["true", "false"],
                               description="true = expose and drive the four "
                                           "mecanum wheels"),
-        control_node, robot_state_pub, joint_state_pub, *controller_nodes,
-        odometry, presence, rviz,
+        OpaqueFunction(function=_nodes),
     ])

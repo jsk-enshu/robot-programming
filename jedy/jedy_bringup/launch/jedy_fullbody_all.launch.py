@@ -9,6 +9,21 @@ Starts the bus servicer, ros2_control with all seven controllers, the wheel
 odometry, RViz and the PS3 / PS4 teleop. Arguments turn pieces off (`rviz:=false`,
 `joy:=false`, `wheels:=false`).
 
+Two robots on one PC, each on its own Dual USB Adapter (e.g. teaching one by
+moving the other, jedy_skrobot's teach_follow)::
+
+    ros2 launch jedy_bringup jedy_fullbody_all.launch.py namespace:=jedy_leader \
+        port:=/dev/serial/by-path/...-usb-0:1.1:1.0-port0 rviz:=false joy:=false wheels:=false
+    ros2 launch jedy_bringup jedy_fullbody_all.launch.py namespace:=jedy_follower \
+        port:=/dev/serial/by-path/...-usb-0:1.2:1.0-port0 rviz:=false joy:=false wheels:=false
+
+namespace:= puts the robot's controllers, joint_states and robot_description
+under /<namespace>, its servo switch at /<namespace>/actuo_bus_servicer and
+its shared-memory segment at <namespace>; the default (jedy_fullbody) keeps
+every name as it was. port:= is the adapter: every Dual USB Adapter claims
+/dev/actuo_kondo_rcb4mini and they all have the same serial number, so with
+two plugged in only the USB socket (/dev/serial/by-path/) tells them apart.
+
 Nothing starts until the robot is plugged in
 --------------------------------------------
 The first thing this launch does is wait for the serial adapter the Kondo
@@ -101,7 +116,26 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from jedy_preflight import preflight_action  # noqa: E402
 
 NAMESPACE = "jedy_fullbody"
-SHM_NAME = "jedy_fullbody"
+
+
+def _namespace(context):
+    """The ``namespace:=`` argument without slashes; also the shm segment name.
+
+    Parameters
+    ----------
+    context : launch.LaunchContext
+
+    Returns
+    -------
+    str
+    """
+    return LaunchConfiguration("namespace").perform(context).strip("/") or NAMESPACE
+
+
+def _shm_file(name):
+    """The servicer's segment file, as actuo.drivers.shm names it."""
+    return os.path.join("/tmp", "{}{}.shm".format(
+        os.environ.get("ACTUO_SHM_PREFIX", "actuo_"), name))
 
 
 def _channel_from_config(path):
@@ -283,7 +317,7 @@ def generate_launch_description():
     pkg = FindPackageShare("jedy_bringup")
     poses = PathJoinSubstitution([pkg, "config", "jedy_fullbody_poses.yaml"])
 
-    def servicer(config, link_args):
+    def servicer(config, link_args, namespace):
         """The bus servicer, as a fresh action each call.
 
         Parameters
@@ -291,7 +325,11 @@ def generate_launch_description():
         config : str
             The bus config, see :func:`_config_path`.
         link_args : list of str
-            Extra arguments for the link (see :func:`_link_args`).
+            Extra arguments for the link (see :func:`_link_args`), or
+            ``--channel`` for ``port:=``.
+        namespace : str
+            The robot's namespace (:func:`_namespace`): the segment's name,
+            and the servicer's namespace unless it is the default one.
 
         Returns
         -------
@@ -300,11 +338,15 @@ def generate_launch_description():
         """
         return Node(
             package="actuo_ros", executable="actuo_bus_node",
+            # /actuo_bus_servicer for the default robot, as jedy_skrobot and
+            # the RViz config expect; under its namespace for any other, so a
+            # second robot's servo switch is its own.
+            namespace=None if namespace == NAMESPACE else namespace,
             output="screen",
             arguments=[
                 "--real",
                 "--config", config,
-                "--shm-name", SHM_NAME,
+                "--shm-name", namespace,
                 "--rate", LaunchConfiguration("rate"),
                 # Long, because this is the side that waits: the segment does
                 # not exist until ros2_control's on_init creates it a second or
@@ -356,7 +398,7 @@ def generate_launch_description():
             ] + link_args,
         )
 
-    def robot_stack(config, link_args):
+    def robot_stack(config, link_args, namespace):
         """The actions that assume the bus is there, as fresh objects.
 
         A factory rather than a list, because these are needed on two
@@ -372,11 +414,10 @@ def generate_launch_description():
         return [
             # Before anything else. See the module docstring.
             ExecuteProcess(
-                cmd=["rm", "-f",
-                     os.path.join("/tmp", "actuo_{}.shm".format(SHM_NAME))],
+                cmd=["rm", "-f", _shm_file(namespace)],
                 output="log"),
 
-            servicer(config, link_args),
+            servicer(config, link_args, namespace),
 
             # A moment later, so the servicer is already waiting when the
             # segment appears. Not required for correctness -- the handshake
@@ -393,6 +434,7 @@ def generate_launch_description():
                         PythonLaunchDescriptionSource(PathJoinSubstitution(
                             [pkg, "launch", "jedy_fullbody.launch.py"])),
                         launch_arguments={
+                            "namespace": namespace,
                             "wheels": LaunchConfiguration("wheels"),
                             "rviz": LaunchConfiguration("rviz"),
                             "backend": "actuo",
@@ -429,6 +471,11 @@ def generate_launch_description():
         """
         config = _config_path(context)
         link_args = _link_args(context)
+        namespace = _namespace(context)
+        port = LaunchConfiguration("port").perform(context)
+        if link_args and port:
+            raise RuntimeError("port:= is the cable's adapter; link:=wifi "
+                               "talks to the relay instead, so give one")
         if link_args:
             # No serial device here: the relay is on the network. Wait until
             # it answers, as the cable path waits for its port, because a
@@ -444,7 +491,7 @@ def generate_launch_description():
 
             def on_relay_ready(event, context):
                 return _on_port_ready(event, context,
-                                      robot_stack(config, link_args))
+                                      robot_stack(config, link_args, namespace))
 
             return [
                 LogInfo(msg="[jedy_fullbody_all] link:=wifi: the board "
@@ -453,7 +500,8 @@ def generate_launch_description():
                 RegisterEventHandler(OnProcessExit(target_action=wait_relay,
                                                    on_exit=on_relay_ready)),
             ]
-        channel = _channel_from_config(config)
+        channel = port or _channel_from_config(config)
+        cable_args = ["--channel", port] if port else []
         wait_port = ExecuteProcess(
             cmd=[PathJoinSubstitution([FindPackagePrefix("jedy_bringup"),
                                        "lib", "jedy_bringup",
@@ -464,7 +512,8 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration("wait_port")))
 
         def on_port_ready(event, context):
-            return _on_port_ready(event, context, robot_stack(config, []))
+            return _on_port_ready(event, context,
+                                  robot_stack(config, cable_args, namespace))
 
         return [
             # Nothing below this line runs until the port opens. See the
@@ -473,7 +522,7 @@ def generate_launch_description():
             RegisterEventHandler(OnProcessExit(target_action=wait_port,
                                                on_exit=on_port_ready)),
             # ...unless the wait was turned off, in which case straight in.
-            GroupAction(robot_stack(config, []),
+            GroupAction(robot_stack(config, cable_args, namespace),
                         condition=UnlessCondition(
                             LaunchConfiguration("wait_port"))),
         ]
@@ -549,6 +598,14 @@ def generate_launch_description():
                               description="link:=wifi: seconds without the "
                                           "host after which the relay stops "
                                           "the wheels"),
+        DeclareLaunchArgument("namespace", default_value=NAMESPACE,
+                              description="the robot's namespace; give each "
+                                          "of two robots on one PC its own "
+                                          "(see the module docstring)"),
+        DeclareLaunchArgument("port", default_value="",
+                              description="the robot's Dual USB Adapter, e.g. "
+                                          "/dev/serial/by-path/...; empty = "
+                                          "the config's channel"),
         DeclareLaunchArgument("config", default_value="",
                               description="a bus config to use instead of "
                                           "jedy_fullbody_rcb4.yaml (e.g. the copy "
@@ -562,7 +619,7 @@ def generate_launch_description():
                     [FindPackageShare("jedy_bringup"), "launch",
                      "jedy_joy.launch.py"])),
                 launch_arguments={
-                    "namespace": "/" + NAMESPACE,
+                    "namespace": ["/", LaunchConfiguration("namespace")],
                     # Pan, then tilt.
                     "head_joints": "head_joint0,head_joint1",
                     # This robot's own poses, and the file jedy_joy reads its

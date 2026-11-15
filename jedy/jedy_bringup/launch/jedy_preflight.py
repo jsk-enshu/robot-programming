@@ -13,11 +13,18 @@ Used from the top-level launch files::
     LaunchDescription([..., preflight_action(), ...])
 
 Set ``JEDY_SKIP_PREFLIGHT=1`` to bypass (staff only).
+
+Robots under different namespaces (``jedy_fullbody_all.launch.py
+namespace:=...``) share no topic, so they do not conflict: only a launch with
+the same namespace does. Gazebo always runs under the default one.
 """
 
 import os
 
 from launch.actions import OpaqueFunction
+
+#: The namespace a bringup uses when it is given none.
+DEFAULT_NAMESPACE = "jedy_fullbody"
 
 #: Top-level bringups that own the robot's topics.
 ROBOT_LAUNCH_FILES = (
@@ -69,8 +76,21 @@ def _ancestors(pid=None):
     return pids
 
 
-def find_conflicts():
+def _namespace_of(argv):
+    """The ``namespace:=`` a launch command line gives (default if none)."""
+    for arg in argv:
+        if arg.startswith("namespace:="):
+            return arg.split(":=", 1)[1].strip("/") or DEFAULT_NAMESPACE
+    return DEFAULT_NAMESPACE
+
+
+def find_conflicts(namespace=DEFAULT_NAMESPACE):
     """Running Jedy bringups / Gazebo servers that would clash with this launch.
+
+    Parameters
+    ----------
+    namespace : str
+        This launch's robot namespace, without slashes.
 
     Returns
     -------
@@ -103,11 +123,13 @@ def find_conflicts():
             argv = argv[0].split()
         command = " ".join(argv)
         if os.path.basename(argv[0]) == "gz" and argv[1:2] == ["sim"]:
-            if env.get("GZ_PARTITION", "") == my_partition:
+            if (env.get("GZ_PARTITION", "") == my_partition
+                    and namespace == DEFAULT_NAMESPACE):
                 found.append((pid, _age_minutes(pid), "gazebo", command))
         elif "launch" in argv and any(
                 os.path.basename(a) in ROBOT_LAUNCH_FILES for a in argv):
-            if (env.get("ROS_DOMAIN_ID", "0") or "0") == my_domain:
+            if ((env.get("ROS_DOMAIN_ID", "0") or "0") == my_domain
+                    and _namespace_of(argv) == namespace):
                 found.append((pid, _age_minutes(pid), "launch", command))
     # A Gazebo server none of whose parents is a launch outlived its launch.
     launch_pids = {p for p, _, k, _ in found if k == "launch"}
@@ -136,6 +158,8 @@ def format_conflicts(found):
         "  kill -INT %s" % pids,
         "  (10 秒たっても残っていれば kill -9 %s)" % pids,
         "その後もう一度 launch してください。",
+        "(実機を 2 台同時に動かすときは，それぞれに別の namespace:= を付ける。"
+        "jedy_fullbody_all.launch.py の説明を参照)",
     ]
     return "\n".join(lines)
 
@@ -143,7 +167,9 @@ def format_conflicts(found):
 def _check(context, *args, **kwargs):
     if os.environ.get("JEDY_SKIP_PREFLIGHT") == "1":
         return []
-    found = find_conflicts()
+    namespace = (context.launch_configurations.get("namespace", DEFAULT_NAMESPACE)
+                 .strip("/") or DEFAULT_NAMESPACE)
+    found = find_conflicts(namespace)
     if found:
         raise RuntimeError(format_conflicts(found))
     return []
