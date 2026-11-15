@@ -158,6 +158,8 @@ $ ls ~/room13bc_map.*
 :::
 
 保存したらSLAM（`jedy_slam.launch.py`）はCtrl-Cで止める．Gazeboはそのままでよい．
+`map_saver_cli`が`Failed to spin map subscription`と出したときは，保存に失敗している（ときどき起きる）．
+SLAMを止めると作った地図は消えるので，止める前に同じコマンドをもう一度実行し，上の`ls`で2つのファイルがあることを確かめる．
 
 ## Nav2によるナビゲーション
 
