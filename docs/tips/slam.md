@@ -86,6 +86,7 @@ Jazzyのslam_toolboxはライフサイクルノードで，configure・activate�
 
 RVizには地図（Map），LiDARの点（LaserScan），ロボットのモデル（RobotModel）が表示される．
 Fixed Frameは`map`である．
+このRVizはNav2と同じ設定で，Nav2のパネルが入っている．SLAMだけのときは，Nav2を探すメッセージ（`controller_server service not available`，`Failed to load plugins. Retrying...`など）が1秒ごとに出続けるが，問題ない．
 
 ### ロボットを動かして地図を作る
 
@@ -134,6 +135,14 @@ Nav2を動かしているときにロボットを原点へ戻したら，AMCLの
 $ ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped \
   "{header: {frame_id: map}, pose: {pose: {orientation: {w: 1.0}}}}"
 ```
+
+原点以外にいるときは，その位置 (x, y) [m] と向き θ を `position` と `orientation` (z = sin(θ/2)，w = cos(θ/2)) で教える．
+たとえば x = 2.0 m，y = -0.5 m で左 (θ = 90°) を向いているなら次のようにする．
+
+```{code-block} console
+$ ros2 topic pub --once /initialpose geometry_msgs/msg/PoseWithCovarianceStamped \
+  "{header: {frame_id: map}, pose: {pose: {position: {x: 2.0, y: -0.5}, orientation: {z: 0.7071, w: 0.7071}}}}"
+```
 :::
 
 ### 地図の保存
@@ -175,6 +184,8 @@ $ ros2 launch jedy_bringup jedy_nav2.launch.py map:=$HOME/room13bc_map.yaml rviz
 
 `map:=`を省くと，`jedy_bringup`に入っている演習室の地図（`jedy_bringup/maps/room13bc.yaml`，上と同じ手順で作ったもの，{numref}`fig:jedy-slam-room13bc`）を使う．SLAMを飛ばしてNav2だけ試すときはこちらを使えばよい．
 この地図はGazeboを`lidar:=true`だけ付けて起動したときのもので，赤いボールが入っている．`box:=true`などで置くものを変えると部屋は地図と少し違ってくる．Nav2のコストマップはLiDARで見えたものも障害物にするので，`lidar:=true box:=true`で起動しても`nav2_goal`の目標3つに着いた．
+ただし`person:=true`の人は既定で中央の通路 (x = 3.5 m，y = 0.6 m) に立つので，通路を通る目標では人をよけきれず，`Failed to make progress`をくり返して着かないことがあった．
+人と一緒にNav2を使うときは，`person_x:=` `person_y:=`で人を通路の外に置き，Gazeboで机と重なっていないことを確かめてから使う．
 
 ```{code-block} console
 $ ros2 launch jedy_bringup jedy_nav2.launch.py rviz:=true
@@ -242,6 +253,8 @@ from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 rclpy.init()                         # nav2_goal では connect() が行う
 navigator = BasicNavigator()
 navigator.waitUntilNav2Active(localizer='robot_localization')
+# nav2_goal はここで wait_for_localization() を呼び，AMCL が自己位置を出すまで待つ
+# (Nav2 の起動直後に目標を送ると "Robot pose is not available" で失敗することがある)
 
 goal = PoseStamped()
 goal.header.frame_id = 'map'

@@ -92,6 +92,8 @@ Ctrl-C は押したターミナルのものだけを止める．起動したタ�
 - 新しく `connect()` すると，ロボットが起動するまで (最大 120 秒) 何も表示せずに待つ．
 
 そうなったら，プログラムを Ctrl-C で止め，ロボットを起動し直してから，プログラムも起動し直す．
+Gazebo は動いているのに待ち続けるときは，コントローラが起動しきっていないことがある (重い PC で起きた)．
+`ros2 control list_controllers -c /jedy_fullbody/controller_manager` で，どれかが `active` でなく `unconfigured` や `inactive` なら，Gazebo を起動し直す．
 
 ### Gazebo シミュレーション
 
@@ -547,6 +549,8 @@ if len(xs) > 0:
 ```
 
 `ros2 run jedy_skrobot track_box` は，これを使って赤い箱の方へ台車を旋回し続けるサンプルである (Gazebo は `box:=true` で起動しておく)．
+箱を探して回ることはしないので，箱が画面に無いと `no box -> stop` を表示して止まったままになり，30 秒で終わる．
+上の「台車を動かす」でロボットの向きが変わったあとは箱が見えないので，Gazebo を起動し直してから実行する．
 中身を読んでみよう (`jedy/jedy_skrobot/scripts/enshu/track_box.py`)．
 
 ```{note}
@@ -738,19 +742,9 @@ if side == '左':
 (`ri.detection_position` と同じ計算．距離が測れなければ `None`)．これを逆運動学の目標にすれば，言葉で言った物に手を伸ばせる．
 
 左腕が届くのは，base_link から前に 0.25 m ほど，左右は 0.05〜0.1 m (左腕の前)，高さ 0.1〜0.2 m ほどである．
-`box:=true` の赤い箱は前に 1.1〜1.2 m，左に 0.43〜0.48 m にあるので，
-下のコードをそのまま実行すると「IK が解けない」で終わる．先に下のコードを 1 回実行して箱の位置 `p` を求め (IK は解けずに終わる)，次のコードで台車を動かして箱を左腕の前に持ってくる．
+`box:=true` の赤い箱は前に 1.1〜1.2 m，左に 0.43〜0.48 m にあるので，次の 3 つを順に行う．
 
-```{code-block} python
-import time
-ri.go_velocity(0.0, 0.12, 0.0, duration=(p[1] - 0.10) / 0.12)   # 左へ: 箱が y = 0.1 m に来るまで
-ri.go_velocity(0.12, 0.0, 0.0, duration=(p[0] - 0.25) / 0.12)   # 前へ: 箱の手前の面が x = 0.25 m に来るまで
-time.sleep(3.0)   # 止まってからの画像を待つ (止まる前の画像で測ると位置がずれる)
-```
-
-前にまっすぐ出るだけだと，箱は横に残ってカメラに写らなくなる (`ri.point` が `None`)．
-寄ったら下のコードをもう一度実行する (`ri.point` から測り直す)．Gazebo では，この手順で箱の手前の面が x = 0.27 m，y = 0.09 m に来て，
-経由点・目標とも IK が解け，手先は目標から 1 mm 以内に着いた．
+**(1) 箱の位置 `p` を測って手を伸ばす．** 最初は箱が遠いので「IK が解けない」で終わるが，箱の位置 `p` はここで求まる．
 
 ```{code-block} python
 import numpy as np
@@ -773,6 +767,21 @@ if uv is not None:
             ri.angle_vector(robot.angle_vector(), 2.0)
             ri.wait_interpolation()
 ```
+
+**(2) 台車で寄る．** (1) で求めた `p` を使って，箱を左腕の前に持ってくる．
+(1) を実行する前にこれを実行すると，`p` が無いので `NameError` になる．
+
+```{code-block} python
+import time
+ri.go_velocity(0.0, 0.12, 0.0, duration=(p[1] - 0.10) / 0.12)   # 左へ: 箱が y = 0.1 m に来るまで
+ri.go_velocity(0.12, 0.0, 0.0, duration=(p[0] - 0.25) / 0.12)   # 前へ: 箱の手前の面が x = 0.25 m に来るまで
+time.sleep(3.0)   # 止まってからの画像を待つ (止まる前の画像で測ると位置がずれる)
+```
+
+前にまっすぐ出るだけだと，箱は横に残ってカメラに写らなくなる (`ri.point` が `None`)．
+
+**(3) (1) をもう一度実行する** (`ri.point` から測り直す)．Gazebo では，この手順で箱の手前の面が x = 0.27 m，y = 0.09 m に来て，
+経由点・目標とも IK が解け，手先は目標から 1 mm 以内に着いた．
 
 Gazebo (`box:=true`) の赤い箱では，Gemini Robotics-ER の生の答えは `[{"point": [545, 138], "label": "赤い箱"}]` で
 ([縦, 横] を 0〜1000 にした値)，`ri.point` は 640×480 の画像の画素 (88, 262) を返した．箱の赤い領域の中心 (87, 262) とほぼ同じである．
@@ -1029,6 +1038,7 @@ text = ri.listen(timeout=10.0)                # 次に聞こえた文．10 秒�
 print('聞こえた文:', text)
 if text is not None and '進' in text:
     ri.say('前に進みます')
+    ri.tuck_arms()                            # 走る前に腕をたたむ
     ri.go_velocity(0.1, 0.0, 0.0, duration=2.0)
 ```
 
@@ -1068,6 +1078,9 @@ if text is not None and '進' in text:
 - `ros2 topic hz /audio` でマイクの音が来ているか (PC によって 75〜100 Hz)
 - 声が小さいと `energy_threshold` に届かず，聞こえなかったことになる．マイクに近づいて話すか，マイクの音量を上げる (`wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 1.0`)
 - インターネットが使えないときは `engine:=Vosk` で PC の中だけで認識できる (精度は落ちる)
+- マイクが無くても，音声認識を起動したまま，認識結果を手で送れば `ri.listen` やプログラムを試せる (`ri.listen` は音声認識が起動していないとエラーになる):
+  `ros2 topic pub -w 1 --once /speech_to_text speech_recognition_msgs/msg/SpeechRecognitionCandidates "{transcript: ['前に進んで']}"`
+  (`-w 1` は受け取る側を待つ．付けないと最初の 1 回が届かないことがある)．ただし，自分の声を聞かない仕組みはこれでは試せない
 ```
 
 ### <span style="color:green">チェックポイント: 声</span>

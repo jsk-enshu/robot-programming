@@ -120,13 +120,21 @@ uv のインストーラが最後に `source $HOME/.local/bin/env` を実行す�
 `~/.local/bin` がもともと PATH に入っている PC (Ubuntu はログイン時に `~/.local/bin` があれば PATH に入れる) では `env` ファイルは作られないので，
 `source` すると「そのようなファイルやディレクトリはありません」と出る．
 
-### `apt upgrade` の後のビルドが `No rule to make target '/opt/ros/jazzy/lib/...'` で止まる
+### ビルドが `No rule to make target '/opt/ros/jazzy/lib/...'` で止まる
 
 ```{code-block} console
 gmake[2]: *** No rule to make target '/opt/ros/jazzy/lib/libfastcdr.so.2.2.5', needed by '...'.  Stop.
 ```
 
-前のビルドが覚えている ROS 2 のライブラリが，`apt upgrade` で新しい版に置き換わった．ビルドの途中結果を消して，ビルドし直す．
+前のビルドが覚えている ROS 2 のライブラリが，新しい版に置き換わった (`apt upgrade` や，演習の日の更新の `rosdep install` のあとに起きる)．
+まず，CMake の設定をやり直してビルドする (VOICEVOX は消えない．模擬の受講者の環境では 45 秒で通った)．
+
+```{code-block} console
+$ cd ~/ros2_ws/
+$ colcon build --symlink-install --cmake-force-configure --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
+```
+
+それでも同じエラーで止まるときは，ビルドの途中結果を消して，ビルドし直す．
 
 ```{code-block} console
 $ cd ~/ros2_ws/

@@ -67,7 +67,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:
 ```
 
 ほかのデモは，表の「Gazebo」の列のとおりに引数を変えて Gazebo を起動する．
-ロボットや物を動かしたデモのあとは，Gazebo を起動し直すと元の配置に戻る．
+**表のデモを続けて動かすときは，1 つごとに Gazebo を起動し直す．** 前のデモでロボットが動いたり向きが変わったりしていると，次のデモで物が見えずに止まる (`find_object` のあとの `approach_tag` が `tag 0 not in view` になった)．起動し直すと元の配置に戻る．
 
 | したいこと | 起動するもの | Gazebo | 中身 (1 日目に出てこない話題) |
 | --- | --- | --- | --- |
@@ -80,7 +80,7 @@ $ ros2 launch jedy_bringup jedy_gazebo.launch.py demo:=true person:=true camera:
 | 首で人を追う | `ros2 run jedy_vision look_at_person` | 舞台 | 首のコントローラだけに指令を送る (追い続けるなら `--keep`) |
 | 人について行く | `ros2 run jedy_vision follow_person` | `person:=true` だけ (`demo:=true` を付けない) | 見え方で台車を動かすフィードバック |
 | 人の腕のまねをする | `ros2 run jedy_vision mimic_arms` | 舞台 | 姿勢推定の結果から逆運動学で腕の姿勢を作る |
-| 手を挙げた人に手を振り返す | `ros2 run jedy_vision wave_back` | 舞台 | 姿勢から合図を判定し，動作を作る |
+| 手を挙げた人に手を振り返す | `ros2 run jedy_vision wave_back` | 舞台 (Gazebo の人は手を挙げないので，`--test` で動作だけ試す) | 姿勢から合図を判定し，動作を作る |
 | 声でデモを切り替える | `ros2 run jedy_vision voice_demo` | 舞台と声のノード | 音声認識の結果で行動を選ぶ |
 | 言葉で言った目標へ走る | `ros2 run jedy_skrobot vlm_navigate 赤い箱に近づいて` | 舞台に `box:=true` を足す．VLM のキー | カメラの画像を VLM に送って次の一手を決める ({ref}`day-recognition-manipulation` の「VLM に聞いて動く」) |
 | 色の付いた物の 3 次元の位置 | `ros2 run jedy_skrobot color_clusters` | `box:=true` だけ (カメラは既定のまま) | 色で画素を選び，深度画像で 3 次元に戻す |
@@ -202,6 +202,7 @@ Gazebo に無いもの (ペットボトル・手のジェスチャ・手を挙�
 <div class="screen">
 
 - Gazebo で最後まで動いたか
+- `ta review ファイル.py` で AI TA にも見てもらったか (AI TA の指摘は参考．最後に確かめて決めるのは自分)
 - **台車**: 速さは前後・左右 0.078〜0.156 m/s，旋回 0.83〜1.66 rad/s の範囲か (遅すぎると動かない．{ref}`base-velocity`)．走る前に `ri.tuck_arms()` で腕をたたんだか．周りに人や机が無いか
 - **腕**: 自分の体や台車にぶつかる姿勢を送っていないか (Gazebo やモデルで確かめる)．速すぎないか (`ri.angle_vector(av, 時間)` の時間は，{ref}`joint-angle-motion` の例のように 1 回の振りに 1〜2 秒以上かける．
   0.4 秒の振りは Gazebo でも関節の速さの上限を超え，`Time has been changed from 0.4 to 0.71 due to joint velocity limit` と出て伸ばされた)
