@@ -396,6 +396,12 @@ def generate_launch_description():
                 # the point where it does.
                 "--diag-latency-warn-ratio", "0.95",
                 "--diag-latency-error-ratio", "1.0",
+                # Torque-on refuses a joint that would jump more than this
+                # [rad]: one left outside its range by hand is brought back to
+                # the edge at once. actuo's 0.05 (2.9 deg) refused a Jedy wrist
+                # turned 3.7 deg past 90 deg by hand; Jedy's servos and arms
+                # are light, so up to max_start_jump:= (20 deg) is accepted.
+                "--max-start-jump", LaunchConfiguration("max_start_jump"),
                 "--ros",
             ] + link_args,
         )
@@ -604,6 +610,12 @@ def generate_launch_description():
                               description="link:=wifi: seconds without the "
                                           "host after which the relay stops "
                                           "the wheels"),
+        DeclareLaunchArgument("max_start_jump", default_value="0.35",
+                              description="rad; torque-on refuses a joint "
+                                          "that would jump more than this "
+                                          "(e.g. one left outside its range); "
+                                          "a large value such as 3.14 turns "
+                                          "the check off"),
         DeclareLaunchArgument("namespace", default_value=NAMESPACE,
                               description="the robot's namespace; give each "
                                           "of two robots on one PC its own "

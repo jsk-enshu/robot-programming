@@ -16,6 +16,10 @@ for the chosen parts; it first moves to the leader's pose in ``--approach``
 seconds, then follows it. Enter records the leader's pose (with
 ``--record``), q quits; the follower keeps holding where it is.
 
+Several followers copy the same leader: give them all, comma-separated::
+
+    ros2 run jedy_skrobot teach_follow --follower /jedy_follower1,/jedy_follower2
+
 Play the recorded poses back on a robot (one second between poses)::
 
     ros2 run jedy_skrobot teach_follow --play poses.yaml --follower /jedy_follower
@@ -60,9 +64,20 @@ def joints_of(ri, parts):
 
 
 def pose_of(robot, ri, names):
-    """{joint: angle [rad]} of the robot ``ri`` now."""
-    robot.angle_vector(ri.angle_vector())
-    return {n: float(getattr(robot, n).joint_angle()) for n in names}
+    """{joint: angle [rad]} of the robot ``ri`` now, inside the model's limits.
+
+    The leader can be moved by hand past a joint's limit (a gripper closed
+    harder than its range); the follower is sent the limit then. Read from
+    the measured vector directly: setting it on the model would clip it too,
+    but warn every cycle.
+    """
+    av = ri.angle_vector()
+    index = {j.name: i for i, j in enumerate(robot.joint_list)}
+    pose = {}
+    for n in names:
+        joint = getattr(robot, n)
+        pose[n] = float(np.clip(av[index[n]], joint.min_angle, joint.max_angle))
+    return pose
 
 
 def send(robot, ri, pose, duration, parts):
@@ -117,26 +132,40 @@ class Streamer:
         self.last.update(pose)
 
 
+def namespaces(text):
+    """The comma-separated namespaces of ``--follower``."""
+    return [n.strip() for n in text.split(',') if n.strip()]
+
+
 def follow(args, parts):
     from jedy_skrobot import connect
     from jedy_skrobot.interface import BoardNotAnswering
     leader_robot, leader = connect(namespace=args.leader)
-    follower_robot, follower = connect(namespace=args.follower)
-    names = joints_of(follower, parts)
+    followers = [(ns,) + tuple(connect(namespace=ns)) for ns in namespaces(args.follower)]
+    names = joints_of(followers[0][2], parts)
 
     # The leader is only read. Its torque is off after the launch; if someone
     # turned it on, moving it by hand fights the servos.
     print('leader {}: read only (move it by hand; its torque stays as it is)'
           .format(args.leader))
-    follower.servo_on(names)
-    print('follower {}: torque on for {}'.format(args.follower, ', '.join(parts)))
+    from actuo_ros.robot_interface import ServoRefused
+    for ns, _, ri in followers:
+        try:
+            ri.servo_on(names)
+        except ServoRefused as err:
+            # Typically a joint left outside its range (moved there by hand
+            # while limp): torque would snap it back.
+            sys.exit('follower {}: torque refused, nothing was moved: {}'.format(ns, err))
+        print('follower {}: torque on for {}'.format(ns, ', '.join(parts)))
 
     pose = pose_of(leader_robot, leader, names)
-    print('moving the follower to the leader\'s pose in {:.1f} s'.format(args.approach))
-    send(follower_robot, follower, pose, args.approach, parts)
-    for p in parts:
-        follower.wait_interpolation(PARTS[p])
-    streamer = Streamer(follower, args.follower, parts, pose)
+    print('moving the follower(s) to the leader\'s pose in {:.1f} s'.format(args.approach))
+    for _, robot, ri in followers:
+        send(robot, ri, pose, args.approach, parts)
+    for _, _, ri in followers:
+        for p in parts:
+            ri.wait_interpolation(PARTS[p])
+    streamers = [Streamer(ri, ns, parts, pose) for ns, _, ri in followers]
 
     recorded = []
     print('following. Enter: record the pose{}, q: quit'.format(
@@ -153,10 +182,10 @@ def follow(args, parts):
                 # joint_states keep coming then, frozen at the last pose read.
                 pose = pose_of(leader_robot, leader, names)
             except BoardNotAnswering:
-                # The follower holds the last pose it was sent.
+                # The followers hold the last pose they were sent.
                 if not paused:
-                    print('the leader stopped answering: the follower holds '
-                          'its pose until it answers again')
+                    print('the leader stopped answering: the followers hold '
+                          'their pose until it answers again')
                     paused = True
                 if read_key(0.1) == 'q':
                     break
@@ -164,7 +193,18 @@ def follow(args, parts):
             if paused:
                 print('the leader answers again: following')
                 paused = False
-            streamer.send(pose, period)
+            stopped = [(ns, ri.board_problem()) for ns, _, ri in followers
+                       if ri.board_problem() is not None]
+            if stopped:
+                # Its torque is off once its board answers again, so going on
+                # would copy the leader onto a limp robot.
+                for ns, why in stopped:
+                    print('follower {} stopped answering ({}): its torque is off; '
+                          'teaching ends. Check its power and cable and start '
+                          'again.'.format(ns, why))
+                break
+            for streamer in streamers:
+                streamer.send(pose, period)
             key = read_key(max(0.0, period - (time.monotonic() - start)))
             if key == 'q':
                 break
@@ -177,7 +217,7 @@ def follow(args, parts):
                 print('recorded pose {} -> {}'.format(len(recorded), args.record))
     finally:
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old)
-    print('done; the follower holds its pose (torque on). '
+    print('done; the follower(s) hold their pose (torque on). '
           'ri.servo_off() releases it.')
 
 
@@ -186,16 +226,19 @@ def play(args):
     with open(args.play) as f:
         recorded = yaml.safe_load(f)
     parts = recorded['parts']
-    robot, ri = connect(namespace=args.follower)
-    names = joints_of(ri, parts)
-    ri.servo_on(names)
+    robots = [connect(namespace=ns) for ns in namespaces(args.follower)]
+    names = joints_of(robots[0][1], parts)
+    for _, ri in robots:
+        ri.servo_on(names)
     for i, pose_deg in enumerate(recorded['poses'], 1):
         pose = {n: float(np.deg2rad(a)) for n, a in pose_deg.items()}
         print('pose {}/{}'.format(i, len(recorded['poses'])))
-        send(robot, ri, pose, args.time, parts)
-        for p in parts:
-            ri.wait_interpolation(PARTS[p])
-    print('done; the robot holds the last pose (torque on).')
+        for robot, ri in robots:
+            send(robot, ri, pose, args.time, parts)
+        for _, ri in robots:
+            for p in parts:
+                ri.wait_interpolation(PARTS[p])
+    print('done; the robot(s) hold the last pose (torque on).')
 
 
 def main():
@@ -205,7 +248,8 @@ def main():
     parser.add_argument('--leader', default='/jedy_leader',
                         help='namespace of the robot moved by hand')
     parser.add_argument('--follower', default='/jedy_follower',
-                        help='namespace of the robot that copies it')
+                        help='namespace of the robot that copies it; several, '
+                             'comma-separated, all copy the same leader')
     parser.add_argument('--parts', default='head,rarm,larm,rhand,lhand',
                         help='comma-separated, of: {}'.format(', '.join(PARTS)))
     parser.add_argument('--approach', type=float, default=5.0,
