@@ -82,6 +82,8 @@ parts:
   - caption: Tips・付録（1日目）
     numbered: false
     chapters:
+    - file: tips/jedy-assembly
+      title: Jedyの組み立て手順
     - file: tips/robot-operation
       title: 実機の使用方法
     - file: tips/joystick
