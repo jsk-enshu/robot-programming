@@ -34,10 +34,13 @@ $ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/
 
 ```{code-block} console
 $ curl -fsSL https://raw.githubusercontent.com/iory/ai-ta-for-student/main/install.sh | bash
-$ source ~/.bashrc
+$ source ~/.bashrc    # zsh なら source ~/.zshrc
 $ ta login    # 表示されたコードを https://github.com/login/device に入力して承認する
 $ ta doctor   # ✓ と - だけで ✗ が無ければよい
 ```
+
+演習の資料は bash で書いてある．AI TA は zsh でも使えるが，fish など，ほかのシェルを普段使っている人は，演習中はターミナルで `bash` と打って bash で作業する ({doc}`tips/ai-ta`)．
+ほかのシェルに対応させたい人は，AI を使ってぜひ PR を送ってほしい．
 
 作業は byobu ({doc}`tips/byobu`) の中のターミナルで行うとよい．`ta fix` がターミナルの画面も AI TA に渡せる．
 

@@ -13,7 +13,8 @@ AI TA のプログラムは [iory/ai-ta-for-student](https://github.com/iory/ai-
 - インターネット接続
 - GitHub アカウント．**演習のアンケートで登録したもの**を使う．
   AI TA は GitHub のユーザ名で受講者を確かめるので，登録していないアカウントでは使えない．
-- Ubuntu (bash)．
+- Ubuntu の bash または zsh．fish など，ほかのシェルには対応していない (`ta` は動くが，失敗したコマンドが `ta fix` に渡らない．ROS 2 にも fish 用の設定ファイルは無い)．
+  演習中はターミナルで `bash` と打ち，bash で作業する．ほかのシェルに対応させたい人は，AI を使ってぜひ [ai-ta-for-student](https://github.com/iory/ai-ta-for-student) に PR を送ってほしい．
 
 ```{note}
 **ROS の環境が無くても試せる．** AI TA は演習資料を読んで答えるので，資料さえ手元にあれば，
@@ -32,12 +33,12 @@ ROS が無いので，`ta fix` が集めるのはターミナルの画面と Pyt
 
 ```{code-block} console
 $ curl -fsSL https://raw.githubusercontent.com/iory/ai-ta-for-student/main/install.sh | bash
-$ source ~/.bashrc
+$ source ~/.bashrc    # zsh なら source ~/.zshrc
 $ ta login    # 表示されたコードを https://github.com/login/device に入力して承認する
 $ ta doctor   # 接続・キー・資料の場所を確認する (✗ が無ければよい)
 ```
 
-- `install.sh` は `ta` コマンド，ターミナルのフック，Python の例外を記録するフック，Claude Code (入っていなければ) を入れる．
+- `install.sh` は `ta` コマンド，ターミナル (bash と zsh) のフック，Python の例外を記録するフック，Claude Code (入っていなければ) を入れる．
   中身を見てから入れたいときは `git clone https://github.com/iory/ai-ta-for-student` して `./install.sh` を実行しても同じ．
 - `ta login` は GitHub のアカウントで本人確認をして，自分専用のキーを受け取る．
   「登録されていない」と言われたら，アンケートで登録した GitHub アカウントでログインしているか確かめ，それでも駄目なら TA に伝える．
