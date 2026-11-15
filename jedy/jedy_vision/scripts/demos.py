@@ -74,7 +74,7 @@ def main():
     print('                ros2 launch ros_speech_recognition speech_recognition.launch.xml '
           'language:=ja-JP '
           'launch_sound_play:=false energy_threshold:=300.0 dynamic_energy_threshold:=false '
-          'tts_action_names:="[robotsound_jp]" tts_tolerance:=3.0\n')
+          'tts_action_names:="[robotsound_jp]"\n')
     for group, items in DEMOS:
         print('[{}]'.format(group))
         for cmd, what, learn in items:

@@ -147,7 +147,7 @@ $ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_
 | --- | --- |
 | カメラの認識 | `ros2 launch jedy_vision recognition.launch.py` |
 | しゃべる | `ros2 launch voicevox voicevox_texttospeech.launch.xml` |
-| 聞く | `ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP launch_sound_play:=false energy_threshold:=300.0 dynamic_energy_threshold:=false tts_action_names:="[robotsound_jp]" tts_tolerance:=3.0` |
+| 聞く | `ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP launch_sound_play:=false energy_threshold:=300.0 dynamic_energy_threshold:=false tts_action_names:="[robotsound_jp]"` |
 
 ### プログラムの形
 
