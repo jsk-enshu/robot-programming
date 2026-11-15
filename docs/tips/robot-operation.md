@@ -67,7 +67,58 @@ name: fig:jedy-power-connector-switch
 ```
 
 起動しない (LED が点滅しない) ときは，安定化電源の出力が ON か，電圧が 7.4 V か，バッテリーが充電されているか，コネクタが挿さっているかを確かめる．
+それでも LED が 3 回点滅しないときは，次の「LED が 3 回点滅しないとき」で RCB-4mini に設定を書き込む．
 基板は起動したのに PC から動かせないときは，下の「起動できないとき」を見る．
+
+(jedy-rcb4mini-flat-startup)=
+### LED が 3 回点滅しないとき (RCB-4mini に設定を書き込む)
+
+電源・電圧・コネクタに問題がないのに LED が 3 回点滅しないときは，RCB-4mini に起動時の設定が書き込まれていない
+(新しい基板や，近藤科学の HeartToHeart4 で書き換えた基板)．
+次のコマンドで，起動時の設定を RCB-4mini に書き込む．
+この設定にすると，電源を入れてもサーボには何も命令せず (サーボは力が抜けたまま)，緑の LED を 3 回点滅させるだけになる．
+書き込みは 1 回でよく，電源を切っても消えない．
+
+1. launch が動いていたら Ctrl-C で止める．書き込みにも同じ USB シリアルアダプタを使うので，launch が動いていると書き込めない．
+2. ロボットの電源を入れたまま，USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) を PC に挿す．
+   アダプタの LED が **緑** (シリアルモード) になっていることを確かめる．
+3. 書き込む．
+
+   ```{code-block} console
+   $ $(ros2 pkg prefix actuo_ros)/share/actuo_ros/venv/bin/rcb4-rom flat-startup --blink 3
+   Opened ftdi://Kondo:DUAL USB ADAPTER/1 at 625000 baud
+   Opened ftdi://Kondo:DUAL USB ADAPTER/1 at 115200 baud
+   Switched ftdi://Kondo:DUAL USB ADAPTER/1 to 625000 baud
+   Saved 262144 bytes of ROM to rcb4-rom-20261115-234259.bin (undo with: rcb4-rom restore rcb4-rom-20261115-234259.bin)
+   Servo data: 0 bytes written
+   Startup program: 233 bytes written
+   Takes effect at the next power-up
+   ```
+
+4. ロボットの電源を切って入れ直し，LED が 3 回点滅することを確かめる (設定は次に電源を入れたときから効く)．
+
+`rcb4-rom` は `actuo_ros` と一緒に入る (ワークスペースをビルドしてあれば入っている)．
+書き込む前に，今の ROM の中身を今いるディレクトリに `rcb4-rom-<日時>.bin` として保存する．
+元に戻すときは，出力に書かれている `rcb4-rom restore rcb4-rom-<日時>.bin` を実行する．
+
+::::{grid} 2
+:::{grid-item}
+```{figure} ../fig/jedy-rcb4mini-write-rom.jpg
+---
+name: fig:jedy-rcb4mini-write-rom
+---
+基板だけで書き込むときのつなぎ方．USB シリアルアダプタのケーブルを RCB-4mini の COM 端子 (青いコネクタ) に挿し，白い VH2 コネクタから電源を入れる
+```
+:::
+:::{grid-item}
+```{figure} ../fig/jedy-usb-adapter-serial-led.jpg
+---
+name: fig:jedy-usb-adapter-serial-led
+---
+USB シリアルアダプタの LED が緑のときがシリアルモード (RCB-4mini と通信できる)
+```
+:::
+::::
 
 ## サーボバッテリーの充電方法
 
