@@ -53,6 +53,8 @@ parts:
       title: apportエラーレポート無効化
     - file: tips/ai-ta
       title: AI TA の使い方
+    - file: tips/ta-remote-debugging
+      title: TA向け：学生のPCで実機の問題を一緒に調べる
     - file: tips/google-ai-studio
       title: Google AI Studio APIキーの発行
     - file: tips/debugging
