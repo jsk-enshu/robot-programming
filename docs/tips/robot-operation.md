@@ -58,3 +58,49 @@ name: fig:how_to_charge_battery
 :::{seealso}
 充電器の詳細な仕様や使用方法については，[BX-32MH充電器マニュアル（PDF）](https://kondo-robot.com/w/wp-content/uploads/BX-32MH-Manual.pdf)を参照のこと．
 :::
+
+(jedy-gripper-hold-relax)=
+## グリッパでつかんだ物が落ちるとき
+
+### つかんだあと，グリッパは弱く握り直す
+
+グリッパで物をつかむと，グリッパは物に当たって止まり，指令した角度まで閉じられない．
+そのままだとサーボは全力で押し続けて熱くなるので，実機 (RCB-4mini) のグリッパは **指令が 1 秒変わらず，指令から 3° 以上離れたまま** になると，
+**今の角度から 2° だけ閉じる側** を目標にして弱く握り直す (actuo の `hold_relax`)．
+新しい指令 (開く，別の角度にする) を送ると元に戻る．
+
+2026 年 11 月に測ったときは，物に当たって押している間はサーボの電流が待機中より約 0.9 A 多く，弱く握り直したあとは約 0.05 A 多いだけだった．
+その状態で物を 18 秒つかんだままにしても，グリッパは開かなかった．
+
+これは実機だけの動きで，Gazebo のグリッパは握り直さない．
+
+### 弱く握り直しているかを確かめる
+
+```{code-block} console
+$ ros2 topic echo /diagnostics | grep -A1 "bus/hold_relax"
+```
+
+`message` が `Held lighter than commanded: rarm_gripper_joint commanded ...` なら弱く握り直している．
+`No servo is held lighter than commanded.` なら握り直していない (指令した角度で全力で握っている)．
+
+### 落ちるときに変えるところ
+
+まず，つかむ位置が浅くないか，物が重すぎないかを確かめる．握り直す前 (つかんで 1 秒以内) に落ちるなら，握る強さではなく，つかみ方の問題である．
+
+握り直したあとに落ちるなら，`jedy/jedy_bringup/config/jedy_fullbody_rcb4.yaml` の `rarm_gripper_joint` / `larm_gripper_joint` にある次の行を変える．
+
+```{code-block} yaml
+      hold_relax: {error_deg: 3.0, seconds: 1.0, squeeze_deg: 2.0}
+```
+
+| 値 | 意味 | 変えるとどうなるか |
+| --- | --- | --- |
+| `squeeze_deg` | 握り直すとき，今の角度からどれだけ閉じる側を目標にするか [deg] | 大きくすると強く握る．そのぶんサーボは熱くなりやすい．まず 3〜4 にして試す |
+| `error_deg` | 指令からこれ以上離れていたら握り直す [deg] | **`squeeze_deg` より大きくする** (同じか小さいと actuo が起動時にエラーにする) |
+| `seconds` | 指令が何秒変わらなかったら握り直すか [s] | 長くすると全力で握る時間が延びる |
+
+- 左手 (`larm_gripper_joint`) は閉じる向きが負の角度で，何もつかまずに閉じると約 −22° で止まる．
+  閉じる側の可動範囲 (`position_limit_deg` の −28.6°) までは約 6° しかないので，`error_deg` を 6 以上にすると左手は握り直さなくなる (全力で握り続けて熱くなる)．
+- 握り直さないようにするには，その関節の `hold_relax:` の行を消す．全力で握り続けるので，長くつかんだままにしない．
+- 変えたら `ros2 launch jedy_bringup jedy_fullbody_all.launch.py` を Ctrl-C で止めて起動し直す．
+  `colcon build --symlink-install` でビルドしていれば，ビルドし直さなくてよい．
