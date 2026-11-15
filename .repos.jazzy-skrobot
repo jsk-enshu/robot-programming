@@ -29,13 +29,15 @@ repositories:
     type: git
     url: https://github.com/jsk-ros-pkg/jsk_common_msgs.git
     version: master
-  # sound_play: 2 回目以降の action のゴールが返らなくなるデッドロックの修正入り
-  # (https://github.com/ros-drivers/audio_common/pull/290)。取り込まれたら
-  # ros-drivers/audio_common の ros2 に戻す。
+  # sound_play: 2 回目以降の action のゴールが返らなくなるデッドロックの修正
+  # (https://github.com/ros-drivers/audio_common/pull/290) と，しゃべっている
+  # 途中に次のゴールが来たときの状態遷移エラーの修正
+  # (https://github.com/ros-drivers/audio_common/pull/291) 入り。
+  # 取り込まれたら ros-drivers/audio_common の ros2 に戻す。
   audio_common:
     type: git
     url: https://github.com/iory/audio_common.git
-    version: fix-sound-play-idle-deadlock
+    version: sound-play-preempt
   # The robot system lecture (2025 material, jedy_gazebo.launch.py legacy:=true):
   # ros2 launch opencv_apps camshift.launch.py / face_detection.launch.py, and
   # jedy_bringup's track_box_to_cmd_vel_*.py read /camshift/track_box.
