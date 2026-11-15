@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="1050" viewBox="0 0 1640 1050">
+  <!-- 2026 年度 Jedy のシステム構成．PNG は Chrome headless で書き出す (docs/fig/system-configuration-all-2026.png) -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+    <style>
+      text { font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Noto Sans JP", sans-serif; fill: #222; }
+      .mono { font-family: "Menlo", "DejaVu Sans Mono", monospace; }
+      .title { font-size: 22px; font-weight: 600; }
+      .cap { font-size: 15px; font-weight: 600; fill: #555; }
+      .n1 { font-size: 16px; text-anchor: middle; }
+      .n2 { font-size: 13px; text-anchor: middle; fill: #444; }
+      .chip { font-size: 12.5px; text-anchor: middle; }
+      .lbl { font-size: 13px; fill: #333; }
+      .node { fill: #c9e8b5; stroke: #4f8a3c; stroke-width: 1.5; }
+      .sensor { fill: #d6ebf5; stroke: #3d7ea6; stroke-width: 1.5; }
+      .act { fill: #f7b3ae; stroke: #c0504d; stroke-width: 1.5; }
+      .board { fill: #eceff1; stroke: #607d8b; stroke-width: 1.5; }
+      .user { fill: #fff1c9; stroke: #c98a00; stroke-width: 2.5; }
+      .cloud { fill: #e4dcf5; stroke: #6a4fa3; stroke-width: 1.5; }
+      .region { fill: #fafafa; stroke: #888; stroke-width: 1.5; stroke-dasharray: 8 5; }
+      .panel { fill: none; stroke: #333; stroke-width: 2; }
+      .dev { fill: none; stroke: #333; stroke-width: 2; marker-start: url(#arrow); marker-end: url(#arrow); }
+      .ros { fill: none; stroke: #333; stroke-width: 2; stroke-dasharray: 7 5; }
+    </style>
+  </defs>
+  <rect width="1640" height="1050" fill="#ffffff"/>
+
+  <!-- ===== Jedy (実機) ===== -->
+  <rect class="panel" x="20" y="20" width="430" height="650" rx="10"/>
+  <text class="title" x="40" y="54">Jedy（実機）</text>
+
+  <rect class="sensor" x="60" y="106" width="340" height="64" rx="6"/>
+  <text class="n1" x="230" y="134">D405 ステレオカメラ</text>
+  <text class="n2" x="230" y="156">頭（カラー画像・深度）</text>
+
+  <rect class="act" x="50" y="190" width="180" height="40" rx="5"/><text class="n1" x="140" y="216">首サーボ ×2</text>
+  <rect class="act" x="50" y="240" width="180" height="40" rx="5"/><text class="n1" x="140" y="266">右腕サーボ ×7</text>
+  <rect class="act" x="50" y="290" width="180" height="40" rx="5"/><text class="n1" x="140" y="316">右グリッパ ×1</text>
+  <rect class="act" x="50" y="340" width="180" height="40" rx="5"/><text class="n1" x="140" y="366">左腕サーボ ×7</text>
+  <rect class="act" x="50" y="390" width="180" height="40" rx="5"/><text class="n1" x="140" y="416">左グリッパ ×1</text>
+  <rect class="act" x="50" y="440" width="180" height="40" rx="5"/><text class="n1" x="140" y="466">車輪 ×4（メカナム）</text>
+
+  <rect class="board" x="290" y="235" width="140" height="150" rx="6"/>
+  <text class="n1" x="360" y="304">RCB-4mini</text>
+  <text class="n1" x="360" y="328">制御基板</text>
+  <text class="lbl" x="236" y="190">ICS</text>
+  <line class="dev" x1="230" y1="210" x2="290" y2="248"/>
+  <line class="dev" x1="230" y1="260" x2="290" y2="272"/>
+  <line class="dev" x1="230" y1="310" x2="290" y2="296"/>
+  <line class="dev" x1="230" y1="360" x2="290" y2="320"/>
+  <line class="dev" x1="230" y1="410" x2="290" y2="344"/>
+  <line class="dev" x1="230" y1="460" x2="290" y2="368"/>
+
+  <rect class="board" x="280" y="470" width="160" height="64" rx="6"/>
+  <text class="n1" x="360" y="497">Dual USB</text>
+  <text class="n1" x="360" y="519">Adapter HS</text>
+  <line class="dev" x1="360" y1="385" x2="360" y2="470"/>
+  <text class="lbl" x="370" y="433">UART</text>
+
+  <!-- ===== 学科 PC につなぐ機器 ===== -->
+  <rect class="panel" x="20" y="700" width="430" height="270" rx="10"/>
+  <text class="title" x="40" y="734">学科 PC につなぐ機器</text>
+  <rect class="sensor" x="60" y="752" width="300" height="52" rx="6"/><text class="n1" x="210" y="784">PS3 / PS4 コントローラ</text>
+  <rect class="sensor" x="60" y="826" width="300" height="52" rx="6"/><text class="n1" x="210" y="858">マイク</text>
+  <rect class="act" x="60" y="902" width="300" height="52" rx="6"/><text class="n1" x="210" y="934">スピーカー</text>
+
+  <!-- ===== 学科 PC ===== -->
+  <rect class="panel" x="475" y="20" width="1145" height="950" rx="10"/>
+  <text class="title" x="495" y="54">学科 PC（Ubuntu 24.04 + ROS 2 Jazzy）</text>
+
+  <!-- ロボットのノード -->
+  <rect class="region" x="495" y="70" width="530" height="600" rx="8"/>
+  <text class="cap" x="510" y="96">ロボットのノード　jedy_fullbody_all.launch.py</text>
+
+  <rect class="node" x="775" y="110" width="230" height="56" rx="6"/>
+  <text class="n1" x="890" y="134">カメラ</text><text class="n2" x="890" y="155">(realsense2_camera)</text>
+
+  <rect class="node" x="515" y="180" width="230" height="56" rx="6"/>
+  <text class="n1" x="630" y="204">ロボットモデル・TF</text><text class="n2" x="630" y="225">(robot_state_publisher)</text>
+  <rect class="node" x="775" y="180" width="230" height="56" rx="6"/>
+  <text class="n1" x="890" y="204">可視化</text><text class="n2" x="890" y="225">(rviz2)</text>
+
+  <rect x="515" y="250" width="470" height="180" rx="6" fill="#e3f3d8" stroke="#4f8a3c" stroke-width="1.5"/>
+  <text class="n1" x="750" y="274">ros2_control (ros2_control_node) とコントローラ</text>
+  <rect class="node" x="530" y="288" width="215" height="34" rx="4"/><text class="chip mono" x="637" y="310">joint_state_broadcaster</text>
+  <rect class="node" x="755" y="288" width="215" height="34" rx="4"/><text class="chip mono" x="862" y="310">mecanum_drive_controller</text>
+  <rect class="node" x="530" y="332" width="215" height="34" rx="4"/><text class="chip mono" x="637" y="354">head_controller</text>
+  <rect class="node" x="755" y="332" width="215" height="34" rx="4"/><text class="chip mono" x="862" y="354">right/left_arm_controller</text>
+  <rect class="node" x="530" y="376" width="440" height="34" rx="4"/><text class="chip mono" x="750" y="398">right/left_gripper_controller</text>
+
+  <rect class="node" x="515" y="474" width="230" height="56" rx="6"/>
+  <text class="n1" x="630" y="498">サーボ通信</text><text class="n2" x="630" y="519">(actuo_bus_node)</text>
+  <line class="dev" x1="630" y1="430" x2="630" y2="474"/>
+  <text class="lbl" x="642" y="457">共有メモリ</text>
+
+  <rect class="node" x="775" y="474" width="230" height="56" rx="6"/>
+  <text class="n1" x="890" y="498">車輪オドメトリ</text><text class="n2" x="890" y="519">(jedy_wheel_odometry)</text>
+  <line class="ros" x1="890" y1="430" x2="890" y2="474" marker-end="url(#arrow)"/>
+  <text class="lbl" x="900" y="457">joint_states</text>
+
+  <rect class="node" x="515" y="590" width="230" height="56" rx="6"/>
+  <text class="n1" x="630" y="614">ジョイスティック</text><text class="n2" x="630" y="635">(joy_linux, teleop_twist_joy)</text>
+  <path class="ros" d="M745,618 H760 V430" marker-end="url(#arrow)"/>
+  <text class="lbl" x="770" y="612">/cmd_vel</text>
+
+  <!-- 認識 -->
+  <rect class="region" x="1050" y="70" width="550" height="150" rx="8"/>
+  <text class="cap" x="1065" y="96">認識　jedy_vision（recognition.launch.py）</text>
+  <rect class="node" x="1065" y="110" width="255" height="56" rx="6"/>
+  <text class="n1" x="1192" y="134">物体検出（YOLOE）</text><text class="n2" x="1192" y="155">(object_detection_node)</text>
+  <rect class="node" x="1335" y="110" width="250" height="56" rx="6"/>
+  <text class="n1" x="1460" y="134">ジェスチャ（MediaPipe）</text><text class="n2" x="1460" y="155">(gesture_node)</text>
+
+  <!-- 自分のプログラム -->
+  <rect class="user" x="1050" y="250" width="550" height="180" rx="10"/>
+  <text x="1325" y="290" style="font-size:20px;font-weight:700;text-anchor:middle">自分のプログラム（Python）</text>
+  <text class="mono" x="1325" y="326" style="font-size:17px;text-anchor:middle">robot, ri = connect()</text>
+  <text x="1325" y="360" style="font-size:15px;text-anchor:middle">jedy_skrobot（ri）＋ scikit-robot（モデル・IK）</text>
+  <text class="mono" x="1325" y="396" style="font-size:13px;text-anchor:middle;fill:#555">ri.angle_vector / ri.go_velocity / ri.sees / ri.say …</text>
+
+  <!-- 音声 -->
+  <rect class="region" x="495" y="700" width="530" height="260" rx="8"/>
+  <text class="cap" x="510" y="726">音声　jsk_3rdparty（PC のマイク・スピーカー）</text>
+  <rect class="node" x="515" y="824" width="260" height="56" rx="6"/>
+  <text class="n1" x="645" y="848">音声認識</text><text class="n2" x="645" y="869">(ros_speech_recognition)</text>
+  <rect class="node" x="515" y="900" width="260" height="56" rx="6"/>
+  <text class="n1" x="645" y="924">音声合成（VOICEVOX）</text><text class="n2" x="645" y="945">(voicevox)</text>
+
+  <!-- クラウド -->
+  <rect class="cloud" x="1180" y="480" width="420" height="100" rx="10"/>
+  <text x="1390" y="518" style="font-size:17px;font-weight:600;text-anchor:middle">Gemini API（Google のクラウド）</text>
+  <text class="mono" x="1390" y="550" style="font-size:13px;text-anchor:middle;fill:#444">ri.ask / ri.point / vlm_navigate</text>
+
+  <!-- Gazebo の注記 -->
+  <rect class="board" x="1180" y="640" width="420" height="140" rx="8"/>
+  <text x="1390" y="676" style="font-size:17px;font-weight:600;text-anchor:middle">Gazebo シミュレータで動かすとき</text>
+  <text x="1390" y="706" style="font-size:14px;text-anchor:middle">jedy_gazebo.launch.py が左上の枠</text>
+  <text x="1390" y="728" style="font-size:14px;text-anchor:middle">「ロボットのノード」をそのまま置き換える．</text>
+  <text x="1390" y="756" style="font-size:14px;text-anchor:middle">トピック名が同じなので，同じプログラムが動く</text>
+
+  <!-- ===== 接続 ===== -->
+  <!-- デバイス (実線) -->
+  <line class="dev" x1="400" y1="138" x2="775" y2="138"/>
+  <text class="lbl" x="455" y="130">USB</text>
+  <line class="dev" x1="440" y1="502" x2="515" y2="502"/>
+  <text class="lbl" x="458" y="494">USB</text>
+  <line class="dev" x1="360" y1="778" x2="515" y2="618"/>
+  <text class="lbl" x="328" y="690">USB / Bluetooth</text>
+  <line x1="360" y1="852" x2="515" y2="852" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="360" y1="928" x2="515" y2="928" stroke="#333" stroke-width="2" marker-start="url(#arrow)"/>
+  <line class="dev" x1="1390" y1="430" x2="1390" y2="480"/>
+  <text class="lbl" x="1400" y="460">インターネット</text>
+
+  <!-- ROS 2 通信 (破線) -->
+  <line class="ros" x1="1005" y1="138" x2="1065" y2="138" marker-end="url(#arrow)"/>
+  <text class="lbl" x="1015" y="128">画像</text>
+  <path class="ros" d="M1030,138 V270 H1050" marker-end="url(#arrow)"/>
+  <line class="ros" x1="985" y1="340" x2="1050" y2="340" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text class="lbl" x="990" y="330" style="font-size:11.5px">関節</text>
+  <text class="lbl" x="990" y="362" style="font-size:11.5px">/cmd_vel</text>
+  <line class="ros" x1="1192" y1="166" x2="1192" y2="250" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line class="ros" x1="1460" y1="166" x2="1460" y2="250" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text class="lbl" x="1202" y="214">service</text>
+  <text class="lbl" x="1470" y="214">service</text>
+  <path class="ros" d="M1110,430 V852 H775" marker-start="url(#arrow)"/>
+  <text class="lbl" x="790" y="844">/speech_to_text</text>
+  <path class="ros" d="M1080,430 V928 H775" marker-end="url(#arrow)"/>
+  <text class="lbl" x="790" y="920">/robotsound_jp（action）</text>
+
+  <!-- ===== 凡例 ===== -->
+  <g transform="translate(20,990)">
+    <rect class="node" x="0" y="0" width="34" height="24" rx="4"/><text class="lbl" x="42" y="18">ROS 2 ノード</text>
+    <rect class="sensor" x="150" y="0" width="34" height="24" rx="4"/><text class="lbl" x="192" y="18">センサ</text>
+    <rect class="act" x="260" y="0" width="34" height="24" rx="4"/><text class="lbl" x="302" y="18">アクチュエータ</text>
+    <rect class="board" x="410" y="0" width="34" height="24" rx="4"/><text class="lbl" x="452" y="18">基板・アダプタ</text>
+    <rect class="user" x="560" y="0" width="34" height="24" rx="4"/><text class="lbl" x="602" y="18">自分のプログラム</text>
+    <rect class="cloud" x="730" y="0" width="34" height="24" rx="4"/><text class="lbl" x="772" y="18">クラウド</text>
+    <line class="ros" x1="860" y1="12" x2="920" y2="12"/><text class="lbl" x="928" y="18">ROS 2 通信（topic・service・action）</text>
+    <line x1="1180" y1="12" x2="1240" y2="12" stroke="#333" stroke-width="2"/><text class="lbl" x="1248" y="18">デバイスへの接続・その他</text>
+  </g>
+</svg>
