@@ -674,6 +674,63 @@ $ ros2 run jedy_vision approach_tag --id 2 --size 0.064 --tilt 10 --standoff 0.3
 学科 PC で上の `approach_tag` を実行したところ (1.5 倍速)
 :::
 
+```{important}
+**`--size` には，使うタグの黒い正方形の一辺を正しく渡す．** タグを見つけること自体は大きさに関係なくできるが，
+距離は「写った大きさ」と「本当の大きさ」の比から計算するので，大きさを間違えると位置がずれる．
+実機で床に置いた 64 mm のタグを `--size 0.064` で測ると高さは床と同じ (z ≈ −0.10 m) だったが，
+同じ画像を `--size 0.08` で測ると 1.25 倍 (0.08 / 0.064) 遠く，床より 5 cm 下になった．
+`--size` を省くとデモの舞台のタグ (id 0 が 8 cm，id 1〜6 が 3.6 cm) の大きさを使い，**それ以外の id のタグは写っていても無視される** (`no tag in view`)．
+```
+
+(show-3d)=
+### 見えている物を RViz で 3 次元に表示する
+
+頭のカメラで見えている物を，ロボットのモデル・TF と一緒に RViz で 3 次元に表示する．
+
+- **点群** (`/camera/depth/color/points`，sensor_msgs/PointCloud2)：カメラの距離画像の各画素を 3 次元の点にして色を付けたもの．
+  実機は RealSense のドライバが (`pointcloud:=true`)，Gazebo は `depth_image_proc` が，同じトピック名で出す．
+  カメラの座標系で出ているので，RViz が TF を使ってロボットの上に重ねる．首を動かすと点群も一緒に動く．
+- **AprilTag と物体** (`ros2 run jedy_vision show_3d`)：タグの大きさの白い板，面から出る青い矢印，`tag#9` のような id と，
+  `--words` で指定した物を `ri.what_do_you_see()` で探し，見つかった枠と距離から大きさを出した緑の箱 (名前・確からしさ・距離)．
+  1〜2 秒に 1 回更新する (物体を探すと 1 回 0.7 秒ほど余計にかかる)．
+- **画像**：タグの輪郭・id・距離と物体の枠を描いたカメラの画像 (`/show_3d/image`，RViz の左上)．
+
+点群は，実機でも Gazebo でも `pointcloud:=true` を付けて起動したときだけ出る．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true pointcloud:=true    # 実機
+$ ros2 launch jedy_bringup jedy_gazebo.launch.py tags:=true box:=true pointcloud:=true  # Gazebo
+```
+
+そのうえで，ターミナルを 1 つずつ使って次の 3 つを起動する (1 つ目の認識のノードは，物体を探すとき (`--words`) だけ要る)．
+
+```{code-block} console
+$ ros2 launch jedy_vision recognition.launch.py
+$ ros2 run jedy_vision show_3d --tag-size 0.064 --words "rubik's cube"
+$ rviz2 -d $(ros2 pkg prefix jedy_vision)/share/jedy_vision/rviz/show_3d.rviz
+```
+
+<video width="100%" controls preload="metadata" poster="fig/jedy-real-rviz-3d.jpg">
+  <source src="fig/jedy-real-rviz-3d.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 実機で上の 3 つを動かし，首を左右に振ったところ (実時間．右下は横から撮った実機)．
+点群はカメラと一緒に回るが，床・タグ・ルービックキューブは同じ場所に留まり，タグの白い板とキューブの緑の箱も点群のタグとキューブに重なったままになる．
+点群にも板や箱にも画像を撮った時刻が付いていて，RViz はその時刻の首の角度 (TF) でそれぞれを置くからである．
+
+:::{figure} fig/jedy-real-tags-objects.jpg
+:align: center
+:name: fig:jedy-real-tags-objects
+
+`show_3d` が出す画像 (`/show_3d/image`)．床に置いた 64 mm のタグ 3 枚 (id 9，8，16) の輪郭・id・距離と，ルービックキューブ 2 つの枠
+:::
+
+- Gazebo では `--words "red object"` で赤い箱を探す．
+- 実機の点群には，D405 が得意な 0.5 m より遠い所の点 (ソファや部屋の奥) も入る．遠い所ほど点がまばらで，形も崩れる．
+- Gazebo の点群は `depth_image_proc` (ROS の image_pipeline) が作る．入っていないと `pointcloud:=true` で起動したときにエラーになるので，ワークスペースで `rosdep install` をし直す (`sudo apt install ros-jazzy-depth-image-proc` でもよい)．
+- `show_3d` の中身は `jedy/jedy_vision/scripts/show_3d.py` にある．マーカーの作り方 (`tag_markers`，`object_boxes`) を自分のプログラムに使える．
+
 ### 人を見つける (体・顔・手)
 
 Gazebo では `person:=true` で人のモデルを置ける (`person_x`, `person_y` で場所 [m])．

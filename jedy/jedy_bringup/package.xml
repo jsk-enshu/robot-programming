@@ -53,6 +53,8 @@
   <!-- jedy_gazebo.launch.py world:=room13bc (the default): the exercise room -->
   <exec_depend>room13bc_description</exec_depend>
   <exec_depend>ros_gz_bridge</exec_depend>
+  <!-- Gazebo's head camera point cloud (/camera/depth/color/points) -->
+  <exec_depend>depth_image_proc</exec_depend>
   <!-- topic_tools drop: thins /clock (jedy_gazebo.launch.py) -->
   <exec_depend>topic_tools</exec_depend>
   <exec_depend>gz_ros2_control</exec_depend>

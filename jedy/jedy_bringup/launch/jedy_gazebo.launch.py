@@ -768,6 +768,30 @@ def generate_launch_description():
         condition=IfCondition(render),
         output="screen",
     )
+    # pointcloud:=true: the head camera's point cloud on the topic the real
+    # robot's RealSense driver uses (jedy_fullbody_all.launch.py camera:=true
+    # pointcloud:=true), made by depth_image_proc from the colour and depth
+    # images above (they are the same size and pixel-aligned, in
+    # camera_color_optical_frame). Off by default, as on the real robot, so
+    # a PC without depth_image_proc still starts Gazebo.
+    # Not Gazebo's own /camera/points: its points are x-forward while the
+    # sensor's frame is the optical one (z forward), so RViz shows them
+    # turned by 90 degrees.
+    point_cloud = Node(
+        package="depth_image_proc", executable="point_cloud_xyzrgb_node",
+        name="camera_point_cloud",
+        parameters=[use_sim_time],
+        remappings=[
+            ("rgb/image_rect_color", "/camera/color/image_rect_raw"),
+            ("rgb/camera_info", "/camera/color/camera_info"),
+            ("depth_registered/image_rect", "/camera/depth/image_rect_raw"),
+            ("points", "/camera/depth/color/points"),
+        ],
+        condition=IfCondition(PythonExpression(
+            ["'", render, "' == 'true' and '", LaunchConfiguration("pointcloud"),
+             "' == 'true'"])),
+        output="screen",
+    )
 
     # lidar:=true: the LiDAR and the odometry that jedy_fullbody_actuo.urdf.xacro
     # adds, for slam_toolbox / AMCL / Nav2. Gazebo publishes the odom ->
@@ -965,6 +989,13 @@ def generate_launch_description():
         DeclareLaunchArgument("gui", default_value="true",
                               choices=["true", "false"],
                               description="false = Gazebo server only"),
+        DeclareLaunchArgument("pointcloud", default_value="false",
+                              choices=["true", "false"],
+                              description="also publish the head camera's "
+                                          "point cloud on "
+                                          "/camera/depth/color/points (as "
+                                          "the real robot with "
+                                          "pointcloud:=true)"),
         DeclareLaunchArgument("render_sensors", default_value="true",
                               choices=["true", "false"],
                               description="false = no camera, for "
@@ -1066,7 +1097,7 @@ def generate_launch_description():
         gazebo, OpaqueFunction(function=room_nodes),
         OpaqueFunction(function=room_tag_nodes),
         robot_state_pub, joint_state_pub, spawn, bridge, clock_bridge, clock_drop,
-        render_bridge, lidar_bridge, box, ball, checkerboard, person, *demo_nodes,
+        render_bridge, point_cloud, lidar_bridge, box, ball, checkerboard, person, *demo_nodes,
         *controller_nodes, servo, presence, sound_play, sim_sounds,
         legacy_bridge, rviz,
     ])

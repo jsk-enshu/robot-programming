@@ -21,6 +21,7 @@ ament_uv_install_python_scripts(
     scripts/look_at_person.py
     scripts/mimic_arms.py
     scripts/tag_pose.py
+    scripts/show_3d.py
     scripts/approach_tag.py
     scripts/touch_tag.py
     scripts/grasp_tag.py
@@ -33,7 +34,7 @@ ament_uv_install_python_scripts(
   STRIP_PY_EXTENSION
 )
 
-install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch config rviz DESTINATION share/${PROJECT_NAME})
 
 # Model weights, fetched once at build time and checked by hash, so a class
 # of students does not each download them on first run (and a changed file
