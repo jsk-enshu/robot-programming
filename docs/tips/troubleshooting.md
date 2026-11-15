@@ -82,6 +82,49 @@ jedy_vision
 jedy_vision_msgs
 ```
 
+(troubleshooting-gz-sim8)=
+## colcon buildが「gz-sim8」が見つからないと言って失敗する
+
+### 症状
+
+`jedy_bringup`のビルドで，以下のエラーが出る．`ros-jazzy-gz-sim-vendor`は入っている．
+
+```{code-block} text
+CMake Error at /opt/ros/jazzy/opt/gz_sim_vendor/extra_cmake/lib/cmake/gz-sim/gz-sim-config.cmake:3 (find_package):
+  ...
+  Could not find a package configuration file provided by "gz-sim8" with any
+  of the following names:
+
+    gz-sim8Config.cmake
+    gz-sim8-config.cmake
+```
+
+### 原因
+
+Gazebo（gz-sim8）が無いのではない．ROS 2 JazzyのGazeboはvendorパッケージ（`ros-jazzy-gz-*-vendor`）として`/opt/ros/jazzy/opt/gz_sim_vendor`に入っていて，
+そこは`source /opt/ros/jazzy/setup.bash`したときに`CMAKE_PREFIX_PATH`に足される．
+`rosdep install`でvendorパッケージを入れたのと同じターミナルで，`source`し直さずにビルドすると，このエラーになる．
+`~/.bashrc`などで`CMAKE_PREFIX_PATH`を上書きしているときも同じになる．
+
+### 解決方法
+
+新しいターミナルを開くか，`source`し直してからビルドする．
+
+```{code-block} console
+$ source /opt/ros/jazzy/setup.bash
+$ echo $CMAKE_PREFIX_PATH | tr : '\n' | grep gz_sim_vendor
+/opt/ros/jazzy/opt/gz_sim_vendor
+$ cd ~/ros2_ws
+$ colcon build --symlink-install --packages-up-to jedy_bringup
+```
+
+```{warning}
+**Gazeboの公式リポジトリ（packages.osrfoundation.org）を足して`libgz-sim8-dev`などを入れてはいけない．**
+ほかのAIやWebの記事がこの方法を勧めることがあるが，演習の環境ではvendorパッケージを使う．
+公式リポジトリのDARTが，Ubuntuの`libdart6.13`などとファイルで衝突し，`apt`が「上書きしようとしています」のエラーで何も入れられない状態になる．
+もう入れてしまったときは，`sudo`で何かを消す前にTAに聞くこと．
+```
+
 ## colcon buildでGitマージコンフリクトマーカーが原因で失敗する
 
 ### 症状
