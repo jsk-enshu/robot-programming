@@ -27,6 +27,22 @@ name: fig:system-configuration-all-index
 緑：ROSノード，赤：アクチュエータ，青：センサ，破線：ROS topic通信，実線：デバイスへのアクセス・その他
 ```
 
+### 作品例：Jedy のダンス
+
+演習で学ぶことを発展させると，Jedy にこういったダンスなどもさせることができる．
+これは2024年度の自主プロで青木さんが作った作品で，曲を解析してビートや歌詞から振付を作り，曲に合わせて Jedy を踊らせる．
+
+- ソースコード: https://github.com/pontarou5/Dancing_Jedy
+- ブラウザで踊る様子を見られるページ: https://iory.github.io/jedy-dance/
+
+```{figure} fig/jedy-dance.jpg
+---
+width: 400px
+name: fig:jedy-dance
+---
+曲に合わせて踊る Jedy（[Jedy Dance](https://iory.github.io/jedy-dance/) の画面）
+```
+
 ## 演習情報
 
 ### 担当教員
