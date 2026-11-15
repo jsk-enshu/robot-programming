@@ -62,7 +62,7 @@ SKROBOT_DEMOS = [
          'SLAM で作った地図, 自己位置推定, 経路計画 (Gazebo のみ. 実機には LiDAR が無い)',
          GAZEBO + ' lidar:=true',
          '別の端末で ros2 launch jedy_bringup jedy_nav2.launch.py rviz:=true. '
-         'Nav2 は apt で入れる (docs/tips/slam.md)'),
+         'Nav2 が無ければ docs/tips/slam.md の準備'),
     ]),
 ]
 

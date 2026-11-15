@@ -28,8 +28,9 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
-#: slam_toolbox and Nav2 are not dependencies of jedy_bringup (the tips page
-#: is optional and they are large), so say how to get them.
+#: slam_toolbox and Nav2 are exec_depends of jedy_bringup, so rosdep installs
+#: them; a workspace set up before that, or a rosdep run that could not sudo,
+#: lacks them, so say how to get them.
 INSTALL = ("sudo apt install -y ros-jazzy-slam-toolbox ros-jazzy-nav2-bringup "
            "ros-jazzy-nav2-simple-commander")
 

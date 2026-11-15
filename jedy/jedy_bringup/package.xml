@@ -92,13 +92,13 @@
   <!-- jedy_gazebo.launch.py lidar:=true: the odom -> base_link TF comes
        through ros_gz_bridge as a tf2_msgs/TFMessage. -->
   <exec_depend>tf2_msgs</exec_depend>
-  <!-- NOT declared on purpose: slam_toolbox and Nav2 (nav2_bringup,
-       nav2_simple_commander), used only by jedy_slam.launch.py,
-       jedy_nav2.launch.py and jedy_skrobot's nav2_goal for the optional
-       simulation tips page docs/tips/slam.md. Declared, every student's
-       day-1 rosdep install pulled them: 114 packages, 529 MB on a
-       desktop-full install. The page installs them with one apt line, and
-       the launch files say so when they are missing. -->
+  <!-- jedy_slam.launch.py / jedy_nav2.launch.py (docs/tips/slam.md, day 2's
+       nav2_goal). Large: on a desktop-full install the day-1 rosdep install
+       pulls 114 packages, 529 MB for them. Declared anyway since nav2_goal is
+       in day 2's demo table, and a department PC set up with rosdep gets
+       them without a separate apt line. -->
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>nav2_bringup</exec_depend>
 
   <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>python3-pytest</test_depend>
