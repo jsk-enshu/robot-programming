@@ -18,13 +18,14 @@ name: fig:jedy-index
 
 ### システム構成
 
-```{figure} fig/system-configuration-all.png
+```{figure} fig/system-configuration-all-2026.png
 ---
-width: 600px
+width: 100%
 name: fig:system-configuration-all-index
 ---
-双腕移動台車ロボットシステム構成
-緑：ROSノード，赤：アクチュエータ，青：センサ，破線：ROS topic通信，実線：デバイスへのアクセス・その他
+双腕移動台車ロボットシステム構成（2026年度）
+ロボットは学科 PC に USB でつなぎ，ロボットのノードも自分のプログラムも学科 PC の上で動く．
+緑：ROS 2 ノード，赤：アクチュエータ，青：センサ，灰：基板・アダプタ，黄：自分のプログラム，紫：クラウド，破線：ROS 2 通信（topic・service・action），実線：デバイスへの接続・その他
 ```
 
 ### 作品例：Jedy のダンス
