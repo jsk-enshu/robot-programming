@@ -23,14 +23,17 @@ Gazebo上のロボットの位置から`odom`→`base_link`を出す．
 
 ## 準備
 
-この章で使うslam_toolboxとNav2は大きい（100以上のパッケージ）ので，演習のための`rosdep install`では入らない．
-最初に一度，次でインストールする．これでSLAM，地図の保存，AMCL，MPPI，RVizのNav2パネル，Pythonの`BasicNavigator`がすべて入る．
+この章で使うslam_toolboxとNav2は，{doc}`../environment-setup` の`rosdep install`で入る（SLAM，地図の保存，AMCL，MPPI，RVizのNav2パネル，Pythonの`BasicNavigator`）．
+100以上のパッケージがあるので，その`rosdep install`には数分かかる．
+
+それより前に環境を作ったときは，資料の更新手順（`rosdep install`を含む）をもう一度実行するか，次の1行で入れる．
 
 ```{code-block} console
 $ sudo apt install -y ros-jazzy-slam-toolbox ros-jazzy-nav2-bringup ros-jazzy-nav2-simple-commander
 ```
 
-入れずに`jedy_slam.launch.py`などを起動すると，`slam_toolbox is not installed.`のように足りないパッケージとこの1行が表示されて止まる．
+入っていないまま`jedy_slam.launch.py`などを起動すると，`slam_toolbox is not installed.`のように足りないパッケージとこの1行が表示されて止まる．
+学科のPCでは`sudo`が使えないので，入っていなければTAに伝える．
 
 この章の端末では，毎回次を実行しておく．
 

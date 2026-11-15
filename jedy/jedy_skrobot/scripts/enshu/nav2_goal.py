@@ -30,7 +30,7 @@ from jedy_skrobot import connect
 try:
     from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 except ImportError:
-    # Nav2 is not a dependency of jedy_skrobot: docs/tips/slam.md installs it.
+    # An exec_depend, but a workspace set up before that may lack it.
     raise SystemExit(
         'nav2_simple_commander is not installed. Install SLAM and Nav2 first '
         '(docs/tips/slam.md):\n  sudo apt install -y ros-jazzy-slam-toolbox '
