@@ -340,7 +340,9 @@ def generate_launch_description():
                 # threshold). Widening both would have bought quiet by removing
                 # the alarm worth having.
                 "--diag-loop-spike-error-ratio", "4.0",
-                # The read-latency lines, from this board at 50 Hz rather
+                # The read-latency lines, from this board at 50 Hz and 1.25
+                # Mbit/s (at the 30 Hz and 625000 used now they raised no
+                # WARN in a minute on two boards, 2026-11-15) rather
                 # than the 0.5 / 0.9 defaults. One cycle reads the 22 servo
                 # records in five 126-byte requests, and that takes what it
                 # takes: read latency p95 15.2-17.5 ms (median 16.2) over 117
@@ -501,11 +503,15 @@ def generate_launch_description():
                               description="PS3 / PS4 teleop. Harmless with no pad "
                                           "plugged in: joy_linux opens the "
                                           "device when one appears."),
-        # 50, not 100: the RCB-4mini drives its servos every 15 ms (its
-        # output cycle), so cycles faster than that send nothing new, and at
-        # 100 Hz the loop measured p95 16.7-18.5 ms against the 10 ms target
-        # (2026-11-13). controller_manager runs at the same rate.
-        DeclareLaunchArgument("rate", default_value="50",
+        # 30: one cycle reads the 22 servo records, and at the config's
+        # 625000 bit/s that takes 25-29 ms. Measured 2026-11-15 on two boards
+        # for a minute each: rate:=50 ran about 41 cycles/s with the loop
+        # diagnostic ERROR throughout (p95 27.9 ms against 26.0), rate:=35 ran
+        # 35.3 with p95 28.7 ms -- its whole 28.6 ms period -- and spike
+        # WARNs, rate:=30 ran 30.5 with no WARN or ERROR. (At 1.25 Mbit/s, 50
+        # held; faster than the 15 ms output cycle sends nothing new.)
+        # controller_manager runs at the same rate.
+        DeclareLaunchArgument("rate", default_value="30",
                               description="servicer loop rate [Hz], and "
                                           "controller_manager's update_rate"),
         DeclareLaunchArgument("wait_port", default_value="true",
