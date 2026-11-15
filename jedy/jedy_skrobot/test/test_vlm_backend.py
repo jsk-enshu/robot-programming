@@ -232,3 +232,14 @@ def test_google_flash_reasoning_none_is_low(env, server):
     for given in ('none', 'minimal'):
         JedyInterface._vlm_chat(_fake_ri(), 'vlm-gemini', messages, 10.0, given)
         assert server.requests[-1]['body']['reasoning_effort'] == 'low'
+
+
+@pytest.mark.parametrize('reply, expected', [
+    ('赤い箱が見えます。', '赤い箱が見えます。'),
+    ('赤い箱が見えます。\n\n```json\n[{"name": "箱", "box": [1, 2]}]\n```',
+     '赤い箱が見えます。'),
+    ('```json\n{"answer": "左"}\n```', '{"answer": "左"}'),
+    ('```\nprint(1)\n```', 'print(1)'),
+])
+def test_prose_answer_drops_trailing_code_block(reply, expected):
+    assert interface._prose_answer(reply) == expected
