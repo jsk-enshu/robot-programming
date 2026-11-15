@@ -38,6 +38,10 @@
      backend on_activate adopts the MEASURED pose and overwrites it. -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="jedy">
   <xacro:arg name="backend" default="actuo"/>  <!-- actuo | mock | gazebo -->
+  <!-- actuo only: the bus servicer's shared-memory segment. One per robot, so
+       two robots on one PC (jedy_fullbody_all.launch.py namespace:=...) each
+       get their own; it is the launch's namespace. -->
+  <xacro:arg name="shm_name" default="jedy_fullbody"/>
   <!-- gazebo only: the controllers yaml gz_ros2_control loads. It is the SAME
        jedy_fullbody_controllers.yaml the real robot runs, so Gazebo exposes the
        same controllers under the same /jedy_fullbody namespace and a client
@@ -102,7 +106,7 @@
     <xacro:if value="${'$(arg backend)' == 'actuo'}">
       <hardware>
         <plugin>actuo_hardware/ActuoSystem</plugin>
-        <param name="shm_name">jedy_fullbody</param>
+        <param name="shm_name">$(arg shm_name)</param>
         <param name="use_sim">$(arg use_sim)</param>
       </hardware>
     </xacro:if>
