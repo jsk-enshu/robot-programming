@@ -1,0 +1,105 @@
+# RViz for `ros2 run jedy_vision show_3d`: the robot and its TF, the head
+# camera's point cloud, AprilTags and object boxes, and the annotated image.
+#   rviz2 -d $(ros2 pkg prefix jedy_vision)/share/jedy_vision/rviz/show_3d.rviz
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Plane Cell Count: 10
+      Cell Size: 0.1
+      Color: 160; 160; 164
+      # base_link is above the floor; put the grid on the floor
+      # (jedy_vision.FLOOR_Z).
+      Offset:
+        X: 0
+        Y: 0
+        Z: -0.116
+    - Class: rviz_default_plugins/RobotModel
+      Name: RobotModel
+      Enabled: true
+      Description Source: Topic
+      Description Topic:
+        Value: /jedy_fullbody/robot_description
+        Depth: 5
+        Durability Policy: Volatile
+        Reliability Policy: Reliable
+      Visual Enabled: true
+      Collision Enabled: false
+      TF Prefix: ""
+      Alpha: 1
+    # Every frame of the robot as small axes (red x, green y, blue z). The
+    # points are in camera_color_optical_frame (z forward, out of the lens).
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: true
+      Show Names: false
+      Show Axes: true
+      Show Arrows: false
+      Marker Scale: 0.12
+      Frames:
+        All Enabled: true
+    # The camera's point cloud, with pointcloud:=true: the real robot's
+    # RealSense driver (jedy_fullbody_all.launch.py camera:=true) or, in
+    # Gazebo, depth_image_proc -- both on this topic.
+    # Best Effort takes the driver's sensor-data QoS as well as reliable ones.
+    - Class: rviz_default_plugins/PointCloud2
+      Name: points
+      Enabled: true
+      Topic:
+        Value: /camera/depth/color/points
+        Depth: 1
+        Durability Policy: Volatile
+        Reliability Policy: Best Effort
+      Color Transformer: RGB8
+      Style: Points
+      Size (Pixels): 3
+      Decay Time: 0
+      Position Transformer: XYZ
+    - Class: rviz_default_plugins/MarkerArray
+      Name: tags and objects
+      Enabled: true
+      Topic:
+        Value: /show_3d/markers
+        Depth: 1
+        Durability Policy: Volatile
+        Reliability Policy: Reliable
+      Namespaces: {}
+    - Class: rviz_default_plugins/Image
+      Name: camera (tags, objects)
+      Enabled: true
+      Topic:
+        Value: /show_3d/image
+        Depth: 1
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Name: Current View
+      Distance: 1.0
+      Focal Point:
+        X: 0.35
+        Y: 0
+        Z: -0.05
+      Pitch: 0.6
+      Yaw: 3.5
+Window Geometry:
+  Width: 1500
+  Height: 900
+  X: 60
+  Y: 60
+  Displays:
+    collapsed: false

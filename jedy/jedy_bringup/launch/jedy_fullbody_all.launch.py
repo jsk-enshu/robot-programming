@@ -301,6 +301,16 @@ def _camera(context):
             "depth_module.color_profile": D405_PROFILE,
             "align_depth.enable": False,
             "publish_tf": False,
+            # pointcloud:=true -> /camera/depth/color/points (sensor_msgs/
+            # PointCloud2, camera_depth_optical_frame), coloured from the
+            # colour image. Gazebo publishes the same topic.
+            "pointcloud.enable":
+                LaunchConfiguration("pointcloud").perform(context) == "true",
+            # Colour the points from the colour stream (2 = RS2_STREAM_COLOR,
+            # as realsense2_camera's rs_launch.py sets it). The node's own
+            # default, 0, gives points with no colour field: RViz draws them
+            # all white.
+            "pointcloud.stream_filter": 2,
         }],
         remappings=[("/camera/color/image_raw", "/camera/color/image_rect_raw")])]
 
@@ -543,6 +553,11 @@ def generate_launch_description():
                               description="start the head RealSense D405 "
                                           "(USB) as /camera/color, "
                                           "/camera/depth"),
+        DeclareLaunchArgument("pointcloud", default_value="false",
+                              choices=["true", "false"],
+                              description="with camera:=true, also publish "
+                                          "the D405's point cloud on "
+                                          "/camera/depth/color/points"),
         OpaqueFunction(function=_camera),
         DeclareLaunchArgument("wheels", default_value="true",
                               choices=["true", "false"],
