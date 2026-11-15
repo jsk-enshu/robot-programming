@@ -100,6 +100,7 @@ name: fig:jedy-power-connector-switch
 `rcb4-rom` は `actuo_ros` と一緒に入る (ワークスペースをビルドしてあれば入っている)．
 書き込む前に，今の ROM の中身を今いるディレクトリに `rcb4-rom-<日時>.bin` として保存する．
 元に戻すときは，出力に書かれている `rcb4-rom restore rcb4-rom-<日時>.bin` を実行する．
+`rcb4-rom` の詳しい使い方 (`rcb4-rom show` で今の設定を見る，など) は [rcb4 の README (RCB-4 board ROM)](https://github.com/iory/rcb4#rcb-4-board-rom-rcb4-rom) を参照すること．
 
 ::::{grid} 2
 :::{grid-item}
