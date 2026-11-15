@@ -691,7 +691,8 @@ $ ros2 run jedy_vision approach_tag --id 2 --size 0.064 --tilt 10 --standoff 0.3
   実機は RealSense のドライバが (`pointcloud:=true`)，Gazebo は `depth_image_proc` が，同じトピック名で出す．
   カメラの座標系で出ているので，RViz が TF を使ってロボットの上に重ねる．首を動かすと点群も一緒に動く．
 - **AprilTag と物体** (`ros2 run jedy_vision show_3d`)：タグの大きさの白い板，面から出る青い矢印，`tag#9` のような id と，
-  `--words` で指定した物を `ri.what_do_you_see()` で探し，見つかった枠と距離から大きさを出した緑の箱 (名前・確からしさ・距離)．
+  `--words` で指定した物を `ri.what_do_you_see()` で探し，枠の中の深度の点から作った，床に立つ向き付きの緑の箱 (名前・確からしさ・高さ)．
+  箱は `jedy_vision.object_box()` で作る (床に置いた物用．作り方は {doc}`tips/ai-robot-programming` の 4.)．
   1〜2 秒に 1 回更新する (物体を探すと 1 回 0.7 秒ほど余計にかかる)．
 - **画像**：タグの輪郭・id・距離と物体の枠を描いたカメラの画像 (`/show_3d/image`，RViz の左上)．
 
@@ -716,7 +717,8 @@ $ rviz2 -d $(ros2 pkg prefix jedy_vision)/share/jedy_vision/rviz/show_3d.rviz
 </video>
 
 **動画：** 実機で上の 3 つを動かし，首を左右に振ったところ (実時間．右下は横から撮った実機)．
-点群はカメラと一緒に回るが，床・タグ・ルービックキューブは同じ場所に留まり，タグの白い板とキューブの緑の箱も点群のタグとキューブに重なったままになる．
+点群はカメラと一緒に回るが，床・タグ・ルービックキューブは同じ場所に留まり，タグの白い板とキューブの緑の箱も同じ場所に留まる．
+(この動画は箱の作り方を直す前に撮ったもので，緑の箱は点群のキューブより 1〜2 cm 奥・下にずれている．今の `show_3d` は点群のキューブを包む箱を出す．)
 点群にも板や箱にも画像を撮った時刻が付いていて，RViz はその時刻の首の角度 (TF) でそれぞれを置くからである．
 
 :::{figure} fig/jedy-real-tags-objects.jpg

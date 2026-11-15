@@ -25,6 +25,7 @@ PC: first detect 2.0 s before, 14.6-17 s after; later detections 0.04 s
 before, 0.09-0.2 s after.
 """
 
+import math
 import os
 import warnings
 from dataclasses import dataclass
@@ -551,6 +552,124 @@ def pixel_on_plane(robot, K, u, v, z):
     if s <= 0:
         return None
     return t + s * d
+
+
+# ------------------------------------------------------------------ object box
+
+@dataclass
+class ObjectBox:
+    """A box around an object standing on the floor, in the base frame.
+
+    Attributes
+    ----------
+    position : numpy.ndarray
+        Centre [m].
+    size : numpy.ndarray
+        Edges along ``rotation``'s x, y, z [m]. z is from the floor to the
+        object's top.
+    rotation : numpy.ndarray
+        ``(3, 3)``: z up (the floor's normal); x the horizontal axis nearest
+        the robot's +x (within 45 deg for a square footprint, 90 deg for an
+        elongated one).
+    yaw : float
+        Of x, about z [rad].
+    points : int
+        Depth points the box was made from.
+    method : str
+        How the yaw was found: ``'pca'`` (an elongated footprint: its long
+        axis) or ``'min-area'`` (a footprint near square: the sides of the
+        smallest rectangle around it, since PCA has no preferred axis there).
+    """
+
+    position: np.ndarray
+    size: np.ndarray
+    rotation: np.ndarray
+    yaw: float
+    points: int
+    method: str
+
+
+def object_box(depth, box, K, robot, floor_z=None, margin=0.005, max_range=0.5,
+               elongated=1.5, min_points=30):
+    """The box around the object in ``box``, from the depth image.
+
+    As jsk_pcl_ros' ClusterPointIndicesDecomposer with ``align_boxes_with_plane``
+    and ``use_pca`` (target frame base_link, the plane the floor): the depth
+    pixels in the detector's box are back-projected with the camera matrix
+    and moved to the base frame with the camera's pose; points no more than
+    ``margin`` above the floor are dropped (the floor seen around the
+    object); the box is upright, its yaw from the points projected on the
+    floor, and it reaches from the floor to the highest point.
+
+    A single depth reading cannot do this: it lands on whichever face the
+    camera sees (from above, the top), and taking it for the front face put
+    the centre 1-1.5 cm too far (real robot, head 50 deg down).
+
+    Parameters
+    ----------
+    depth : numpy.ndarray
+        ``(H, W)`` [m], nan where there is no reading (``ri.depth_image()``),
+        pixel-aligned with the image the detector saw.
+    box : sequence of float
+        ``x1, y1, x2, y2`` [px] (a detection's ``box``).
+    K : numpy.ndarray
+        ``(3, 3)`` camera matrix.
+    robot : skrobot model
+        With the measured joint angles (for the camera pose).
+    floor_z : float or None
+        Floor height in the base frame [m]; None: :data:`FLOOR_Z`.
+    margin : float
+        Points at most this far above the floor are floor [m].
+    max_range : float
+        Ignore depth farther than this [m] (the D405 is good to ~0.5 m).
+    elongated : float
+        Footprint's long/short spread ratio above which PCA gives the yaw.
+    min_points : int
+
+    Returns
+    -------
+    ObjectBox or None
+        None if fewer than ``min_points`` points are left.
+    """
+    import cv2
+    floor_z = FLOOR_Z if floor_z is None else floor_z
+    h, w = depth.shape
+    x1, y1, x2, y2 = (int(round(float(v))) for v in box)
+    x1, y1, x2, y2 = max(x1, 0), max(y1, 0), min(x2, w), min(y2, h)
+    v, u = np.mgrid[y1:y2, x1:x2]
+    z = depth[v, u]
+    keep = np.isfinite(z) & (z > 0.0) & (z < max_range)
+    u, v, z = u[keep], v[keep], z[keep]
+    cam = np.column_stack([(u - K[0, 2]) * z / K[0, 0], (v - K[1, 2]) * z / K[1, 1], z])
+    R, t = camera_pose(robot)
+    pts = cam.dot(R.T) + t
+    pts = pts[pts[:, 2] > floor_z + margin]
+    if len(pts) < min_points:
+        return None
+    xy = pts[:, :2]
+    mean = xy.mean(axis=0)
+    evals, evecs = np.linalg.eigh(np.cov((xy - mean).T))
+    if evals[1] > elongated ** 2 * max(evals[0], 1e-12):
+        axis = evecs[:, 1]
+        yaw = math.atan2(axis[1], axis[0])
+        method = 'pca'
+        period = math.pi           # a long axis has no front or back
+    else:
+        (_, _), (_, _), angle = cv2.minAreaRect(xy.astype(np.float32))
+        yaw = math.radians(angle)
+        method = 'min-area'
+        period = math.pi / 2.0     # any side of a near-square will do
+    # The axis nearest the robot's +x.
+    yaw = (yaw + period / 2.0) % period - period / 2.0
+    c, s = math.cos(yaw), math.sin(yaw)
+    along = (xy - mean).dot(np.array([[c, -s], [s, c]]))   # in the box's axes
+    lo, hi = np.percentile(along, 2, axis=0), np.percentile(along, 98, axis=0)
+    centre_xy = mean + np.array([[c, -s], [s, c]]).dot((lo + hi) / 2.0)
+    top = float(np.percentile(pts[:, 2], 98))
+    rotation = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]])
+    return ObjectBox(position=np.array([centre_xy[0], centre_xy[1], (floor_z + top) / 2.0]),
+                     size=np.array([hi[0] - lo[0], hi[1] - lo[1], top - floor_z]),
+                     rotation=rotation, yaw=yaw, points=int(len(pts)), method=method)
 
 
 # ------------------------------------------------------------------ AprilTag

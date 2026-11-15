@@ -21,11 +21,11 @@ The point cloud in show_3d.rviz is not made here: it is the camera's own,
 ``/camera/depth/color/points``, published with ``pointcloud:=true`` by the
 RealSense driver on the real robot and by depth_image_proc in Gazebo.
 
-The object's box: the detector gives a box in the image and the detection
-node the distance ``z`` to the object's front; the box is ``(x2 - x1) * z /
-fx`` wide and ``(y2 - y1) * z / fy`` tall, as deep as the smaller of the two
-(one image cannot tell the depth), and its centre is half that behind the
-front.
+The object's box comes from the depth pixels inside the detector's box
+(``jedy_vision.object_box``, as jsk_pcl_ros' ClusterPointIndicesDecomposer
+with align_boxes_with_plane): moved to the base frame, the floor dropped,
+upright on the floor and turned to the points' footprint. It is for objects
+standing on the floor, within the D405's range (~0.5 m).
 
 Tags need their size: the black square's edge [m] (``--tag-size``). A tag of
 another size is still found, but its distance comes out scaled by the
@@ -43,7 +43,7 @@ from skrobot.coordinates.math import matrix2quaternion
 from visualization_msgs.msg import Marker, MarkerArray
 
 from jedy_skrobot import connect
-from jedy_vision import TagDetector, set_head
+from jedy_vision import TagDetector, object_box, set_head
 
 #: The colour camera's optical frame in the robot's URDF (x right, y down, z forward).
 CAMERA_FRAME = 'camera_color_optical_frame'
@@ -79,26 +79,28 @@ def tag_markers(tags, size, header):
     return out
 
 
-def object_boxes(detections, K, header):
-    """A translucent box and a label for each positioned detection (optical frame)."""
+def object_boxes(detections, depth, K, robot, header):
+    """A translucent upright box and a label for each detection (base frame)."""
     out = []
     for i, d in enumerate(detections):
-        if not d.has_position:
+        b = object_box(depth, d.box, K, robot)
+        if b is None:
             continue
-        x1, y1, x2, y2 = d.box
-        z = d.position.z
-        w = (x2 - x1) * z / K[0, 0]
-        h = (y2 - y1) * z / K[1, 1]
-        depth = min(w, h)
         box = marker(header, 'object box', i, Marker.CUBE, (0.1, 1.0, 0.2, 0.45))
-        box.pose.position = Point(x=d.position.x, y=d.position.y, z=z + depth / 2.0)
-        box.scale.x, box.scale.y, box.scale.z = w, h, depth
+        box.pose.position = Point(x=float(b.position[0]), y=float(b.position[1]),
+                                  z=float(b.position[2]))
+        q = rotation_to_quaternion(b.rotation)
+        box.pose.orientation.x, box.pose.orientation.y = q[0], q[1]
+        box.pose.orientation.z, box.pose.orientation.w = q[2], q[3]
+        box.scale.x, box.scale.y, box.scale.z = (float(v) for v in b.size)
         text = marker(header, 'object label', i, Marker.TEXT_VIEW_FACING, (0.1, 1.0, 0.2, 1.0))
-        text.pose.position = Point(x=d.position.x, y=d.position.y - h / 2.0 - 0.07, z=z)
+        text.pose.position = Point(x=float(b.position[0]), y=float(b.position[1]),
+                                   z=float(b.position[2] + b.size[2] / 2.0 + 0.04))
         text.scale.z = 0.025
         # One word per line: RViz draws a space in a text marker as a wide
         # gap, which splits the label across the view.
-        text.text = '\n'.join(d.label.split() + ['{:.2f}'.format(d.score), '{:.2f}m'.format(z)])
+        text.text = '\n'.join(d.label.split() + ['{:.2f}'.format(d.score),
+                                                  '{:.1f}cm'.format(100 * b.size[2])])
         out += [box, text]
     return out
 
@@ -160,6 +162,7 @@ def main():
     warned = False
     while True:
         rgb, stamp = ri.image(newer_than=ri.now())
+        depth, _ = ri.depth_image()
         robot.angle_vector(ri.angle_vector())
         tags = detector.detect(rgb, K, robot)
         detections = []
@@ -179,7 +182,7 @@ def main():
         base = Header(frame_id='base_link', stamp=ri.get_clock().now().to_msg())
         markers = MarkerArray(markers=[Marker(header=base, action=Marker.DELETEALL)])
         markers.markers += tag_markers(tags, args.tag_size, base)
-        markers.markers += object_boxes(detections, K, cam)
+        markers.markers += object_boxes(detections, depth, K, robot, base)
         markers_pub.publish(markers)
         image_pub.publish(image_msg(annotated(rgb, tags, detections), cam))
         print('tags: {}  objects: {}'.format(

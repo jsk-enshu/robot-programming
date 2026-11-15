@@ -86,6 +86,8 @@ parts:
       title: Jedyの組み立て手順
     - file: tips/robot-operation
       title: 実機の使用方法
+    - file: tips/ai-robot-programming
+      title: AIと一緒に実機のプログラムを作る
     - file: tips/joystick
       title: ジョイスティック操縦
     - file: tips/realsense-d405
