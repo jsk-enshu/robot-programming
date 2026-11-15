@@ -1,8 +1,9 @@
 # Jedyの組み立て手順
 
 Jedyを組み立てるときは，以下の組立タイムラインを参考にすること．
+画面が狭いときは[別のタブで全画面表示](https://jsk-enshu.github.io/robot-programming/fig/jedy-assembly/)するとよい．
 
-- [Jedy 組立タイムライン](https://jsk-enshu.github.io/robot-programming/fig/jedy-assembly/)
+<iframe src="../fig/jedy-assembly/index.html" title="Jedy 組立タイムライン" style="width: 100%; height: 640px; border: 1px solid #ddd; border-radius: 6px;" loading="lazy" allowfullscreen></iframe>
 
 ## 使い方
 
