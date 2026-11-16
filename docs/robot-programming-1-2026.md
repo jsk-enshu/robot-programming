@@ -133,17 +133,16 @@ Gazebo の演習室の Jedy と赤い箱 (`box:=true`)
 
 ```{code-block} console
 $ # 緑の箱 (一辺 0.2 m) をロボットの 1 m 前，0.4 m 右に置く
-$ ros2 run ros_gz_sim create -name green_box -x 1.0 -y -0.4 -z 0.1 -string \
-  "<sdf version='1.9'><model name='m'><static>true</static><link name='l'><collision name='c'><geometry><box><size>0.2 0.2 0.2</size></box></geometry></collision><visual name='v'><geometry><box><size>0.2 0.2 0.2</size></box></geometry><material><diffuse>0 0.8 0 1</diffuse></material></visual></link></model></sdf>"
+$ ros2 run ros_gz_sim create -name green_box -x 1.0 -y -0.4 -z 0.1 -string "<sdf version='1.9'><model name='m'><static>true</static><link name='l'><collision name='c'><geometry><box><size>0.2 0.2 0.2</size></box></geometry></collision><visual name='v'><geometry><box><size>0.2 0.2 0.2</size></box></geometry><material><diffuse>0 0.8 0 1</diffuse></material></visual></link></model></sdf>"
 $ # Gazebo Fuel (https://app.gazebosim.org/fuel/models) のモデルを URL で置く (例: コップ)
-$ ros2 run ros_gz_sim create -name my_cup -x 0.8 -y 0.0 -z 0.0 \
-  -file https://fuel.gazebosim.org/1.0/GoogleResearch/models/ACE_Coffee_Mug_Kristen_16_oz_cup/1
+$ ros2 run ros_gz_sim create -name my_cup -x 0.8 -y 0.0 -z 0.0 -file https://fuel.gazebosim.org/1.0/GoogleResearch/models/ACE_Coffee_Mug_Kristen_16_oz_cup/1
 $ gz model --list                    # 置かれている物の名前
-$ gz service -s /world/jedy_world/remove --reqtype gz.msgs.Entity --reptype gz.msgs.Boolean \
-  --timeout 3000 --req 'name: "green_box" type: MODEL'   # 名前を指定して消す
+$ # 名前を指定して消す
+$ gz service -s /world/jedy_world/remove --reqtype gz.msgs.Entity --reptype gz.msgs.Boolean --timeout 3000 --req 'name: "green_box" type: MODEL'
 ```
 
 `-name` は物ごとに違う名前にする．
+コマンドはどれも 1 行である (`$ ` から行の終わりまで．長い行は右にスクロールして見る)．コピーボタンを使うと `$ ` を除いて写せる．
 物体の認識 (YOLO) は本物らしい見た目の物でないと見つけにくい．単色の箱は色で見つけ (`track_box`)，
 「コップ」「ペットボトル」などを認識させたいときは Fuel の実物をスキャンしたモデル (GoogleResearch など) を置くとよい．
 
@@ -158,6 +157,13 @@ $ sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh
 
 ```{code-block} console
 $ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
+```
+
+ジョイスティック ({doc}`tips/joystick`) が既定で有効なので，`joy_linux` が入っていないと起動が
+`package 'joy_linux' not found` で止まる．入れるか (`sudo apt install -y ros-jazzy-joy-linux`)，ジョイスティックを使わないなら `joy:=false` を付けて起動する．
+
+```{code-block} console
+$ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true joy:=false
 ```
 
 USB シリアルアダプタが挿さるまで待ってから起動する．サーボは **OFF で起動する** (台車の車輪だけは ON で起動するので，初めて動かすときは車輪を床から浮かせておく)．
@@ -515,6 +521,12 @@ depth, stamp = ri.depth_image()   # (480, 640) float32 [m]．測れない画素�
 K, D = ri.camera_info()        # カメラ行列 3x3 と歪み係数
 print(depth[240, 320])         # 画像の真ん中までの距離 [m]
 ```
+
+実機の頭のカメラ (D405) が深度を測れるのは **0.07〜0.5 m** である
+(Intel の仕様: Ideal Range 7 cm to 50 cm．<https://www.realsenseai.com/products/d405-series/>)．
+それより遠い所 (近すぎる所も) は `nan` になり，`ri.pixel_position()` や `ri.detection_position()` は `None` を返す．
+Gazebo の既定のカメラ (`camera:=wide`) は 10 m まで測れるので，Gazebo で測れた距離が実機では `nan` になることがある．
+実機と同じにして試すには Gazebo を `camera:=d405` で起動する ({doc}`tips/realsense-d405`)．
 
 :::{figure} fig/jedy-gazebo-head-camera-box.png
 :align: center
@@ -1082,6 +1094,12 @@ AI の答えは間違えることがあり，同じ画像でも毎回同じ答�
 ロボットに声でしゃべらせ ([VOICEVOX](https://voicevox.hiroshiba.jp/))，人の声を文字にする (音声認識)．
 どちらも [jsk_3rdparty](https://github.com/jsk-ros-pkg/jsk_3rdparty) のパッケージで，スピーカーとマイクは**自分の PC のもの**を使う．
 音声認識の既定のエンジン (Google) はインターネットにつながっている必要がある．
+また，録音した声を送る前に `flac` コマンドで変換するので，`flac` が要る．
+入っていないと，話しかけるたびに `Unexpected error: (<class 'FileNotFoundError'>, ...)` と出て認識されない．1 回だけ入れる．
+
+```{code-block} console
+$ sudo apt install -y flac
+```
 
 音声合成の VOICEVOX は環境構築ではビルドしていないので，初めて使う前に 1 回だけビルドする．
 エンジン (約 1.3 GB) をダウンロードするので，回線によっては 30 分以上かかる．
@@ -1100,8 +1118,7 @@ $ ros2 launch voicevox voicevox_texttospeech.launch.xml
 ```
 
 ```{code-block} console
-$ ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP launch_sound_play:=false \
-    energy_threshold:=300.0 dynamic_energy_threshold:=false tts_action_names:="[robotsound_jp]"
+$ ros2 launch ros_speech_recognition speech_recognition.launch.xml language:=ja-JP launch_sound_play:=false energy_threshold:=300.0 dynamic_energy_threshold:=false tts_action_names:="[robotsound_jp]"
 ```
 
 ```{code-block} python
@@ -1167,7 +1184,9 @@ if text is not None and '進' in text:
 **例:** 「前」で前に進み，「回って」でその場で旋回し，「手を挙げて」で右腕を上げる．聞き取れなかったら「もう一度言ってください」と返す．
 ```
 
-## 本日の課題
+## 本日の課題 (チェックポイント 5)
+
+台車・腕と首・カメラ・声の 4 つのチェックポイントに続く 5 つ目のチェックポイントである．
 
 ```{exercise} 道具を組み合わせる
 :label: ex_day1_2026
