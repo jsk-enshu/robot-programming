@@ -1172,7 +1172,10 @@ if text is not None and '進' in text:
 ```
 
 ```{note}
-**何も認識されないとき**
+**何も認識されないとき** (`ri.listen()` がいつも `None` を返す)
+- 音声認識を起動した端末に `ERROR` が出ていないか．`flac` が無いと，話しかけるたびに
+  `Unexpected error: (<class 'FileNotFoundError'>, ...)` (新しい版では `flac is not installed ... sudo apt install flac`) と出る．
+  上の `sudo apt install -y flac` (または {ref}`software-update` の `rosdep install`) で入れて，音声認識を起動し直す
 - PC のマイクがミュートになっていないか: `wpctl status` の `Sources:` で，使うマイクに `MUTED` が付いていたら
   `wpctl set-mute @DEFAULT_AUDIO_SOURCE@ 0` と `wpctl set-volume @DEFAULT_AUDIO_SOURCE@ 0.8`
 - `ros2 topic hz /audio` でマイクの音が来ているか (PC によって 75〜100 Hz)
