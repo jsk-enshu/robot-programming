@@ -1862,7 +1862,7 @@ def _decode_image(msg):
         msg.encoding))
 
 
-def _probe(namespace, servo_timeout=SERVO_PROBE_TIMEOUT):
+def _probe(node, namespace, servo_timeout=SERVO_PROBE_TIMEOUT):
     """Look at the running system: simulated time? a servo switch?
 
     Simulated time is read from the controller manager's ``use_sim_time``
@@ -1873,6 +1873,13 @@ def _probe(namespace, servo_timeout=SERVO_PROBE_TIMEOUT):
     on the wall clock while every image and joint state was stamped in
     simulated time.
 
+    Parameters
+    ----------
+    node : rclpy.node.Node
+        The node :func:`connect` keeps for the whole connection.
+    namespace : str
+    servo_timeout : float
+
     Returns
     -------
     use_sim_time : bool
@@ -1881,7 +1888,7 @@ def _probe(namespace, servo_timeout=SERVO_PROBE_TIMEOUT):
     from actuo_msgs.action import SetServo
     from rcl_interfaces.msg import ParameterType
     from rcl_interfaces.srv import GetParameters
-    node = rclpy.create_node('jedy_skrobot_probe')
+    params = None
     try:
         service = namespace + '/controller_manager/get_parameters'
         params = node.create_client(GetParameters, service)
@@ -1919,21 +1926,28 @@ def _probe(namespace, servo_timeout=SERVO_PROBE_TIMEOUT):
         client.destroy()
         return use_sim_time, has_servo
     finally:
-        node.destroy_node()
+        if params is not None:
+            node.destroy_client(params)
 
 
-def _wait_for_controllers(namespace, timeout=CONTROLLER_TIMEOUT):
+def _wait_for_controllers(node, namespace, timeout=CONTROLLER_TIMEOUT):
     """Block until every one of :data:`CONTROLLERS` is active.
 
     Taking whatever happens to be loaded at the moment of the call gave an
     ``ri`` that silently drove three of the five limbs when a script started
     while the launch was still spawning.
+
+    Parameters
+    ----------
+    node : rclpy.node.Node
+        The node :func:`connect` keeps for the whole connection.
+    namespace : str
+    timeout : float
     """
     from controller_manager_msgs.srv import ListControllers
-    node = rclpy.create_node('jedy_skrobot_wait')
+    client = node.create_client(
+        ListControllers, namespace + '/controller_manager/list_controllers')
     try:
-        client = node.create_client(
-            ListControllers, namespace + '/controller_manager/list_controllers')
         start = time.monotonic()
         deadline = start + timeout
         next_note = start + CONTROLLER_NOTE_AFTER
@@ -1964,7 +1978,7 @@ def _wait_for_controllers(namespace, timeout=CONTROLLER_TIMEOUT):
             '(is the bring-up running?)'.format(
                 timeout, {c: state.get(c, 'not loaded') for c in CONTROLLERS}))
     finally:
-        node.destroy_node()
+        node.destroy_client(client)
 
 
 def connect(namespace=NAMESPACE, load_meshes=False):
@@ -1994,15 +2008,25 @@ def connect(namespace=NAMESPACE, load_meshes=False):
         # plain KeyboardInterrupt, cleanup still publishes, and
         # actuo_ros' atexit hook shuts ROS down afterwards.
         rclpy.init(signal_handler_options=SignalHandlerOptions.NO)
-    _wait_for_controllers(namespace)
-    use_sim_time, has_servo = _probe(namespace)
-    robot, ri = _actuo_connect(
-        servo_ns=servo_namespace(namespace) if has_servo else None,
-        load_meshes=load_meshes,
-        model_class=Jedy,
-        namespace=namespace,
-        interface_class=JedyInterface,
-        use_sim_time=use_sim_time)
+    # One node for the whole connection, alive until ``ri`` exists. With
+    # Fast DDS, a node created right after the process's last node was
+    # destroyed took 0.2-3 s to see a service again (measured on a running
+    # Gazebo); while another node of the process stays up, a new one sees it
+    # at once. Creating and destroying a node per step paid that wait three
+    # times, 5-8 s before every program started.
+    node = rclpy.create_node('jedy_skrobot_connect')
+    try:
+        _wait_for_controllers(node, namespace)
+        use_sim_time, has_servo = _probe(node, namespace)
+        robot, ri = _actuo_connect(
+            servo_ns=servo_namespace(namespace) if has_servo else None,
+            load_meshes=load_meshes,
+            model_class=Jedy,
+            namespace=namespace,
+            interface_class=JedyInterface,
+            use_sim_time=use_sim_time)
+    finally:
+        node.destroy_node()
     # Say at once if servos are missing: otherwise the first sign is a
     # servo_on refusal or an arm that does not move, far from the cause.
     missing = ri.missing_servos()
