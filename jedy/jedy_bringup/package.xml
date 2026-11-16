@@ -101,6 +101,10 @@
        them without a separate apt line. -->
   <exec_depend>slam_toolbox</exec_depend>
   <exec_depend>nav2_bringup</exec_depend>
+  <!-- docs/tips/cyclone-dds.md: the optional RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+       switch. Not used unless that variable is set; declared so rosdep installs
+       it on every PC and switching needs no extra apt line. -->
+  <exec_depend>rmw_cyclonedds_cpp</exec_depend>
 
   <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>python3-pytest</test_depend>
