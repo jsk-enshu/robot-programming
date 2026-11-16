@@ -104,6 +104,36 @@ $ rs-enumerate-devices --compact
 `Intel RealSense D405` の行が出ればつながっている．何も出ないときは，プラグが奥まで入っているか，ネジが締まっているかを見て挿し直す．
 抜くときは，先にネジを緩めてからプラグを持って抜く (ケーブルを引っぱらない)．
 
+(d405-no-frames)=
+### 画像が来ないとき
+
+launch のログに `No RealSense devices were found!` や `Frames didn't arrived within 5 seconds` が出続けるときは，
+PC が USB でカメラを見つけているか，見つけていても通信が途切れていないかを確かめる．
+
+1. `lsusb` でカメラが見えているかを見る．`Intel(R) RealSense(TM) Depth Camera 405` の行が無ければ，USB でつながっていない．
+
+   ```{code-block} console
+   $ lsusb | grep -i realsense
+   Bus 002 Device 023: ID 8086:0b5b Intel Corp. Intel(R) RealSense(TM) Depth Camera 405
+   ```
+
+2. `lsusb -t` で，どの速さでつながっているかを見る．`Driver=uvcvideo` の行の最後が `5000M` なら USB 3.0，`480M` なら USB 2.0 である．
+   `480M` のときや，カメラが `Class=Hub` の行の下にある (USB ハブを通っている) ときは，PC の USB 3.0 のポートに直接挿し直す．
+
+3. 別のターミナルで `sudo dmesg --follow` を動かしたまま，カメラのケーブルを PC 側で抜いて挿し直す ({doc}`arduino-device-detection` の「dmesg でカーネルログを確認」と同じやり方)．
+
+   ```{code-block} console
+   $ sudo dmesg --follow
+   ```
+
+   挿したときに `New USB device found, idVendor=8086, idProduct=0b5b` と `Product: Intel(R) RealSense(TM) Depth Camera 405` が出れば，PC はカメラを見つけている．
+   何も出なければ，ケーブルかカメラ側の端子 (ネジが締まっているか) を見る．
+   見つけたあとで `uvcvideo ...: Non-zero status (-71) in video completion handler.` が出るときは，USB の通信がうまくいっていない．
+   USB ハブを外して PC に直接挿すか，ほかのポートやケーブルに替える．
+   `sudo` が使えないときは `journalctl -kf` でも同じログが見られる．
+
+挿し直したら launch も起動し直す．ケーブルを抜き差しするときは TA を呼び，launch を Ctrl-C で止めてから行う．
+
 ## 実機での起動
 
 実機では，ロボットを起動するときに `camera:=true` を付ける．

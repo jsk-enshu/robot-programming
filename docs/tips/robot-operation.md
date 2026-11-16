@@ -280,7 +280,7 @@ name: fig:jedy-real-detect-cube
 | `ABORT: board answers at none of 625000, 115200, 625000, 1250000 bit/s` | アダプタの先の制御基板が答えない．電源が入っているか，アダプタの LED が緑か (シリアルモード)，ケーブルが挿さっているかを確かめる．アダプタを挿し直すと直ることがある |
 | `ABORT: Configured servos did not answer: head_joint1 (id 34)` | その関節のサーボが答えない．**そのサーボのケーブル**を確かめる．電源を入れ直しても直らなかったときは，ケーブルを替えて直った |
 | `segment 'jedy_fullbody' not ready within 10.0s` | 上の 2 つのどれかで actuo が止まった結果．その前の `ABORT:` を見る |
-| `No RealSense devices were found!` / `Frames didn't arrived within 5 seconds` | 頭のカメラ (D405) の USB が抜けている．首まわりのケーブルを触ったあとに抜けることがある．挿し直すと戻る |
+| `No RealSense devices were found!` / `Frames didn't arrived within 5 seconds` | 頭のカメラ (D405) の USB が抜けている．首まわりのケーブルを触ったあとに抜けることがある．挿し直すと戻る．挿し直しても直らないときは {ref}`d405-no-frames` |
 
 ケーブルを抜き差しするときは TA を呼び，launch を Ctrl-C で止めてから行う．
 
