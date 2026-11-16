@@ -58,6 +58,82 @@ $ sudo curl -fsSL -o /etc/udev/rules.d/99-realsense-libusb.rules \
 $ sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
 
+(d405-cable)=
+## ケーブルのつなぎ方
+
+D405 は付属の USB 3.0 ケーブル (カメラ側が L 字の USB Type-C で，抜け止めのネジが付いている) で PC とつなぐ．
+カメラの USB 端子は，`intel REALSENSE` の文字がある側面にある ({numref}`fig:d405-cable-port`)．
+
+```{figure} ../fig/d405-cable-port.jpg
+---
+name: fig:d405-cable-port
+width: 50%
+---
+Jedy の頭の D405．`intel REALSENSE` の文字がある側面に USB 端子がある (右下に写っているのがケーブルの L 字のプラグ)
+```
+
+1. プラグのネジがカメラの端子の横の小さな穴に合う向きにして，端子にまっすぐ奥まで挿す ({numref}`fig:d405-cable-insert`)．
+2. ケーブルが下 (胴体の方) へ伸びる向きになっていることを確かめる ({numref}`fig:d405-cable-connected`)．
+3. プラグの後ろのネジのつまみを指で回して締める．工具は使わず，軽く止まるところまででよい．
+   ネジを締めておかないと，首を動かしたときにケーブルに引っぱられて抜けやすい．
+4. 首を左右・上下に動かしても突っぱらないくらいケーブルにたるみを持たせて，PC の USB ポートに挿す．
+   USB 2.0 のポートや USB ハブにつなぐと，画像が来なかったり途切れたりすることがある．
+
+```{figure} ../fig/d405-cable-insert.jpg
+---
+name: fig:d405-cable-insert
+width: 50%
+---
+プラグを端子に挿すところ．プラグの後ろのつまみがネジになっている
+```
+
+```{figure} ../fig/d405-cable-connected.jpg
+---
+name: fig:d405-cable-connected
+width: 50%
+---
+挿し終わったところ．ケーブルが下へ伸び，ネジが締まっている
+```
+
+つないだら，PC からカメラが見えているかを確かめる．
+
+```{code-block} console
+$ rs-enumerate-devices --compact
+```
+
+`Intel RealSense D405` の行が出ればつながっている．何も出ないときは，プラグが奥まで入っているか，ネジが締まっているかを見て挿し直す．
+抜くときは，先にネジを緩めてからプラグを持って抜く (ケーブルを引っぱらない)．
+
+(d405-no-frames)=
+### 画像が来ないとき
+
+launch のログに `No RealSense devices were found!` や `Frames didn't arrived within 5 seconds` が出続けるときは，
+PC が USB でカメラを見つけているか，見つけていても通信が途切れていないかを確かめる．
+
+1. `lsusb` でカメラが見えているかを見る．`Intel(R) RealSense(TM) Depth Camera 405` の行が無ければ，USB でつながっていない．
+
+   ```{code-block} console
+   $ lsusb | grep -i realsense
+   Bus 002 Device 023: ID 8086:0b5b Intel Corp. Intel(R) RealSense(TM) Depth Camera 405
+   ```
+
+2. `lsusb -t` で，どの速さでつながっているかを見る．`Driver=uvcvideo` の行の最後が `5000M` なら USB 3.0，`480M` なら USB 2.0 である．
+   `480M` のときや，カメラが `Class=Hub` の行の下にある (USB ハブを通っている) ときは，PC の USB 3.0 のポートに直接挿し直す．
+
+3. 別のターミナルで `sudo dmesg --follow` を動かしたまま，カメラのケーブルを PC 側で抜いて挿し直す ({doc}`arduino-device-detection` の「dmesg でカーネルログを確認」と同じやり方)．
+
+   ```{code-block} console
+   $ sudo dmesg --follow
+   ```
+
+   挿したときに `New USB device found, idVendor=8086, idProduct=0b5b` と `Product: Intel(R) RealSense(TM) Depth Camera 405` が出れば，PC はカメラを見つけている．
+   何も出なければ，ケーブルかカメラ側の端子 (ネジが締まっているか) を見る．
+   見つけたあとで `uvcvideo ...: Non-zero status (-71) in video completion handler.` が出るときは，USB の通信がうまくいっていない．
+   USB ハブを外して PC に直接挿すか，ほかのポートやケーブルに替える．
+   `sudo` が使えないときは `journalctl -kf` でも同じログが見られる．
+
+挿し直したら launch も起動し直す．ケーブルを抜き差しするときは TA を呼び，launch を Ctrl-C で止めてから行う．
+
 ## 実機での起動
 
 実機では，ロボットを起動するときに `camera:=true` を付ける．

@@ -178,7 +178,8 @@ name: fig:how_to_charge_battery
 ### 起動
 
 1. 電源を入れる (上の「電源の入れ方」)．
-2. USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) と頭のカメラ (D405) の USB を PC に挿す．
+2. USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) と頭のカメラ (D405) の USB を PC に挿す
+   (D405 のケーブルのつなぎ方は {ref}`d405-cable`)．
 3. 起動する．
 
 ```{code-block} console
@@ -233,6 +234,25 @@ robot, ri = connect()
 ri.servo_on()       # 今の姿勢のまま固まる (腕が飛ぶことはない)
 ```
 
+(jedy-real-rviz-servo-panel)=
+### 動かしている間の RViz を見る
+
+<video width="100%" controls preload="metadata" poster="../fig/jedy-real-rviz-arm.jpg">
+  <source src="../fig/jedy-real-rviz-arm.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** {doc}`../robot-programming-1-2026` の「腕と首を動かす」のコードを実機で実行したところ (左：RViz，右：実機，実時間)．
+起動した直後は Servo パネルの torque がすべて OFF (赤) で，`ri.servo_on()` で ON (緑) になる．
+
+Servo パネルの **away from command** は，コントローラが送った角度と，サーボが測った今の角度の差である．
+ふつうは数度以内に収まる．
+0.35 rad (約 20°) 以上離れた関節は赤で表示され，パネルに `Red: moved ≥0.35 rad from the controller's command.` と出る．
+この動画では，右肩の `rarm_joint1` が送った角度まで動かず，`reset_pose` に戻したあとも 27.7° 離れたままになっている．
+プログラムからは `ri.angle_vector()` で読んだ角度と送った角度を比べると分かる (`reset_pose` で 28° の差)．
+腕が体や床，ケーブルに当たっている，サーボホーンの取り付けがずれている，などが考えられる．
+その関節に力がかかり続けてサーボが熱くなるので，プログラムを止め，その関節だけ `ri.servo_off(joints=[...])` するか電源を切ってから，腕の周りと組み立てを確かめる．
+
 ### Gazebo と違うところ
 
 実機で 1 日目の資料を通したときに見つかった違いである．
@@ -279,7 +299,7 @@ name: fig:jedy-real-detect-cube
 | `ABORT: board answers at none of 625000, 115200, 625000, 1250000 bit/s` | アダプタの先の制御基板が答えない．電源が入っているか，アダプタの LED が緑か (シリアルモード)，ケーブルが挿さっているかを確かめる．アダプタを挿し直すと直ることがある |
 | `ABORT: Configured servos did not answer: head_joint1 (id 34)` | その関節のサーボが答えない．**そのサーボのケーブル**を確かめる．電源を入れ直しても直らなかったときは，ケーブルを替えて直った |
 | `segment 'jedy_fullbody' not ready within 10.0s` | 上の 2 つのどれかで actuo が止まった結果．その前の `ABORT:` を見る |
-| `No RealSense devices were found!` / `Frames didn't arrived within 5 seconds` | 頭のカメラ (D405) の USB が抜けている．首まわりのケーブルを触ったあとに抜けることがある．挿し直すと戻る |
+| `No RealSense devices were found!` / `Frames didn't arrived within 5 seconds` | 頭のカメラ (D405) の USB が抜けている．首まわりのケーブルを触ったあとに抜けることがある．挿し直すと戻る．挿し直しても直らないときは {ref}`d405-no-frames` |
 
 ケーブルを抜き差しするときは TA を呼び，launch を Ctrl-C で止めてから行う．
 

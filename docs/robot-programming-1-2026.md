@@ -89,7 +89,12 @@ Ctrl-C は押したターミナルのものだけを止める．起動したタ�
 - `ri.angle_vector()` は `wait_until_update_all_joints timeout (... s): no message on /jedy_fullbody/joint_states for ... s. Is the robot or the simulator running?`
   と警告して，最後に受け取った (古い) 角度を返す．
 - `ri.wait_interpolation()` は 30 秒待ってから `... the clock has not moved for 30.0 s (is the simulator running and publishing /clock?)` のエラーで止まる．
-- 新しく `connect()` すると，ロボットが起動するまで (最大 120 秒) 待つ．5 秒たつと `waiting for the Jedy controllers (20 s of 120 s): {...}` のように，何を待っているかを 15 秒ごとに表示する．
+- 新しく `connect()` すると，ロボットが起動するまで最大 120 秒待つ．待っている間は 15 秒ごとに何を待っているかが出る．
+  launch が動いていなければ `waiting for the Jedy controllers (21 s of 120 s): no controller_manager yet. ...`，
+  起動の途中なら `{'head_controller': 'not loaded', 'right_arm_controller': 'active', ...}` のようにコントローラごとの状態が出る．
+- 実機で，サーボと通信するノード (`actuo_bus_node`) が止まると，サーボには何も届かない．それでも `ri.wait_interpolation()` はふつうに終わり，
+  `ri.angle_vector()` は止まったときの角度を返し続ける．launch のターミナルに `[ERROR] [actuo_bus_node-6]: process has died` が出ていないか見る．
+  出ていたら launch を Ctrl-C で止め，起動し直す．
 
 そうなったら，プログラムを Ctrl-C で止め，ロボットを起動し直してから，プログラムも起動し直す．
 Gazebo は動いているのに待ち続けるときは，コントローラが起動しきっていないことがある (重い PC で起きた)．
@@ -156,7 +161,7 @@ $ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
 ```
 
 USB シリアルアダプタが挿さるまで待ってから起動する．サーボは **OFF で起動する** (台車の車輪だけは ON で起動するので，初めて動かすときは車輪を床から浮かせておく)．
-`camera:=true` で頭のカメラ (USB でつなぐ RealSense D405) も起動する
+`camera:=true` で頭のカメラ (USB でつなぐ RealSense D405．つなぎ方は {ref}`d405-cable`) も起動する
 (`sudo apt install -y ros-jazzy-realsense2-camera` と udev ルール ({doc}`tips/realsense-d405`) が 1 回だけ必要)．
 実機で動かしたところの動画，Gazebo と違うところ，起動できないときの直し方は {ref}`jedy-real-run` にある．
 
@@ -237,6 +242,11 @@ ri.go_velocity(0.0, 0.0, 1.0, duration=2.0)   # 2 秒その場で旋回
 ```
 
 `duration` を省くと 1 回だけ指令を送る．台車は 0.5 秒指令が来ないと自動で止まるので，ループの中で毎回呼ぶ．Jedy の正面は x+ である．
+
+`go_velocity` は速さを送るだけで，どこまで進んだかは測っていない．実機では車輪が床で滑るので，
+前に進んで同じ時間だけ後ろに戻っても，元の場所には戻らない．
+前・後ろ・右・左・左旋回・右旋回を同じ速さと時間で順に送ったときも，止まった場所は出発点からずれた．
+決まった場所へ行くには，カメラでタグや物を見て位置を測りながら動かす ({doc}`robot-programming-2-2026` の `approach_tag`)．
 
 :::{figure} fig/jedy-gazebo-base-square.gif
 :align: center
@@ -372,7 +382,9 @@ for _ in range(3):
         ri.angle_vector(robot.angle_vector(), 1.0)
         ri.wait_interpolation()
 
-print(np.rad2deg(robot.angle_vector() - ri.angle_vector()))   # 送った姿勢と実際の姿勢の差 [deg]
+# 送った姿勢と実際の姿勢の差 [deg] を関節の名前と並べて出す
+for joint, diff in zip(robot.joint_list, np.rad2deg(robot.angle_vector() - ri.angle_vector())):
+    print(f'{joint.name:20s} {diff:+6.1f}')
 ```
 
 関節には動ける範囲がある (`robot.rarm_joint1.min_angle`，`max_angle` [rad])．範囲を超える角度を入れると範囲の端に切り詰められ，
