@@ -175,6 +175,58 @@ name: fig:how_to_charge_battery
 
 **動画：** `ri.tuck_arms()` のあと，`ri.go_velocity()` で前・後ろ・右・左に 0.1 m/s で 2 秒ずつ，その場で左・右に 1.0 rad/s で 1.5 秒ずつ動かしたところ (実時間)．
 
+(jedy-real-quickstart)=
+### 最短で首を動かす
+
+ワークスペースをビルドしてあれば，次の手順で実機の首を動かせる．首だけを動かすので，腕が落ちたり台車が走ったりしない．
+
+<video width="100%" controls preload="metadata" poster="../fig/jedy-real-quickstart.jpg">
+  <source src="../fig/jedy-real-quickstart.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** 下の手順をそのまま実行したところ (実時間)．左上：launch の端末，左下：ipython，中：PyrenderViewer，右：実機．
+launch からコントローラがそろうまで約 6 秒，`head_joint0` を +20°，−20° と送ると，実機とモデルが同じ向きに回る．
+
+0. 初回だけ (PC ごとに 1 回)：`sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh`
+1. 電源を入れ，USB シリアルアダプタを PC に挿す (アダプタの LED が緑か確かめる)．
+2. 1 つ目の端末で起動する．`Configured and activated mecanum_drive_controller` が出たら起動できている．
+
+   ```{code-block} console
+   $ ros2 launch jedy_bringup jedy_fullbody_all.launch.py rviz:=false
+   ```
+
+3. 2 つ目の端末で ipython を開く．
+
+   ```{code-block} console
+   $ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/ipython
+   ```
+
+4. 首だけサーボを ON にして動かす．
+
+   ```{code-block} python
+   from jedy_skrobot import connect
+   import numpy as np
+   from skrobot.viewers import PyrenderViewer
+
+   robot, ri = connect(load_meshes=True)   # ビューワに出すのでメッシュも読む
+   viewer = PyrenderViewer()
+   viewer.add(robot)
+   viewer.show()
+   robot.angle_vector(ri.angle_vector()); viewer.redraw()   # モデルを今の姿勢に
+
+   ri.servo_on(joints=['head_joint0', 'head_joint1'])        # 首だけ ON (今の姿勢で固まる)
+   robot.head_joint0.joint_angle(np.deg2rad(20)); viewer.redraw()
+   ri.angle_vector(robot.angle_vector(), 2.0, controller_type='head_controller')
+   ri.wait_interpolation('head_controller')
+   robot.angle_vector(ri.angle_vector()); viewer.redraw()
+   print(np.rad2deg(robot.head_joint0.joint_angle()))       # 20 度くらいになる
+   ```
+
+ビューワを使わないなら `connect()` だけでよい (`load_meshes=True` が無いとビューワには何も表示されない)．
+全身を動かすときは `ri.servo_on()` で全軸 ON にしてから {doc}`../robot-programming-1-2026` の「腕と首を動かす」に進む．
+実機を動かすときは，電源をすぐ切れる人がもう 1 人そばにいること．
+
 ### 起動
 
 1. 電源を入れる (上の「電源の入れ方」)．
