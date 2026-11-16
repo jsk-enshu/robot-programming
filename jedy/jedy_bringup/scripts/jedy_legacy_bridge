@@ -31,6 +31,7 @@ a second) gets the same replacement, so the repeats do not restart it.
 """
 
 import functools
+import signal
 import threading
 
 from control_msgs.action import FollowJointTrajectory
@@ -40,6 +41,7 @@ from rclpy.action import ActionClient, ActionServer, CancelResponse, GoalRespons
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import ExternalShutdownException, SingleThreadedExecutor
 from rclpy.node import Node
+from rclpy.signals import SignalHandlerOptions
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from action_msgs.msg import GoalStatus
@@ -409,17 +411,40 @@ class JedyLegacyBridge(Node):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+    # Ctrl+C (SIGINT, sent twice: by the terminal and again by the launch)
+    # only asks the spin loop below to stop; nothing is raised or shut down
+    # from inside the signal handler. Both of rclpy's defaults do one of
+    # those at an arbitrary point of the executor:
+    # - Python's KeyboardInterrupt lands wherever the main thread is, and in
+    #   this node that is often inside rclpy's take_message while it builds
+    #   the Python message (/jedy_fullbody/joint_states), or inside
+    #   destroy_node. rclpy then loses it and reports
+    #     RuntimeError: Unable to convert call argument '0' to Python object
+    #   which reads like a broken message but is only the Ctrl+C.
+    # - rclpy's own SIGINT handler shuts the context down under the
+    #   executor, which can fail with "failed to initialize wait set: the
+    #   given context is not valid".
+    stop = threading.Event()
+    signal.signal(signal.SIGINT, lambda signum, frame: stop.set())
+    rclpy.init(args=args, signal_handler_options=SignalHandlerOptions.NO)
     node = JedyLegacyBridge()
     # One thread is enough: the goal and execute callbacks are coroutines,
     # which yield while they wait for the 2026 controllers.
     executor = SingleThreadedExecutor()
     executor.add_node(node)
+    # The Python handler runs once the executor's wait returns; the timeout
+    # bounds that.
     try:
-        executor.spin()
-    except (KeyboardInterrupt, ExternalShutdownException):
+        while rclpy.ok() and not stop.is_set():
+            executor.spin_once(timeout_sec=0.1)
+    except ExternalShutdownException:
         pass
     finally:
+        # Already stopping: the launch's SIGINT right after the terminal's
+        # must not interrupt the shutdown or kill the interpreter on its way
+        # out (Python puts SIGINT back to the default action while it
+        # finalizes, unless it is ignored).
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
         executor.shutdown()
         node.destroy_node()
         rclpy.try_shutdown()
