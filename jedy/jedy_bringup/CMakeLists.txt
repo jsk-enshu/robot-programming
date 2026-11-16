@@ -78,6 +78,7 @@ if(BUILD_TESTING)
   ament_add_pytest_test(test_wheel_angle test/test_wheel_angle.py)
   ament_add_pytest_test(test_deadband test/test_deadband.py)
   ament_add_pytest_test(test_gz_sim test/test_gz_sim.py)
+  ament_add_pytest_test(test_wait_port test/test_wait_port.py)
 endif()
 
 ament_package()

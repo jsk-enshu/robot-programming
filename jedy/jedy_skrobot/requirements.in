@@ -8,7 +8,7 @@
 # (seen on a department PC: still 0.4.18). Bumping the hash here is what
 # updates every workspace on its next build. Bump jedy_vision/requirements.in
 # to the same commit.
-scikit-robot @ git+https://github.com/iory/scikit-robot.git@77e8ae550021f3e5941d511da701d9d90c9754e7
+scikit-robot @ git+https://github.com/iory/scikit-robot.git@4f79f3a83c977eada4ed0049d7af68f86d88d550
 
 # The interactive shell. Falls back to `code.interact` if absent, but the
 # history and completion are the point.

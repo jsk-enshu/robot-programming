@@ -31,6 +31,7 @@ wheels, mecanum_drive_controller's reference twist turned into wheel speeds.
 import argparse
 import math
 import os
+import signal
 import sys
 import threading
 
@@ -44,6 +45,7 @@ from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy
 from rclpy.qos import QoSProfile
 from rclpy.qos import qos_profile_sensor_data
+from rclpy.signals import SignalHandlerOptions
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String
 
@@ -163,7 +165,23 @@ def main(argv=None):
                         '(rehearsal of a cable out)')
     args = p.parse_args(rclpy.utilities.remove_ros_args(
         sys.argv if argv is None else argv)[1:])
-    rclpy.init(args=sys.argv if argv is None else argv)
+    # Ctrl+C (SIGINT, sent twice: by the terminal and again by the launch)
+    # only asks the spin loop below to stop; nothing is raised or shut down
+    # from inside the signal handler. Both of rclpy's defaults do one of
+    # those at an arbitrary point of the executor:
+    # - Python's KeyboardInterrupt lands wherever the main thread is, and in
+    #   this node that is often inside rclpy's take_message while it builds
+    #   the Python message (joint_states, the controllers' states). rclpy
+    #   then loses it and reports
+    #     RuntimeError: Unable to convert call argument '0' to Python object
+    #   which reads like a broken message but is only the Ctrl+C.
+    # - rclpy's own SIGINT handler shuts the context down under the
+    #   executor, which can fail with "failed to initialize wait set: the
+    #   given context is not valid".
+    stop = threading.Event()
+    signal.signal(signal.SIGINT, lambda signum, frame: stop.set())
+    rclpy.init(args=sys.argv if argv is None else argv,
+               signal_handler_options=SignalHandlerOptions.NO)
     missing = [j.strip() for j in args.missing.split(',') if j.strip()]
     node = SimServo(args.controllers, args.namespace, missing)
     # Single-threaded, like the real servo switch (actuo_ros servo_node). The
@@ -171,10 +189,17 @@ def main(argv=None):
     # thread.
     executor = SingleThreadedExecutor()
     executor.add_node(node)
-    try:
-        executor.spin()
-    except KeyboardInterrupt:
-        pass
+    # The Python handler runs once the executor's wait returns; the timeout
+    # bounds that (the node's own timers wake it every 0.2 s anyway).
+    while rclpy.ok() and not stop.is_set():
+        executor.spin_once(timeout_sec=0.1)
+    # Already stopping: the launch's SIGINT right after the terminal's must
+    # not kill the interpreter on its way out (Python puts SIGINT back to
+    # the default action while it finalizes, unless it is ignored).
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    executor.shutdown()
+    node.destroy_node()
+    rclpy.try_shutdown()
     return 0
 
 

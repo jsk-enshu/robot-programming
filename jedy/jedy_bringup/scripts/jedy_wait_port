@@ -160,7 +160,7 @@ def missing_advice(channel):
 
 
 def wait(channel, timeout, report_interval, now=time.monotonic,
-         sleep=time.sleep, out=sys.stderr):
+         sleep=time.sleep, out=None):
     """Poll until the port opens.
 
     Parameters
@@ -178,8 +178,8 @@ def wait(channel, timeout, report_interval, now=time.monotonic,
     sleep : callable, optional
         Sleep function, injected by the tests.
     out : file, optional
-        Where the messages go. stderr, so this stays readable when a launch
-        interleaves it with node output.
+        Where the messages go. stderr (looked up at call time) by default, so
+        this stays readable when a launch interleaves it with node output.
 
     Returns
     -------
@@ -187,6 +187,9 @@ def wait(channel, timeout, report_interval, now=time.monotonic,
         Process exit status: 0 once the port opened, 1 on timeout or on a
         permission problem that waiting cannot fix.
     """
+    if out is None:
+        out = sys.stderr
+
     def emit(line):
         print(line, file=out, flush=True)
 
@@ -273,11 +276,39 @@ def main(argv=None):
 
     channel = args.channel or channel_from_config(args.config)
     try:
-        return wait(channel, args.timeout, args.report_interval)
-    except KeyboardInterrupt:
-        print("\n[jedy_wait_port] interrupted while waiting for {}."
-              .format(channel), file=sys.stderr, flush=True)
-        return 130
+        try:
+            return wait(channel, args.timeout, args.report_interval)
+        except KeyboardInterrupt:
+            print("\n[jedy_wait_port] interrupted while waiting for {}."
+                  .format(channel), file=sys.stderr, flush=True)
+            return 130
+    except BrokenPipeError:
+        return quiet_exit_on_broken_pipe()
+
+
+def quiet_exit_on_broken_pipe():
+    """Exit without a traceback once nobody reads our output any more.
+
+    When the launch that started this goes away (Ctrl-C, or it died), the
+    pipe our stderr goes into closes, and the next "still waiting" line raised
+    BrokenPipeError. Its traceback then landed in the terminal and read like
+    the real failure. Nothing is listening, so there is nothing to say: point
+    stdout and stderr at /dev/null, so that Python's own flush at exit does not
+    fail a second time ("Exception ignored ... BrokenPipeError"), and stop.
+
+    Returns
+    -------
+    int
+        Exit status 1: the wait did not finish.
+    """
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            os.dup2(devnull, stream.fileno())
+        except (AttributeError, OSError, ValueError):
+            pass
+    os.close(devnull)
+    return 1
 
 
 if __name__ == "__main__":

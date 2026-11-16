@@ -3,7 +3,7 @@
 # different scikit-robots in two venvs would be two different base classes.
 # A commit, not @main: see jedy_skrobot/requirements.in (with @main a rebuild
 # never updates it; a department PC kept 0.4.18 here).
-scikit-robot @ git+https://github.com/iory/scikit-robot.git@77e8ae550021f3e5941d511da701d9d90c9754e7
+scikit-robot @ git+https://github.com/iory/scikit-robot.git@4f79f3a83c977eada4ed0049d7af68f86d88d550
 
 numpy
 
