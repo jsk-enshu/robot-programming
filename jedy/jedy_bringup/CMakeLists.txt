@@ -77,6 +77,7 @@ if(BUILD_TESTING)
     APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR})
   ament_add_pytest_test(test_wheel_angle test/test_wheel_angle.py)
   ament_add_pytest_test(test_deadband test/test_deadband.py)
+  ament_add_pytest_test(test_wait_port test/test_wait_port.py)
 endif()
 
 ament_package()
