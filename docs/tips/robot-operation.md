@@ -188,7 +188,8 @@ name: fig:how_to_charge_battery
 **動画：** 下の手順をそのまま実行したところ (実時間)．左上：launch の端末，左下：ipython，中：PyrenderViewer，右：実機．
 launch からコントローラがそろうまで約 6 秒，`head_joint0` を +20°，−20° と送ると，実機とモデルが同じ向きに回る．
 
-0. 初回だけ (PC ごとに 1 回)：`sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh`
+0. 初回だけ (PC ごとに 1 回)：`P=$(ros2 pkg prefix actuo_ros) && sudo "$P/share/actuo_ros/udev/install.sh"`
+   (`Package not found` で止まったら，ワークスペースを更新・ビルドしてから ({ref}`software-update`))
 1. 電源を入れ，USB シリアルアダプタを PC に挿す (アダプタの LED が緑か確かめる)．
 2. 1 つ目の端末で起動する．`Configured and activated mecanum_drive_controller` が出たら起動できている．
 
