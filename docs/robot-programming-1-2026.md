@@ -150,10 +150,17 @@ $ gz service -s /world/jedy_world/remove --reqtype gz.msgs.Entity --reptype gz.m
 
 初回だけ，USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) に `/dev/actuo_kondo_rcb4mini` という名前を付ける udev ルールを入れる．
 入れないと起動が「`/dev/actuo_kondo_rcb4mini` を待っています」のまま進まない．
+udev ルールは PC に入るので，**PC ごとに 1 回**必要 (別の学科 PC に移ったらもう一度入れる)．
 
 ```{code-block} console
-$ sudo $(ros2 pkg prefix actuo_ros)/share/actuo_ros/udev/install.sh
+$ P=$(ros2 pkg prefix actuo_ros) && sudo "$P/share/actuo_ros/udev/install.sh"
 ```
+
+- `Package not found` と出て止まったら，今のワークスペースに `actuo_ros` が無い (古い，またはビルドしていない)．
+  {ref}`software-update` のとおり更新・ビルドし，`source ~/ros2_ws/install/setup.bash` してからもう一度実行する．
+  (`sudo $(ros2 pkg prefix actuo_ros)/...` と書くと，この場合 `sudo: /share/actuo_ros/udev/install.sh: command not found` で失敗し，原因が分かりにくい)
+- `installed 99-actuo-kondo-symlink.rules` などと出たら入っている．続く `actuo_kondo_rcb4mini   absent (no matching adapter plugged in)` は，アダプタを挿していなければ正しい．
+- ルールを入れて，ロボットの電源を入れてアダプタを挿しても `/dev/actuo_kondo_rcb4mini` ができない (`lsusb` にアダプタが出ない) ときは，ケーブルか電源の問題なので TA を呼ぶ (`ta call`)．
 
 ```{code-block} console
 $ ros2 launch jedy_bringup jedy_fullbody_all.launch.py camera:=true
