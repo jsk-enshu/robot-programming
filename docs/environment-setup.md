@@ -113,7 +113,56 @@ $ source /opt/ros/jazzy/setup.bash
 $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
 ```
 
+- **`vcs pull` の出力を読んでから先に進む．** どこかに `error:` が出ていたら，そのリポジトリは更新されていない．
+  そのまま `colcon build` すると古いままのコードで動き，別のエラーになる．
+  よくあるのは自分で変えたファイルとぶつかる場合で，直し方は {ref}`vcs-pull-local-changes`．
+- **`rosdep install` を飛ばさない．** 新しく必要になった apt のパッケージ (実機のジョイスティックの `ros-jazzy-joy-linux`，
+  音声認識の `flac` など) はここで入る．入っていないと，起動したときに `package 'joy_linux' not found` などで止まる．
+- **`~/ros2_ws` の中にパッケージのバックアップを置かない．** 古い版を `jedy_skrobot.bak` などとして残すときは
+  `~/ros2_ws` の外 (例: `~/backup/`) に移す．中にあると同じ名前のパッケージが 2 つになり，`colcon build` が止まる
+  ({ref}`colcon-duplicate-package`)．
+
 ## トラブルシューティング
+
+(vcs-pull-local-changes)=
+### `vcs pull` が `Your local changes to the following files would be overwritten by merge` で止まる
+
+演習のリポジトリのファイルを自分で変えていて (例: ロボットシステムの授業で `jedy/jedy_bringup/CMakeLists.txt` に自分のスクリプトを書き足した)，
+同じファイルが更新されたときに出る．自分で足したファイルと同じ名前のファイルが追加されたときは
+`The following untracked working tree files would be overwritten by merge` と出る．どちらも最後に `Aborting` と出て，このリポジトリは更新されていない．
+自分の変更をいったん退避してから更新する．退避した変更は消えない．
+
+```{code-block} console
+$ cd ~/ros2_ws/src/robot-programming
+$ git status                                   # 自分が変えたファイルを確かめる
+$ git stash push -u -m "before-update"         # 変更と追加したファイルを退避する
+$ cd ~/ros2_ws/src && vcs pull                 # 今度は error が出ないことを確かめる
+```
+
+その後，上の手順の `rosdep install` と `colcon build` をやり直す．
+退避した変更は `git -C ~/ros2_ws/src/robot-programming stash list` で見られ，`git stash show -p` で中身を確かめられる．
+`jedy/jedy_bringup/scripts/track_box_to_cmd_vel_*.py` などは今はリポジトリに入っているので，退避したものを戻す必要はない．
+自分のプログラムは，これからは演習のリポジトリの外 (`~/enshu` など) に置く．
+
+(colcon-duplicate-package)=
+### `colcon build` が `Duplicate package names not supported` で止まる
+
+```{code-block} console
+ERROR:colcon:colcon build: Duplicate package names not supported:
+- jedy_skrobot:
+  - src/robot-programming/jedy/jedy_skrobot
+  - jedy_skrobot.bak
+```
+
+`~/ros2_ws` の下に，同じ名前のパッケージ (`package.xml` の `<name>` が同じ) が 2 つある．
+`colcon build` は `~/ros2_ws` の下を全部探すので，`src` の外 (`~/ros2_ws/jedy_skrobot.bak` など) に置いたバックアップも見つかる．
+このエラーでビルドが止まると，前にビルドした古いもの (または何も) が使われ，「`jedy_skrobot` が見つからない」などになる．
+バックアップを `~/ros2_ws` の外に移してからビルドし直す．
+
+```{code-block} console
+$ mkdir -p ~/backup && mv ~/ros2_ws/jedy_skrobot.bak ~/backup/
+$ cd ~/ros2_ws && colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
+```
 
 ### `colcon build` が「`uv` not found on PATH」で失敗する
 
