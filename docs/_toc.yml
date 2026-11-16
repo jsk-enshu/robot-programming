@@ -71,6 +71,8 @@ parts:
       title: use_sim_timeパラメータ
     - file: tips/ros-network
       title: ROS 2ネットワーク設定
+    - file: tips/cyclone-dds
+      title: Cyclone DDSに切り替える（任意）
     - file: tips/byobu
       title: tmux・byobu利用
     - file: tips/euslisp-to-skrobot

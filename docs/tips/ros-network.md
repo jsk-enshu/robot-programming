@@ -141,6 +141,8 @@ $ echo $RMW_IMPLEMENTATION
 
 両方で同じ実装（例：`rmw_fastrtps_cpp`や`rmw_cyclonedds_cpp`）に設定するか，環境変数を未設定（デフォルトのFast DDSが使われる）にする．
 
+Cyclone DDS に切り替える手順は {doc}`cyclone-dds` にある．
+
 ###### 2. ファイアウォールによるブロック
 
 DDSは通信の検出（Discovery）やデータ交換にUDPポート（場合によってはTCPも）を使用する．OSのファイアウォールがこれらのパケットをブロックしている可能性がある．
