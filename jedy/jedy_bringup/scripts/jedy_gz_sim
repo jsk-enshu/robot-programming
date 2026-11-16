@@ -1,0 +1,192 @@
+#!/usr/bin/env python3
+"""Run ``gz sim`` for a launch, and make sure all of it is gone when the launch is.
+
+    jedy_gz_sim [--grace SECONDS] -- <gz sim arguments>
+
+jedy_gazebo.launch.py starts Gazebo through this instead of ``gz sim`` itself.
+
+Why Gazebo outlived its launch
+------------------------------
+``gz sim`` is a Ruby program. With the GUI it forks two children, ``gz sim
+server`` and ``gz sim gui``, and each moves into a process group of its own.
+Gazebo was also started under ``setsid`` (one SIGINT, not the terminal's plus
+launch's). Together, on Ctrl-C:
+
+* The terminal's SIGINT reached only the launch's own process group, so not
+  Gazebo; and ``ros2 launch`` does not send SIGINT itself after a Ctrl-C (it
+  assumes the terminal already did). Gazebo heard nothing for 5 s, until
+  launch escalated to SIGTERM.
+* On SIGTERM the Ruby parent stops the GUI, then the server, allowing each 5 s.
+  Launch SIGKILLs the parent 5 s after the SIGTERM. A server that had not
+  stopped by then lost its parent and kept running -- the ``gz sim server``
+  students found afterwards, which the preflight check then reported on the
+  next launch.
+* Closing the terminal instead of Ctrl-C: SIGHUP goes to the terminal's
+  session, and Gazebo was in another one.
+
+What this does
+--------------
+It starts ``gz sim`` in a new session and stays launch's child. On the first
+SIGINT, SIGTERM or SIGHUP (or when the launch dies: PR_SET_PDEATHSIG), it sends
+one SIGINT to ``gz sim``, waits ``--grace`` seconds, then SIGKILLs every process
+still in that session (server and GUI included: setpgid does not leave the
+session). When Gazebo exits by itself (the GUI window closed), whatever is
+left of it is stopped the same way and this exits with Gazebo's status, so
+the launch's ``on_exit=Shutdown()`` still fires.
+
+Pure standard library, like jedy_wait_port.
+"""
+
+from __future__ import annotations
+
+import argparse
+import ctypes
+import os
+import signal
+import subprocess
+import sys
+import time
+
+PR_SET_PDEATHSIG = 1
+
+
+def session_members(session):
+    """Processes whose session id is ``session``.
+
+    Parameters
+    ----------
+    session : int
+        Session id, i.e. the pid of the session leader.
+
+    Returns
+    -------
+    list of int
+        Their pids (the leader included while it is alive).
+    """
+    members = []
+    for name in os.listdir("/proc"):
+        if not name.isdigit():
+            continue
+        try:
+            with open("/proc/%s/stat" % name) as handle:
+                fields = handle.read().rsplit(")", 1)[1].split()
+        except (OSError, IndexError):
+            continue
+        # After the ")": state ppid pgrp session ...
+        if len(fields) > 3 and int(fields[3]) == session and fields[0] != "Z":
+            members.append(int(name))
+    return members
+
+
+def signal_all(pids, signum):
+    """Send ``signum`` to each pid, ignoring those already gone."""
+    for pid in pids:
+        try:
+            os.kill(pid, signum)
+        except ProcessLookupError:
+            pass
+
+
+def stop_session(child, session, grace, out):
+    """SIGINT ``gz sim``; SIGKILL the whole session after ``grace`` s.
+
+    Parameters
+    ----------
+    child : subprocess.Popen
+        The ``gz sim`` process (the session leader).
+    session : int
+        Its session id.
+    grace : float
+        Seconds Gazebo gets to stop by itself.
+    out : file
+        Where to say that it had to be killed.
+    """
+    if child.poll() is None:
+        signal_all([child.pid], signal.SIGINT)
+    else:
+        # The Ruby parent is gone; its server/GUI children may not be.
+        signal_all(session_members(session), signal.SIGINT)
+    deadline = time.monotonic() + grace
+    while time.monotonic() < deadline:
+        child.poll()
+        if not session_members(session):
+            return
+        time.sleep(0.1)
+    left = session_members(session)
+    if left:
+        print("[jedy_gz_sim] Gazebo did not stop within {:.0f} s of SIGINT; "
+              "killing pids {}".format(grace, " ".join(map(str, left))),
+              file=out, flush=True)
+        signal_all(left, signal.SIGKILL)
+        while session_members(session):
+            child.poll()
+            time.sleep(0.05)
+    child.poll()
+
+
+def die_with_parent():
+    """Get SIGTERM when the launch that started us dies (Linux only)."""
+    try:
+        libc = ctypes.CDLL(None, use_errno=True)
+        libc.prctl(PR_SET_PDEATHSIG, signal.SIGTERM)
+    except (OSError, AttributeError):
+        return
+
+
+def main(argv=None):
+    """Run Gazebo until it exits or we are told to stop.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Arguments without the program name.
+
+    Returns
+    -------
+    int
+        Gazebo's exit status, or 0 when it was stopped on request.
+    """
+    parser = argparse.ArgumentParser(
+        description="gz sim that does not outlive its launch")
+    parser.add_argument("--grace", type=float, default=8.0,
+                        help="seconds Gazebo gets after SIGINT before the "
+                             "whole session is SIGKILLed (default 8)")
+    parser.add_argument("gz_args", nargs=argparse.REMAINDER,
+                        help="arguments for `gz sim`, after --")
+    args = parser.parse_args(argv)
+    gz_args = args.gz_args
+    if gz_args[:1] == ["--"]:
+        gz_args = gz_args[1:]
+
+    stop = {"requested": False}
+
+    def request_stop(signum, frame):
+        stop["requested"] = True
+
+    for signum in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+        signal.signal(signum, request_stop)
+    parent = os.getppid()
+    die_with_parent()
+    if os.getppid() != parent:
+        stop["requested"] = True
+
+    child = subprocess.Popen(["gz", "sim"] + gz_args, start_new_session=True)
+    session = child.pid
+
+    while not stop["requested"]:
+        try:
+            child.wait(timeout=0.2)
+        except subprocess.TimeoutExpired:
+            continue
+        break
+
+    # Either way, nothing of this Gazebo may be left behind.
+    stop_session(child, session, args.grace, sys.stderr)
+    if stop["requested"]:
+        return 0
+    status = child.returncode
+    return status if status >= 0 else 128 - status
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
