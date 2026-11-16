@@ -178,7 +178,8 @@ name: fig:how_to_charge_battery
 ### 起動
 
 1. 電源を入れる (上の「電源の入れ方」)．
-2. USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) と頭のカメラ (D405) の USB を PC に挿す．
+2. USB シリアルアダプタ (Kondo DUAL USB ADAPTER HS) と頭のカメラ (D405) の USB を PC に挿す
+   (D405 のケーブルのつなぎ方は {ref}`d405-cable`)．
 3. 起動する．
 
 ```{code-block} console
