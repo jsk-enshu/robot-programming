@@ -58,7 +58,8 @@ import sys
 import tempfile
 import xml.etree.ElementTree as ET
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import (
+    get_package_prefix, get_package_share_directory)
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument, ExecuteProcess, OpaqueFunction,
@@ -73,6 +74,9 @@ sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
 from jedy_preflight import preflight_action  # noqa: E402
 
 NAMESPACE = "jedy_fullbody"
+
+#: Seconds Gazebo gets to stop on SIGINT before jedy_gz_sim SIGKILLs it.
+GZ_STOP_GRACE = 8
 
 #: The pose the robot is spawned in [rad]: scikit-robot's Jedy.reset_pose()
 #: (as the 2025 EusLisp :reset-pose), upper arms a little back, forearms
@@ -598,25 +602,25 @@ def checkerboard_sdf(cols=CHECKERBOARD_COLS, rows=CHECKERBOARD_ROWS,
 
 
 def gz_sim_process(context, world):
-    """``gz sim`` as launch's own child in its own process group.
+    """``gz sim`` through ``jedy_gz_sim``, so that Ctrl-C stops all of it.
 
-    Gazebo stops in about 2 s on ONE SIGINT. Two ways it did not:
+    Before, Gazebo ran as ``setsid gz sim ...``, and on Ctrl-C:
 
-    * Stopped with ``kill -INT <launch pid>`` (scripts, ``timeout``):
-      ros_gz_sim's gz_sim.launch.py runs Gazebo through a shell (``/bin/sh -c
-      ruby gz sim ...``); launch's SIGINT went to the shell, which waits on
-      Gazebo and did not pass it on; 5 s later launch's SIGTERM ended only the
-      shell, and Gazebo was left running with parent pid 1, still stepping the
-      physics. So no shell here.
-    * Ctrl-C in the terminal: the terminal sends SIGINT to the whole process
-      group, and launch sends Gazebo another one; with two, Gazebo did not
-      stop and launch killed it 15 s later (SIGKILL). ``setsid`` puts Gazebo
-      in a process group of its own, so only launch's SIGINT reaches it.
-      Launch's child is not a group leader, so setsid execs in place: the pid
-      launch watches is Gazebo's.
+    * nothing told Gazebo for 5 s: the terminal's SIGINT goes to the launch's
+      process group (not Gazebo's session), and ``ros2 launch`` does not send
+      its own SIGINT after a Ctrl-C (it assumes the terminal did);
+    * then launch's SIGTERM made the Ruby ``gz sim`` stop the GUI and the
+      server (5 s each), and launch SIGKILLed it 5 s later. A ``gz sim
+      server`` not stopped by then was left running without a parent, and
+      the next launch's preflight check refused to start (5 students on
+      2026-11-16).
 
-    Measured on an RTX 4090 desktop, old and new: the old launch left Gazebo
-    behind after ``kill -INT``; this one stops it in 2 s either way.
+    ``jedy_gz_sim`` (scripts/) keeps Gazebo in a session of its own, so it gets
+    exactly one SIGINT, but sends it at once, and SIGKILLs whatever of that
+    session is left after its grace period (8 s), server and GUI included. It
+    also stops Gazebo when the terminal is closed (SIGHUP) or the launch is
+    killed. sigterm_timeout leaves it the time to do that before launch
+    escalates.
 
     The rest is what gz_sim.launch.py does: Gazebo finds system plugins
     (gz_ros2_control, jedy_bringup's) on GZ_SIM_SYSTEM_PLUGIN_PATH, which gets
@@ -625,7 +629,9 @@ def gz_sim_process(context, world):
     gui = LaunchConfiguration("gui").perform(context) == "true"
     # -s: server only. --headless-rendering lets the server render sensors
     # through EGL without a display.
-    cmd = ["setsid", "gz", "sim", "-r"]
+    wrapper = os.path.join(get_package_prefix("jedy_bringup"), "lib",
+                           "jedy_bringup", "jedy_gz_sim")
+    cmd = [wrapper, "--grace", str(GZ_STOP_GRACE), "--", "-r"]
     if not gui:
         cmd += ["-s", "--headless-rendering"]
     cmd.append(world.perform(context))
@@ -635,6 +641,9 @@ def gz_sim_process(context, world):
     return [ExecuteProcess(
         cmd=cmd, name="gazebo", output="screen",
         additional_env={"GZ_SIM_SYSTEM_PLUGIN_PATH": plugin_path},
+        # jedy_gz_sim ends by itself within GZ_STOP_GRACE s; launch's SIGTERM
+        # (and the "failed to terminate" error) only if it did not.
+        sigterm_timeout=str(GZ_STOP_GRACE + 4),
         on_exit=Shutdown(),
     )]
 
