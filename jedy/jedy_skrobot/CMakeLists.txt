@@ -10,6 +10,29 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
 ament_generate_virtualenv(PYTHON ${Python3_EXECUTABLE})
 
+# A student's own ~/ros2_ws/jedy_skrobot.py (or skrobot.py) is imported instead
+# of the package when the venv's ipython/python runs in that directory, and the
+# error ("cannot import name 'connect' from 'jedy_skrobot'
+# (/home/.../jedy_skrobot.py)") reads like a broken install. This .pth runs at
+# start-up of every venv interpreter and makes such an import fail with a
+# message naming the file and saying to rename it.
+#
+# Copied into the BUILD venv, not installed next to the installed one: the
+# venv's console scripts (ipython, pip, ...) keep the build venv's interpreter
+# in their #! line, so `venv/bin/ipython` under install/ runs
+# build/jedy_skrobot/venv/bin/python and reads that venv's site-packages. The
+# installed venv is a copy of the build one, so it gets the files too.
+set(_venv_site_packages
+  "${CMAKE_CURRENT_BINARY_DIR}/venv/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/site-packages")
+add_custom_target(${PROJECT_NAME}_shadow_guard ALL
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/venv_site/_jedy_skrobot_shadow_guard.pth"
+    "${CMAKE_CURRENT_SOURCE_DIR}/venv_site/_jedy_skrobot_shadow_guard.py"
+    "${_venv_site_packages}/"
+  VERBATIM
+)
+add_dependencies(${PROJECT_NAME}_shadow_guard ${PROJECT_NAME}_generate_virtualenv)
+
 # jedy_skrobot/ (connect, JedyInterface) on the workspace's PYTHONPATH, so
 # programs outside this package (e.g. students' own) can import it.
 find_package(ament_cmake_python REQUIRED)

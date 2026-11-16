@@ -202,6 +202,7 @@ for _ in range(30):
 ```
 
 ファイルに書いたプログラムは，jedy_skrobot の仮想環境の python で実行する (ふつうの `python3` では scikit-robot が見つからない)．
+ファイル名を，使うパッケージと同じ名前 (`jedy_skrobot.py`，`skrobot.py`，`numpy.py` など) にしない．そのファイルが本物のパッケージの代わりに読み込まれ，`import` が失敗する．
 
 ```{code-block} console
 $ $(ros2 pkg prefix jedy_skrobot)/share/jedy_skrobot/venv/bin/python ~/enshu/my_program.py
