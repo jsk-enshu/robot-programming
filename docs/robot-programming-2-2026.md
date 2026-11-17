@@ -19,8 +19,8 @@ $ source ~/ros2_ws/install/setup.bash
 ```
 
 - `vcs pull` の出力に `error:` が無いこと，`colcon build` の最後が `Summary: N packages finished` で `failed` が無いことを確かめる．
-- うまくいかなかったら，そのターミナルで **`ta fix`** と打つ．AI TA が直前のエラーを読んで直し方を教えてくれる ({doc}`tips/ai-ta`)．
-  言われたとおりに直したら，失敗したところから続ける．
+- うまくいかなかったら，そのターミナルで **`ta fix`** と打つ．AI TA が直前のエラーを読んで，原因と直し方を教えてくれる ({doc}`tips/ai-ta`)．
+  自分で直してもよいし，「やって」と頼めば AI TA が直してくれる．直ったら，失敗したところから続ける．
 - よくあるつまずきと直し方は {ref}`software-update` にもある．
 
 <video width="100%" controls muted preload="metadata" poster="fig/update-ta-fix.jpg">
@@ -28,10 +28,20 @@ $ source ~/ros2_ws/install/setup.bash
   お使いのブラウザは動画タグをサポートしていません．
 </video>
 
-**動画：** `vcs pull` が自分の変更 (`interface.py` の待ち時間を変えていた) とぶつかって止まったので，`ta fix` で聞いた例．
-AI TA は原因を調べ，変更を `git stash` で退避して `vcs pull` をやり直した．
-コマンドを実行する前に許可を聞いてくるので，内容を読んで `1` (Yes) を選ぶ．
-最後に教えてくれた残りの手順 (`rosdep` と `colcon build`) を実行して終わり (待ち時間を詰めて，2〜8 倍速にしている)．
+**動画：** `vcs pull` が自分の変更 (`interface.py` の待ち時間を変えていた) とぶつかって止まったので，`ta fix` で聞いた例
+(待ち時間を詰めて，最大 3 倍速にしている)．
+AI TA は原因を調べて直し方を答えた．「やって」と頼むと，変更を `git stash` で退避して `vcs pull` をやり直し，
+「rosdep と colcon build もやって」で残りの手順も済ませた．頼みごとはこの 2 回だけで，確認は 1 回も求められていない．
+
+### AI TA の auto mode
+
+`ta` や `ta fix` で開く AI TA は，**auto mode** で起動する (画面の下に `⏵⏵ auto mode on` と出る．`ta version` が 0.2.13 以降)．
+
+- AI TA が実行するコマンドは，安全かを AI が判定し，問題ないものは確認なしで実行される．上の動画では，`git stash`・`vcs pull`・`rosdep`・`colcon build` を確認なしで実行した．
+- `sudo`，`pip install`，`~/ros2_ws/src` の中のファイルの書き換え，`~/.bashrc` などの書き換えは，auto mode でも毎回確認を求められる (`ta version` が 0.2.14 以降)．内容を読んでから選ぶ．
+- 1 つずつ確かめてから許可したいときは，`Shift+Tab` を何回か押して `manual mode on` にする．コマンドのたびに確認を求められるので，`1` (Yes) か `3` (No) を選ぶ．
+- 確認なしでも，何をしたかは画面に出る．「何をしたの?」と聞けば説明してくれる．
+- `ta version` が 0.2.12 以前のときは manual mode で起動する．{ref}`ai-ta-setup` の `curl ... | bash` をもう一度実行すると新しくなる．
 
 ## 本日の演習内容
 
