@@ -1,6 +1,38 @@
 (day-whole-body)=
 # ロボットの全身行動プログラミング
 
+(day2-update)=
+## はじめに: ソフトウェアを更新する
+
+1 日目のあとに直したところがあるので，最初に更新してビルドし直す．新しいターミナルで次を順に実行する．
+
+```{code-block} console
+$ cd ~/ros2_ws/src
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
+$ vcs pull
+$ rosdep update
+$ cd ~/ros2_ws/
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
+$ source /opt/ros/jazzy/setup.bash
+$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
+$ source ~/ros2_ws/install/setup.bash
+```
+
+- `vcs pull` の出力に `error:` が無いこと，`colcon build` の最後が `Summary: N packages finished` で `failed` が無いことを確かめる．
+- うまくいかなかったら，そのターミナルで **`ta fix`** と打つ．AI TA が直前のエラーを読んで直し方を教えてくれる ({doc}`tips/ai-ta`)．
+  言われたとおりに直したら，失敗したところから続ける．
+- よくあるつまずきと直し方は {ref}`software-update` にもある．
+
+<video width="100%" controls muted preload="metadata" poster="fig/update-ta-fix.jpg">
+  <source src="fig/update-ta-fix.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
+
+**動画：** `vcs pull` が自分の変更 (`interface.py` の待ち時間を変えていた) とぶつかって止まったので，`ta fix` で聞いた例．
+AI TA は原因を調べ，変更を `git stash` で退避して `vcs pull` をやり直した．
+コマンドを実行する前に許可を聞いてくるので，内容を読んで `1` (Yes) を選ぶ．
+最後に教えてくれた残りの手順 (`rosdep` と `colcon build`) を実行して終わり (待ち時間を詰めて，2〜8 倍速にしている)．
+
 ## 本日の演習内容
 
 今日は {doc}`robot-programming-1-2026` で使えるようになった道具 (台車・腕と首・カメラ・認識・声) を組み合わせて，
