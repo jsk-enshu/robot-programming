@@ -23,25 +23,42 @@ $ source ~/ros2_ws/install/setup.bash
   自分で直してもよいし，「やって」と頼めば AI TA が直してくれる．直ったら，失敗したところから続ける．
 - よくあるつまずきと直し方は {ref}`software-update` にもある．
 
-<video width="100%" controls muted preload="metadata" poster="fig/update-ta-fix.jpg">
-  <source src="fig/update-ta-fix.mp4" type="video/mp4">
+### AI TA の auto mode と manual mode
+
+`ta` や `ta fix` で開く AI TA は，**auto mode** で起動する (画面の下に `⏵⏵ auto mode on` と出る．`ta version` が 0.2.13 以降)．
+`Shift+Tab` を何回か押すと **manual mode** (`manual mode on`) になる．どちらでも直せるので，好きなほうを使う．
+
+| | auto mode (起動したとき) | manual mode (`Shift+Tab` で切り替え) |
+| --- | --- | --- |
+| AI TA がコマンドを実行するとき | 安全かを AI が判定し，問題ないものは確認なしで実行する | 毎回確認を求める．内容を読んで `1` (Yes) か `3` (No) を選ぶ |
+| 確認を求めるもの | `sudo`，`pip install`，`~/ros2_ws/src` の中のファイルの書き換え，`~/.bashrc` などの書き換え (0.2.14 以降) | ほぼ全部 (資料を読むだけのコマンドと，`~/enshu` の中のファイルの書き換えは確認なし) |
+| 向いているとき | 早く直したい | 何をするかを 1 つずつ確かめたい |
+
+- どちらでも，何をしたかは画面に出る．「何をしたの?」と聞けば説明してくれる．
+- `ta version` が 0.2.12 以前のときは manual mode で起動する．{ref}`ai-ta-setup` の `curl ... | bash` をもう一度実行すると新しくなる．
+
+下の 2 つの動画は，どちらも `vcs pull` が自分の変更 (`interface.py` の待ち時間を変えていた) とぶつかって止まったところから始まる (待ち時間を詰めて速くしている)．
+
+**auto mode の例：**
+
+<video width="100%" controls muted preload="metadata" poster="fig/update-ta-fix-auto.jpg">
+  <source src="fig/update-ta-fix-auto.mp4" type="video/mp4">
   お使いのブラウザは動画タグをサポートしていません．
 </video>
 
-**動画：** `vcs pull` が自分の変更 (`interface.py` の待ち時間を変えていた) とぶつかって止まったので，`ta fix` で聞いた例
-(待ち時間を詰めて，最大 3 倍速にしている)．
-AI TA は原因を調べて直し方を答えた．「やって」と頼むと，変更を `git stash` で退避して `vcs pull` をやり直し，
+`ta fix` で AI TA が原因と直し方を答えた．「やって」と頼むと，変更を `git stash` で退避して `vcs pull` をやり直し，
 「rosdep と colcon build もやって」で残りの手順も済ませた．頼みごとはこの 2 回だけで，確認は 1 回も求められていない．
 
-### AI TA の auto mode
+**manual mode の例：**
 
-`ta` や `ta fix` で開く AI TA は，**auto mode** で起動する (画面の下に `⏵⏵ auto mode on` と出る．`ta version` が 0.2.13 以降)．
+<video width="100%" controls muted preload="metadata" poster="fig/update-ta-fix-manual.jpg">
+  <source src="fig/update-ta-fix-manual.mp4" type="video/mp4">
+  お使いのブラウザは動画タグをサポートしていません．
+</video>
 
-- AI TA が実行するコマンドは，安全かを AI が判定し，問題ないものは確認なしで実行される．上の動画では，`git stash`・`vcs pull`・`rosdep`・`colcon build` を確認なしで実行した．
-- `sudo`，`pip install`，`~/ros2_ws/src` の中のファイルの書き換え，`~/.bashrc` などの書き換えは，auto mode でも毎回確認を求められる (`ta version` が 0.2.14 以降)．内容を読んでから選ぶ．
-- 1 つずつ確かめてから許可したいときは，`Shift+Tab` を何回か押して `manual mode on` にする．コマンドのたびに確認を求められるので，`1` (Yes) か `3` (No) を選ぶ．
-- 確認なしでも，何をしたかは画面に出る．「何をしたの?」と聞けば説明してくれる．
-- `ta version` が 0.2.12 以前のときは manual mode で起動する．{ref}`ai-ta-setup` の `curl ... | bash` をもう一度実行すると新しくなる．
+`ta fix` で AI TA が原因を調べ，変更を `git stash` で退避して `vcs pull` をやり直した．
+コマンドを実行する前に毎回確認を求めてくるので，内容を読んで `1` (Yes) を選んだ．
+最後に教えてくれた残りの手順 (`rosdep` と `colcon build`) は自分で実行した．
 
 ## 本日の演習内容
 
