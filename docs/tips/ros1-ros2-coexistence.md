@@ -86,7 +86,7 @@ ROS 1で安定動作している部分はそのまま使用し新しい機能や
 
 ### メカトロボット
 
-{doc}`../robot-programming-3-2026`で扱うメカトロボットは以下のような混在システムの例である：
+{doc}`2025年度の資料<../robot-programming-3-2025>`で扱ったメカトロボットは以下のような混在システムの例である（2026年度は Arduino UNO R4 WiFi と ROS 2 のブリッジノードを使い，ROS 2 だけで完結させている．{doc}`../robot-programming-3-2026`を参照）：
 
 **ROS 1側：**
 - **rosserial**を使用したArduino（Seeeduino Nano）との通信

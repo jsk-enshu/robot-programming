@@ -32,6 +32,7 @@ ament_uv_install_python_scripts(
     scripts/demos.py
     scripts/object_detection_node.py
     scripts/gesture_node.py
+    scripts/hand_detection_node.py
   STRIP_PY_EXTENSION
 )
 

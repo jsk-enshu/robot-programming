@@ -60,12 +60,13 @@ $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy
 - `sudo apt upgrade` を省くと，入っている ROS 2 が古いままになる．`rosdep install` は足りないパッケージを入れるだけで，入っているものは新しくしない．
   古い ROS 2 Jazzy では `speech_recognition_msgs` のビルドが `Unknown CMake command "rosidl_auto_generate_interfaces"` で止まる．
 - `--packages-up-to` の後に並べた，演習に使うパッケージ (ロボットとシミュレータ，`robot, ri`，カメラの認識，音声認識) とそれが使うものだけをビルドする．
-  ワークスペースには演習で使わないパッケージ (jsk_3rdparty の他のパッケージ，メカトロボットなど) も入っているが，それらはビルドしない．
+  ワークスペースには演習で使わないパッケージ (jsk_3rdparty の他のパッケージなど) も入っているが，それらはビルドしない．
+  メカトロボット (`mechatrobot_ros2`) は {doc}`robot-programming-3-2026` の日にビルドする．
 - 音声合成 (VOICEVOX) は，エンジン (約 1.3 GB) のダウンロードに時間がかかるので，ここではビルドしない．
   ロボットに声でしゃべらせるときに，{doc}`robot-programming-1-2026` の「声でしゃべる・聞く」の手順でビルドする．
 - ビルドの最後に `N packages had stderr output` と出ることがあるが，uv の進み具合などの表示で，失敗ではない．
   失敗したときは `Failed` と出て，`Summary` に `failed` のパッケージが並ぶ．
-- `--skip-keys` の 3 つは，本演習で使わないパッケージ (`mechatrobot_ros2`，`jsk_data`) の依存で，rosdep では入らない．
+- `--skip-keys` の 3 つは，ワークスペースのパッケージの依存のうち，rosdep では入らないものである．
   付けないと `rosdep install` が最後に `ERROR` を出すが，演習には影響しない．
 
 ```{important}

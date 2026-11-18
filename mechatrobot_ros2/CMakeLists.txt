@@ -41,8 +41,9 @@ install(TARGETS
 
 # Install Python scripts
 install(PROGRAMS
-  scripts/motor-command-by-face.py
+  scripts/motor_command_by_hand.py
   scripts/led_controller.py
+  scripts/serial_bridge.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
