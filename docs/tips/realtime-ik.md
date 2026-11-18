@@ -61,22 +61,7 @@ irtviewer内のロボットモデルとGazebo内のロボットが即時追従�
 
 ```{code-block} console
 $ source /opt/ros/one/setup.bash
-$ rostopic pub /ik_rarm_tgt geometry_msgs/PoseStamped "header:
-  seq: 0
-  stamp:
-    secs: 0
-    nsecs: 0
-  frame_id: ''
-pose:
-  position:
-    x: 0.2
-    y: -0.5
-    z: 0.5
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0"
+$ rostopic pub /ik_rarm_tgt geometry_msgs/PoseStamped "{header: {seq: 0, stamp: {secs: 0, nsecs: 0}, frame_id: ''}, pose: {position: {x: 0.2, y: -0.5, z: 0.5}, orientation: {x: 0.0, y: 0.0, z: 0.0, w: 1.0}}}"
 ```
 
 コマンド入力時は適宜Tab補完を利用するとよい
