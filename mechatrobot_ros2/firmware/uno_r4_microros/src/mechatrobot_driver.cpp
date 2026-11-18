@@ -4,16 +4,17 @@
 // Same topics as the rosserial version, so mechatrobot_ros2 works unchanged:
 //   pub  range           sensor_msgs/Range  HC-SR04 (TRIG D2, ECHO D3), 20 Hz
 //   pub  led/state       std_msgs/Bool      LED_BUILTIN blinks, 2 Hz
-//   pub  motor1/position std_msgs/Int64     current stepper angle [deg], 20 Hz
-//   sub  motor1/command  std_msgs/Int64     target stepper angle [deg] (absolute)
+//   pub  motor1/position std_msgs/Int64     angle the servo is driven to now [deg], 20 Hz
+//   sub  motor1/command  std_msgs/Int64     servo target [deg], -90..90, 0 = centre
 //
 // Differences from the rosserial version:
-//   - The stepper moves one step per loop() instead of blocking inside the
-//     subscriber callback, so communication keeps running while it turns.
-//   - motor1/position reports the angle actually reached, not the last target.
+//   - An SG90 servo on D8 replaces the 28BYJ-48 stepper. It has no position
+//     output, so motor1/position is the angle this sketch writes to it. That
+//     angle moves towards the target at SERVO_DEG_PER_SEC (slower than the
+//     SG90), so the servo keeps up and the reported angle stays close.
 //   - pulseIn() times out after the echo time of max_range instead of 1 s.
 #include <Arduino.h>
-#include <Stepper.h>
+#include <Servo.h>
 #include <micro_ros_platformio.h>
 #include <rcl/rcl.h>
 #include <rclc/rclc.h>
@@ -24,17 +25,18 @@
 #include <std_msgs/msg/int64.h>
 
 // ---- hardware ---------------------------------------------------------------
-// Same wiring as the summer course (micon-programming): HC-SR04 on D2/D3,
-// ULN2003 IN1-IN4 on D5-D8.
+// HC-SR04 on D2/D3 as in the summer course (micon-programming, task 3),
+// SG90 servo signal on D8. Same as firmware/uno_r4_serial.
 constexpr int TRIG_PIN = 2;
 constexpr int ECHO_PIN = 3;
-constexpr int MOTOR_PIN1 = 5;
-constexpr int MOTOR_PIN2 = 6;
-constexpr int MOTOR_PIN3 = 7;
-constexpr int MOTOR_PIN4 = 8;
-// 360 [deg] / 5.625 [deg/step] / 2 (phase excitation) * 64 (gear ratio)
-constexpr long STEPS_PER_ROTATE_28BYJ48 = 2048;
-constexpr int STEPPER_RPM = 5;  // must be within 1-15
+constexpr int SERVO_PIN = 8;
+// Servo.write() takes 0-180 deg; the topics use -90..90 with 0 at the centre.
+constexpr long SERVO_CENTER_DEG = 90;
+constexpr long ANGLE_MIN_DEG = -90;
+constexpr long ANGLE_MAX_DEG = 90;
+// The SG90 turns about 600 deg/s (0.1 s / 60 deg) with no load.
+constexpr unsigned long SERVO_DEG_PER_SEC = 200;
+constexpr unsigned long SERVO_MS_PER_DEG = 1000 / SERVO_DEG_PER_SEC;
 
 constexpr float SOUND_SPEED_M_PER_US = 0.000343f;
 constexpr float RANGE_MIN_M = 0.02f;
@@ -47,10 +49,9 @@ constexpr unsigned long ECHO_TIMEOUT_US =
 constexpr unsigned long SENSOR_PERIOD_MS = 50;
 constexpr int LED_TOGGLE_EVERY_N_TICKS = 10;  // 10 * 50 ms = 500 ms
 
-// The pin order 1-3-2-4 matches the wiring used in the course material.
-static Stepper stepper(STEPS_PER_ROTATE_28BYJ48, MOTOR_PIN1, MOTOR_PIN3, MOTOR_PIN2, MOTOR_PIN4);
-static long current_steps = 0;
-static long target_steps = 0;
+static Servo servo;
+static long current_deg = 0;  // angle written to the servo [deg], -90..90
+static long target_deg = 0;
 
 // ---- micro-ROS --------------------------------------------------------------
 static char range_frame_id[] = "range_sensor";
@@ -75,13 +76,18 @@ static AgentState state = AgentState::WAITING;
 
 #define RC(fn) { if ((fn) != RCL_RET_OK) { return false; } }
 
-// Rounded so that commanding N deg reports N deg back once the motor arrives.
-static long angle_to_steps(long deg) {
-  return lround((double)deg * STEPS_PER_ROTATE_28BYJ48 / 360.0);
+static long clamp_angle(long deg) {
+  if (deg < ANGLE_MIN_DEG) {
+    return ANGLE_MIN_DEG;
+  }
+  if (deg > ANGLE_MAX_DEG) {
+    return ANGLE_MAX_DEG;
+  }
+  return deg;
 }
 
-static long steps_to_angle(long steps) {
-  return lround((double)steps * 360.0 / STEPS_PER_ROTATE_28BYJ48);
+static void write_servo(long deg) {
+  servo.write((int)(SERVO_CENTER_DEG + deg));
 }
 
 static float measure_range_m() {
@@ -109,7 +115,7 @@ static void timer_callback(rcl_timer_t *t, int64_t) {
   stamp_now(&range_msg.header.stamp);
   (void)rcl_publish(&range_pub, &range_msg, NULL);
 
-  position_msg.data = steps_to_angle(current_steps);
+  position_msg.data = current_deg;
   (void)rcl_publish(&position_pub, &position_msg, NULL);
 
   if (tick % LED_TOGGLE_EVERY_N_TICKS == 0) {
@@ -122,7 +128,7 @@ static void timer_callback(rcl_timer_t *t, int64_t) {
 
 static void command_callback(const void *msgin) {
   const std_msgs__msg__Int64 *m = (const std_msgs__msg__Int64 *)msgin;
-  target_steps = angle_to_steps((long)m->data);
+  target_deg = clamp_angle((long)m->data);
 }
 
 static bool create_entities() {
@@ -162,21 +168,36 @@ static void destroy_entities() {
   (void)rclc_support_fini(&support);
 }
 
-static void step_towards_target() {
-  if (current_steps < target_steps) {
-    stepper.step(1);
-    current_steps++;
-  } else if (current_steps > target_steps) {
-    stepper.step(-1);
-    current_steps--;
+// Move the servo 1 deg towards the target every SERVO_MS_PER_DEG. When loop()
+// was held up (pulseIn waits up to ~27 ms), catch up by several degrees.
+static void move_towards_target() {
+  static unsigned long last_ms = 0;
+  unsigned long now = millis();
+  if (current_deg == target_deg) {
+    last_ms = now;
+    return;
   }
+  long steps = (long)((now - last_ms) / SERVO_MS_PER_DEG);
+  if (steps == 0) {
+    return;
+  }
+  last_ms += (unsigned long)steps * SERVO_MS_PER_DEG;
+  long remaining = target_deg - current_deg;
+  if (labs(remaining) <= steps) {
+    current_deg = target_deg;
+  } else {
+    current_deg += remaining > 0 ? steps : -steps;
+  }
+  write_servo(current_deg);
 }
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
-  stepper.setSpeed(STEPPER_RPM);
+  // The servo goes to the centre at power-on; that is where position 0 starts.
+  write_servo(current_deg);
+  servo.attach(SERVO_PIN);
 
   range_msg.radiation_type = sensor_msgs__msg__Range__ULTRASOUND;
   range_msg.field_of_view = RANGE_FOV_RAD;
@@ -225,6 +246,6 @@ void loop() {
       state = AgentState::WAITING;
       break;
   }
-  // Keep turning towards the last command even while the agent is away.
-  step_towards_target();
+  // Keep moving towards the last command even while the agent is away.
+  move_towards_target();
 }

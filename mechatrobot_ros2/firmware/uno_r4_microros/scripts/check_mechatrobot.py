@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Check the mechatrobot firmware: topic rates, the Range message, and the stepper.
+"""Check the mechatrobot firmware: topic rates, the Range message, and the servo.
 
 Run with micro_ros_agent already connected::
 
-    python3 scripts/check_mechatrobot.py            # moves the stepper to 30 deg
+    python3 scripts/check_mechatrobot.py            # moves the servo to 30 deg
     python3 scripts/check_mechatrobot.py --target 0
 """
 import argparse
@@ -36,9 +36,9 @@ def spin_for(node, sec):
 
 
 def main():
-    """Print topic rates, the last Range message and the stepper trajectory."""
+    """Print topic rates, the last Range message and the servo trajectory."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--target", type=int, default=30, help="stepper target [deg]")
+    parser.add_argument("--target", type=int, default=30, help="servo target [deg]")
     args = parser.parse_args()
 
     rclpy.init()

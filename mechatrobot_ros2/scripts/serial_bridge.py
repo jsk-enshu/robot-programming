@@ -71,7 +71,7 @@ class SerialBridge(Node):
     # ---- PC -> board ---------------------------------------------------------
 
     def on_command(self, msg):
-        """Send a stepper target to the board.
+        """Send a motor target to the board.
 
         Parameters
         ----------

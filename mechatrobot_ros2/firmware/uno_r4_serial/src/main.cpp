@@ -4,30 +4,38 @@
 //
 // Protocol: one line per message, '\n' terminated, readable in a serial monitor.
 //   board -> PC   range <m>      HC-SR04 distance (TRIG D2, ECHO D3), 20 Hz
-//                 pos <deg>      stepper angle actually reached, 20 Hz
+//                 pos <deg>      angle the servo is being driven to now, 20 Hz
 //                 led <0|1>      LED_BUILTIN state, 2 Hz
 //                 # <text>       free-form log; the bridge only prints it
-//   PC -> board   cmd <deg>      stepper target angle (absolute)
+//   PC -> board   cmd <deg>      servo target angle, -90 (one end) .. 90 (other end),
+//                                0 is the centre; values outside are clamped
 //
-// The control part (non-blocking stepper, pulseIn timeout, rounding) is the same
-// as the micro-ROS version so that the two can be compared on communication only.
+// The servo (SG90 on D8) has no position output, so "pos" is the angle this
+// sketch writes to it, not a measurement. The sketch moves that angle towards
+// the target at SERVO_DEG_PER_SEC, slower than the SG90 can turn, so the servo
+// keeps up and "pos" stays close to where the horn actually is.
+//
+// The control part (non-blocking servo motion, pulseIn timeout, clamping) is the
+// same as the micro-ROS version so that the two can be compared on communication
+// only.
 #include <Arduino.h>
-#include <Stepper.h>
+#include <Servo.h>
 #include <stdlib.h>
 #include <string.h>
 
 // ---- hardware ---------------------------------------------------------------
-// Same wiring as the summer course (micon-programming): HC-SR04 on D2/D3,
-// ULN2003 IN1-IN4 on D5-D8.
+// HC-SR04 on D2/D3 as in the summer course (micon-programming, task 3),
+// SG90 servo signal on D8.
 constexpr int TRIG_PIN = 2;
 constexpr int ECHO_PIN = 3;
-constexpr int MOTOR_PIN1 = 5;
-constexpr int MOTOR_PIN2 = 6;
-constexpr int MOTOR_PIN3 = 7;
-constexpr int MOTOR_PIN4 = 8;
-// 360 [deg] / 5.625 [deg/step] / 2 (phase excitation) * 64 (gear ratio)
-constexpr long STEPS_PER_ROTATE_28BYJ48 = 2048;
-constexpr int STEPPER_RPM = 5;  // must be within 1-15
+constexpr int SERVO_PIN = 8;
+// Servo.write() takes 0-180 deg; the protocol uses -90..90 with 0 at the centre.
+constexpr long SERVO_CENTER_DEG = 90;
+constexpr long ANGLE_MIN_DEG = -90;
+constexpr long ANGLE_MAX_DEG = 90;
+// The SG90 turns about 600 deg/s (0.1 s / 60 deg) with no load.
+constexpr unsigned long SERVO_DEG_PER_SEC = 200;
+constexpr unsigned long SERVO_MS_PER_DEG = 1000 / SERVO_DEG_PER_SEC;
 
 constexpr float SOUND_SPEED_M_PER_US = 0.000343f;
 constexpr float RANGE_MAX_M = 4.5f;
@@ -40,19 +48,23 @@ constexpr unsigned long SENSOR_PERIOD_MS = 50;
 constexpr int LED_TOGGLE_EVERY_N_TICKS = 10;  // 10 * 50 ms = 500 ms
 constexpr size_t LINE_MAX = 32;
 
-// The pin order 1-3-2-4 matches the wiring used in the course material.
-static Stepper stepper(STEPS_PER_ROTATE_28BYJ48, MOTOR_PIN1, MOTOR_PIN3, MOTOR_PIN2, MOTOR_PIN4);
-static long current_steps = 0;
-static long target_steps = 0;
+static Servo servo;
+static long current_deg = 0;  // angle written to the servo [deg], -90..90
+static long target_deg = 0;
 static bool led_on = false;
 
-// Rounded so that commanding N deg reports N deg back once the motor arrives.
-static long angle_to_steps(long deg) {
-  return lround((double)deg * STEPS_PER_ROTATE_28BYJ48 / 360.0);
+static long clamp_angle(long deg) {
+  if (deg < ANGLE_MIN_DEG) {
+    return ANGLE_MIN_DEG;
+  }
+  if (deg > ANGLE_MAX_DEG) {
+    return ANGLE_MAX_DEG;
+  }
+  return deg;
 }
 
-static long steps_to_angle(long steps) {
-  return lround((double)steps * 360.0 / STEPS_PER_ROTATE_28BYJ48);
+static void write_servo(long deg) {
+  servo.write((int)(SERVO_CENTER_DEG + deg));
 }
 
 static float measure_range_m() {
@@ -71,7 +83,7 @@ static void handle_line(const char *line) {
     char *end = NULL;
     long deg = strtol(line + 4, &end, 10);
     if (end != line + 4) {
-      target_steps = angle_to_steps(deg);
+      target_deg = clamp_angle(deg);
       return;
     }
   }
@@ -113,7 +125,7 @@ static void send_sensors() {
   Serial.print(F("range "));
   Serial.println(measure_range_m(), 3);
   Serial.print(F("pos "));
-  Serial.println(steps_to_angle(current_steps));
+  Serial.println(current_deg);
   if (tick % LED_TOGGLE_EVERY_N_TICKS == 0) {
     led_on = !led_on;
     digitalWrite(LED_BUILTIN, led_on ? HIGH : LOW);
@@ -123,21 +135,36 @@ static void send_sensors() {
   tick++;
 }
 
-static void step_towards_target() {
-  if (current_steps < target_steps) {
-    stepper.step(1);
-    current_steps++;
-  } else if (current_steps > target_steps) {
-    stepper.step(-1);
-    current_steps--;
+// Move the servo 1 deg towards the target every SERVO_MS_PER_DEG. When loop()
+// was held up (pulseIn waits up to ~27 ms), catch up by several degrees.
+static void move_towards_target() {
+  static unsigned long last_ms = 0;
+  unsigned long now = millis();
+  if (current_deg == target_deg) {
+    last_ms = now;
+    return;
   }
+  long steps = (long)((now - last_ms) / SERVO_MS_PER_DEG);
+  if (steps == 0) {
+    return;
+  }
+  last_ms += (unsigned long)steps * SERVO_MS_PER_DEG;
+  long remaining = target_deg - current_deg;
+  if (labs(remaining) <= steps) {
+    current_deg = target_deg;
+  } else {
+    current_deg += remaining > 0 ? steps : -steps;
+  }
+  write_servo(current_deg);
 }
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
-  stepper.setSpeed(STEPPER_RPM);
+  // The servo goes to the centre at power-on; that is where "pos 0" starts.
+  write_servo(current_deg);
+  servo.attach(SERVO_PIN);
   Serial.begin(BAUD);
   Serial.println(F("# mechatrobot_serial ready"));
 }
@@ -150,5 +177,5 @@ void loop() {
     last_sensor_ms = now;
     send_sensors();
   }
-  step_towards_target();
+  move_towards_target();
 }

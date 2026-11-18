@@ -1,9 +1,17 @@
 (day-mechatronics)=
 # メカトロボットの製作とプログラミング
 
+:::{figure} fig/mechatrobot-servo-2026.jpg
+:align: center
+:width: 420px
+:name: fig:mechatrobot-servo-2026
+
+本日作るメカトロボット．Arduino UNO R4 WiFi に超音波距離センサ HC-SR04（Trig D2 / Echo D3）とサーボモータ SG90（信号線 D8）をつないだもの．
+:::
+
 ## 本日の演習内容
 
-{doc}`機械系二学科 夏学期演習 マイコンプログラミング演習<micon-programming>`では，Arduino UNO R4 WiFi で超音波距離センサ（HC-SR04）を読み，ステッピングモータ（28BYJ-48）を回した．
+{doc}`機械系二学科 夏学期演習 マイコンプログラミング演習<micon-programming>`では，Arduino UNO R4 WiFi で超音波距離センサ（HC-SR04）を読み，サーボモータ（SG90）を回した．
 そのときの処理はマイコンの中で閉じていた．
 本日はこの回路を PC とつなぎ，ROS 2 のロボットシステムに組み込んだメカトロボット[^mechatro]を作る．
 PC からモータに指令を送ったり，センサの値を PC で受け取って可視化したり，PC の画像処理の結果でモータを動かしたりできるようになる．
@@ -60,6 +68,8 @@ PC で動く `serial_bridge.py`（ブリッジ）がその行を ROS 2 のトピ
 | `/led/state` | std_msgs/Bool | マイコン → PC | 2 Hz | `led <0 または 1>` |
 | `/motor1/command` | std_msgs/Int64 | PC → マイコン | 送ったとき | `cmd <角度 [deg]>` |
 
+角度はサーボの真ん中を 0° とし，−90° 〜 90° の範囲で表す（Arduino の `Servo.write()` の 0〜180° から 90 を引いた値）．
+
 ```{note}
 2025年度までは ROS 1 の rosserial でマイコンと通信し，ros1_bridge で ROS 2 につないでいた．
 rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py` がトピックに変換する」という同じ形で，通信手順を汎用にしたものである．
@@ -71,15 +81,15 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 
 ### 回路
 
-{doc}`夏学期のマイコンプログラミング演習<micon-programming>`の演習課題3（超音波距離センサ）と演習課題4（ステッピングモータ）の配線をそのまま使う．
-両方を同時につなぐこと．
+{doc}`夏学期のマイコンプログラミング演習<micon-programming>`の演習課題3（超音波距離センサ）と発展課題5-1（サーボモータ）の回路を，両方同時につないで使う（発展課題5-2 と同じ配線）．
+超音波距離センサは Trig = D2 / Echo = D3，サーボの信号線は D8 である．
 
 | 部品 | 端子 | Arduino UNO R4 WiFi |
 | --- | --- | --- |
 | HC-SR04 | VCC / GND | 5V / GND |
 | HC-SR04 | Trig / Echo | D2 / D3 |
-| ULN2003 ドライバ基板 | 電源 + / − | 5V / GND |
-| ULN2003 ドライバ基板 | IN1 / IN2 / IN3 / IN4 | D5 / D6 / D7 / D8 |
+| サーボ SG90 | 赤（真ん中）/ 茶 | 5V / GND |
+| サーボ SG90 | オレンジ（信号） | D8 |
 
 ::::{grid} 2
 :gutter: 2
@@ -93,11 +103,11 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 :::
 
 :::{grid-item}
-:::{figure} fig/micon-programming/stepper-motor-uln2003-wiring.jpg
+:::{figure} fig/micon-programming/servo-motor-with-arduino.jpg
 :align: center
-:name: fig:stepper-uln2003-wiring-2026
+:name: fig:servo-motor-wiring-2026
 
-ステッピングモータの駆動回路（夏学期の演習課題4と同じ）
+サーボモータ SG90 の接続（夏学期の発展課題5-1．写真は信号線を D2 につないだ旧配線で，本日は D8 につなぐ）
 :::
 
 ::::
@@ -105,6 +115,7 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 <span style="color:red">**配線を変えるときは，必ず Arduino の USB ケーブルを PC から抜いて電源を切った状態で行うこと．**</span>
 通電したまま配線を変えると，一瞬の接触で短絡や過電流が起き，マイコンや周辺回路が壊れる．
 
+(mechatrobot-software-2026)=
 ### ソフトウェア
 
 {ref}`software-update`の手順でソフトウェアを更新してから，メカトロボットのパッケージをビルドする．
@@ -115,6 +126,26 @@ $ cd ~/ros2_ws/
 $ colcon build --symlink-install --packages-up-to mechatrobot_ros2
 $ source ~/ros2_ws/install/setup.bash
 ```
+
+ROS 2 の通信が自分の PC の中だけに閉じているかを確かめる．`LOCALHOST` と出ればよい．
+
+```{code-block} console
+$ echo $ROS_AUTOMATIC_DISCOVERY_RANGE
+LOCALHOST
+```
+
+<span style="color:red">**何も出ないときは，必ず設定してから先に進むこと．**</span>
+本日のトピック名（`/motor1/command` など）は全員同じなので，設定していないと同じネットワークにいる他の人の PC とつながり，
+他の人が送った指令で自分のサーボが動いたり，自分の指令で他の人のサーボが動いたりする．
+{doc}`environment-setup`のとおりに `~/.bashrc` に書いてあれば，新しく開いたターミナルでは自動で設定される．
+まだ書いていなければ，次で書いておく（1 回だけ）．
+
+```{code-block} console
+$ echo 'export ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST' >> ~/.bashrc
+$ source ~/.bashrc
+```
+
+`~/.bashrc` を書き換える前に開いたターミナルには読み込まれていないので，そのターミナルでも `source ~/.bashrc` するか，開き直すこと．
 
 Arduino を USB でつなぎ，デバイスファイルの名前を確かめておく．
 UNO R4 WiFi は `/dev/ttyACM0` のような名前になる．
@@ -148,7 +179,7 @@ static void send_sensors() {
   Serial.print(F("range "));
   Serial.println(measure_range_m(), 3);
   Serial.print(F("pos "));
-  Serial.println(steps_to_angle(current_steps));
+  Serial.println(current_deg);
   if (tick % LED_TOGGLE_EVERY_N_TICKS == 0) {
     led_on = !led_on;
     digitalWrite(LED_BUILTIN, led_on ? HIGH : LOW);
@@ -159,7 +190,7 @@ static void send_sensors() {
 }
 ```
 
-PC から届いた行は改行までためてから解釈する．`cmd <角度>` ならモータの目標角度にし，それ以外の行は `#` を付けて送り返す．
+PC から届いた行は改行までためてから解釈する．`cmd <角度>` ならモータの目標角度にし（−90〜90° の外の値は端に丸める），それ以外の行は `#` を付けて送り返す．
 `#` で始まる行はログで，ブリッジはトピックにせずに画面に表示するだけである．デバッグに `Serial.print` を使いたいときは，行の先頭に `#` を付けるとよい．
 
 ```cpp
@@ -168,7 +199,7 @@ static void handle_line(const char *line) {
     char *end = NULL;
     long deg = strtol(line + 4, &end, 10);
     if (end != line + 4) {
-      target_steps = angle_to_steps(deg);
+      target_deg = clamp_angle(deg);
       return;
     }
   }
@@ -177,9 +208,13 @@ static void handle_line(const char *line) {
 }
 ```
 
-ステッピングモータは，`loop()` が回るたびに目標へ 1 ステップずつ近づける．
-`cmd` を受けた瞬間に目標まで一気に回すと，回っている間（5 rpm で 360° なら約 12 秒）は通信もセンサの計測も止まってしまうからである．
-`pos` で送るのは，最後に受けた目標ではなく，実際に到達した角度である．
+サーボには，`loop()` の中で 5 ms ごとに 1° ずつ目標に近づけた角度を書く（200°/s）．
+SG90 は負荷がなければ 60° を約 0.1 秒（600°/s）で回れるので，この速さならサーボは遅れずについてくる．
+`delay()` で待ちながら動かすと，その間は通信もセンサの計測も止まってしまうので，`millis()` で時刻を見て動かす．
+
+サーボは今の角度をマイコンに返さない．
+そのため `pos` で送るのは，最後に受けた目標ではなく，**今サーボに書いている角度**である．実際の角度を測っているわけではないので，
+サーボの軸を手で押さえたり，重いものを付けたりしてサーボが追いつけないと，`pos` と実際の角度はずれる．
 
 #### <span style="color:green">チェックポイント: シリアルモニタで通信を確かめる</span>
 
@@ -189,7 +224,8 @@ static void handle_line(const char *line) {
 1.  Arduino IDE のシリアルモニタ（{doc}`tips/arduino-serial-monitor`）を 115200 bps で開き，`range` と `pos` の行が流れ続けることを確かめる．
     センサの前に手をかざすと `range` の値が変わることも確かめる．
 
-2.  改行を「LF」にして `cmd 90` を送り，モータが回って `pos` が 90 まで増えていくことを確かめる．`cmd 0` で戻す．
+2.  改行を「LF」にして `cmd 60` を送り，サーボが回って `pos` が 60 まで増えていくことを確かめる．`cmd -60` で反対向きに回し，`cmd 0` で真ん中に戻す．
+    `cmd 120` のように範囲の外の値を送ると，`pos` が 90 で止まることも確かめる．
 
 3.  `hello` のような決まっていない行を送り，`# ignored: hello` と返ってくることを確かめる．
 
@@ -284,7 +320,7 @@ $ ros2 launch mechatrobot_ros2 mechatrobot_display.launch.py
 ```
 
 ```{note}
-ros2_control を起動すると，モータはまず 0° に戻る．
+ros2_control を起動すると，サーボはまず 0°（真ん中）に戻る．
 コントローラが動き始めた時点ではまだ `/motor1/position` を受け取っていないので，指令が 0° から始まるためである．
 UNO R4 WiFi はシリアルポートを開き直してもリセットされないので，マイコンの中の角度は前に動かしたときのまま残っている．
 ```
@@ -362,7 +398,7 @@ ROS には GUI でロボットを操作するインターフェースが用意�
 
 下図は `rqt_joint_trajectory_controller` を起動した直後の off の状態である．
 GUI 中で `/controller_manager` と `position_trajectory_controller` を選択し，電源ボタン（赤）をクリックすると，コントローラは電源ボタン（緑）の on となり，GUI からロボットを操作できるようになる．
-`joint1` のバーと数値は角度 [rad] を示しており，左右に動かすことで rviz および実物のモータが動くので試してみてほしい．
+`joint1` のバーと数値は角度 [rad] を示しており（サーボの範囲に合わせて −1.57〜1.57 rad），左右に動かすことで rviz および実物のモータが動くので試してみてほしい．
 正しく起動できていれば，rviz 上に表示されているモータ回転軸に相当する座標系が回転するのが確認できる．
 
 ::::{grid} 2
@@ -456,8 +492,8 @@ $ ros2 run rqt_image_view rqt_image_view
 - [motor_command_by_hand.py](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/scripts/motor_command_by_hand.py)
   `/hand_detection/hands` を受け，いちばん確かな手の枠の中心が画像の右側なら角度を 3° 増やし，左側なら 3° 減らして `/motor1/command` に送る．
   真ん中（画像の幅の 20%）にあるときは送らない．手がわずかに揺れただけでモータが左右に行ったり来たりしないようにするためである．
-  `hand_detection_node` は 1 秒に 10 回ほど出すので，手を片側に出し続けると 1 秒に 30° ほど回る（28BYJ-48 を 5 rpm で回す速さ）．
-  起動したときの角度を 0° として数えるので，最初の指令でモータは 0° 付近に向かう．
+  `hand_detection_node` は 1 秒に 10 回ほど出すので，手を片側に出し続けると 1 秒に 30° ほど回り，サーボの端（±90°）で止まる．
+  起動したときの角度を 0° として数えるので，最初の指令でサーボは真ん中付近に向かう．
 
 ### <span style="color:green">チェックポイント: 手の位置を利用したモータ制御</span>
 
@@ -480,7 +516,9 @@ UNO R4 WiFi では，USB と Arduino のマイコン（RA4M1）のあいだに�
 | ブリッジが `cannot open /dev/ttyACM0` を出し続ける | シリアルモニタなど，ポートを開いている他のプログラムを閉じる．`Permission denied` なら {doc}`tips/arduino-device-detection` を見る |
 | ブリッジは `connected` と出るのにトピックが届かない（Arduino の LED は点滅している） | マイコンは動いているが，USB とシリアルの変換役が止まっている．下の `recover_usb.sh` を実行してから，ブリッジを起動し直す |
 | 書き込みが `No device found on ttyACM0` / `Device unsupported` で失敗する | `recover_usb.sh` を実行してから書き込み直す．それでも失敗するなら下の `flash_swd.sh` で書き込む |
-| センサの前に何もないとき，モータの回り方が遅い | 超音波が返ってこないと，`pulseIn` が最大距離（4.5 m）ぶんの時間（約 27 ms）待つため．センサの前に物を置くと速くなる |
+| `range` が `0.000` のまま変わらない | 超音波が返ってきていない．Trig と Echo が逆でないか，夏学期の発展課題5-2 の古い資料の配線（Trig = D3 / Echo = D4）のままでないかを確かめる．Trig = D2，Echo = D3 である．4.5 m 以内に何もないときも 0 になる |
+| `pos` は変わるのにサーボが動かない | サーボは角度を返さないので，`pos` は動かそうとしている角度でしかない．信号線（オレンジ）が D8 か，赤が 5V・茶が GND かを確かめる |
+| 何も送っていないのにサーボが動く．`ros2 node list` に自分が起動していないノードが出る | 同じネットワークの他の人の PC とつながっている．`echo $ROS_AUTOMATIC_DISCOVERY_RANGE` が `LOCALHOST` か確かめる（{ref}`mechatrobot-software-2026`）．設定したら，ブリッジなどのノードをすべて止めて起動し直す |
 
 ```{code-block} console
 $ cd ~/ros2_ws/src/robot-programming/mechatrobot_ros2/firmware
@@ -504,7 +542,7 @@ $ scripts/flash_swd.sh uno_r4_serial mechatrobot_serial        # ボード上の
 **実装内容の例：**
 
 - PC から LED を点けたり消したりする（`/led/command` を受けて `led_cmd 1` の行を送る）
-- ステッピングモータの速さ [rpm] を PC から変える
+- サーボの速さ [deg/s]（`SERVO_DEG_PER_SEC`）を PC から変える
 - 夏学期の LED マトリクスに，PC から送った文字や数字を表示する
 
 <div class="screen">

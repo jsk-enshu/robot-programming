@@ -30,14 +30,16 @@
     <origin xyz="0 0 0.005" rpy="0 0 0"/>
   </joint>
 
+  <!-- SG90 servo body (22.5 x 12.2 x 22.7 mm). The link origin is under the
+       output shaft, which is 5.5 mm from the centre of the body. -->
   <link name="motor_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 1.57"/>
+      <origin xyz="0 0.0055 0.01135" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://mechatrobot_ros2/urdf/28BYJ-48.STL" scale="0.001 0.001 0.001" />
+        <box size="0.0122 0.0225 0.0227"/>
       </geometry>
-      <material name="silver">
-        <color rgba="0.75 0.75 0.75 1"/>
+      <material name="servo_blue">
+        <color rgba="0.2 0.4 0.9 1"/>
       </material>
     </visual>
   </link>
@@ -150,10 +152,11 @@
     <origin xyz="0.01 0 0.0035" rpy="0 0 0" />
   </joint>
 
+  <!-- 0 rad is the servo's centre (Servo.write(90)); it turns +-90 deg. -->
   <joint name="joint1" type="revolute">
     <axis xyz="0 0 -1"/>
-    <limit effort="1000.0" lower="-3.14" upper="3.14" velocity="2.0"/>
-    <origin xyz="-0.008 0 0.03" />
+    <limit effort="1000.0" lower="-1.57" upper="1.57" velocity="3.0"/>
+    <origin xyz="0 0 0.027" />
     <parent link="motor_link" />
     <child link="link1" />
   </joint>
@@ -165,8 +168,8 @@
     </hardware>
     <joint name="joint1">
       <command_interface name="position">
-        <param name="min">-3.14</param>
-        <param name="max">3.14</param>
+        <param name="min">-1.57</param>
+        <param name="max">1.57</param>
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>

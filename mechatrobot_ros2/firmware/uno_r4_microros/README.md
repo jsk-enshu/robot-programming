@@ -27,6 +27,8 @@ micro_ros_arduino のビルド済みライブラリは publisher 10 / subscriber
 
 ## 実機で確かめたこと（2026-11-18、UNO R4 WiFi 単体、センサ・モータは未接続）
 
+この節はサーボ版に変える前の、ステッピングモータ（28BYJ-48）版のファームウェアで確かめたことである。
+
 - `pubsub_sample`: `/uno_r4/counter` が 9.98 Hz で届く。`/uno_r4/led` に送った値がカウンタに反映される（PC → ボードも動く）
 - `mechatrobot`: `range` 20 Hz、`led/state` 2 Hz、`motor1/position` 20 Hz。`range` の `frame_id` と範囲、タイムスタンプ（agent と時刻同期、PC 時刻との差 約 -0.06 s）
 - `motor1/command` に 30 / 0 を送ると `motor1/position` が 1 ステップずつ追従して 30 / 0 で止まる（ピン出力のロジックまで。モータを実際に回したわけではない）
@@ -37,8 +39,8 @@ micro_ros_arduino のビルド済みライブラリは publisher 10 / subscriber
 
 ## rosserial 版からの変更点（`mechatrobot`）
 
-- ステッピングモータは `loop()` ごとに 1 ステップずつ目標へ進める。rosserial 版はコールバックの中で `stepper.step()` を一度に呼ぶので、5 rpm で 360° 回すと約 12 秒間通信が止まっていた
-- `motor1/position` は最後の指令値ではなく、実際に到達した角度を出す
+- モータはステッピングモータ（28BYJ-48）からサーボ（SG90、信号線 D8）に変えた。サーボは `loop()` の中で `millis()` を見ながら 1° ずつ（200°/s）目標へ進める。rosserial 版はコールバックの中で `stepper.step()` を一度に呼ぶので、5 rpm で 360° 回すと約 12 秒間通信が止まっていた
+- `motor1/position` はサーボに書いている角度（サーボは角度を返さないので実測ではない）。−90〜90° で、0° がサーボの真ん中
 - `pulseIn` のタイムアウトを最大距離 4.5 m の往復時間にした（既定の 1 s だとセンサがないとき毎回 1 s 止まる）
 - タイムスタンプは `nh.now()` の代わりに `rmw_uros_sync_session()` で agent と同期した時刻
 
@@ -88,7 +90,7 @@ scripts/run_agent.sh
 
 ```bash
 python3 scripts/check_pubsub.py        # pubsub_sample
-python3 scripts/check_mechatrobot.py   # mechatrobot（ステッピングモータを 30° へ動かす）
+python3 scripts/check_mechatrobot.py   # mechatrobot（サーボを 30° へ動かす）
 ```
 
 ## うまくいかないとき
