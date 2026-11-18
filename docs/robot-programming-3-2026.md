@@ -45,6 +45,7 @@ RCB-4mini の役を Arduino UNO R4 WiFi が，ドライバの役を `serial_brid
 - マイコンと PC が USB シリアルでやり取りする仕組みを理解し，自分で通信手順を読み書きできるようになる
 - シリアル通信を ROS 2 のトピックに変換するブリッジノードの役割を理解する
 - ros2_control・rviz・画像処理と組み合わせて，メカトロボットを ROS 2 から動かす
+- サーボと超音波センサで LiDAR を作り，周りの物を rviz で点群として見る
 
 ## 本日のシステム構成
 
@@ -505,6 +506,84 @@ $ ros2 run rqt_image_view rqt_image_view
 余裕があれば，`motor_command_by_hand.py` を書き換えて，手の高さ（枠の `y`）や右手・左手の違いにも動きを割り当ててみよう．
 ```
 
+(mechatrobot-lidar-2026)=
+## サーボと超音波センサで LiDAR を作る
+
+自動運転の車やロボット掃除機に載っている LiDAR は，レーザの向きを回しながら距離を測り，周りの物の位置を点の集まり（点群）として出す．
+ここでは超音波センサをサーボの軸の先に付けて左右に振り，同じことをする．
+向きを変えながら測った距離を，その向きに置いた点にすれば，周りの物の形が見えてくる．
+
+### センサをサーボに付ける
+
+<span style="color:red">**USB ケーブルを抜いてから付けること．**</span>
+超音波センサをサーボの軸（ホーン）の先に付ける（{numref}`Fig. %s <fig:mechatrobot-servo-lidar-2026>`．写真ではホルダーで留めている）．
+配線は{ref}`mechatrobot-circuit-2026`のままでよい．
+センサの線は，サーボが −90° から 90° まで回っても引っ張られないように，長さに余裕を持たせる．
+
+:::{figure} fig/mechatrobot-servo-lidar-2026.jpg
+:align: center
+:width: 360px
+:name: fig:mechatrobot-servo-lidar-2026
+
+サーボの軸の先に超音波センサを付けたところ．サーボを回すとセンサの向きが変わる．
+:::
+
+### 動かす
+
+ros2_control（`mechatrobot_controller.launch.py`）や `motor_command_by_hand.py` が動いていたら止めておく（同じ `/motor1/command` にサーボの角度を送るため）．
+
+**ターミナル1: ブリッジ（起動済みならそのまま）**
+
+```{code-block} console
+$ ros2 run mechatrobot_ros2 serial_bridge.py --ros-args -p port:=/dev/ttyACM0
+```
+
+**ターミナル2: サーボを振って点群を出すノードと rviz**
+
+```{code-block} console
+$ ros2 launch mechatrobot_ros2 servo_scan.launch.py
+```
+
+サーボが左右に振れ続け，rviz に点がたまっていく（{numref}`Fig. %s <fig:mechatrobot-servo-lidar-rviz-2026>`）．
+rviz は真上から見た図で，原点がサーボの軸，**画面の右（赤い軸の向き）がサーボ 0° のときセンサが向く方向**である．
+緑の線が，いま測っている向きと距離を表す．点の色は距離（近いほど赤い）．
+
+:::{figure} fig/mechatrobot-servo-lidar-rviz-2026.png
+:align: center
+:name: fig:mechatrobot-servo-lidar-rviz-2026
+
+rviz で見た点群．往復するたびに点が増えていく（点は 20 秒で消える）．
+:::
+
+[servo_scan.py](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/scripts/servo_scan.py) は次のことをしている．
+
+- 50 ms ごとにサーボの目標角度を 7.3° ずつ進め，−90° と 90° で折り返す（`/motor1/command`）．
+- マイコンは 50 ms ごとに距離を測って `range` を送り，すぐ後にそのとき書いていた角度を `pos` で送る．
+  ノードは `range` を受けたら次の `pos` を待ち，その角度の向きに，その距離の点を 1 つ作って `/servo_scan/points`（`sensor_msgs/PointCloud2`）に出す．
+  1 つ前の `pos` を使うと 50 ms 前の角度（最大 10° ずれる）になってしまう．
+- 7.3° は 180° を割り切らないので，往復するたびに前の往復とは少しずれた向きで測る．
+  rviz は点を 20 秒残すので（PointCloud2 の Decay Time），待つほど点の間が埋まって形がはっきりする．
+  Livox などの LiDAR も，同じ向きばかりを測らない走査で，時間をかけるほど細かく見えるようにしている．
+
+超音波は 15° ほどの幅に広がって進むので，レーザの LiDAR のように細かい形は分からない．
+斜めのつるつるした面では音が別の向きに反射して返ってこず，点が出ないこともある．
+センサが机に近いと，机の面で反射した音を拾い，どの向きでも同じくらいの距離の点が出る．そのときはセンサを少し上に向けるか，サーボを台に載せる．
+
+### <span style="color:green">チェックポイント: 物を目の前に置いて確かめよう</span>
+
+```{exercise} サーボと超音波センサで LiDAR を作る
+:label: ex_servo_lidar-2026
+
+1.  センサの正面（サーボ 0° の向き）20〜30 cm のところに箱などを置き，rviz で画面の右，原点から 20〜30 cm のところに点が集まることを確かめる．
+
+2.  箱をセンサから見て左に動かすと，rviz では点が画面の上に，右に動かすと画面の下に移ることを確かめる．
+    逆になるときは，サーボの回る向きが逆である．ターミナル2を `Ctrl-C` で止め，`ros2 launch mechatrobot_ros2 servo_scan.launch.py direction:=-1.0` で起動し直す．
+
+3.  しばらく待って点が増え，箱の面の形が見えてくることを確かめる．箱を取り除くと，その点は 20 秒で消える．
+
+余裕があれば，`servo_scan.launch.py step_deg:=10.0` で起動し（180° を割り切るので，毎回同じ向きで測る），点の増え方を比べてみよう．
+```
+
 (mechatrobot-troubleshooting-2026)=
 ## うまくいかないとき
 
@@ -566,6 +645,7 @@ UNO R4 WiFi では，USB と Arduino のマイコン（RA4M1）のあいだに�
 | 書き込みが `No device found on ttyACM0` / `Device unsupported` で失敗する | `recover_usb.sh` を実行してから書き込み直す．それでも失敗するなら下の `flash_swd.sh` で書き込む |
 | `range` が `0.000` のまま変わらない | 超音波が返ってきていない．`check_hardware.py` で原因を調べる．Trig と Echo が逆でないか，夏学期の発展課題5-2 の古い資料の配線（Trig = D3 / Echo = D4）のままでないかを確かめる．Trig = D2，Echo = D3 である．4.5 m 以内に何もないときも 0 になる |
 | `pos` は変わるのにサーボが動かない | サーボは角度を返さないので，`pos` は動かそうとしている角度でしかない．`check_hardware.py --servo` で動かして確かめる．信号線（オレンジ）が D8 か，赤が 5V・茶が GND かを確かめる |
+| しばらく PC から離れていたら，ブリッジは `connected` のままトピックが届かない | ノート PC がバッテリーで動いていると，触らずに 15 分ほどたつとサスペンド（スリープ）する．復帰しても Arduino からのデータは止まったままなので，Arduino の USB ケーブルを抜いて挿し直す．演習中は AC アダプタをつないでおく |
 | 何も送っていないのにサーボが動く．`ros2 node list` に自分が起動していないノードが出る | 同じネットワークの他の人の PC とつながっている．`echo $ROS_AUTOMATIC_DISCOVERY_RANGE` が `LOCALHOST` か確かめる（{ref}`mechatrobot-software-2026`）．設定したら，ブリッジなどのノードをすべて止めて起動し直す |
 
 ```{code-block} console
