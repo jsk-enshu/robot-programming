@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Turn the mechatrobot's stepper towards the side of the image your hand is on.
+"""Turn the mechatrobot's servo towards the side of the image your hand is on.
 
 Reads the hands that jedy_vision's ``hand_detection_node`` finds in the camera
 image and sends an absolute angle to ``motor1/command``:
@@ -8,9 +8,9 @@ image and sends an absolute angle to ``motor1/command``:
     hand in the left part of the image    angle -= step_deg
     hand near the middle, or no hand      no command (the motor stays)
 
+The angle stays within the servo's range, -90 to 90 deg (0 is the centre).
 ``hand_detection_node`` publishes once for every image it reads (about 10 a
-second), so the default step (3 deg) asks for about 30 deg/s, the 28BYJ-48's
-speed at 5 rpm.
+second), so the default step (3 deg) asks for about 30 deg/s.
 
 Topics::
 
@@ -25,7 +25,7 @@ from std_msgs.msg import Int64
 
 
 class MotorCommandByHand(Node):
-    """ROS 2 node that turns the stepper towards the hand."""
+    """ROS 2 node that turns the servo towards the hand."""
 
     def __init__(self):
         super().__init__('motor_command_by_hand')
@@ -35,7 +35,10 @@ class MotorCommandByHand(Node):
         # No command while the hand is within this fraction of the width around
         # the centre, so a hand held still does not make the motor hunt.
         self.dead_zone = self.declare_parameter('dead_zone', 0.2).value
-        self.motor_angle = 0  # [deg]
+        # The servo's range; the firmware clamps to it too [deg]
+        self.min_angle = self.declare_parameter('min_angle', -90).value
+        self.max_angle = self.declare_parameter('max_angle', 90).value
+        self.motor_angle = 0  # [deg], the servo's centre
         self.motor_pub = self.create_publisher(Int64, 'motor1/command', 10)
         self.create_subscription(DetectionArray, '/hand_detection/hands', self.on_hands, 10)
         self.get_logger().info('move your hand to the right or left of the image')
@@ -56,7 +59,8 @@ class MotorCommandByHand(Node):
         offset = (x1 + x2) / 2 / self.image_width - 0.5  # -0.5 (left) .. 0.5 (right)
         if abs(offset) < self.dead_zone / 2:
             return
-        self.motor_angle += self.step_deg if offset > 0 else -self.step_deg
+        angle = self.motor_angle + (self.step_deg if offset > 0 else -self.step_deg)
+        self.motor_angle = min(max(angle, self.min_angle), self.max_angle)
         self.motor_pub.publish(Int64(data=self.motor_angle))
         self.get_logger().info(
             f'{hand.label} at x={(x1 + x2) / 2:.0f} px -> motor1/command {self.motor_angle}',

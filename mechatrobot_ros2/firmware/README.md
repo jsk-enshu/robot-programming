@@ -1,7 +1,7 @@
 # メカトロボットのファームウェア（Arduino UNO R4 WiFi）
 
 昨年度の rosserial 版 `mechatrobot/sketchbook/MechatrobotDriver` と同じことをする 2 つの版。
-**どちらも ROS 2 側には同じトピックを出す**ので、`mechatrobot_ros2` の残り（rviz、ros2_control、顔認識 → モータ）はどちらの版でもそのまま動く。
+**どちらも ROS 2 側には同じトピックを出す**ので、`mechatrobot_ros2` の残り（rviz、ros2_control、手の検出 → モータ）はどちらの版でもそのまま動く。
 
 | 版 | マイコン側 | PC 側 |
 | --- | --- | --- |
@@ -15,11 +15,15 @@
 | `motor1/position` | std_msgs/Int64 | ボード → PC | 20 Hz |
 | `motor1/command` | std_msgs/Int64 | PC → ボード | 送ったとき |
 
-制御部分（ステッピングモータを 1 ステップずつ進める、`pulseIn` のタイムアウト、角度の丸め）は 2 つの版で同じにしてある。違うのは通信だけ。
+制御部分（サーボを `millis()` で 1° ずつ目標へ進める、`pulseIn` のタイムアウト、角度を −90〜90° に丸める）は 2 つの版で同じにしてある。違うのは通信だけ。
+
+配線は HC-SR04 が Trig D2 / Echo D3、サーボ SG90 の信号線が D8。角度は SG90 の真ん中を 0° とする（`Servo.write()` の値 − 90）。
+サーボは角度を返さないので、`motor1/position` はマイコンがサーボに書いている角度で、実測ではない。
 
 ## 比較
 
 2026-11-18 に、UNO R4 WiFi 単体（HC-SR04・28BYJ-48 は未接続）、ROS 2 Jazzy、`ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST` で測った。
+**サーボ版に変える前の、ステッピングモータ版のファームウェアでの数字である。** 「指令から位置が変わるまで」はモータを動かす部分の作りにもよるので、サーボ版では測り直していない。
 測定には `scripts/measure_mechatrobot.py` を使った（どちらの版にも同じスクリプトを使える）。
 
 | 項目 | シリアル＋ブリッジ | micro-ROS |

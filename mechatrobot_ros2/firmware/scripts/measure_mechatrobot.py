@@ -64,7 +64,7 @@ class Recorder:
         Parameters
         ----------
         msg : std_msgs.msg.Int64
-            Reported stepper angle in degrees.
+            Reported motor angle in degrees.
         """
         if self.position is not None and msg.data != self.position:
             self.position_changed_at = time.monotonic()
