@@ -386,7 +386,7 @@ def check_servo(report, ser, ask):
                   "ファームウェアを書き込み直す．それでも同じなら TA を呼ぶ (ta call)")
         return
     report.ok("ファームウェアはサーボに角度を書いた (pos が指令どおりに変わった)")
-    not_moving = ("USB ケーブルを抜いてから，サーボの信号線 (オレンジ) が D8，"
+    not_moving = ("USB ケーブルを抜いてから，サーボの信号線 (黄かオレンジ) が D8，"
                   "赤が 5V，茶が GND かを確かめる．スマホで配線の写真を撮って AI TA に見せてもよい")
     if not ask:
         report.info("サーボが左右に動いたかは，見ていた人に確かめる．動かなかったときは: " + not_moving)
