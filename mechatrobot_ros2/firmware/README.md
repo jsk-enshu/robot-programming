@@ -89,6 +89,9 @@ python3 mechatrobot_ros2/firmware/scripts/measure_mechatrobot.py --label serial
 
 ## うまくいかないとき（両方の版に共通）
 
+シリアル版は `diag` の行を送ると配線の自己診断の結果（`diag echo_us ...` など）を返す。
+`ros2 run mechatrobot_ros2 check_hardware.py` がこれを使って、ポート・データ・超音波センサの配線を調べ、次にすることを表示する（`--servo` でサーボも動かす）。
+
 UNO R4 WiFi では、USB と RA4M1 のあいだに ESP32-S3 が入っている（USB ブリッジ）。
 今回の不具合はどれもこの ESP32-S3 側で起きた。RA4M1 のスケッチはその間も動き続けていた（デバッガで確認した）。
 

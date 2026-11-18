@@ -41,9 +41,11 @@ install(TARGETS
 
 # Install Python scripts
 install(PROGRAMS
+  scripts/check_hardware.py
   scripts/motor_command_by_hand.py
   scripts/led_controller.py
   scripts/serial_bridge.py
+  scripts/servo_scan.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

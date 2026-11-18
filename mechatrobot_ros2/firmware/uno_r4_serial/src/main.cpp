@@ -9,6 +9,7 @@
 //                 # <text>       free-form log; the bridge only prints it
 //   PC -> board   cmd <deg>      servo target angle, -90 (one end) .. 90 (other end),
 //                                0 is the centre; values outside are clamped
+//                 diag           wiring self-test; answers "diag ..." lines (run_diag)
 //
 // The servo (SG90 on D8) has no position output, so "pos" is the angle this
 // sketch writes to it, not a measurement. The sketch moves that angle towards
@@ -77,6 +78,58 @@ static float measure_range_m() {
   return duration_us * SOUND_SPEED_M_PER_US / 2.0f;
 }
 
+// One HC-SR04 measurement with the given pins; the echo pulse width [us], 0 if none.
+static unsigned long ping_us(int trig, int echo) {
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);
+  digitalWrite(trig, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trig, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig, LOW);
+  return pulseIn(echo, HIGH, ECHO_TIMEOUT_US);
+}
+
+// Wiring self-test for scripts/check_hardware.py. Blocks for about 0.2 s.
+//   diag trig_idle <0|1>   D2 with a pull-down, before any pulse
+//   diag echo_idle <0|1>   D3 with a pull-down (1: something drives it high)
+//   diag echo_us <us>      echo with Trig D2 / Echo D3 (0: no echo)
+//   diag swapped_us <us>   echo with Trig D3 / Echo D2, only measured when
+//                          echo_us is 0 (-1: not measured), so that a correctly
+//                          wired sensor's Echo output is never driven
+//   diag servo_pin <n>
+//   diag end
+static void run_diag() {
+  constexpr unsigned long SETTLE_MS = 60;  // let the previous echo die out
+  pinMode(TRIG_PIN, INPUT_PULLDOWN);
+  pinMode(ECHO_PIN, INPUT_PULLDOWN);
+  delay(2);
+  int trig_idle = digitalRead(TRIG_PIN);
+  int echo_idle = digitalRead(ECHO_PIN);
+  delay(SETTLE_MS);
+  unsigned long echo_us = ping_us(TRIG_PIN, ECHO_PIN);
+  long swapped_us = -1;
+  if (echo_us == 0) {
+    delay(SETTLE_MS);
+    swapped_us = (long)ping_us(ECHO_PIN, TRIG_PIN);
+  }
+  // Back to the normal pin modes.
+  pinMode(TRIG_PIN, OUTPUT);
+  digitalWrite(TRIG_PIN, LOW);
+  pinMode(ECHO_PIN, INPUT);
+  Serial.print(F("diag trig_idle "));
+  Serial.println(trig_idle);
+  Serial.print(F("diag echo_idle "));
+  Serial.println(echo_idle);
+  Serial.print(F("diag echo_us "));
+  Serial.println(echo_us);
+  Serial.print(F("diag swapped_us "));
+  Serial.println(swapped_us);
+  Serial.print(F("diag servo_pin "));
+  Serial.println(SERVO_PIN);
+  Serial.println(F("diag end"));
+}
+
 // Handle one received line. Unknown or malformed lines are reported and ignored.
 static void handle_line(const char *line) {
   if (strncmp(line, "cmd ", 4) == 0) {
@@ -86,6 +139,10 @@ static void handle_line(const char *line) {
       target_deg = clamp_angle(deg);
       return;
     }
+  }
+  if (strcmp(line, "diag") == 0) {
+    run_diag();
+    return;
   }
   Serial.print(F("# ignored: "));
   Serial.println(line);

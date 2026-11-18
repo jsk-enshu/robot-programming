@@ -215,7 +215,7 @@ KRSサーボの零点マーク（軸のドットがサーボの真ん中に来�
 - RCB-4mini の COM ポートは信号が反転した特殊なシリアル（Jedy の設定では 625000 bps）なので，Arduino の `Serial1` では話せない．
   そのための書き込み用のコードは [build-your-own-arduino-rtos](https://github.com/iory/build-your-own-arduino-rtos) にある．
 
-詳しい配線と書き込みの手順は {doc}`../robot-programming-3-2026` の課題3と，[組み立てのページ](https://iory.github.io/build-your-own-arduino-rtos/hardware/krs.html) を見よ．
+詳しい配線と書き込みの手順は {doc}`../robot-programming-3-2026` の課題4と，[組み立てのページ](https://iory.github.io/build-your-own-arduino-rtos/hardware/krs.html) を見よ．
 
 ## トラブルシューティング
 
