@@ -45,7 +45,6 @@ RCB-4mini の役を Arduino UNO R4 WiFi が，ドライバの役を `serial_brid
 - マイコンと PC が USB シリアルでやり取りする仕組みを理解し，自分で通信手順を読み書きできるようになる
 - シリアル通信を ROS 2 のトピックに変換するブリッジノードの役割を理解する
 - ros2_control・rviz・画像処理と組み合わせて，メカトロボットを ROS 2 から動かす
-- サーボと超音波センサで LiDAR を作り，周りの物を rviz で点群として見る
 
 ## 本日のシステム構成
 
@@ -75,7 +74,7 @@ PC で動く `serial_bridge.py`（ブリッジ）がその行を ROS 2 のトピ
 2025年度までは ROS 1 の rosserial でマイコンと通信し，ros1_bridge で ROS 2 につないでいた．
 rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py` がトピックに変換する」という同じ形で，通信手順を汎用にしたものである．
 本年度は ROS 2 だけで完結させ，通信手順とブリッジを自分で読める形にした．
-マイコン自身を ROS 2 のノードにする micro-ROS という方法もある．比べたい人は発展課題の課題2に取り組んでほしい．
+マイコン自身を ROS 2 のノードにする micro-ROS という方法もある．比べたい人は発展課題の課題3に取り組んでほしい．
 ```
 
 ## 準備
@@ -506,84 +505,6 @@ $ ros2 run rqt_image_view rqt_image_view
 余裕があれば，`motor_command_by_hand.py` を書き換えて，手の高さ（枠の `y`）や右手・左手の違いにも動きを割り当ててみよう．
 ```
 
-(mechatrobot-lidar-2026)=
-## サーボと超音波センサで LiDAR を作る
-
-自動運転の車やロボット掃除機に載っている LiDAR は，レーザの向きを回しながら距離を測り，周りの物の位置を点の集まり（点群）として出す．
-ここでは超音波センサをサーボの軸の先に付けて左右に振り，同じことをする．
-向きを変えながら測った距離を，その向きに置いた点にすれば，周りの物の形が見えてくる．
-
-### センサをサーボに付ける
-
-<span style="color:red">**USB ケーブルを抜いてから付けること．**</span>
-超音波センサをサーボの軸（ホーン）の先に付ける（{numref}`Fig. %s <fig:mechatrobot-servo-lidar-2026>`．写真ではホルダーで留めている）．
-配線は{ref}`mechatrobot-circuit-2026`のままでよい．
-センサの線は，サーボが −90° から 90° まで回っても引っ張られないように，長さに余裕を持たせる．
-
-:::{figure} fig/mechatrobot-servo-lidar-2026.jpg
-:align: center
-:width: 360px
-:name: fig:mechatrobot-servo-lidar-2026
-
-サーボの軸の先に超音波センサを付けたところ．サーボを回すとセンサの向きが変わる．
-:::
-
-### 動かす
-
-ros2_control（`mechatrobot_controller.launch.py`）や `motor_command_by_hand.py` が動いていたら止めておく（同じ `/motor1/command` にサーボの角度を送るため）．
-
-**ターミナル1: ブリッジ（起動済みならそのまま）**
-
-```{code-block} console
-$ ros2 run mechatrobot_ros2 serial_bridge.py --ros-args -p port:=/dev/ttyACM0
-```
-
-**ターミナル2: サーボを振って点群を出すノードと rviz**
-
-```{code-block} console
-$ ros2 launch mechatrobot_ros2 servo_scan.launch.py
-```
-
-サーボが左右に振れ続け，rviz に点がたまっていく（{numref}`Fig. %s <fig:mechatrobot-servo-lidar-rviz-2026>`）．
-rviz は真上から見た図で，原点がサーボの軸，**画面の右（赤い軸の向き）がサーボ 0° のときセンサが向く方向**である．
-緑の線が，いま測っている向きと距離を表す．点の色は距離（近いほど赤い）．
-
-:::{figure} fig/mechatrobot-servo-lidar-rviz-2026.png
-:align: center
-:name: fig:mechatrobot-servo-lidar-rviz-2026
-
-rviz で見た点群．往復するたびに点が増えていく（点は 20 秒で消える）．
-:::
-
-[servo_scan.py](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/scripts/servo_scan.py) は次のことをしている．
-
-- 50 ms ごとにサーボの目標角度を 7.3° ずつ進め，−90° と 90° で折り返す（`/motor1/command`）．
-- マイコンは 50 ms ごとに距離を測って `range` を送り，すぐ後にそのとき書いていた角度を `pos` で送る．
-  ノードは `range` を受けたら次の `pos` を待ち，その角度の向きに，その距離の点を 1 つ作って `/servo_scan/points`（`sensor_msgs/PointCloud2`）に出す．
-  1 つ前の `pos` を使うと 50 ms 前の角度（最大 10° ずれる）になってしまう．
-- 7.3° は 180° を割り切らないので，往復するたびに前の往復とは少しずれた向きで測る．
-  rviz は点を 20 秒残すので（PointCloud2 の Decay Time），待つほど点の間が埋まって形がはっきりする．
-  Livox などの LiDAR も，同じ向きばかりを測らない走査で，時間をかけるほど細かく見えるようにしている．
-
-超音波は 15° ほどの幅に広がって進むので，レーザの LiDAR のように細かい形は分からない．
-斜めのつるつるした面では音が別の向きに反射して返ってこず，点が出ないこともある．
-センサが机に近いと，机の面で反射した音を拾い，どの向きでも同じくらいの距離の点が出る．そのときはセンサを少し上に向けるか，サーボを台に載せる．
-
-### <span style="color:green">チェックポイント: 物を目の前に置いて確かめよう</span>
-
-```{exercise} サーボと超音波センサで LiDAR を作る
-:label: ex_servo_lidar-2026
-
-1.  センサの正面（サーボ 0° の向き）20〜30 cm のところに箱などを置き，rviz で画面の右，原点から 20〜30 cm のところに点が集まることを確かめる．
-
-2.  箱をセンサから見て左に動かすと，rviz では点が画面の上に，右に動かすと画面の下に移ることを確かめる．
-    逆になるときは，サーボの回る向きが逆である．ターミナル2を `Ctrl-C` で止め，`ros2 launch mechatrobot_ros2 servo_scan.launch.py direction:=-1.0` で起動し直す．
-
-3.  しばらく待って点が増え，箱の面の形が見えてくることを確かめる．箱を取り除くと，その点は 20 秒で消える．
-
-余裕があれば，`servo_scan.launch.py step_deg:=10.0` で起動し（180° を割り切るので，毎回同じ向きで測る），点の増え方を比べてみよう．
-```
-
 (mechatrobot-troubleshooting-2026)=
 ## うまくいかないとき
 
@@ -660,9 +581,87 @@ $ scripts/flash_swd.sh uno_r4_serial mechatrobot_serial        # ボード上の
 ## 本日の発展課題
 
 発展課題は必須ではない．
-課題1・課題2は本日のメカトロボットの通信を発展させる課題，課題3〜課題8は四脚ロボット JEFY を題材にした課題である．
+課題1は本日のメカトロボットで LiDAR を作る課題，課題2・課題3はメカトロボットの通信を発展させる課題，課題4〜課題9は四脚ロボット JEFY を題材にした課題である．
 
-### 課題1(発展): 通信手順を自分で拡張する
+(mechatrobot-lidar-2026)=
+### 課題1(発展): サーボと超音波センサで LiDAR を作る
+
+自動運転の車やロボット掃除機に載っている LiDAR は，レーザの向きを回しながら距離を測り，周りの物の位置を点の集まり（点群）として出す．
+ここでは超音波センサをサーボの軸の先に付けて左右に振り，同じことをする．
+向きを変えながら測った距離を，その向きに置いた点にすれば，周りの物の形が見えてくる．
+
+#### センサをサーボに付ける
+
+<span style="color:red">**USB ケーブルを抜いてから付けること．**</span>
+超音波センサをサーボの軸（ホーン）の先に付ける（{numref}`Fig. %s <fig:mechatrobot-servo-lidar-2026>`．写真ではホルダーで留めている）．
+配線は{ref}`mechatrobot-circuit-2026`のままでよい．
+センサの線は，サーボが −90° から 90° まで回っても引っ張られないように，長さに余裕を持たせる．
+
+:::{figure} fig/mechatrobot-servo-lidar-2026.jpg
+:align: center
+:width: 360px
+:name: fig:mechatrobot-servo-lidar-2026
+
+サーボの軸の先に超音波センサを付けたところ．サーボを回すとセンサの向きが変わる．
+:::
+
+#### 動かす
+
+ros2_control（`mechatrobot_controller.launch.py`）や `motor_command_by_hand.py` が動いていたら止めておく（同じ `/motor1/command` にサーボの角度を送るため）．
+
+**ターミナル1: ブリッジ（起動済みならそのまま）**
+
+```{code-block} console
+$ ros2 run mechatrobot_ros2 serial_bridge.py --ros-args -p port:=/dev/ttyACM0
+```
+
+**ターミナル2: サーボを振って点群を出すノードと rviz**
+
+```{code-block} console
+$ ros2 launch mechatrobot_ros2 servo_scan.launch.py
+```
+
+サーボが左右に振れ続け，rviz に点がたまっていく（{numref}`Fig. %s <fig:mechatrobot-servo-lidar-rviz-2026>`）．
+rviz は真上から見た図で，原点がサーボの軸，**画面の右（赤い軸の向き）がサーボ 0° のときセンサが向く方向**である．
+緑の線が，いま測っている向きと距離を表す．点の色は距離（近いほど赤い）．
+
+:::{figure} fig/mechatrobot-servo-lidar-rviz-2026.png
+:align: center
+:name: fig:mechatrobot-servo-lidar-rviz-2026
+
+rviz で見た点群．往復するたびに点が増えていく（点は 20 秒で消える）．
+:::
+
+[servo_scan.py](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/scripts/servo_scan.py) は次のことをしている．
+
+- 50 ms ごとにサーボの目標角度を 7.3° ずつ進め，−90° と 90° で折り返す（`/motor1/command`）．
+- マイコンは 50 ms ごとに距離を測って `range` を送り，すぐ後にそのとき書いていた角度を `pos` で送る．
+  ノードは `range` を受けたら次の `pos` を待ち，その角度の向きに，その距離の点を 1 つ作って `/servo_scan/points`（`sensor_msgs/PointCloud2`）に出す．
+  1 つ前の `pos` を使うと 50 ms 前の角度（最大 10° ずれる）になってしまう．
+- 7.3° は 180° を割り切らないので，往復するたびに前の往復とは少しずれた向きで測る．
+  rviz は点を 20 秒残すので（PointCloud2 の Decay Time），待つほど点の間が埋まって形がはっきりする．
+  Livox などの LiDAR も，同じ向きばかりを測らない走査で，時間をかけるほど細かく見えるようにしている．
+
+超音波は 15° ほどの幅に広がって進むので，レーザの LiDAR のように細かい形は分からない．
+斜めのつるつるした面では音が別の向きに反射して返ってこず，点が出ないこともある．
+センサが机に近いと，机の面で反射した音を拾い，どの向きでも同じくらいの距離の点が出る．そのときはセンサを少し上に向けるか，サーボを台に載せる．
+
+#### 物を目の前に置いて確かめよう
+
+<div class="screen">
+
+1.  センサの正面（サーボ 0° の向き）20〜30 cm のところに箱などを置き，rviz で画面の右，原点から 20〜30 cm のところに点が集まることを確かめる．
+
+2.  箱をセンサから見て左に動かすと，rviz では点が画面の上に，右に動かすと画面の下に移ることを確かめる．
+    逆になるときは，サーボの回る向きが逆である．ターミナル2を `Ctrl-C` で止め，`ros2 launch mechatrobot_ros2 servo_scan.launch.py direction:=-1.0` で起動し直す．
+
+3.  しばらく待って点が増え，箱の面の形が見えてくることを確かめる．箱を取り除くと，その点は 20 秒で消える．
+
+</div>
+
+余裕があれば，`servo_scan.launch.py step_deg:=10.0` で起動し（180° を割り切るので，毎回同じ向きで測る），点の増え方を比べてみよう．
+
+### 課題2(発展): 通信手順を自分で拡張する
 
 本日のメカトロボットに，新しいトピックを 1 本足してみよう．
 トピックを足すには，マイコン（`firmware/uno_r4_serial/src/main.cpp`）・通信手順（行の書式）・ブリッジ（`scripts/serial_bridge.py`）の 3 か所をそろえて変える必要がある．
@@ -683,7 +682,7 @@ $ scripts/flash_swd.sh uno_r4_serial mechatrobot_serial        # ボード上の
 
 </div>
 
-### 課題2(発展): micro-ROS 版と比べる
+### 課題3(発展): micro-ROS 版と比べる
 
 本日はシリアルの行を PC のブリッジでトピックに変換した．
 これに対して micro-ROS は，マイコン自身を ROS 2 のノードにする方法である（PC 側では既製の `micro_ros_agent` が中継する）．
@@ -711,14 +710,14 @@ $ scripts/flash_swd.sh uno_r4_serial mechatrobot_serial        # ボード上の
 
 ### 四脚ロボット JEFY について
 
-課題3〜課題8では，Arduino UNO R4 WiFi と近藤科学の KRS サーボで組む四脚ロボット JEFY を題材に，
+課題4〜課題9では，Arduino UNO R4 WiFi と近藤科学の KRS サーボで組む四脚ロボット JEFY を題材に，
 組み立て → 強化学習 → 自分の方策で実機を歩かせる → IMU を付ける → CAD から URDF を作る → 自分のロボットを作る，
 と順に進められるようにした．
 
 **JEFY**（ジェフィー）は **J**SK **E**ducational **F**our-legged walk**Y** robot の略で，[四脚ロボット JEFY の組み立て](https://iory.github.io/build-your-own-arduino-rtos/hardware/index.html)にまとめられている四脚ロボットの呼び名である．
 
-課題3から順にやると，ロボットを一から作って歩かせるところまでの流れをひととおり体験できる．
-課題4・課題7・課題8は実機がなくても取り組める．
+課題4から順にやると，ロボットを一から作って歩かせるところまでの流れをひととおり体験できる．
+課題5・課題8・課題9は実機がなくても取り組める．
 
 <video width="100%" controls preload="metadata" poster="fig/krs-quad-walk-2026-poster.jpg">
   <source src="fig/krs-quad-walk-2026.mp4" type="video/mp4">
@@ -727,7 +726,7 @@ $ scripts/flash_swd.sh uno_r4_serial mechatrobot_serial        # ボード上の
 
 **動画：** KRS-3302 ICS ×8 と RCB-4mini で組んだ四脚ロボット．Ni-MH バッテリー（ROBO パワーセル E タイプ，7.2 V）1 本だけで，ケーブルをつながずに歩いている．
 
-### 課題3(発展): 四脚ロボット JEFY を組み立てて歩かせる
+### 課題4(発展): 四脚ロボット JEFY を組み立てて歩かせる
 
 動画の四脚ロボット JEFY を自分で組み立て，Arduino UNO R4 WiFi から歩かせてみよう．
 希望者は TA から部品一式を受け取ること．
@@ -775,9 +774,9 @@ Arduino UNO R4 WiFi は TA からは配らない．各自が持っているも�
 歩いている最中に Arduino がリセットするときは，バッテリーの電圧（6 V を切っていないか）を確かめる．
 :::
 
-### 課題4(発展): 強化学習で歩行方策を学習する
+### 課題5(発展): 強化学習で歩行方策を学習する
 
-課題3で使った方策は，物理シミュレータ MuJoCo の中で強化学習（PPO）によって学習したものである．
+課題4で使った方策は，物理シミュレータ MuJoCo の中で強化学習（PPO）によって学習したものである．
 [歩行を学習させる（強化学習）](https://iory.github.io/build-your-own-arduino-rtos/hardware/walk.html)を読んで，
 自分で歩行方策を学習してみよう．実機がなくても取り組める．
 
@@ -799,10 +798,10 @@ Arduino UNO R4 WiFi は TA からは配らない．各自が持っているも�
 
 余裕があれば，報酬の重みや速度指令の上限を変えて学習し直し，歩き方がどう変わるかを比べてみよう．
 
-### 課題5(発展): 自分で学習した方策で実機を歩かせる
+### 課題6(発展): 自分で学習した方策で実機を歩かせる
 
-（課題3・課題4ができてから挑戦することをお勧めする．）
-課題4で学習した方策を Arduino に書き込み，課題3で組み立てた JEFY を歩かせてみよう．
+（課題4・課題5ができてから挑戦することをお勧めする．）
+課題5で学習した方策を Arduino に書き込み，課題4で組み立てた JEFY を歩かせてみよう．
 
 <div class="screen">
 
@@ -810,7 +809,7 @@ Arduino UNO R4 WiFi は TA からは配らない．各自が持っているも�
 
 2.  書き出した `arduino_quad_policy.h` で `code/13_quadruped/include/arduino_quad_policy.h` を置き換える．
 
-3.  課題3と同じ `-e uno_r4_wifi_rcb4` で書き込み，**吊るした状態で**足踏みを確かめてから床で歩かせる．
+3.  課題4と同じ `-e uno_r4_wifi_rcb4` で書き込み，**吊るした状態で**足踏みを確かめてから床で歩かせる．
 
 </div>
 
@@ -819,9 +818,9 @@ Arduino UNO R4 WiFi は TA からは配らない．各自が持っているも�
 `ArduinoQuad-Walk` の機体モデルは Feetech STS3215 のサーボを前提にしていて，KRS-3302 のトルクはその4分の1以下である．
 シミュレーションと実機で歩き方がどう違ったかを観察し，その差がどこから来るのかを考えてみよう．
 
-### 課題6(発展): IMU を付けて KRS 専用の方策で歩かせる
+### 課題7(発展): IMU を付けて KRS 専用の方策で歩かせる
 
-（課題3または課題5で JEFY が歩いた人向け．）
+（課題4または課題6で JEFY が歩いた人向け．）
 JEFY が歩いたら TA に申し出て，IMU 基板（QMI8658）と Qwiic ケーブルを受け取ること．
 IMU（慣性計測装置）で胴体の傾きと回転の速さを測り，その値も見る方策で歩かせてみよう．
 
@@ -847,7 +846,7 @@ IMU なしの方策と比べて，歩いている途中や止まっていると�
 
 さらに余裕があれば，KRS 専用の方策を自分で学習し直してみよう．
 タスクは `KrsQuad-Walk` で，mjlab 版で学習するため NVIDIA GPU が必要である．
-手元に GPU がなければ，課題4の Google Colab（無料枠の T4）で学習してみるとよい．
+手元に GPU がなければ，課題5の Google Colab（無料枠の T4）で学習してみるとよい．
 Colab のノートブックは `ArduinoQuad-Walk` 用なので，学習と書き出しのセルのタスク名を `KrsQuad-Walk` に変え，書き出しには `--name krs_quad_policy` を付ける．
 手順は [code/13_quadruped/rl/README.md](https://github.com/iory/build-your-own-arduino-rtos/blob/main/code/13_quadruped/rl/README.md) の「KRS 版（KrsQuad-*）」にある．
 
@@ -867,7 +866,7 @@ Colab のノートブックは `ArduinoQuad-Walk` 用なので，学習と書き
 
 </div>
 
-### 課題7(発展): SolidWorks で組んだ四脚ロボットから URDF を書き出す
+### 課題8(発展): SolidWorks で組んだ四脚ロボットから URDF を書き出す
 
 [sw2robot（solidworks_urdf_exporter2）](https://github.com/jsk-ros-pkg/solidworks_urdf_exporter2)は，SolidWorks のアセンブリの合致（メイト）からリンクの木構造と関節軸を読み取り，URDF を書き出すツールである．
 [sw2robot の日本語ドキュメント](https://jsk-ros-pkg.github.io/solidworks_urdf_exporter2/ja/)の
@@ -905,14 +904,14 @@ STEP のサーボを部品として取り込み，サーボの出力軸とフレ
 JEFY の 3D プリント部品の STL は[部品表](https://iory.github.io/build-your-own-arduino-rtos/hardware/krs_bom.html)の「3D プリント部品」にある．
 
 さらに余裕があれば，[MuJoCo で歩かせる](https://jsk-ros-pkg.github.io/solidworks_urdf_exporter2/ja/walk/)に沿って，
-自分で書き出したロボットを課題4の CPU 版の学習コードで歩かせてみよう．
+自分で書き出したロボットを課題5の CPU 版の学習コードで歩かせてみよう．
 
-### 課題8(発展): 自分のオリジナルロボットの URDF を作る
+### 課題9(発展): 自分のオリジナルロボットの URDF を作る
 
-課題7の流れを使って，自分で考えたオリジナルのロボットを SolidWorks で設計し，sw2robot で URDF を作ってみよう．
+課題8の流れを使って，自分で考えたオリジナルのロボットを SolidWorks で設計し，sw2robot で URDF を作ってみよう．
 脚の数・関節の数・形は自由である（アーム，車輪ロボット，脚の数が違う歩行ロボットなど）．
 
-- 実際に使うサーボがあれば，課題7と同じようにメーカーの STEP を取り込んでアセンブリする．
+- 実際に使うサーボがあれば，課題8と同じようにメーカーの STEP を取り込んでアセンブリする．
 - 部品ごとに材料を設定し，合致で関節を作る．
 - エディタで関節の種類（動く関節か固定か）・可動範囲・名前を整える．
 - 書き出した URDF を RViz で表示し，各関節を動かしたスクリーンショットを撮って URDF と一緒に提出すること．
