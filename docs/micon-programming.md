@@ -928,7 +928,7 @@ name: fig:servo-motor-with-distance
 
 | 部品 | 端子 | Arduino UNO R4 WiFi |
 | --- | --- | --- |
-| HC-SR04 | VCC / GND | 5V / GND |
+| HC-SR04 | VCC / GND | 3.3V / GND |
 | HC-SR04 | Trig / Echo | D2 / D3 |
 | サーボ SG90 | 赤（真ん中）/ 茶 | 5V / GND |
 | サーボ SG90 | オレンジ（信号） | D8 |

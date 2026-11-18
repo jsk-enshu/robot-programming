@@ -79,6 +79,7 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 
 ## 準備
 
+(mechatrobot-circuit-2026)=
 ### 回路
 
 {doc}`夏学期のマイコンプログラミング演習<micon-programming>`の演習課題3（超音波距離センサ）と発展課題5-1（サーボモータ）の回路を，両方同時につないで使う（発展課題5-2 と同じ配線）．
@@ -86,7 +87,7 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 
 | 部品 | 端子 | Arduino UNO R4 WiFi |
 | --- | --- | --- |
-| HC-SR04 | VCC / GND | 5V / GND |
+| HC-SR04 | VCC / GND | 3.3V / GND |
 | HC-SR04 | Trig / Echo | D2 / D3 |
 | サーボ SG90 | 赤（真ん中）/ 茶 | 5V / GND |
 | サーボ SG90 | オレンジ（信号） | D8 |
@@ -507,6 +508,53 @@ $ ros2 run rqt_image_view rqt_image_view
 (mechatrobot-troubleshooting-2026)=
 ## うまくいかないとき
 
+### まず配線を自動で確かめる
+
+センサの値が変わらない，サーボが動かない，といったときは，まず次を実行する．
+ポートを使うので，ブリッジ（`serial_bridge.py`）は先にそのウィンドウで `Ctrl-C` して止めておく．
+
+```{code-block} console
+$ ros2 run mechatrobot_ros2 check_hardware.py
+[OK] ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST (ROS 2 は自分の PC の中だけ)
+[OK] /dev/ttyACM0 を使える
+[OK] ファームウェアが動いている (range の行が 2 秒で 41 行)
+[OK] 超音波センサ: Trig D2 / Echo D3 で反射が返る (前方 27.9 cm)
+```
+
+ROS 2 の設定，シリアルポート（ある・権限がある・他のプログラムが開いていない），ボードからデータが届くか，を順に調べる．
+超音波センサは，ファームウェアの `diag`（配線の自己診断）で，反射が返るか・Trig と Echo が逆でないか・Echo が HIGH のままでないかを調べる．
+`[NG]` が出たら，その下の `->` に書いてあることを上から順に行い，1 つ直したらもう一度実行する．
+
+サーボは角度を返さないので，電気的には動いたかが分からない．`--servo` を付けると，サーボを −45° → 45° → 元の角度と動かすので，**サーボを見ていて，左右に動いたかを確かめる**．
+
+```{code-block} console
+$ ros2 run mechatrobot_ros2 check_hardware.py --servo
+...
+サーボを -45° → 45° → 0° (元の角度) に動かす．サーボを見ていること
+[OK] ファームウェアはサーボに角度を書いた (pos が指令どおりに変わった)
+サーボは左右に動きましたか? [y/n]
+```
+
+<span style="color:red">**配線を直すときは，必ず先に Arduino の USB ケーブルを抜くこと．**</span>
+
+### AI TA に見てもらう
+
+AI TA（{doc}`tips/ai-ta`）に「超音波センサの値が 0 のまま」「サーボが動かない」などと聞くと，AI TA は上の `check_hardware.py` を実行して原因を探す．
+サーボを動かすときは，何をどれだけ動かすかを書いてから動かし，「いま左右に動きましたか？」と聞いてくるので，見て答える．
+
+配線が合っているかを目で見てほしいときは，**スマホで配線の写真を撮って AI TA に貼る**．
+
+1.  明るいところで 2 枚撮る．1 枚目はブレッドボードと Arduino の全体を真上から，2 枚目は Arduino のピンの番号と，そこに刺さっている線が読めるくらい近づけて．
+2.  写真を PC に送る（自分宛てのメールなど）．PC のブラウザで開き，画像を右クリックして「画像をコピー」する．
+3.  `ta` の対話の画面で `Ctrl+V` で貼り，「メカトロボットの配線が資料と合っているか見て」と頼む．
+    画像を保存したときは，`~/Downloads/wiring.jpg の配線を見て` のようにファイルの場所を書いてもよい．
+
+AI TA は，資料の先頭の写真と{ref}`mechatrobot-circuit-2026`の表と比べる．
+ただし，写真では細い線がブレッドボードや Arduino のどの穴に刺さっているかまでは見分けにくい．
+`check_hardware.py` の結果と食い違うときは，`check_hardware.py`（電気的に測った結果）を信じる．
+
+### よくある症状
+
 UNO R4 WiFi では，USB と Arduino のマイコン（RA4M1）のあいだに，もう 1 つのマイコン（ESP32-S3）が USB とシリアルの変換役として入っている．
 ここが止まると，マイコンのプログラムは動いているのに PC にデータが届かなくなる．
 
@@ -514,15 +562,15 @@ UNO R4 WiFi では，USB と Arduino のマイコン（RA4M1）のあいだに�
 | --- | --- |
 | `ls /dev/ttyACM*` で何も出ない | USB ケーブルを挿し直す．充電専用のケーブルでないか確かめる |
 | ブリッジが `cannot open /dev/ttyACM0` を出し続ける | シリアルモニタなど，ポートを開いている他のプログラムを閉じる．`Permission denied` なら {doc}`tips/arduino-device-detection` を見る |
-| ブリッジは `connected` と出るのにトピックが届かない（Arduino の LED は点滅している） | マイコンは動いているが，USB とシリアルの変換役が止まっている．下の `recover_usb.sh` を実行してから，ブリッジを起動し直す |
+| ブリッジは `connected` と出るのにトピックが届かない（Arduino の LED は点滅している） | マイコンは動いているが，USB とシリアルの変換役が止まっている．Arduino の USB ケーブルを抜いて挿し直す（下の `recover_usb.sh` でも同じ）．そのあとブリッジを起動し直す |
 | 書き込みが `No device found on ttyACM0` / `Device unsupported` で失敗する | `recover_usb.sh` を実行してから書き込み直す．それでも失敗するなら下の `flash_swd.sh` で書き込む |
-| `range` が `0.000` のまま変わらない | 超音波が返ってきていない．Trig と Echo が逆でないか，夏学期の発展課題5-2 の古い資料の配線（Trig = D3 / Echo = D4）のままでないかを確かめる．Trig = D2，Echo = D3 である．4.5 m 以内に何もないときも 0 になる |
-| `pos` は変わるのにサーボが動かない | サーボは角度を返さないので，`pos` は動かそうとしている角度でしかない．信号線（オレンジ）が D8 か，赤が 5V・茶が GND かを確かめる |
+| `range` が `0.000` のまま変わらない | 超音波が返ってきていない．`check_hardware.py` で原因を調べる．Trig と Echo が逆でないか，夏学期の発展課題5-2 の古い資料の配線（Trig = D3 / Echo = D4）のままでないかを確かめる．Trig = D2，Echo = D3 である．4.5 m 以内に何もないときも 0 になる |
+| `pos` は変わるのにサーボが動かない | サーボは角度を返さないので，`pos` は動かそうとしている角度でしかない．`check_hardware.py --servo` で動かして確かめる．信号線（オレンジ）が D8 か，赤が 5V・茶が GND かを確かめる |
 | 何も送っていないのにサーボが動く．`ros2 node list` に自分が起動していないノードが出る | 同じネットワークの他の人の PC とつながっている．`echo $ROS_AUTOMATIC_DISCOVERY_RANGE` が `LOCALHOST` か確かめる（{ref}`mechatrobot-software-2026`）．設定したら，ブリッジなどのノードをすべて止めて起動し直す |
 
 ```{code-block} console
 $ cd ~/ros2_ws/src/robot-programming/mechatrobot_ros2/firmware
-$ scripts/recover_usb.sh                                       # USB を抜き差ししたのと同じ状態にする
+$ scripts/recover_usb.sh                                       # USB を抜き差ししたのと同じ状態にする（権限が無いと失敗する．そのときは抜き差しする）
 $ scripts/flash_swd.sh uno_r4_serial mechatrobot_serial        # ボード上のデバッガ経由で書き込む（約 15 秒）
 ```
 
