@@ -193,6 +193,16 @@ $ colcon build --symlink-install --packages-up-to mechatrobot_ros2
 $ source ~/ros2_ws/install/setup.bash
 ```
 
+<span style="color:red">**AI TA を使う人は，AI TA も新しくしておく**</span>（{ref}`software-update`の最後の手順）．
+本日の「{ref}`mechatrobot-troubleshooting-2026`」で使う，配線を自動で確かめる・サーボを動かして「いま左右に動きましたか？」と聞く・配線の写真を見る，といった AI TA の動きは新しい版で入ったものである．
+`ta version` が `ai-ta-for-student 0.2.15` 以上ならよい．
+
+```{code-block} console
+$ curl -fsSL https://raw.githubusercontent.com/iory/ai-ta-for-student/main/install.sh | bash
+$ source ~/.bashrc
+$ ta version
+```
+
 ROS 2 の通信が自分の PC の中だけに閉じているかを確かめる．`LOCALHOST` と出ればよい．
 
 ```{code-block} console

@@ -114,6 +114,16 @@ $ source /opt/ros/jazzy/setup.bash
 $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition
 ```
 
+AI TA（{doc}`tips/ai-ta`）を使う人は，AI TA も新しくする．
+AI TA の本体（`ta`）と AI TA への指示は `~/ros2_ws` の外に入っているので，上の手順では新しくならない．
+インストールのコマンドをもう一度実行すれば新しい版になり，キーと設定はそのまま残る．
+
+```{code-block} console
+$ curl -fsSL https://raw.githubusercontent.com/iory/ai-ta-for-student/main/install.sh | bash
+$ source ~/.bashrc
+$ ta version
+```
+
 - **`vcs pull` の出力を読んでから先に進む．** どこかに `error:` が出ていたら，そのリポジトリは更新されていない．
   そのまま `colcon build` すると古いままのコードで動き，別のエラーになる．
   よくあるのは自分で変えたファイルとぶつかる場合で，直し方は {ref}`vcs-pull-local-changes`．
