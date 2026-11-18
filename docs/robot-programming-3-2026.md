@@ -85,12 +85,24 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 {doc}`夏学期のマイコンプログラミング演習<micon-programming>`の演習課題3（超音波距離センサ）と発展課題5-1（サーボモータ）の回路を，両方同時につないで使う（発展課題5-2 と同じ配線）．
 超音波距離センサは Trig = D2 / Echo = D3，サーボの信号線は D8 である．
 
+<span style="color:red">**超音波距離センサの VCC は 3.3V に，5V はサーボの真ん中の赤い線につなぐ．**</span>
+
 | 部品 | 端子 | Arduino UNO R4 WiFi |
 | --- | --- | --- |
 | HC-SR04 | VCC / GND | 3.3V / GND |
 | HC-SR04 | Trig / Echo | D2 / D3 |
 | サーボ SG90 | 赤（真ん中）/ 茶 | 5V / GND |
-| サーボ SG90 | オレンジ（信号） | D8 |
+| サーボ SG90 | 黄またはオレンジ（信号） | D8 |
+
+:::{figure} fig/mechatrobot-servo-wires-2026.jpg
+:align: center
+:width: 360px
+:name: fig:mechatrobot-servo-wires-2026
+
+サーボ SG90 の線．茶が GND，真ん中の赤が 5V，黄が信号で D8 につなぐ．
+信号線は製品によってオレンジのこともある．どの色でも，赤が真ん中で，茶と反対側の端が信号である．
+写真のジャンパ線の色（青・赤・オレンジ）は一例で，決まりはない．
+:::
 
 ::::{grid} 2
 :gutter: 2
@@ -100,21 +112,74 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 :align: center
 :name: fig:hc-sr04-connection-2026
 
-超音波距離センサ HC-SR04 の接続（夏学期の演習課題3と同じ）
+超音波距離センサ HC-SR04 の接続（夏学期の演習課題3の写真）．Trig を D2，Echo を D3 につなぐ．<span style="color:red">**VCC は 3.3V につなぐ．**</span>
 :::
 
 :::{grid-item}
-:::{figure} fig/micon-programming/servo-motor-with-arduino.jpg
+:::{figure} fig/mechatrobot-servo-2026.jpg
 :align: center
-:name: fig:servo-motor-wiring-2026
+:name: fig:mechatrobot-wiring-2026
 
-サーボモータ SG90 の接続（夏学期の発展課題5-1．写真は信号線を D2 につないだ旧配線で，本日は D8 につなぐ）
+全体の配線（ページ先頭の写真と同じ）．サーボの真ん中の赤い線が 5V，超音波距離センサの VCC が 3.3V である．
 :::
 
 ::::
 
 <span style="color:red">**配線を変えるときは，必ず Arduino の USB ケーブルを PC から抜いて電源を切った状態で行うこと．**</span>
 通電したまま配線を変えると，一瞬の接触で短絡や過電流が起き，マイコンや周辺回路が壊れる．
+
+(mechatrobot-mount-2026)=
+### センサをサーボに付ける
+
+<span style="color:red">**USB ケーブルを抜いてから付けること．**</span>
+超音波センサをサーボの軸（ホーン）の先に付ける（{numref}`Fig. %s <fig:mechatrobot-servo-2026>`）．サーボを回すとセンサの向きが変わる．
+サーボと超音波センサをスナップフィット（部品のたわみを使って，はめ込むだけで留まる仕組み）でつなぐパーツ（ホルダー）を TA が配るので，
+希望する人は `ta call "センサのホルダーがほしい"` で TA を呼ぶか，近くの TA に声をかけて受け取ること．
+
+- **超音波センサ**: ホルダーには溝があるので，センサの基板をその溝にはめ込む（{numref}`Fig. %s <fig:mechatrobot-snapfit-sensor-back-2026>`，{numref}`Fig. %s <fig:mechatrobot-snapfit-sensor-front-2026>`）．
+- **サーボ**: ホルダーをサーボの軸にはめ込むときは，パーツが壊れないように，**軸の真上の部分だけを押して，軸の部分にだけ力がかかるようにする**（{numref}`Fig. %s <fig:mechatrobot-snapfit-servo-2026>`）．
+  ホルダーの長い部分（センサを載せる側）を持って押し込むと，細いところに力がかかって折れることがある．
+
+::::{grid} 3
+:gutter: 2
+
+:::{grid-item}
+:::{figure} fig/mechatrobot-snapfit-sensor-back-2026.jpg
+:align: center
+:name: fig:mechatrobot-snapfit-sensor-back-2026
+
+ホルダーの溝に超音波センサの基板をはめ込んだところ（裏側）
+:::
+
+:::{grid-item}
+:::{figure} fig/mechatrobot-snapfit-sensor-front-2026.jpg
+:align: center
+:name: fig:mechatrobot-snapfit-sensor-front-2026
+
+同じものを表側から見たところ
+:::
+
+:::{grid-item}
+:::{figure} fig/mechatrobot-snapfit-servo-2026.jpg
+:align: center
+:name: fig:mechatrobot-snapfit-servo-2026
+
+ホルダーをサーボの軸にはめ込むときは，軸の真上を指で押す
+:::
+
+::::
+
+配線は{ref}`mechatrobot-circuit-2026`のままでよい．
+センサの線は，サーボが −90° から 90° まで回っても引っ張られないように，長さに余裕を持たせる．
+部品の中の赤いジャンパワイヤを 2 本つないで 1 本の長い線にして（{numref}`Fig. %s <fig:mechatrobot-long-jumper-2026>`），超音波センサの 4 本の線に使うとよい．
+
+:::{figure} fig/mechatrobot-long-jumper-2026.jpg
+:align: center
+:width: 360px
+:name: fig:mechatrobot-long-jumper-2026
+
+赤いジャンパワイヤを 2 本つないで長くしたもの
+:::
 
 (mechatrobot-software-2026)=
 ### ソフトウェア
@@ -345,15 +410,15 @@ UNO R4 WiFi はシリアルポートを開き直してもリセットされな�
 :gutter: 2
 
 :::{grid-item}
-:::{figure} fig/mechatrobot-rviz.jpg
+:::{figure} fig/mechatrobot-rviz-2026.png
 :align: center
 :name: fig:mechatrobot-rviz-2026
 
-メカトロボットの rviz での表示
+メカトロボットの rviz での表示．Arduino UNO R4 WiFi の横にサーボがあり，サーボの軸に付けた台（ホルダー）に超音波センサが載っている．
 :::
 
 :::{grid-item}
-:::{figure} fig/mechatrobot-rviz-with-tf.jpg
+:::{figure} fig/mechatrobot-rviz-with-tf-2026.png
 :align: center
 :name: fig:mechatrobot-rviz-with-tf-2026
 
@@ -366,6 +431,18 @@ tf を表示すると，ロボットモデルの link，joint 等の位置関係
 
 ロボットモデルは [mechatrobot_ros2/urdf/robot.urdf](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/urdf/robot.urdf) に定義されている．
 ロボットモデルは `link` と `joint` の連結で表されており，以下に記述の一部を紹介する．
+Arduino・サーボ・センサのホルダー・超音波センサの形（メッシュ．色や印刷の模様も付いた glTF 形式（.glb），[mechatrobot_ros2/meshes](https://github.com/jsk-enshu/robot-programming/tree/master/mechatrobot_ros2/meshes)）と，それらの位置関係は，SolidWorks で組んだモデルから [sw2robot](https://github.com/jsk-ros-pkg/solidworks_urdf_exporter2) で書き出したものである（課題8）．
+
+| link | 中身 | 親との joint |
+| --- | --- | --- |
+| `base_link` | Arduino UNO R4 WiFi | （根元） |
+| `motor_link` | サーボ SG90 の本体 | `base_to_motor`（fixed） |
+| `link1` | サーボの軸に付けたセンサのホルダー | `joint1`（revolute，サーボの角度） |
+| `hc_sr04` | 超音波センサ HC-SR04 | `link1_to_hc_sr04`（fixed） |
+| `range_sensor` | `/range` の座標系（x 軸がセンサの向く方向） | `hc_sr04_to_range_sensor`（fixed） |
+| `led` | 基板上の LED（L） | `base_to_led`（fixed） |
+
+センサはサーボの軸に載っているので，`joint1` を回すとセンサの向きも変わる．
 
 `link` 部では `link` 名や幾何情報が記述されている．
 幾何情報は既に用意されたプリミティブ形状の他，自身で作成した 3D データを読み込ませることも可能である．
@@ -376,7 +453,7 @@ tf を表示すると，ロボットモデルの link，joint 等の位置関係
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <box size="0.053 0.082 0.01"/>
+      <mesh filename="package://mechatrobot_ros2/meshes/arduino_uno_r4_wifi_1.glb"/>
     </geometry>
   </visual>
 </link>
@@ -387,9 +464,9 @@ tf を表示すると，ロボットモデルの link，joint 等の位置関係
 
 ```xml
 <joint name="base_to_motor" type="fixed">
-  <parent link="breadboard_link" />
-  <child link="motor_link" />
-  <origin xyz="0 0.08 0" rpy="0 0 0" />
+  <parent link="base_link"/>
+  <child link="motor_link"/>
+  <origin xyz="0.09107008578 0.02666985587 0.009294932217" rpy="1.570796327 0 0"/>
 </joint>
 ```
 
@@ -400,7 +477,7 @@ ROS には GUI でロボットを操作するインターフェースが用意�
 下図は `rqt_joint_trajectory_controller` を起動した直後の off の状態である．
 GUI 中で `/controller_manager` と `position_trajectory_controller` を選択し，電源ボタン（赤）をクリックすると，コントローラは電源ボタン（緑）の on となり，GUI からロボットを操作できるようになる．
 `joint1` のバーと数値は角度 [rad] を示しており（サーボの範囲に合わせて −1.57〜1.57 rad），左右に動かすことで rviz および実物のモータが動くので試してみてほしい．
-正しく起動できていれば，rviz 上に表示されているモータ回転軸に相当する座標系が回転するのが確認できる．
+正しく起動できていれば，rviz 上でもサーボの軸に載ったセンサが同じように回るのが確認できる．
 
 ::::{grid} 2
 :gutter: 2
@@ -428,11 +505,11 @@ rqt_joint_trajectory_controller（on の状態）
 超音波センサの認識領域は，`/range` を円錐形で可視化している．
 前方物体の距離に応じて円錐が変形するので，超音波センサの前に手をかざしてみたり，実際に定規で距離を確認してみるとよい．
 
-:::{figure} fig/range-sensor-rviz.png
+:::{figure} fig/range-sensor-rviz-2026.png
 :align: center
 :name: fig:range-sensor-visualized-2026
 
-rviz で測距センサを可視化している様子
+rviz で測距センサを可視化している様子．センサの向きに，測った距離の長さの円錐が出る．
 :::
 
 #### <span style="color:green">チェックポイント: メカトロボットの動作確認</span>
@@ -484,6 +561,15 @@ $ ros2 run mechatrobot_ros2 motor_command_by_hand.py
 ```{code-block} console
 $ ros2 run rqt_image_view rqt_image_view
 ```
+
+:::{figure} fig/mechatrobot-hand-detection-2026.jpg
+:align: center
+:width: 480px
+:name: fig:mechatrobot-hand-detection-2026
+
+`rqt_image_view` で見た `/hand_detection/image`．見つけた手に骨格（赤）と枠（緑）が描かれる．
+この枠の中心は画像の右側にあるので，モータは右に回る．
+:::
 
 - `hand_detection_node`（[jedy_vision/scripts/hand_detection_node.py](https://github.com/jsk-enshu/robot-programming/blob/master/jedy/jedy_vision/scripts/hand_detection_node.py)）
   カメラの画像（`image_topic` で指定する．`usb_cam` は `/image_raw` に出す）から，MediaPipe の Hand Landmarker で手（1 つにつき 21 点）を見つけ，
@@ -537,6 +623,15 @@ $ ros2 run mechatrobot_ros2 check_hardware.py --servo
 
 <span style="color:red">**配線を直すときは，必ず先に Arduino の USB ケーブルを抜くこと．**</span>
 
+`[NG]` の意味が分からないときは，AI TA に相談する．
+そのまま `ros2 run` で実行した結果は AI TA に渡らないので，前に `ta run` を付けて実行してから `ta fix` する（{doc}`tips/ai-ta`）．
+`ta run` は出力を記録しながらコマンドを実行し，失敗したら `ta fix` がその出力を AI TA に送る．
+
+```{code-block} console
+$ ta run ros2 run mechatrobot_ros2 check_hardware.py
+$ ta fix
+```
+
 ### AI TA に見てもらう
 
 AI TA（{doc}`tips/ai-ta`）に「超音波センサの値が 0 のまま」「サーボが動かない」などと聞くと，AI TA は上の `check_hardware.py` を実行して原因を探す．
@@ -565,7 +660,7 @@ UNO R4 WiFi では，USB と Arduino のマイコン（RA4M1）のあいだに�
 | ブリッジは `connected` と出るのにトピックが届かない（Arduino の LED は点滅している） | マイコンは動いているが，USB とシリアルの変換役が止まっている．Arduino の USB ケーブルを抜いて挿し直す（下の `recover_usb.sh` でも同じ）．そのあとブリッジを起動し直す |
 | 書き込みが `No device found on ttyACM0` / `Device unsupported` で失敗する | `recover_usb.sh` を実行してから書き込み直す．それでも失敗するなら下の `flash_swd.sh` で書き込む |
 | `range` が `0.000` のまま変わらない | 超音波が返ってきていない．`check_hardware.py` で原因を調べる．Trig と Echo が逆でないか，夏学期の発展課題5-2 の古い資料の配線（Trig = D3 / Echo = D4）のままでないかを確かめる．Trig = D2，Echo = D3 である．4.5 m 以内に何もないときも 0 になる |
-| `pos` は変わるのにサーボが動かない | サーボは角度を返さないので，`pos` は動かそうとしている角度でしかない．`check_hardware.py --servo` で動かして確かめる．信号線（オレンジ）が D8 か，赤が 5V・茶が GND かを確かめる |
+| `pos` は変わるのにサーボが動かない | サーボは角度を返さないので，`pos` は動かそうとしている角度でしかない．`check_hardware.py --servo` で動かして確かめる．信号線（黄かオレンジ）が D8 か，赤が 5V・茶が GND かを確かめる |
 | しばらく PC から離れていたら，ブリッジは `connected` のままトピックが届かない | ノート PC がバッテリーで動いていると，触らずに 15 分ほどたつとサスペンド（スリープ）する．復帰しても Arduino からのデータは止まったままなので，Arduino の USB ケーブルを抜いて挿し直す．演習中は AC アダプタをつないでおく |
 | 何も送っていないのにサーボが動く．`ros2 node list` に自分が起動していないノードが出る | 同じネットワークの他の人の PC とつながっている．`echo $ROS_AUTOMATIC_DISCOVERY_RANGE` が `LOCALHOST` か確かめる（{ref}`mechatrobot-software-2026`）．設定したら，ブリッジなどのノードをすべて止めて起動し直す |
 
@@ -590,21 +685,7 @@ $ scripts/flash_swd.sh uno_r4_serial mechatrobot_serial        # ボード上の
 ここでは超音波センサをサーボの軸の先に付けて左右に振り，同じことをする．
 向きを変えながら測った距離を，その向きに置いた点にすれば，周りの物の形が見えてくる．
 
-#### センサをサーボに付ける
-
-<span style="color:red">**USB ケーブルを抜いてから付けること．**</span>
-超音波センサをサーボの軸（ホーン）の先に付ける（{numref}`Fig. %s <fig:mechatrobot-servo-lidar-2026>`．写真ではホルダーで留めている）．
-センサのホルダーは TA が配るので，欲しい人は `ta call "センサのホルダーがほしい"` で TA を呼ぶか，近くの TA に声をかけること．
-配線は{ref}`mechatrobot-circuit-2026`のままでよい．
-センサの線は，サーボが −90° から 90° まで回っても引っ張られないように，長さに余裕を持たせる．
-
-:::{figure} fig/mechatrobot-servo-lidar-2026.jpg
-:align: center
-:width: 360px
-:name: fig:mechatrobot-servo-lidar-2026
-
-サーボの軸の先に超音波センサを付けたところ．サーボを回すとセンサの向きが変わる．
-:::
+センサは{ref}`mechatrobot-mount-2026`のとおりサーボの軸に付けておく．
 
 #### 動かす
 
@@ -631,6 +712,14 @@ rviz は真上から見た図で，原点がサーボの軸，**画面の右（�
 :name: fig:mechatrobot-servo-lidar-rviz-2026
 
 rviz で見た点群．往復するたびに点が増えていく（点は 5 秒で消える）．
+:::
+
+:::{figure} fig/mechatrobot-servo-lidar-2026.gif
+:align: center
+:name: fig:mechatrobot-servo-lidar-movie-2026
+
+左: 実機（センサの前にカップを置いている）．右: rviz で見た点群（緑の線がいま測っている向きと距離）．
+左右は別々に撮ったもので，同じ瞬間ではなく，周りの物の置き方も同じではない．
 :::
 
 [servo_scan.py](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/scripts/servo_scan.py) は次のことをしている．
