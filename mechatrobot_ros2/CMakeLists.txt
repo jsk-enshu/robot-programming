@@ -53,6 +53,7 @@ install(PROGRAMS
 install(DIRECTORY
   config
   launch
+  meshes
   urdf
   DESTINATION share/${PROJECT_NAME}
 )
