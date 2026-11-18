@@ -1,164 +1,91 @@
 <?xml version="1.0"?>
+<!-- Mechatrobot: Arduino UNO R4 WiFi, SG90 servo, HC-SR04 on a cradle on the
+     servo horn. Meshes and the base_link -> motor_link -> link1 -> hc_sr04
+     transforms come from the SolidWorks assembly (sw2robot export
+     arduino_sg90_hcsr04_description); the link and joint names are the ones
+     the rest of the package uses (joint1, range_sensor, led). -->
 <robot name="robot">
+  <!-- Arduino UNO R4 WiFi. Origin at a corner of the board, x along the long
+       side (USB connector at x < 0), z up. -->
   <link name="base_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.053 0.082 0.01"/>
+        <mesh filename="package://mechatrobot_ros2/meshes/arduino_uno_r4_wifi_1.glb"/>
       </geometry>
-      <material name="white">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
   </link>
 
-  <link name="breadboard_link">
+  <!-- SG90 servo body, lying next to the board with its shaft up. -->
+  <link name="motor_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.053 0.082 0.01"/>
+        <mesh filename="package://mechatrobot_ros2/meshes/sg90_1.glb"/>
       </geometry>
-      <material name="white">
-        <color rgba="1 1 1 1"/>
-      </material>
     </visual>
   </link>
 
-  <joint name="base_to_breadboard" type="fixed">
-    <parent link="base_link"/>
-    <child link="breadboard_link"/>
-    <origin xyz="0 0 0.005" rpy="0 0 0"/>
-  </joint>
-
-  <!-- SG90 servo body (22.5 x 12.2 x 22.7 mm). The link origin is under the
-       output shaft, which is 5.5 mm from the centre of the body. -->
-  <link name="motor_link">
-    <visual>
-      <origin xyz="0 0.0055 0.01135" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.0122 0.0225 0.0227"/>
-      </geometry>
-      <material name="servo_blue">
-        <color rgba="0.2 0.4 0.9 1"/>
-      </material>
-    </visual>
-  </link>
-
+  <!-- Sensor cradle on the servo horn; turns with joint1. -->
   <link name="link1">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.01 0.1 0.005"/>
+        <mesh filename="package://mechatrobot_ros2/meshes/hcsr04_cradle_1.glb"/>
       </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1"/>
-      </material>
     </visual>
   </link>
 
-  <link name="range_sensor">
+  <!-- HC-SR04 board. Its transducers face +z of this link. -->
+  <link name="hc_sr04">
     <visual>
-      <origin xyz="0 0 0" rpy="1.57 0 1.57" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.045 0.020 0.002"/>
+        <mesh filename="package://mechatrobot_ros2/meshes/hc_sr04_1.glb"/>
       </geometry>
-      <material name="blue">
-        <color rgba="0 0 1 1"/>
-      </material>
     </visual>
   </link>
 
-  <link name="range_sensor_left_transducer">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 1.57 0" />
-      <geometry>
-        <cylinder radius="0.008" length="0.012"/>
-      </geometry>
-      <material name="silver">
-        <color rgba="0.75 0.75 0.75 1"/>
-      </material>
-    </visual>
-  </link>
+  <!-- Frame of the /range messages: x points out of the transducers
+       (sensor_msgs/Range measures along x). -->
+  <link name="range_sensor"/>
 
-  <link name="range_sensor_right_transducer">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 1.57 0" />
-      <geometry>
-        <cylinder radius="0.008" length="0.012"/>
-      </geometry>
-      <material name="silver">
-        <color rgba="0.75 0.75 0.75 1"/>
-      </material>
-    </visual>
-  </link>
-
-  <link name="arduino_nano">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <box size="0.045 0.018 0.005"/>
-      </geometry>
-      <material name="arduino_red">
-        <color rgba="1 0 0 1"/>
-      </material>
-    </visual>
-  </link>
-
-  <link name="led">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <cylinder radius="0.0025" length="0.002"/>
-      </geometry>
-      <material name="led_off">
-        <color rgba="0.3 0.3 0.3 1"/>
-      </material>
-    </visual>
-  </link>
+  <!-- LED_BUILTIN ("L") on the board; led_controller.py draws a marker here. -->
+  <link name="led"/>
 
   <joint name="base_to_motor" type="fixed">
-    <parent link="breadboard_link" />
-    <child link="motor_link" />
-    <origin xyz="0 0.08 0" rpy="0 0 0" />
+    <parent link="base_link"/>
+    <child link="motor_link"/>
+    <origin xyz="0.09107008578 0.02666985587 0.009294932217" rpy="1.570796327 0 0"/>
   </joint>
 
-  <joint name="base_to_sensor" type="fixed">
-    <parent link="breadboard_link" />
-    <child link="range_sensor" />
-    <origin xyz="0.02 -0.03 0.02" />
-  </joint>
-
-  <joint name="sensor_to_left_transducer" type="fixed">
-    <parent link="range_sensor" />
-    <child link="range_sensor_left_transducer" />
-    <origin xyz="0.006 0.0166 0" rpy="0 0 0" />
-  </joint>
-
-  <joint name="sensor_to_right_transducer" type="fixed">
-    <parent link="range_sensor" />
-    <child link="range_sensor_right_transducer" />
-    <origin xyz="0.006 -0.0166 0" rpy="0 0 0" />
-  </joint>
-
-  <joint name="breadboard_to_arduino" type="fixed">
-    <parent link="breadboard_link" />
-    <child link="arduino_nano" />
-    <origin xyz="0 0.022 0.0075" rpy="0 0 1.57" />
-  </joint>
-
-  <joint name="arduino_to_led" type="fixed">
-    <parent link="arduino_nano" />
-    <child link="led" />
-    <origin xyz="0.01 0 0.0035" rpy="0 0 0" />
-  </joint>
-
-  <!-- 0 rad is the servo's centre (Servo.write(90)); it turns +-90 deg. -->
+  <!-- 0 rad is the servo's centre (Servo.write(90)); it turns +-90 deg.
+       At 0 rad the sensor faces +x of base_link. -->
   <joint name="joint1" type="revolute">
+    <parent link="motor_link"/>
+    <child link="link1"/>
+    <origin xyz="0.003909914222 0.01649506778 0" rpy="-1.570796327 0 0"/>
     <axis xyz="0 0 -1"/>
     <limit effort="1000.0" lower="-1.57" upper="1.57" velocity="3.0"/>
-    <origin xyz="0 0 0.027" />
-    <parent link="motor_link" />
-    <child link="link1" />
+  </joint>
+
+  <joint name="link1_to_hc_sr04" type="fixed">
+    <parent link="link1"/>
+    <child link="hc_sr04"/>
+    <origin xyz="0.0004439344412 0.0001980352264 0.02417671319" rpy="0 -1.570796327 3.141592654"/>
+  </joint>
+
+  <!-- Front face of the transducers is 9.2 mm in front of the hc_sr04 origin. -->
+  <joint name="hc_sr04_to_range_sensor" type="fixed">
+    <parent link="hc_sr04"/>
+    <child link="range_sensor"/>
+    <origin xyz="0 0 0.0092" rpy="0 -1.570796327 0"/>
+  </joint>
+
+  <joint name="base_to_led" type="fixed">
+    <parent link="base_link"/>
+    <child link="led"/>
+    <origin xyz="0.026 0.0435 0.003" rpy="0 0 0"/>
   </joint>
 
   <!-- ros2_control hardware interface -->
