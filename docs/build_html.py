@@ -137,8 +137,10 @@ def main() -> None:
         target_files = []
 
         # ルートディレクトリのMarkdownファイル
-        for pattern in ["*.md", "appendix-*.md", "robot-programming-*.md"]:
-            target_files.extend(project_root.glob(pattern))
+        # "*.md" already covers appendix-*.md and robot-programming-*.md. Listing
+        # them again backs a file up twice, so the second backup holds the
+        # converted text and the restore step leaves the conversion in place.
+        target_files.extend(project_root.glob("*.md"))
 
         # tipsディレクトリのMarkdownファイル
         tips_dir = project_root / "tips"
