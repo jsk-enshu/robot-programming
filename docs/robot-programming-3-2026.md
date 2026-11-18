@@ -184,14 +184,24 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 (mechatrobot-software-2026)=
 ### ソフトウェア
 
-{ref}`software-update`の手順でソフトウェアを更新してから，メカトロボットのパッケージをビルドする．
-画像処理には，`jedy_vision` の `hand_detection_node`（1日目の人の認識と同じ MediaPipe で手を見つけるノード）を使う．`jedy_vision` は上のソフトウェア更新でビルドされるので，追加の作業はいらない．
+<span style="color:red">**まず最新のソフトウェアを取得してビルドし直す．**</span>
+{ref}`software-update`と同じ手順に，本日使うメカトロボットのパッケージ `mechatrobot_ros2` を足したものである．
+画像処理で使う `jedy_vision` の `hand_detection_node`（1日目の人の認識と同じ MediaPipe で手を見つけるノード）も，ここでビルドされる．
 
 ```{code-block} console
+$ cd ~/ros2_ws/src
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
+$ vcs pull
+$ rosdep update
 $ cd ~/ros2_ws/
-$ colcon build --symlink-install --packages-up-to mechatrobot_ros2
+$ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
+$ source /opt/ros/jazzy/setup.bash
+$ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy_vision ros_speech_recognition mechatrobot_ros2
 $ source ~/ros2_ws/install/setup.bash
 ```
+
+- **`vcs pull` の出力を読んでから先に進む．** どこかに `error:` が出ていたら，そのリポジトリは更新されていない（直し方は {ref}`vcs-pull-local-changes`）．
+- **`rosdep install` を飛ばさない．** カメラの `usb_cam` など，新しく必要になったパッケージはここで入る．
 
 <span style="color:red">**AI TA を使う人は，AI TA も新しくしておく**</span>（{ref}`software-update`の最後の手順）．
 本日の「{ref}`mechatrobot-troubleshooting-2026`」で使う，配線を自動で確かめる・サーボを動かして「いま左右に動きましたか？」と聞く・配線の写真を見る，といった AI TA の動きは新しい版で入ったものである．
