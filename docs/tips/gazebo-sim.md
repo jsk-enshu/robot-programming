@@ -65,11 +65,7 @@ Gazeboシミュレーション中に倒れてしまったjedyロボット
 
 ```{code-block} console
 $ source /opt/ros/jazzy/setup.bash
-$ gz service -s /world/jedy_world/set_pose --reqtype gz.msgs.Pose --reptype gz.msgs.Boolean --timeout 3000 --req "
-name: 'jedy',
-position: {x: 0, y: 0, z: 0.2},
-orientation: {w: 1, x: 0, y: 0, z: 0}
-"
+$ gz service -s /world/jedy_world/set_pose --reqtype gz.msgs.Pose --reptype gz.msgs.Boolean --timeout 3000 --req "name: 'jedy', position: {x: 0, y: 0, z: 0.2}, orientation: {w: 1, x: 0, y: 0, z: 0}"
 data: true
 ```
 

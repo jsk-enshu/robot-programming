@@ -43,11 +43,18 @@ sphinx:
     - sphinxcontrib.images
   config:
     # コピーボタンの設定：$とirteusgl$をプロンプトとして除外
-    copybutton_prompt_text: "^(\\$ |irteusgl\\$ )"
+    # sphinx-copybutton はこれを "^(" + ここ + ")(.*)" に埋め込み，2 番目のグループを
+    # 「プロンプトの後ろ」として使う．ここに ( ) を書くとグループの番号がずれ，
+    # コマンドではなくプロンプト（"$ "）がコピーされるので，グループは書かない．
+    copybutton_prompt_text: "\\$ |irteusgl\\$ "
     copybutton_prompt_is_regexp: true
-    copybutton_only_copy_prompt_lines: false
+    # プロンプトの付いた行（コマンド）だけをコピーし，出力の行はコピーしない．
+    # プロンプトの無いブロック（Python など）はそのまま全部コピーされる．
+    # そのため，コマンドを複数行に分けるときは行末の \ で続けること（\ で続く行もコピーされる）．
+    # 引用符の中で改行すると 2 行目以降が落ちるので，そう書かない．
+    copybutton_only_copy_prompt_lines: true
     copybutton_remove_prompts: true
-    copybutton_line_continuation_character: ""
+    copybutton_line_continuation_character: "\\"
     # 画像のライトボックス設定
     images_config:
       backend: LightBox2
