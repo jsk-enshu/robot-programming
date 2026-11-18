@@ -864,8 +864,12 @@ Arduinoで[Servoライブラリ](https://github.com/arduino-libraries/Servo/blob
 width: 400px
 name: fig:servo-motor
 ---
-サーボモータのための接続
+サーボモータのための接続（写真は信号線を D2 につないだときのもの．本演習では D8 につなぐ）
 ```
+
+サーボの信号線（オレンジ）は **D8** につなぐ．
+冬学期の演習（知能ロボット行動プログラミング演習の3日目，メカトロボット）でも，演習課題3の超音波距離センサ（Trig = D2 / Echo = D3）とこのサーボ（D8）を同時につないで使うので，そのまま使えるようにこのピンにしておく．
+
 
 ```{warning}
 **SG90の配線に注意**
@@ -887,7 +891,7 @@ SG90に限らず，3線式サーボモータでは一般的に真ん中の線が
 ```
 
 ```cpp
-#define SERVO_PIN 2
+#define SERVO_PIN 8
 #include <Servo.h>
 
 Servo servo;
@@ -917,13 +921,23 @@ void loop() {
 width: 500px
 name: fig:servo-motor-with-distance
 ---
-超音波センサとサーボモータの接続
+超音波センサとサーボモータの接続（写真は Trig = D3 / Echo = D4，サーボ = D2 の旧配線．本演習では下の表のとおりにつなぐ）
 ```
 
+演習課題3と発展課題5-1の配線をそのまま両方つなぐ．
+
+| 部品 | 端子 | Arduino UNO R4 WiFi |
+| --- | --- | --- |
+| HC-SR04 | VCC / GND | 5V / GND |
+| HC-SR04 | Trig / Echo | D2 / D3 |
+| サーボ SG90 | 赤（真ん中）/ 茶 | 5V / GND |
+| サーボ SG90 | オレンジ（信号） | D8 |
+
+
 ```cpp
-#define SERVO_PIN 2
-#define TRIG_PIN 3
-#define ECHO_PIN 4
+#define SERVO_PIN 8
+#define TRIG_PIN 2
+#define ECHO_PIN 3
 
 #include <Servo.h>
 
@@ -971,9 +985,9 @@ void loop() {
 超音波距離センサ（HC-SR04）で計測した距離に応じて，サーボモータ（SG90）の角度を変化させると同時に，LEDマトリクスにバーメーターとして距離を表示する．距離が近いほどサーボモータの角度が大きくなり，LEDマトリクスの点灯行数も増える．
 
 ```cpp
-#define SERVO_PIN 2
-#define TRIG_PIN 3
-#define ECHO_PIN 4
+#define SERVO_PIN 8
+#define TRIG_PIN 2
+#define ECHO_PIN 3
 
 #include <Servo.h>
 #include "Arduino_LED_Matrix.h"
@@ -1857,7 +1871,7 @@ Pythonプログラムを実行したら，Arduino UNO R4 WiFiの基板上にあ�
 **Arduino側のプログラム:**
 
 ```cpp
-#define SERVO_PIN 2
+#define SERVO_PIN 8
 #include <Servo.h>
 
 Servo servo;
