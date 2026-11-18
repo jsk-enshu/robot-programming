@@ -594,6 +594,7 @@ $ scripts/flash_swd.sh uno_r4_serial mechatrobot_serial        # ボード上の
 
 <span style="color:red">**USB ケーブルを抜いてから付けること．**</span>
 超音波センサをサーボの軸（ホーン）の先に付ける（{numref}`Fig. %s <fig:mechatrobot-servo-lidar-2026>`．写真ではホルダーで留めている）．
+センサのホルダーは TA が配るので，欲しい人は `ta call "センサのホルダーがほしい"` で TA を呼ぶか，近くの TA に声をかけること．
 配線は{ref}`mechatrobot-circuit-2026`のままでよい．
 センサの線は，サーボが −90° から 90° まで回っても引っ張られないように，長さに余裕を持たせる．
 
