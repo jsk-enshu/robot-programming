@@ -630,7 +630,7 @@ rviz は真上から見た図で，原点がサーボの軸，**画面の右（�
 :align: center
 :name: fig:mechatrobot-servo-lidar-rviz-2026
 
-rviz で見た点群．往復するたびに点が増えていく（点は 20 秒で消える）．
+rviz で見た点群．往復するたびに点が増えていく（点は 5 秒で消える）．
 :::
 
 [servo_scan.py](https://github.com/jsk-enshu/robot-programming/blob/master/mechatrobot_ros2/scripts/servo_scan.py) は次のことをしている．
@@ -640,7 +640,7 @@ rviz で見た点群．往復するたびに点が増えていく（点は 20 �
   ノードは `range` を受けたら次の `pos` を待ち，その角度の向きに，その距離の点を 1 つ作って `/servo_scan/points`（`sensor_msgs/PointCloud2`）に出す．
   1 つ前の `pos` を使うと 50 ms 前の角度（最大 10° ずれる）になってしまう．
 - 7.3° は 180° を割り切らないので，往復するたびに前の往復とは少しずれた向きで測る．
-  rviz は点を 20 秒残すので（PointCloud2 の Decay Time），待つほど点の間が埋まって形がはっきりする．
+  rviz は点を 5 秒残すので（PointCloud2 の Decay Time），待つほど点の間が埋まって形がはっきりする．
   Livox などの LiDAR も，同じ向きばかりを測らない走査で，時間をかけるほど細かく見えるようにしている．
 
 超音波は 15° ほどの幅に広がって進むので，レーザの LiDAR のように細かい形は分からない．
@@ -656,7 +656,7 @@ rviz で見た点群．往復するたびに点が増えていく（点は 20 �
 2.  箱をセンサから見て左に動かすと，rviz では点が画面の上に，右に動かすと画面の下に移ることを確かめる．
     逆になるときは，サーボの回る向きが逆である．ターミナル2を `Ctrl-C` で止め，`ros2 launch mechatrobot_ros2 servo_scan.launch.py direction:=-1.0` で起動し直す．
 
-3.  しばらく待って点が増え，箱の面の形が見えてくることを確かめる．箱を取り除くと，その点は 20 秒で消える．
+3.  しばらく待って点が増え，箱の面の形が見えてくることを確かめる．箱を取り除くと，その点は 5 秒で消える．
 
 </div>
 
