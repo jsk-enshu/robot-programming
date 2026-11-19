@@ -85,7 +85,7 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 {doc}`夏学期のマイコンプログラミング演習<micon-programming>`の演習課題3（超音波距離センサ）と発展課題5-1（サーボモータ）の回路を，両方同時につないで使う（発展課題5-2 と同じ配線）．
 超音波距離センサは Trig = D2 / Echo = D3，サーボの信号線は D8 である．
 
-<span style="color:red">**超音波距離センサの VCC は 3.3V に，5V はサーボの真ん中の赤い線につなぐ．**</span>
+<span style="color:red">**超音波距離センサの VCC は 3.3V に，5V はサーボの真ん中の赤い線につなぐ．3.3V で距離が測れない古いセンサは VCC も 5V にする（表の下の注意を参照）．**</span>
 
 | 部品 | 端子 | Arduino UNO R4 WiFi |
 | --- | --- | --- |
@@ -117,7 +117,7 @@ Arduino の 5V ピンは1本でサーボの赤い線と取り合いになるの�
 :align: center
 :name: fig:hc-sr04-connection-2026
 
-超音波距離センサ HC-SR04 の接続（夏学期の演習課題3の写真）．Trig を D2，Echo を D3 につなぐ．<span style="color:red">**VCC は 3.3V につなぐ．**</span>
+超音波距離センサ HC-SR04 の接続（夏学期の演習課題3の写真）．Trig を D2，Echo を D3 につなぐ．<span style="color:red">**VCC は 3.3V につなぐ．3.3V で測れない古いセンサは 5V にする（上の注意を参照）．**</span>
 :::
 
 :::{grid-item}
