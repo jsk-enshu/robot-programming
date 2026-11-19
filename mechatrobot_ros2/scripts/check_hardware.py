@@ -330,7 +330,9 @@ def check_sensor(report, ser):
     else:
         report.ng("超音波センサから反射が返らない (Trig/Echo を入れ替えても返らない)",
                   "センサの前 10〜30 cm に手をかざしてもう一度実行する．それでも返らなければ，"
-                  f"{unplug}，VCC が 3.3V，GND が GND，Trig が D2，Echo が D3 か，線が抜けていないかを確かめる")
+                  f"{unplug}，VCC が 3.3V，GND が GND，Trig が D2，Echo が D3 か，線が抜けていないかを確かめる．"
+                  "配線が正しいのに返らなければ 5V でしか動かない古いセンサかもしれないので，"
+                  "VCC を 5V につなぎ替える (サーボと 5V を分けるのにブレッドボードを使う)")
     servo_pin = diag.get("servo_pin")
     if servo_pin is not None:
         report.info(f"サーボの信号線はファームウェアでは D{servo_pin}．"

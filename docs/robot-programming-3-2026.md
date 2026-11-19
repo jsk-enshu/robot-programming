@@ -94,6 +94,11 @@ rosserial も「マイコンはシリアルで話し，PC 側の `serial_node.py
 | サーボ SG90 | 赤（真ん中）/ 茶 | 5V / GND |
 | サーボ SG90 | 黄またはオレンジ（信号） | D8 |
 
+```{note}
+HC-SR04 には 5V でしか動かない古い版がある．VCC を 3.3V にして配線も正しいのに距離が測れない（反射が返らない）ときは，USB ケーブルを抜いてから VCC を 5V につなぎ替える．
+Arduino の 5V ピンは1本でサーボの赤い線と取り合いになるので，**ブレッドボードの電源レールに 5V と GND を1本ずつ引き出し，そこからセンサとサーボの両方につなぐ**とよい（{ref}`夏学期の説明 <hc-sr04-5v>`）．
+```
+
 :::{figure} fig/mechatrobot-servo-wires-2026.jpg
 :align: center
 :width: 360px
