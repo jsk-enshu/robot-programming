@@ -8,7 +8,14 @@ find_package(ament_uv_virtualenv REQUIRED)
 # numpy/rclpy (an ABI mismatch otherwise).
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
-ament_generate_virtualenv(PYTHON ${Python3_EXECUTABLE})
+# The venv is installed from the committed requirements.lock.txt, not resolved
+# from requirements.in at build time, so a build gives the same versions as on
+# the day the 2026 course was frozen (tag enshu-2026) whatever PyPI has since.
+# How to regenerate it: see the top of requirements.in.
+ament_generate_virtualenv(
+  PYTHON ${Python3_EXECUTABLE}
+  LOCKFILE requirements.lock.txt
+)
 
 # A student's own ~/ros2_ws/jedy_skrobot.py (or skrobot.py) is imported instead
 # of the package when the venv's ipython/python runs in that directory, and the
@@ -75,8 +82,8 @@ install(
   DESTINATION share/${PROJECT_NAME}/scripts
 )
 
-if(BUILD_TESTING)
-  ament_uv_check_virtualenv()
-endif()
+# No ament_uv_check_virtualenv(): it re-resolves requirements.in against
+# today's PyPI (and without --universal) and fails whenever that differs from
+# the frozen lockfile, which is exactly what the lockfile is for.
 
 ament_package()

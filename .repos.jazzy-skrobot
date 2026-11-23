@@ -1,19 +1,23 @@
 # 2026 年版 Jedy 演習 (scikit-robot + ROS 2 Jazzy のみ) で使うリポジトリ。
 #   vcs import src < src/robot-programming/.repos.jazzy-skrobot
 # Jedy のパッケージは robot-programming/jedy にある (jedyeus と jedy_ros1_bridge は COLCON_IGNORE)。
+#
+# 2026 年度の演習が終わった時点 (2026-11-23) の版に固定してある。robot-programming は
+# tag enshu-2026，ほかは commit。各行のコメントは固定する前に追っていたブランチ。
+# 固定したので，更新は vcs import だけで行う (detached HEAD なので vcs pull はエラーになる)。
 repositories:
   robot-programming:
     type: git
     url: https://github.com/jsk-enshu/robot-programming.git
-    version: master
+    version: enshu-2026  # master (2026-11-23)
   actuo:
     type: git
     url: https://github.com/iory/actuo.git
-    version: main
+    version: 197706ec30fbf3bf00b43026a4bcbb6478cd3f12  # main (2026-11-23)
   ament_uv_virtualenv:
     type: git
     url: https://github.com/iory/ament_uv_virtualenv.git
-    version: main
+    version: cda2659e5e582f404ab483b9cc1eb0bed98d2a37  # main (2026-11-23)
   # 音声: VOICEVOX での発話 (voicevox) と音声認識 (ros_speech_recognition)。
   # どちらも jsk_ros1_ros2_compat (jsk_common) と speech_recognition_msgs
   # (jsk_common_msgs) を使う。
@@ -25,15 +29,15 @@ repositories:
   jsk_3rdparty:
     type: git
     url: https://github.com/jsk-ros-pkg/jsk_3rdparty.git
-    version: enshu-2026
+    version: aac404f7224c8c21be24b1d5622b294c9464e933  # enshu-2026 (2026-11-23)
   jsk_common:
     type: git
     url: https://github.com/jsk-ros-pkg/jsk_common.git
-    version: master
+    version: 66a96504c63d9033f8676b6bb572b68a228d57da  # master (2026-11-23)
   jsk_common_msgs:
     type: git
     url: https://github.com/jsk-ros-pkg/jsk_common_msgs.git
-    version: master
+    version: f3089d4c20ef312d6e01e9ea626425e007b29a2d  # master (2026-11-23)
   # sound_play: 2 回目以降の action のゴールが返らなくなるデッドロックの修正
   # (https://github.com/ros-drivers/audio_common/pull/290) と，しゃべっている
   # 途中に次のゴールが来たときの状態遷移エラーの修正
@@ -42,11 +46,11 @@ repositories:
   audio_common:
     type: git
     url: https://github.com/iory/audio_common.git
-    version: enshu-2026
+    version: adc91cf50785d709842868ae278eac0229b3b408  # enshu-2026 (2026-11-23)
   # The robot system lecture (2025 material, jedy_gazebo.launch.py legacy:=true):
   # ros2 launch opencv_apps camshift.launch.py / face_detection.launch.py, and
   # jedy_bringup's track_box_to_cmd_vel_*.py read /camshift/track_box.
   opencv_apps:
     type: git
     url: https://github.com/iory/opencv_apps.git
-    version: ros2
+    version: 671c1656287e0dc56ab55478d6e8c699f3a6a9f7  # ros2 (2026-11-23)

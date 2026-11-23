@@ -31,9 +31,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
-          pip install -r docs/requirements.txt
-          pip install cmarkgfm
+          # docs/requirements.lock.txt freezes the versions (2026-11-23); it is
+          # generated from docs/requirements.txt with
+          #   uvx --from uv==0.13.9 uv pip compile --universal --python-version 3.11 \
+          #     requirements.txt -o requirements.lock.txt   (in docs/)
+          pip install -r docs/requirements.lock.txt
 
       - name: Lint Markdown
         run: |

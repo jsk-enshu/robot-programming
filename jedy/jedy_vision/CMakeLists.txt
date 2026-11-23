@@ -6,9 +6,13 @@ find_package(ament_uv_virtualenv REQUIRED)
 # Same interpreter as jedy_skrobot's venv (see its CMakeLists.txt).
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
+# Installed from the committed requirements.lock.txt (see jedy_skrobot's
+# CMakeLists.txt). overrides.txt is applied when that lockfile is generated
+# (top of requirements.in); ament_uv_virtualenv has no OVERRIDES argument and
+# ignored it when it was passed here.
 ament_generate_virtualenv(
   PYTHON ${Python3_EXECUTABLE}
-  OVERRIDES overrides.txt
+  LOCKFILE requirements.lock.txt
 )
 
 find_package(ament_cmake_python REQUIRED)

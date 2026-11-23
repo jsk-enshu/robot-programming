@@ -1,3 +1,13 @@
+# The build installs requirements.lock.txt, not this file (CMakeLists.txt,
+# LOCKFILE). The lockfile was generated on 2026-11-23 to freeze the 2026
+# course; after editing this file or overrides.txt, regenerate it in this
+# directory with
+#
+#   uvx --from uv==0.13.9 uv pip compile --universal --python-version 3.12 \
+#     --overrides overrides.txt requirements.in -o requirements.lock.txt
+#
+# together with jedy_skrobot's (see its requirements.in).
+
 # scikit-robot: the SAME pin as jedy_skrobot (bump both together). The demos
 # call jedy_skrobot.connect(), whose interface subclasses skrobot's; two
 # different scikit-robots in two venvs would be two different base classes.

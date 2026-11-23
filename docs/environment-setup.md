@@ -17,13 +17,13 @@ $ sudo apt install -y python3-colcon-common-extensions python3-vcstool python3-r
 $ sudo curl -fsSL -o /etc/udev/rules.d/99-realsense-libusb.rules \
     https://raw.githubusercontent.com/IntelRealSense/librealsense/v2.58.4/config/99-realsense-libusb.rules   # 頭のカメラ (D405) を開けるようにする
 $ sudo udevadm control --reload-rules && sudo udevadm trigger
-$ curl -LsSf https://astral.sh/uv/install.sh | sh   # Python の仮想環境を作る uv (1 回だけ)
+$ curl -LsSf https://astral.sh/uv/0.13.9/install.sh | sh   # Python の仮想環境を作る uv (1 回だけ)
 $ export PATH="$HOME/.local/bin:$PATH"   # 今のターミナルで uv を使えるようにする
 $ uv --version
 $ mkdir -p ~/ros2_ws/src
 $ cd ~/ros2_ws/src
 $ source /opt/ros/jazzy/setup.bash
-$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/tags/enshu-2026/.repos.jazzy-skrobot -O- | vcs import
 ```
 
 ### AI TA の設定
@@ -103,10 +103,16 @@ $ source ~/.bashrc   # 今開いているターミナルにも読み込む
 
 演習の日には，最新のソフトウェアを取得してビルドし直す．
 
+:::{note}
+2026 年度の演習は終わったので，ソフトウェアは演習が終わった時点の版に固定してある．
+`.repos.jazzy-skrobot` は tag `enshu-2026` のもので，その中のリポジトリは tag か commit を指し，
+Python のパッケージは `jedy_skrobot` と `jedy_vision` の `requirements.lock.txt` の版が入る．
+`vcs import` だけで，すべてのリポジトリがその版になる (固定した版はブランチではないので `vcs pull` は使わない)．
+:::
+
 ```{code-block} console
 $ cd ~/ros2_ws/src
-$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
-$ vcs pull
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/tags/enshu-2026/.repos.jazzy-skrobot -O- | vcs import
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
@@ -124,7 +130,7 @@ $ source ~/.bashrc
 $ ta version
 ```
 
-- **`vcs pull` の出力を読んでから先に進む．** どこかに `error:` が出ていたら，そのリポジトリは更新されていない．
+- **`vcs import` の出力を読んでから先に進む．** どこかに `Could not checkout` や `error:` が出ていたら，そのリポジトリは更新されていない．
   そのまま `colcon build` すると古いままのコードで動き，別のエラーになる．
   よくあるのは自分で変えたファイルとぶつかる場合で，直し方は {ref}`vcs-pull-local-changes`．
 - **`rosdep install` を飛ばさない．** 新しく必要になった apt のパッケージ (実機のジョイスティックの `ros-jazzy-joy-linux`，
@@ -136,18 +142,20 @@ $ ta version
 ## トラブルシューティング
 
 (vcs-pull-local-changes)=
-### `vcs pull` が `Your local changes to the following files would be overwritten by merge` で止まる
+### `vcs import` が `Your local changes to the following files would be overwritten by checkout` で止まる
 
 演習のリポジトリのファイルを自分で変えていて (例: ロボットシステムの授業で `jedy/jedy_bringup/CMakeLists.txt` に自分のスクリプトを書き足した)，
-同じファイルが更新されたときに出る．自分で足したファイルと同じ名前のファイルが追加されたときは
-`The following untracked working tree files would be overwritten by merge` と出る．どちらも最後に `Aborting` と出て，このリポジトリは更新されていない．
+同じファイルが更新されたときに出る (`Could not checkout ref ...` に続いて出る)．自分で足したファイルと同じ名前のファイルが追加されたときは
+`The following untracked working tree files would be overwritten by checkout` と出る．どちらも最後に `Aborting` と出て，このリポジトリは更新されていない．
+(演習中の資料の `vcs pull` では，最後の語が `checkout` ではなく `merge` になる．直し方は同じである．)
 自分の変更をいったん退避してから更新する．退避した変更は消えない．
 
 ```{code-block} console
 $ cd ~/ros2_ws/src/robot-programming
 $ git status                                   # 自分が変えたファイルを確かめる
 $ git stash push -u -m "before-update"         # 変更と追加したファイルを退避する
-$ cd ~/ros2_ws/src && vcs pull                 # 今度は error が出ないことを確かめる
+$ cd ~/ros2_ws/src
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/tags/enshu-2026/.repos.jazzy-skrobot -O- | vcs import   # 今度は error が出ないことを確かめる
 ```
 
 その後，上の手順の `rosdep install` と `colcon build` をやり直す．
@@ -177,7 +185,7 @@ $ cd ~/ros2_ws && colcon build --symlink-install --packages-up-to jedy_bringup j
 
 ### `colcon build` が「`uv` not found on PATH」で失敗する
 
-uv が入っていないか，PATH に無い．上の手順の `curl -LsSf https://astral.sh/uv/install.sh | sh` と
+uv が入っていないか，PATH に無い．上の手順の `curl -LsSf https://astral.sh/uv/0.13.9/install.sh | sh` と
 `export PATH="$HOME/.local/bin:$PATH"` を実行し，`uv --version` で版が表示されることを確かめてから，もう一度 `colcon build` する．
 
 uv のインストーラが最後に `source $HOME/.local/bin/env` を実行するように表示することがあるが，実行しなくてよい (上の `export` と同じことをする)．

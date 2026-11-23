@@ -1,4 +1,5 @@
-# `uv pip compile --override`: drop the OpenCV distributions that the
+# `uv pip compile --overrides`, used when generating requirements.lock.txt
+# (top of requirements.in): drop the OpenCV distributions that the
 # dependencies ask for, so only requirements.in's
 # opencv-contrib-python-headless provides cv2. (A marker that is never true
 # removes a requirement.)
