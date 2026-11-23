@@ -195,8 +195,7 @@ Arduino の 5V ピンは1本でサーボの赤い線と取り合いになるの�
 
 ```{code-block} console
 $ cd ~/ros2_ws/src
-$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
-$ vcs pull
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/tags/enshu-2026/.repos.jazzy-skrobot -O- | vcs import
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
@@ -205,7 +204,7 @@ $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy
 $ source ~/ros2_ws/install/setup.bash
 ```
 
-- **`vcs pull` の出力を読んでから先に進む．** どこかに `error:` が出ていたら，そのリポジトリは更新されていない（直し方は {ref}`vcs-pull-local-changes`）．
+- **`vcs import` の出力を読んでから先に進む．** どこかに `Could not checkout` や `error:` が出ていたら，そのリポジトリは更新されていない（直し方は {ref}`vcs-pull-local-changes`）．
 - **`rosdep install` を飛ばさない．** カメラの `usb_cam` など，新しく必要になったパッケージはここで入る．
 
 <span style="color:red">**AI TA を使う人は，AI TA も新しくしておく**</span>（{ref}`software-update`の最後の手順）．
@@ -860,11 +859,11 @@ rviz で見た点群．往復するたびに点が増えていく（点は 5 秒
 
 Arduino UNO R4 WiFi は TA からは配らない．各自が持っているものを使うこと．
 
-以下の手順では `uv` を使う．入っていなければ {doc}`environment-setup` の「初回環境構築」にある `curl -LsSf https://astral.sh/uv/install.sh | sh` で入れておくこと．
+以下の手順では `uv` を使う．入っていなければ {doc}`environment-setup` の「初回環境構築」にある `curl -LsSf https://astral.sh/uv/0.13.9/install.sh | sh` で入れておくこと．
 
 <div class="screen">
 
-1.  `ics-manager`（`uv tool install rcb4` で入る）で8個のサーボに ID を振り，設定を確かめる．
+1.  `ics-manager`（`uv tool install rcb4==0.2.5` で入る）で8個のサーボに ID を振り，設定を確かめる．
 
 2.  サーボを真ん中に合わせてからホーンと脚を付け，ページの 3D ビューアを見ながら胴体に組み付ける．
 
@@ -874,6 +873,7 @@ Arduino UNO R4 WiFi は TA からは配らない．各自が持っているも�
 
     ```bash
     git clone https://github.com/iory/build-your-own-arduino-rtos
+    git -C build-your-own-arduino-rtos checkout 50024d238c238bb84868ea52d713eeb186af3596  # 2026 年度の演習の版
     cd build-your-own-arduino-rtos/code
     uv run pio run -d 13_quadruped -e uno_r4_wifi_rcb4 -t upload
     ```

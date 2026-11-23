@@ -8,8 +8,7 @@
 
 ```{code-block} console
 $ cd ~/ros2_ws/src
-$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/heads/master/.repos.jazzy-skrobot -O- | vcs import
-$ vcs pull
+$ wget https://raw.githubusercontent.com/jsk-enshu/robot-programming/refs/tags/enshu-2026/.repos.jazzy-skrobot -O- | vcs import
 $ rosdep update
 $ cd ~/ros2_ws/
 $ rosdep install --from-paths src --ignore-src -y -r --rosdistro jazzy --skip-keys "opencv_apps python3-gdown-pip micro_ros_agent"
@@ -18,7 +17,7 @@ $ colcon build --symlink-install --packages-up-to jedy_bringup jedy_skrobot jedy
 $ source ~/ros2_ws/install/setup.bash
 ```
 
-- `vcs pull` の出力に `error:` が無いこと，`colcon build` の最後が `Summary: N packages finished` で `failed` が無いことを確かめる．
+- `vcs import` の出力に `Could not checkout` や `error:` が無いこと，`colcon build` の最後が `Summary: N packages finished` で `failed` が無いことを確かめる．
 - うまくいかなかったら，そのターミナルで **`ta fix`** と打つ．AI TA が直前のエラーを読んで，原因と直し方を教えてくれる ({doc}`tips/ai-ta`)．
   自分で直してもよいし，「やって」と頼めば AI TA が直してくれる．直ったら，失敗したところから続ける．
 - よくあるつまずきと直し方は {ref}`software-update` にもある．

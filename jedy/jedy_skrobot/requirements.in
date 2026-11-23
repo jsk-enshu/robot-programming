@@ -1,13 +1,21 @@
+# The build installs requirements.lock.txt, not this file (CMakeLists.txt,
+# LOCKFILE). The lockfile was generated on 2026-11-23 to freeze the 2026
+# course; after editing this file, regenerate it in this directory with
+#
+#   uvx --from uv==0.13.9 uv pip compile --universal --python-version 3.12 \
+#     requirements.in -o requirements.lock.txt
+#
+# and regenerate jedy_vision's lockfile the same day, so the packages the two
+# venvs share keep the same versions.
+
 # scikit-robot from git, pinned to a main commit: this package subclasses
 # actuo_ros' RobotInterface, which subclasses skrobot's ros2 interface. Two
 # different scikit-robots would be two different base classes.
 #
-# Pinned, not @main: ament_uv_virtualenv re-resolves only when this file
-# changes, and uv's cache answers @main with the commit it saw first, so with
-# @main a student's `vcs pull && colcon build` never gets a newer scikit-robot
-# (seen on a department PC: still 0.4.18). Bumping the hash here is what
-# updates every workspace on its next build. Bump jedy_vision/requirements.in
-# to the same commit.
+# Pinned, not @main: uv's cache answers @main with the commit it saw first, so
+# with @main a student's rebuild never got a newer scikit-robot (seen on a
+# department PC: still 0.4.18). Bump jedy_vision/requirements.in to the same
+# commit.
 scikit-robot @ git+https://github.com/iory/scikit-robot.git@4f79f3a83c977eada4ed0049d7af68f86d88d550
 
 # The interactive shell. Falls back to `code.interact` if absent, but the

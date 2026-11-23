@@ -52,7 +52,7 @@ micro_ros_platformio は PlatformIO 標準の仮想環境 `~/.platformio/penv` �
 
 ```bash
 uv venv --seed --allow-existing ~/.platformio/penv
-uv pip install --python ~/.platformio/penv/bin/python platformio
+uv pip install --python ~/.platformio/penv/bin/python platformio==6.2.0
 ```
 
 ### 2. ビルドと書き込み
@@ -72,6 +72,9 @@ apt パッケージはないので、ワークスペースでソースからビ�
 cd ~/ros2_ws/src
 git clone -b jazzy https://github.com/micro-ROS/micro-ROS-Agent.git
 git clone -b jazzy https://github.com/micro-ROS/micro_ros_msgs.git
+# 2026 年度の演習の版 (jazzy ブランチの 2026-11-23 の commit) に固定する
+git -C micro-ROS-Agent checkout 7c932329ad5591ef23942ef1962534258c16b000
+git -C micro_ros_msgs checkout b1ef85201e5545d3e07b73f4628bb15836062573
 cd ~/ros2_ws
 colcon build --packages-select micro_ros_msgs micro_ros_agent --cmake-args -DBUILD_TESTING=OFF
 source install/setup.bash

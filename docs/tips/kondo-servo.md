@@ -56,15 +56,15 @@ ICS は，サーボとコントロールボードの間の双方向の通信規�
 ## rcb4 のインストール
 
 `ics-manager` などのコマンドは，Python のパッケージ [rcb4](https://github.com/iory/rcb4) に入っている．
-`uv tool install` で入れる（`uv` が無ければ {doc}`../environment-setup` の「初回環境構築」にある `curl -LsSf https://astral.sh/uv/install.sh | sh` で入れておく）．
+`uv tool install` で入れる（`uv` が無ければ {doc}`../environment-setup` の「初回環境構築」にある `curl -LsSf https://astral.sh/uv/0.13.9/install.sh | sh` で入れておく）．
 
 ```{code-block} console
-$ uv tool install rcb4
+$ uv tool install rcb4==0.2.5
 ...
 Installed 5 executables: armh7-tools, ics-manager, rcb4-rom, rcb4-shell, rcb4-write-firmware
 ```
 
-コマンドは `~/.local/bin` に入る．新しくするときは `uv tool upgrade rcb4`，消すときは `uv tool uninstall rcb4` である．
+コマンドは `~/.local/bin` に入る．版は 2026 年度の演習の版 (0.2.5) に固定してある．新しい版にするときは `uv tool install --force rcb4`，消すときは `uv tool uninstall rcb4` である．
 仮想環境を作ったり `pip install` したりする必要は無い．
 
 入るコマンドは次のとおりである（それぞれ `--help` で使い方が出る）．
